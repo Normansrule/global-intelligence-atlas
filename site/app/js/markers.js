@@ -264,18 +264,19 @@ export class MarkerRenderer {
 
   /** Screen-space hit test on visible symbols: the symbol itself, or its name card. */
   hitPin(x, y, occluded) {
-    let best = null;
+    let best = null; let badge = null; // a symbol under the pointer wins over a neighbour's "+N" badge drawn on top of it
     for (const sp of this.pool) {
       if (!sp.visible || !sp.userData.d || !sp.userData.pin) continue;
       const d = sp.userData.d; const s = this.globe.getScreenCoords(d.lat, d.lng, d.renderAlt ?? 0.004); if (!s) continue;
       if (occluded(d)) continue;
       const t = sp.userData.t; const w = t.w / S; const h = t.h / S;
       const left = s.x - w * sp.center.x; const top = s.y - h * (1 - sp.center.y);
-      const b = t.badge; if (b && x - s.x >= b.x0 && x - s.x <= b.x1 && y - s.y >= b.y0 && y - s.y <= b.y1) return { zoom: true, lat: d.lat, lng: d.lng, more: d.more, group: [d, ...(d.members ?? [])], tip: `<div class="tip"><b>${d.more} more here</b><span>Click to see them all</span></div>` };
+      const b = t.badge; if (!badge && b && x - s.x >= b.x0 && x - s.x <= b.x1 && y - s.y >= b.y0 && y - s.y <= b.y1) badge = { zoom: true, lat: d.lat, lng: d.lng, more: d.more, group: [d, ...(d.members ?? [])], tip: `<div class="tip"><b>${d.more} more here</b><span>Click to see them all</span></div>` };
+      if (badge && badge.lat === d.lat && badge.lng === d.lng) continue;
       const onSymbol = Math.hypot(x - s.x, y - s.y) <= t.hitR + 4;
       const onCard = x >= left && x <= left + w && y >= top && y <= top + h && x > s.x;
-      if (onSymbol || onCard) { const dist = Math.hypot(x - s.x, y - s.y); if (!best || dist < best.dist) best = { d, dist }; }
+      if (onSymbol || onCard) { const dist = Math.hypot(x - s.x, y - s.y); if (!best || dist < best.dist) best = { d, dist, onSymbol }; }
     }
-    return best?.d ?? null;
+    return (best?.onSymbol ? best.d : badge ?? best?.d) ?? null;
   }
 }

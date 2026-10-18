@@ -27,6 +27,12 @@ jobs:
         run: bash tests/e2e/run.sh test_v22.py | tee v22.log && grep -q "SUMMARY 18 / 18" v22.log
       - name: v2.3 terrain and buildings (landscape, Street level, 3D surroundings)
         run: bash tests/e2e/run.sh test_v23.py | tee v23.log && grep -q "SUMMARY 15 / 15" v23.log
+      - name: v2.11 World Monitor baseline layers
+        run: bash tests/e2e/run.sh test_wmbaseline.py | tee wmb.log && grep -qE "SUMMARY ([0-9]+) / \\1$" wmb.log
+      - name: v2.11 markers that share a spot (spread up close, listed from afar)
+        run: bash tests/e2e/run.sh test_colocated.py | tee colo.log && grep -q "SUMMARY 7 / 7" colo.log
+      - name: v2.11 camera source parsers (offline)
+        run: for t in tests/cameras/*.test.mjs; do node "$t" || exit 1; done
       - name: v2.10 repository launch (README, branding, browser tuning)
         run: python3 tests/docs/check_readme.py && bash tests/e2e/run.sh test_v210.py | tee v210.log && grep -q "SUMMARY 10 / 10" v210.log
       - name: v2.9 open data

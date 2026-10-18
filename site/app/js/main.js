@@ -42,7 +42,7 @@ import { installWatch } from './watch.js';
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.10';
+export const VERSION = '2.11';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg } from './icons.js';
@@ -422,27 +422,29 @@ function markerPass(acc) {
     if (v.altitude < 0.12) { // v2.11: things at the very same spot fan out round it, each with its own symbol (space objects are never pins)
       const spot = new Map(); for (const c of cand) { const k = `${Math.round(c.p.lat * 1e4)},${Math.round(c.p.lng * 1e4)}`; (spot.get(k) ?? spot.set(k, []).get(k)).push(c); }
       const kpx = kmPerPx();
-      for (const g of spot.values()) if (g.length > 1 && g.length <= 24) g.forEach((c, k) => { const a = (2 * Math.PI * k) / g.length; const rkm = kpx * (16 + 2.5 * g.length); c.at = { lat: c.p.lat + (rkm * Math.sin(a)) / 111, lng: c.p.lng + (rkm * Math.cos(a)) / (111 * Math.max(0.05, Math.cos(c.p.lat * Math.PI / 180))) }; });
+      // the ring is wide enough that neighbouring symbols sit at least 32 px apart, so none of them folds into another
+      let gi = 0;
+      for (const g of spot.values()) if (g.length > 1 && g.length <= 24) { gi++; const rkm = kpx * Math.max(30, 16 / Math.sin(Math.PI / g.length)); g.forEach((c, k) => { const a = (2 * Math.PI * k) / g.length; c.grp = gi; c.at = { lat: c.p.lat + (rkm * Math.sin(a)) / 111, lng: c.p.lng + (rkm * Math.cos(a)) / (111 * Math.max(0.05, Math.cos(c.p.lat * Math.PI / 180))) }; }); }
     }
     for (const c of cand) {
       const isSel = !!selD && c.p.ref?.d === selD;
       if (!isSel && (pins.length >= q.pins || (perLayer[c.l.id] ?? 0) >= q.pinsPerLayer)) { cols.push(c.p); continue; }
       const at = c.at ?? c.p; const sc = globe.getScreenCoords(at.lat, at.lng, markers.floatAlt);
       if (!sc || sc.x < -40 || sc.y < -40 || sc.x > stageSize.w + 40 || sc.y > stageSize.h + 40) { cols.push(c.p); continue; }
-      const hitsCard = cards.some((r) => sc.x + 14 > r.x0 && sc.x - 14 < r.x1 && sc.y + 14 > r.y0 && sc.y - 14 < r.y1);
-      const near = placed.find((o) => Math.abs(o.x - sc.x) < 22 && Math.abs(o.y - sc.y) < 26) ?? (hitsCard ? placed.reduce((b, o) => (!b || Math.hypot(o.x - sc.x, o.y - sc.y) < Math.hypot(b.x - sc.x, b.y - sc.y) ? o : b), null) : null);
+      const hitsCard = !c.grp && cards.some((r) => sc.x + 14 > r.x0 && sc.x - 14 < r.x1 && sc.y + 14 > r.y0 && sc.y - 14 < r.y1);
+      const near = placed.find((o) => (!c.grp || o.grp !== c.grp) && Math.abs(o.x - sc.x) < 22 && Math.abs(o.y - sc.y) < 26) ?? (hitsCard ? placed.reduce((b, o) => (!b || Math.hypot(o.x - sc.x, o.y - sc.y) < Math.hypot(b.x - sc.x, b.y - sc.y) ? o : b), null) : null);
       if (near && !isSel) { near.pin.more = (near.pin.more ?? 0) + 1; (near.pin.members ??= []).push(c.p); if (v.altitude > 0.3 && !far) cols.push(c.p); else state.clustered.push(c.p); continue; } // up close the "+N" badge stands in for the column
       perLayer[c.l.id] = (perLayer[c.l.id] ?? 0) + 1;
       const icon = typeof c.l.pin === 'function' ? c.l.pin(c.p.ref.d) : c.l.pin;
       const [title, sub] = tipParts(c.p);
       const rect = { x0: sc.x + 14, x1: sc.x + 40 + Math.min(240, 7.2 * Math.max(title.length, sub.length * 0.9)), y0: sc.y - 18, y1: sc.y + 18 };
-      const cardFree = isSel || cards.length < (far ? Math.min(6, q.cards) : q.cards) && !cards.some((r) => r.x0 < rect.x1 && rect.x0 < r.x1 && r.y0 < rect.y1 && rect.y0 < r.y1)
+      const cardFree = isSel || !c.grp && cards.length < (far ? Math.min(6, q.cards) : q.cards) && !cards.some((r) => r.x0 < rect.x1 && rect.x0 < r.x1 && r.y0 < rect.y1 && rect.y0 < r.y1)
         && !placed.some((o) => o.x + 14 > rect.x0 && o.x - 14 < rect.x1 && o.y + 14 > rect.y0 && o.y - 14 < rect.y1);
       if (cardFree) cards.push(rect);
       // bigger things get bigger symbols: size follows the marker's radius (magnitude, megawatts, networks…)
       const size = Math.round(Math.max(24, Math.min(38, 20 + (c.p.r ?? 0.22) * 36)) / 2) * 2;
       const pin = { lat: at.lat, lng: at.lng, home: c.at ? { lat: c.p.lat, lng: c.p.lng } : null, alt: c.p.alt, icon, size, color: solid(c.p.color, c.l.swatch), title, sub, detailed: cardFree, selected: isSel, ref: c.p.ref, tip: c.p.tip };
-      pins.push(pin); placed.push({ x: sc.x, y: sc.y, pin });
+      pins.push(pin); placed.push({ x: sc.x, y: sc.y, pin, grp: c.grp });
     }
   }
   markerPass.prev = new Set(pins.map((p) => p.ref?.d));

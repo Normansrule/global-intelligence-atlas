@@ -6,9 +6,9 @@ def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1440,'height':900}); errs=[]
     pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
-    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.10')}catch(e){}")
+    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@36.7,-119.8,0.5&l=borders,wqp', wait_until='commit'); pg.wait_for_timeout(12000)
-    check('version 2.10', pg.evaluate("() => gia.VERSION")=='2.10')
+    check('version 2.11', pg.evaluate("() => gia.VERSION")=='2.11')
     st=pg.evaluate("() => ({ s: gia.state.lstatus.wqp?.s, n: gia.state.data.wqp?.rows?.length, note: gia.state.data.wqp?.statusNote })")
     check('layer loads from the regional-data branch', st['s']=='ok' and st['n']==5 and 'above an EPA drinking-water limit' in (st['note'] or ''), st)
     if not pg.evaluate("() => document.body.classList.contains('left-open')"): pg.click('.rail [data-section=layers]')

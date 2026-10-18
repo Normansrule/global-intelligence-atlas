@@ -11,7 +11,7 @@ def h(route):
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1440,'height':900}); errs=[]
     pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
-    pg.route('**/*', h); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.10')}catch(e){}")
+    pg.route('**/*', h); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@46,10,2.2&l=borders,webcams', wait_until='commit'); pg.wait_for_timeout(14000)
     d = pg.evaluate("() => { const d=gia.state.data.webcams; return d && {density: d.density?.length, total: d.total}; }")
     check('density grid when far out', d and d['density'] and d['density'] > 500, d)

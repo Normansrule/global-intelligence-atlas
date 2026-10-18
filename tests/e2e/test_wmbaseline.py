@@ -4,7 +4,7 @@ import json, os
 # World Monitor baseline: the rest of World Monitor's static map datasets as layers (wmbaseline.js).
 res=[]
 def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok else 'FAIL ')+name, info)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.10')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}"
 WM=json.load(open(os.path.join(sys.argv[-1], '..', '..', 'site', 'app', 'data', 'worldmonitor-static.json')))
 # layer id -> (JSON key, group, a field label its card must show)
 LAYERS={
@@ -21,7 +21,7 @@ def page(b, url):
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS)
     pg, errs = page(b, 'http://localhost:8765/app/#@25,40,2.4&l=borders,'+','.join(LAYERS))
-    check('version 2.10', pg.evaluate("() => gia.VERSION")=='2.10')
+    check('version 2.11', pg.evaluate("() => gia.VERSION")=='2.11')
     m=pg.evaluate("() => gia.layerManifest()")
     man={l['id']: l for l in m['layers']}
     for lid,(key,group,field) in LAYERS.items():

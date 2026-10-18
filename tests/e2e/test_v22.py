@@ -9,13 +9,13 @@ def baltic(route):
     if 'meri.digitraffic.fi/api/ais/v1/locations' in u: return route.fulfill(status=200, body=BALTIC, headers={'Content-Type':'application/json','Access-Control-Allow-Origin':'*'})
     if 'meri.digitraffic.fi/api/ais/v1/vessels' in u: return route.fulfill(status=200, body='[]', headers={'Content-Type':'application/json','Access-Control-Allow-Origin':'*'})
     return handler(route)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.10')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}"
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1440,'height':900}); errs=[]
     pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
     pg.route('**/*', baltic); pg.add_init_script(INIT)
     pg.goto('http://localhost:8765/app/#@1.3,103.8,2.2&l=borders,ships', wait_until='commit'); pg.wait_for_timeout(14000)
-    check('version 2.10', pg.evaluate("() => gia.VERSION")=='2.10')
+    check('version 2.11', pg.evaluate("() => gia.VERSION")=='2.11')
     d=pg.evaluate("() => { const s=gia.state.data.ships; return s && { n: s.length, src: s.src, parts: gia.state.chan.ships?.particles.length, st: gia.state.lstatus.ships?.s } }")
     check('ships load worldwide from the snapshot', d and d['n']==4001 and d['src']=='world' and d['st']=='ok', d)
     check('ships drawn as one particle cloud', d and d['parts']==1, d)

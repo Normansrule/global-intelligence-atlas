@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Global Intelligence Atlas service worker: the site itself works offline; live feeds and map tiles always go to the network.
-const VERSION = 'global-intelligence-atlas-v2.10';
+const VERSION = 'global-intelligence-atlas-v2.11';
 const SHELL = [
   './', 'app/', 'app/css/atlas.css', 'app/vendor/vendor.min.mjs',
   'app/js/main.js', 'app/js/layers.js', 'app/js/opendata.js', 'app/js/flights.js', 'app/js/cameras.js', 'app/js/places.js', 'app/js/nav.js', 'app/js/icons.js', 'app/js/news.js', 'app/js/crime.js', 'app/js/live.js', 'app/js/networks.js', 'app/js/hud.js', 'app/js/markers.js', 'app/js/perf.js', 'app/js/clock.js', 'app/js/launches.js', 'app/js/trace.js', 'app/js/wind.js', 'app/js/feeds.js', 'app/js/astro.js', 'app/js/satellites.js', 'app/js/sources.js', 'app/js/tours.js', 'app/js/quiz.js', 'app/js/moon.js', 'app/js/extras.js', 'app/js/sky.js', 'app/js/shell.js', 'app/js/fatlines.js', 'app/js/pulses.js', 'app/js/planes3d.js', 'app/js/planeview.js', 'app/js/hazards.js', 'app/js/health.js', 'app/js/watch.js', 'app/js/osint.js', 'app/js/osint-core.js', 'app/js/worldcams.js', 'app/js/intel.js', 'app/js/redaction.js', 'app/js/photo-osint.js', 'app/js/ais.js', 'app/js/landscape.js', 'app/js/surroundings.js', 'app/js/replay.js', 'app/js/registry.js', 'app/js/chemicals.js', 'app/js/wmbaseline.js', 'app/js/plss.js', 'app/plugins/daylength.js', 'app/config.json',

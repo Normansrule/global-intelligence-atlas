@@ -1,6 +1,6 @@
 [package]
 name = "global-intelligence-atlas"
-version = "2.10.0"
+version = "2.11.0"
 description = "Global Intelligence Atlas — an educational 3D Earth, built on World Monitor"
 license = "AGPL-3.0-only"
 edition = "2021"
