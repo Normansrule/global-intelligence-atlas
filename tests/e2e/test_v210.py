@@ -21,7 +21,7 @@ with sync_playwright() as p:
     ok=pg.evaluate("async () => { const rs = await Promise.all([...document.querySelectorAll('link[rel=modulepreload]')].map(l => fetch(l.href))); return rs.every(r => r.ok) }")
     check('preloaded files exist', ok)
     sw=pg.evaluate("async () => (await fetch('../sw.js')).text()")
-    check('service worker cache is v2.10', "global-intelligence-atlas-v2.10'" in sw)
+    check('service worker cache is v2.11', "global-intelligence-atlas-v2.11'" in sw)
     heavy=pg.evaluate("async () => { const t = await (await fetch('../sw.js')).text(); const re = new RegExp(t.match(/const HEAVY = \\/(.*)\\/;/)[1]); return ['/global-intelligence-atlas/app/vendor/vendor.min.mjs', '/global-intelligence-atlas/app/textures/earth-night-2k.jpg', '/global-intelligence-atlas/site/docs-media/home.jpg'].every(p => re.test(p)) && !['/global-intelligence-atlas/app/js/main.js', '/global-intelligence-atlas/app/config.json', '/global-intelligence-atlas/app/data/worldmonitor-static.json'].some(p => re.test(p)) }")
     check('cache-first only for heavy files; code, config and data stay network-first', heavy)
     calls=pg.evaluate("() => gia.globe.renderer().info.render.calls")

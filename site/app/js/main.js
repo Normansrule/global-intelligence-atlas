@@ -1676,7 +1676,14 @@ if (NEW_VERSION) { if (!state.pendingSel) setTimeout(whatsNew, 600); try { local
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>Global Intelligence Atlas (GIA) gets its own repository</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>Cameras worldwide, property and industry</h3>
+    <div class="newlist">
+      <span>${g('camera', '#7ed6c4')}<b>Cameras from 22 more agencies:</b> U.S. states from Arizona to Washington, Edmonton, Ottawa and Toronto, Singapore, Japan, Italy, Sweden and Poland, plus 900 public webcams in 74 countries from Osiris’s list.</span>
+      <span>${g('factory', '#ff6b5a')}<b>Economy, property and industry:</b> house prices by area, U.S. home values and rents, homes sold in England and Wales, what each country exports, heavy industry and mapped factories.</span>
+      <span>${g('dossier', '#e3b55b')}<b>The rest of World Monitor’s map:</b> military bases, technology offices, cloud regions, AI labs, startups, financial centres, mining and commodity hubs.</span>
+      <span>${g('anchor', '#9fc3e6')}<b>Markers that share a spot</b> fan out up close, and a “+N” badge lists every one of them.</span>
+    </div>
+    <h4>From v2.10 — Global Intelligence Atlas (GIA) gets its own repository</h4>
     <div class="newlist">
       <span>${g('dossier', '#e3b55b')}<b>One app, web and desktop:</b> the website and the desktop app run exactly the same code, so every layer and tool is in both. The desktop app adds native fetching, the flights board feed, the ship collector and system notifications.</span>
       <span>${g('anchor', '#7ed6c4')}<b>Faster in the browser:</b> the globe engine and the first modules load in parallel, and on repeat visits the engine, Earth textures and images come straight from the offline cache while it refreshes in the background.</span>
