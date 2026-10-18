@@ -158,6 +158,10 @@ await t('parseWsdot keeps placed cameras with an image (http upgraded to https)'
     { CameraID: 9002, Title: 'No image', ImageURL: '', CameraLocation: { Latitude: 47.6, Longitude: -122.3 } }, { CameraID: 9003, ImageURL: 'https://x.wsdot.wa.gov/a.jpg', CameraLocation: {} }]);
   assert.deepEqual(r, [['wsdot-9001', 'I-5 at NE 45th St', 47.66, -122.32, 'https://images.wsdot.wa.gov/nw/005vc16952.jpg', '', 0, 'Washington · I-5']]);
 });
+await t('parseWsdot also reads the mobile-app list', () => {
+  const r = na.parseWsdot({ cameras: { items: [{ id: 5, title: 'SR 520 at Montlake', url: 'https://images.wsdot.wa.gov/nw/520vc00430.jpg', lat: 47.64, lon: -122.3, roadName: 'SR 520' }, { id: 6, title: 'No place', url: 'https://images.wsdot.wa.gov/x.jpg' }] } });
+  assert.deepEqual(r, [['wsdot-5', 'SR 520 at Montlake', 47.64, -122.3, 'https://images.wsdot.wa.gov/nw/520vc00430.jpg', '', 0, 'Washington · SR 520']]);
+});
 await t('parseOttawa builds the still URL from the camera number', () => {
   const r = na.parseOttawa([{ id: 12, number: 2003, latitude: 45.42, longitude: -75.69, description: 'Bank St & Wellington St' }, { id: 13, latitude: null, longitude: -75 }]);
   assert.deepEqual(r, [['ott-12', 'Bank St & Wellington St', 45.42, -75.69, 'https://traffic.ottawa.ca/map/camera?id=2003', '', 0, 'Ontario · Ottawa']]);

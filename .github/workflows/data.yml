@@ -20,6 +20,7 @@ jobs:
         env:
           ONTARIO_511_KEY: ${{ secrets.ONTARIO_511_KEY }}
           ALBERTA_511_KEY: ${{ secrets.ALBERTA_511_KEY }}
+          WSDOT_ACCESS_CODE: ${{ secrets.WSDOT_ACCESS_CODE }}
         run: node tools/fetch-cameras.mjs
       - name: Internet facilities and radio receivers
         run: node tools/fetch-networks.mjs

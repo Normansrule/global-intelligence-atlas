@@ -189,14 +189,29 @@ const dedupe = (rows) => { const m = new Map(); for (const r of rows) if (r && (
 export const parseMiDrive = (json) => { if (!Array.isArray(json)) throw new Error('MiDrive returned a non-array payload'); return dedupe(json.map(mapMiDrive)); };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Washington — WSDOT camera list (array of { CameraID, Title, ImageURL, CameraLocation: { Latitude, Longitude } }).
+// Washington — WSDOT camera list. Two shapes are read: the Traveler Information API array of { CameraID, Title, ImageURL,
+// CameraLocation: { Latitude, Longitude } }, and the mobile-app list { cameras: { items: [{ id, title, url, lat, lon, roadName }] } }.
 export function parseWsdot(json) {
-  const list = Array.isArray(json) ? json : json?.cameras ?? [];
+  const list = Array.isArray(json) ? json : Array.isArray(json?.cameras) ? json.cameras : json?.cameras?.items ?? [];
   return dedupe(list.map((c) => {
-    const lat = num(c?.CameraLocation?.Latitude); const lng = num(c?.CameraLocation?.Longitude);
-    if (!ok(lat, lng) || !c.ImageURL || c.IsActive === false) return null;
-    return row(`wsdot-${c.CameraID}`, c.Title || `WSDOT camera ${c.CameraID}`, lat, lng, c.ImageURL, '', ['Washington', c.CameraLocation?.RoadName].filter(Boolean).join(' · '));
+    const lat = num(c?.CameraLocation?.Latitude ?? c?.lat); const lng = num(c?.CameraLocation?.Longitude ?? c?.lon);
+    const id = c?.CameraID ?? c?.id; const img = c?.ImageURL ?? c?.url; const road = c?.CameraLocation?.RoadName ?? c?.roadName;
+    if (!ok(lat, lng) || !img || c.IsActive === false) return null;
+    return row(`wsdot-${id}`, c.Title ?? c.title ?? `WSDOT camera ${id}`, lat, lng, img, '', ['Washington', road].filter(Boolean).join(' · '));
   }));
+}
+// The free access code (WSDOT_ACCESS_CODE) opens the official API; without it the public mobile-app list is tried.
+async function wsdot() {
+  const urls = [
+    ...(process.env.WSDOT_ACCESS_CODE ? [`https://wsdot.wa.gov/Traffic/api/HighwayCameras/HighwayCamerasREST.svc/GetCamerasAsJson?AccessCode=${encodeURIComponent(process.env.WSDOT_ACCESS_CODE)}`] : []),
+    'https://data.wsdot.wa.gov/mobile/Cameras.js',
+    'https://www.wsdot.wa.gov/traffic/api/HighwayCameras/HighwayCamerasREST.svc/GetCamerasAsJson',
+  ];
+  const errs = [];
+  for (const u of urls) {
+    try { const t = await get(u, 'text'); const rows = parseWsdot(JSON.parse(t.slice(t.search(/[[{]/)).replace(/;\s*$/, ''))); if (rows.length) return rows; errs.push(`${u.split('?')[0]}: no cameras`); } catch (e) { errs.push(e.message.replace(/AccessCode=[^&\s]+/, 'AccessCode=…').slice(0, 160)); }
+  }
+  throw new Error(errs.join(' | '));
 }
 
 // City of Ottawa — traffic.ottawa.ca camera list; each camera's still is served at /map/camera?id={number}.
@@ -242,7 +257,7 @@ export const sources = [
     body: JSON.stringify({ query: INDOT_QUERY, variables: { input: { north: IN_B.maxLat, south: IN_B.minLat, east: IN_B.maxLng, west: IN_B.minLng, zoom: 16, layerSlugs: ['normalCameras'], nonClusterableUris: null } } }),
   })) },
   { key: 'midrive', name: 'MDOT MiDrive (Michigan)', run: async () => parseMiDrive(await get('https://mdotjboss.state.mi.us/MiDrive/camera/list')) },
-  { key: 'wsdot', name: 'WSDOT (Washington)', run: async () => parseWsdot(await get('https://data.wsdot.wa.gov/log/public/cameras.json')) },
+  { key: 'wsdot', name: 'WSDOT (Washington)', run: wsdot },
   { key: 'ottawatraffic', name: 'City of Ottawa traffic cameras (Ontario)', run: async () => parseOttawa(await get('https://traffic.ottawa.ca/beta/camera_list')) },
   { key: 'torontocams', name: 'City of Toronto traffic cameras (Ontario)', run: async () => parseToronto(await get(TORONTO_URL)) },
   { key: 'butleroh', name: 'Butler County Sheriff tower cameras (Ohio)', run: async () => BUTLER },

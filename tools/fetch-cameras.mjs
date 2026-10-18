@@ -151,7 +151,13 @@ async function newZealand() {
 // Taiwan: Freeway Bureau CCTV (MOTC v2.0 static list). Each camera is a live motion-JPEG stream, which an
 // <img> element plays directly.
 async function taiwan() {
-  const xml = await get('https://tisvcloud.freeway.gov.tw/history/motc20/CCTV.xml', 'text');
+  // The list itself is public XML with no media in it, so the plain-HTTP address is tried when the HTTPS one fails
+  // (the bureau's certificate chain is often incomplete for Node); the camera streams below stay HTTPS-only.
+  let xml;
+  try { xml = await get('https://tisvcloud.freeway.gov.tw/history/motc20/CCTV.xml', 'text'); } catch (e) {
+    console.warn(`taiwan https: ${e.message} ${e.cause?.code ?? ''}`);
+    xml = await get('http://tisvcloud.freeway.gov.tw/history/motc20/CCTV.xml', 'text');
+  }
   return [...xml.matchAll(/<CCTV>([\s\S]*?)<\/CCTV>/g)].map(([, b]) => {
     const lat = Number(xmlTag(b, 'PositionLat')); const lng = Number(xmlTag(b, 'PositionLon')); const url = xmlTag(b, 'VideoStreamURL') ?? xmlTag(b, 'VideoImageURL');
     if (!ok(lat, lng) || !url || !/^https:/.test(url)) return null;
