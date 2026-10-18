@@ -51,6 +51,14 @@ export class GeoIndex {
     }
     return best ? { item: best, km: bestD } : null;
   }
+  /** every item within radiusKm (at most max), e.g. things that share one spot */
+  within(lat, lng, radiusKm, max = 30) {
+    const dLat = radiusKm / 111; const dLng = radiusKm / (111 * Math.max(0.05, Math.cos(lat * D2R))); const c = this.cell; const cosl = Math.cos(lat * D2R); const out = [];
+    for (let i = Math.floor((lat - dLat) / c); i <= Math.floor((lat + dLat) / c); i++) for (let j = Math.floor((lng - dLng) / c); j <= Math.floor((lng + dLng) / c); j++) {
+      for (const it of this.map.get((i + 4000) * 20000 + (j + 9000)) ?? []) { if (Math.hypot((it.lat - lat) * 111, (it.lng - lng) * 111 * cosl) <= radiusKm) { out.push(it); if (out.length >= max) return out; } }
+    }
+    return out;
+  }
 }
 /** Several indexes queried as one (each layer's index is cached until its data changes). */
 export class MultiIndex {
@@ -60,6 +68,7 @@ export class MultiIndex {
     for (const p of this.parts) { const n = p.nearest(lat, lng, best ? best.km : radiusKm, filter); if (n && (!best || n.km < best.km)) best = n; }
     return best;
   }
+  within(lat, lng, radiusKm, max = 30) { const out = []; for (const p of this.parts) { out.push(...p.within(lat, lng, radiusKm, max - out.length)); if (out.length >= max) break; } return out; }
 }
 
 // ------------------------------------------------------------------ map symbols (Path2D, drawn in any colour)
@@ -262,7 +271,7 @@ export class MarkerRenderer {
       if (occluded(d)) continue;
       const t = sp.userData.t; const w = t.w / S; const h = t.h / S;
       const left = s.x - w * sp.center.x; const top = s.y - h * (1 - sp.center.y);
-      const b = t.badge; if (b && x - s.x >= b.x0 && x - s.x <= b.x1 && y - s.y >= b.y0 && y - s.y <= b.y1) return { zoom: true, lat: d.lat, lng: d.lng, more: d.more, tip: `<div class="tip"><b>${d.more} more here</b><span>Click to zoom in</span></div>` };
+      const b = t.badge; if (b && x - s.x >= b.x0 && x - s.x <= b.x1 && y - s.y >= b.y0 && y - s.y <= b.y1) return { zoom: true, lat: d.lat, lng: d.lng, more: d.more, group: [d, ...(d.members ?? [])], tip: `<div class="tip"><b>${d.more} more here</b><span>Click to see them all</span></div>` };
       const onSymbol = Math.hypot(x - s.x, y - s.y) <= t.hitR + 4;
       const onCard = x >= left && x <= left + w && y >= top && y <= top + h && x > s.x;
       if (onSymbol || onCard) { const dist = Math.hypot(x - s.x, y - s.y); if (!best || dist < best.dist) best = { d, dist }; }

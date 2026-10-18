@@ -5,7 +5,7 @@ name: Camera source check
 on:
   push:
     branches-ignore: [main]
-    paths: ['tools/fetch-cameras.mjs', 'tools/fetch-worldcams.mjs', 'tools/cameras/**', 'tools/data/osiris-webcams.json', '.github/workflows/camera-check.yml']
+    paths: ['tools/fetch-cameras.mjs', 'tools/fetch-worldcams.mjs', 'tools/cameras/**', 'tests/cameras/**', 'tools/data/osiris-webcams.json', '.github/workflows/camera-check.yml']
   workflow_dispatch:
 permissions:
   contents: read
