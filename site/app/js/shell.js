@@ -5,7 +5,7 @@
 import { glyphSvg } from './icons.js';
 import { installOsint, osintSection } from './osint.js';
 
-const TITLES = { layers: 'Layers', map: 'Map style', live: 'Live now', explore: 'Explore', tools: 'Tools', intel: 'Open-source intelligence', saved: 'Saved views', about: 'About and sources' };
+const TITLES = { layers: 'Layers', map: 'Map style', live: 'Live now', explore: 'Explore', tools: 'Tools', news: 'News', intel: 'Open-source intelligence', saved: 'Saved views', about: 'About and sources' };
 // openNotes() calls whose content is a "section" rather than the details of one thing
 export const SECTION_FOR_KEY = { live: 'live', views: 'saved', about: 'about' };
 export const SECTION_FOR_TITLE = { 'About and sources': 'about', 'Saved views': 'saved', 'Live now': 'live', 'Guided tours': 'explore' };
@@ -102,7 +102,7 @@ export function installShell(x) {
     if (section === 'about') return x.openAbout();
     if (extra[section]) return extra[section]();
   }
-  // sections added by other modules (intel.js): register(section, open)
+  // sections added by other modules (newsdesk.js, intel.js): register(section, open)
   const extra = {};
   const register = (section, fn) => { extra[section] = fn; };
   document.querySelectorAll('.rail [data-section]').forEach((b) => b.addEventListener('click', () => open(b.dataset.section)));
@@ -123,6 +123,6 @@ export function installShell(x) {
   });
   // restore the last open section (Layers on a first visit)
   let last = 'layers'; try { last = localStorage.getItem('global-intelligence-atlas-section') ?? 'layers'; } catch { /* ignore */ }
-  if (matchMedia('(max-width: 860px)').matches) close(); else if (!last) close(); else if (last === 'layers' || !['explore', 'tools', 'intel'].includes(last)) show('layers'); else setTimeout(() => open(last), 0);
+  if (matchMedia('(max-width: 860px)').matches) close(); else if (!last) close(); else if (last === 'layers' || !['explore', 'tools', 'news', 'intel'].includes(last)) show('layers'); else setTimeout(() => open(last), 0);
   return { show, close, open, isOpen, current: () => current, explore, tools, register };
 }

@@ -719,3 +719,25 @@ ul.health { list-style: none; margin: 4px 0 12px; padding: 0; display: grid; gap
 .wqp-t th, .wqp-t td { text-align: left; padding: 4px 5px; border-bottom: 1px solid rgba(255,255,255,.08); }
 .wqp-t th { color: var(--mist); font-weight: 500; }
 .wqp-t tr.over td { color: #ff4e6a; }
+
+/* ---------- News section: headlines and live news channels (newsdesk.js) ---------- */
+.news-list { list-style: none; margin: 0; padding: 0; }
+.news-list li { padding: 9px 0; border-bottom: 1px solid var(--rule); }
+.news-list a { display: block; color: var(--paper); font-size: 14px; line-height: 1.35; text-decoration: none; }
+.news-list a:hover { color: var(--brass); text-decoration: underline; }
+.news-list small { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 3px; color: var(--mist); font-size: 12px; }
+.news-own { display: inline-block; padding: 0 6px; border: 1px solid var(--rule); border-radius: 999px; font-size: 10.5px; line-height: 16px; color: var(--mist); }
+.news-own-state { border-color: #c98b4a; color: #e8b27a; }
+.news-own-public { border-color: #4f8fb8; color: #8ecbff; }
+.news-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 10px; overflow: hidden; }
+.news-frame iframe, .news-frame video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.news-cap { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 6px 0 4px; font-size: 13px; }
+.news-cap small { color: var(--mist); }
+.news-chans { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px; }
+.news-chan { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 10px; background: none; color: var(--paper); text-align: left; cursor: pointer; min-width: 0; }
+.news-chan b { font-size: 13px; overflow-wrap: anywhere; }
+.news-chan small { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; color: var(--mist); font-size: 11.5px; }
+.news-chan[aria-pressed='true'] { border-color: var(--brass); background: var(--brass-dim); }
+.news-live { font-style: normal; color: #ff6b6b; font-weight: 700; }
+.news-off { margin: 10px 0; font-size: 13px; color: var(--mist); }
+.news-off li { margin: 4px 0; }

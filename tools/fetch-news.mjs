@@ -7,6 +7,7 @@
 //   headlines.json  { updated, items: [{ t: title, u: link, at: ISO time, p: publisher key, r: region, f: feed id }] }
 //                   Only the title, link and time are kept, from the last 48 hours, at most 25 per feed.
 //   channels.json   { updated, channels: [{ key, name, owner, region, lang, yt, video, live, title, hls, checked }] }
+//                   live: true, false, or null when YouTube would not show the runner the channel page.
 //                   video: the broadcaster's current YouTube live video when it is live and embedding is allowed;
 //                   hls: the broadcaster's own HLS streams that answered with a playlist and open Cross-Origin
 //                   Resource Sharing (CORS) for the site's origin, on the playlist and on its first rendition.
@@ -83,25 +84,32 @@ export function parseYouTubePage(html) {
   const live = /"isLiveNow":true/.test(s) || /"videoDetails":\{[^}]*?"isLive":true/.test(s);
   const embeddable = /"playableInEmbed":true/.test(s);
   const title = decode(s.match(/<meta name="title" content="([^"]*)"/)?.[1] ?? '') || null;
-  return { video, channel, live, embeddable, title };
+  // a page we could not read (a consent or bot check) says nothing about whether the channel is live
+  const unreadable = !/ytInitial(PlayerResponse|Data)/.test(s) || /consent\.youtube\.com|confirm you(?:’|')re not a bot|"status":"LOGIN_REQUIRED"/i.test(s);
+  return { video, channel, live, embeddable, title, unreadable };
 }
 
-async function get(url, headers = {}, timeout = 20_000) {
-  const r = await fetch(url, { headers: { ...UA, ...headers }, signal: AbortSignal.timeout(timeout), redirect: 'follow' });
-  return { status: r.status, headers: r.headers, text: await r.text(), url: r.url };
+async function get(url, headers = {}, timeout = 30_000, tries = 2) {
+  for (let i = 1; ; i++) {
+    try {
+      const r = await fetch(url, { headers: { ...UA, ...headers }, signal: AbortSignal.timeout(timeout), redirect: 'follow' });
+      return { status: r.status, headers: r.headers, text: await r.text(), url: r.url };
+    } catch (e) { if (i >= tries) throw e; }
+  }
 }
 
 async function checkYouTube(c) {
   const tries = [];
   if (c.yt) tries.push(`https://www.youtube.com/channel/${c.yt}/live`);
   if (c.video) tries.push(`https://www.youtube.com/watch?v=${c.video}`);
-  const notes = [];
+  const notes = []; let unread = false;
   for (const url of tries) {
     try {
       const r = await get(url, { 'Accept-Language': 'en' });
       if (r.status !== 200) { notes.push(`HTTP ${r.status}`); continue; }
       const p = parseYouTubePage(r.text);
-      if (!p.video) { notes.push('no video on the page'); continue; }
+      if (p.unreadable) { unread = true; notes.push(`page could not be read (${r.text.length} bytes${/not a bot/i.test(r.text) ? ', bot check' : /consent/i.test(r.text) ? ', consent page' : ''})`); continue; }
+      if (!p.video) { notes.push('not live now (no live video on the channel)'); continue; }
       if (c.yt && p.channel && p.channel !== c.yt) { notes.push(`video belongs to another channel (${p.channel})`); continue; }
       if (!p.live) { notes.push(`${p.video} is not live now`); continue; }
       if (!p.embeddable) {
@@ -111,7 +119,7 @@ async function checkYouTube(c) {
       return { ok: true, video: p.video, title: p.title, note: `live on YouTube (${p.video})` };
     } catch (e) { notes.push(e.name === 'TimeoutError' ? 'timed out' : e.message); }
   }
-  return { ok: false, note: notes.join('; ') || 'no YouTube channel' };
+  return { ok: false, unknown: unread, note: notes.join('; ') || 'no YouTube channel' };
 }
 
 const corsOk = (h) => { const a = h.get('access-control-allow-origin'); return a === '*' || a === ORIGIN; };
@@ -165,6 +173,8 @@ async function channels(status) {
     if (c.yt || c.video) {
       const y = await checkYouTube(c);
       if (y.ok) { row.video = y.video; row.title = y.title; row.live = true; }
+      // YouTube would not show the page to the runner: leave it to the broadcaster's channel embed in the browser
+      else if (y.unknown && c.yt) row.ytUnknown = true;
       reached ||= y.ok || !/timed out|fetch failed/.test(y.note);
       notes.push(`YouTube: ${y.note}`);
     }
@@ -172,12 +182,13 @@ async function channels(status) {
       try { const h = await checkHls(u); reached = true; if (h.ok) { row.hls.push(u); row.live = true; } notes.push(`HLS ${new URL(u).host}: ${h.note}`); }
       catch (e) { notes.push(`HLS ${new URL(u).host}: ${e.name === 'TimeoutError' ? 'timed out' : e.message}`); }
     }
-    status[`channel ${c.key} ${c.name}`] = { ok: row.live, note: notes.join(' | ') };
+    if (!row.live && row.ytUnknown) row.live = null;
+    status[`channel ${c.key} ${c.name}`] = { ok: row.live !== false, note: notes.join(' | ') + (row.live === null ? ' (offered through the channel’s live embed, not verified)' : '') };
     // nothing answered at all (a network fault on the runner): keep what the last run found
     return !reached && prev[c.key] ? prev[c.key] : row;
   }));
   write('channels.json', { updated: new Date().toISOString(), channels: out });
-  log(`${out.filter((c) => c.live).length}/${out.length} channels live and embeddable`);
+  log(`${out.filter((c) => c.live).length}/${out.length} channels verified live, ${out.filter((c) => c.live === null).length} left to the YouTube channel embed`);
 }
 
 if (MAIN) {

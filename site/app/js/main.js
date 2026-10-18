@@ -34,6 +34,7 @@ import { clock, SPEEDS, speedLabel } from './clock.js';
 import { launchesLayer, alertsLayer, countdown } from './launches.js';
 import { installTrace } from './trace.js';
 import { installIntel } from './intel.js';
+import { installNewsDesk } from './newsdesk.js';
 import { windLayer } from './wind.js';
 import { smallCircle } from './astro.js';
 import { firesLayer, radarLayer } from './hazards.js';
@@ -1653,6 +1654,7 @@ api.liveOverview = () => {
 };
 shell = installShell({ $, esc, TOURS, closeNotes, closeDetails: () => { state.leftAuto = false; closeNotes(); }, openLive: () => live.openFeed('all'), openSaved: () => extras.viewsPanel(), openAbout: () => aboutPanel(), sky: () => sky.open(state.pov.lat, state.pov.lng), palette: () => extras.open() });
 installIntel({ ...api, shell });
+installNewsDesk({ ...api, shell });
 $('#flights-chip').addEventListener('click', () => extras.flightsBoard());
 // Live countdowns in any open card
 setInterval(() => document.querySelectorAll('.countdown[data-net]').forEach((el) => { el.textContent = countdown(Number(el.dataset.net) - Date.now()); }), 1000);
