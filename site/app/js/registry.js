@@ -23,6 +23,7 @@ import { moonLayer } from './moon.js';
 import { firesLayer, radarLayer } from './hazards.js';
 import { replayLayer } from './replay.js';
 import { pesticideUseLayer, pesticideEstimatesLayer, toxicReleasesLayer, calEnviroScreenLayer, enforcementLayer, waterQualityLayer } from './chemicals.js';
+import { WM_BASELINE } from './wmbaseline.js';
 import { SOURCES } from './sources.js';
 
 /** Groups the registry adds to the core ones, with the index they take. */
@@ -57,6 +58,8 @@ export const REGISTRY = [
   { make: (api) => calEnviroScreenLayer(api), after: 'tri' },
   { make: () => enforcementLayer(), after: 'ces' },
   { make: (api) => waterQualityLayer(api), after: 'echo' },
+  // the rest of World Monitor's static map datasets (wmbaseline.js)
+  ...WM_BASELINE.map(([layer, after]) => ({ make: () => layer, after })),
 ];
 
 /** Editions: what each one leaves out. Layers and rail sections not listed stay. */
@@ -64,8 +67,8 @@ export const EDITIONS = {
   full: { label: 'Full atlas', about: 'Every layer and section.', exclude: [], hideSections: [] },
   classroom: {
     label: 'Classroom',
-    about: 'For schools: the live Earth, space, science, infrastructure and places, without surveillance cameras, licence-plate readers, crime maps, conflict zones, news pins, watch areas or the Intel section.',
-    exclude: ['cameras', 'webcams', 'alpr', 'crime', 'conflicts', 'hotspots', 'news', 'watch', 'declass'],
+    about: 'For schools: the live Earth, space, science, infrastructure and places, without surveillance cameras, licence-plate readers, crime maps, conflict zones, military bases, news pins, watch areas or the Intel section.',
+    exclude: ['cameras', 'webcams', 'alpr', 'crime', 'conflicts', 'hotspots', 'bases', 'news', 'watch', 'declass'],
     hideSections: ['intel'],
   },
   lite: {
