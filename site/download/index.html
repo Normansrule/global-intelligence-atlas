@@ -1,0 +1,38 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-only — Global Intelligence Atlas, built on World Monitor (github.com/koala73/worldmonitor, (C) Elie Habib) -->
+<html lang="en" data-base=".." data-page="download"><head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Download — Global Intelligence Atlas (GIA)</title><meta name="description" content="Install Global Intelligence Atlas from your browser, or download the desktop app for Windows, macOS and Linux." /><meta name="theme-color" content="#081827" />
+<link rel="manifest" href="../manifest.webmanifest" /><link rel="icon" href="../icons/icon-192.png" /><link rel="apple-touch-icon" href="../icons/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/site.css" />
+</head><body>
+
+<main id="main"><div class="wrap">
+<header class="page-head"><h1 data-split>Take the Earth with you</h1>
+<p data-rise>Two ways to install. Both open straight onto the 3D globe and keep the lessons, tours and quiz.</p></header>
+<section class="block" style="border:0;padding-top:20px"><h2 class="title">Desktop app</h2>
+<p class="intro">A small native window around the same globe, built with <a href="https://tauri.app">Tauri</a> — the framework World Monitor uses for its own desktop app. Built automatically by GitHub Actions for every release.</p>
+<div class="dl-grid">
+  <a class="card" data-repo="/releases/latest" href="#"><p class="meta">Windows 10 and 11</p><h3>Installer (.msi or .exe)</h3><p>Windows may show “Windows protected your PC” because the app is not code-signed. Choose More info → Run anyway.</p></a>
+  <a class="card" data-repo="/releases/latest" href="#"><p class="meta">macOS 11 or newer</p><h3>Disk image (.dmg)</h3><p>Pick “aarch64” for Apple silicon or “x64” for Intel. The first time, right-click the app and choose Open, because it is not notarised.</p></a>
+  <a class="card" data-repo="/releases/latest" href="#"><p class="meta">Linux</p><h3>.AppImage, .deb or .rpm</h3><p>For the AppImage: <code>chmod +x Global*.AppImage</code>, then run it.</p></a>
+</div>
+<p class="intro" style="margin-top:20px"><b>Why download?</b> Browsers refuse to read flight trackers directly, so the website shows planes from a snapshot taken every 4 minutes and projects them forward. The desktop app fetches OpenSky and the community ADS-B exchanges itself, so flights are truly live (every 90 seconds worldwide, every few seconds near your view), and it runs the globe with GPU rasterisation switched on.</p>
+<p class="intro" style="margin-top:20px">All builds are on the <a data-repo="/releases" href="#">releases page</a> with their checksums. No release yet? The repository owner creates one by pushing a version tag — see the README.</p>
+</section>
+<section class="block"><h2 class="title">Install from your browser</h2>
+<p class="intro">Global Intelligence Atlas is a progressive web app. In Chrome or Edge, open the globe and choose <b>Install Global Intelligence Atlas</b> from the address bar or the ⋮ menu. On iPhone or iPad, use Share → Add to Home Screen. The pages, textures and datasets are cached so the globe, lessons and quiz open without a connection; live layers refresh when you are back online.</p>
+<a class="btn" href="../app/">Open the globe to install</a></section>
+<section class="block"><h2 class="title">Run it from source</h2>
+<p class="intro">Everything is static files, so any web server works.</p>
+<pre><code>git clone https://github.com/Normansrule/global-intelligence-atlas.git
+cd global-intelligence-atlas/site
+python3 -m http.server 8080      # then open http://localhost:8080</code></pre>
+<p class="intro">To build the desktop app yourself you need Rust and Node.js: <code>cd desktop && npm install && npx tauri build</code>.</p></section>
+</div></main>
+<script src="../assets/vendor/gsap.min.js"></script><script src="../assets/vendor/ScrollTrigger.min.js"></script>
+<script src="../assets/site.js"></script>
+<script>if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('../sw.js');</script>
+</body></html>

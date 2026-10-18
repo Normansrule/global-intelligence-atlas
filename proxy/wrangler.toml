@@ -1,0 +1,10 @@
+# Global Intelligence Atlas optional CORS proxy — see worker.js
+name = "global-intelligence-atlas-proxy"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Comma-separated list of sites allowed to use this proxy.
+ALLOWED_ORIGINS = "https://normansrule.github.io,http://localhost:8765"
+# Optional: `npx wrangler secret put OPENSKY_CLIENT_ID` and `npx wrangler secret put OPENSKY_CLIENT_SECRET`
+# Optional: `npx wrangler secret put AISSTREAM_KEY` (free key from https://aisstream.io) turns on /ais, ships in view.

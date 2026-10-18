@@ -1,0 +1,43 @@
+# Global Intelligence Atlas: weekly data health probe.
+# Probes every public source and the data jobs (tools/probe-sources.mjs). When something is broken it opens a
+# GitHub issue labelled "data-health" (or comments on the one already open); when everything works again it
+# closes that issue. The same results show in the app under Tools → Data health.
+name: Data health probe
+on:
+  schedule:
+    - cron: '23 6 * * 3'   # Wednesdays 06:23 UTC
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            tools
+            site/app/data/cameras.json
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Probe every source
+        id: probe
+        continue-on-error: true
+        run: node tools/probe-sources.mjs "$GITHUB_REPOSITORY"
+      - name: Open, update or close the data-health issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FAILED: ${{ steps.probe.outcome == 'failure' }}
+        run: |
+          gh label create data-health --color d93f0b --description "A data source stopped working" 2>/dev/null || true
+          open=$(gh issue list --label data-health --state open --json number --jq '.[0].number')
+          if [ "$FAILED" = "true" ]; then
+            if [ -n "$open" ]; then gh issue comment "$open" --body-file probe-report.md
+            else gh issue create --title "Data health: a source stopped working" --label data-health --body-file probe-report.md; fi
+          elif [ -n "$open" ]; then
+            gh issue close "$open" --comment "Every source answered in the latest probe. $(date -u +%F)"
+          fi

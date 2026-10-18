@@ -1,0 +1,160 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-only
+     Global Intelligence Atlas — an educational, static 3D globe (github.com/Normansrule/global-intelligence-atlas). Contains curated datasets from World Monitor (github.com/koala73/worldmonitor, © 2024-2026 Elie Habib), AGPL-3.0-only.
+     Source code for this page: see the "About and sources" panel or the repository README. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Global Intelligence Atlas (GIA) — a 3D Earth to explore and learn from</title>
+  <meta name="description" content="A zoomable 3D Earth with live earthquakes, natural events, satellites, aurora, day and night, plate tectonics and World Monitor's infrastructure layers — plus guided tours, a geography quiz and a measuring tool." />
+  <meta name="theme-color" content="#081827" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%230c2136' stroke='%23e3b55b' stroke-width='4'/%3E%3Cpath d='M8 32h48M32 4c10 9 10 47 0 56M32 4c-10 9-10 47 0 56' stroke='%237ed6c4' stroke-width='3' fill='none'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/atlas.css" />
+  <!-- Browser tuning (v2.10): fetch the globe engine and the first modules in parallel with the page, instead of one import at a time. -->
+  <link rel="modulepreload" href="vendor/vendor.min.mjs" />
+  <link rel="modulepreload" href="js/main.js" />
+  <link rel="modulepreload" href="js/layers.js" />
+  <link rel="modulepreload" href="js/feeds.js" />
+  <link rel="modulepreload" href="js/markers.js" />
+  <link rel="modulepreload" href="js/registry.js" />
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../icons/icon-192.png" />
+</head>
+<body class="left-open">
+  <header class="topbar">
+    <a class="brand" href="#" id="brand" title="Back to the whole Earth">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" /><path d="M5 32h54M32 5c11 9 11 45 0 54M32 5c-11 9-11 45 0 54" /></svg>
+      <span>Global Intelligence Atlas</span><small class="ver">v2.10</small>
+    </a>
+    <form class="search" id="search" role="search">
+      <label class="sr" for="q">Search places and layers</label>
+      <input id="q" type="search" autocomplete="off" placeholder="Search a place, cable, port…  ( / )" />
+      <ul id="results" class="results" role="listbox" hidden></ul>
+    </form>
+    <div class="top-status">
+      <button id="live-open" class="chipbtn liveb" title="What is happening right now"><i class="live-dot"></i><span id="live-count">Live</span></button>
+      <button id="flights-chip" class="chipbtn" title="Flights board" hidden></button>
+      <button id="pal-open" class="chipbtn palb" title="Find any layer, place, flight, tour or action (Ctrl+K)">⌘K <span>Find anything</span></button>
+    </div>
+  </header>
+
+  <nav class="rail" aria-label="Sections">
+    <button data-section="layers" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 8l10 5 10-5z"/><path d="m2 13 10 5 10-5"/><path d="m2 17.5 10 5 10-5" opacity=".55"/></svg><span>Layers</span></button>
+    <button data-section="map" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg><span>Map</span></button>
+    <button data-section="live" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M3.5 3.5a12 12 0 0 0 0 17M20.5 3.5a12 12 0 0 1 0 17"/></svg><span>Live</span></button>
+    <button data-section="explore" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="m15.8 8.2-2.2 5.4-5.4 2.2 2.2-5.4z"/></svg><span>Explore</span></button>
+    <button data-section="tools" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><span>Tools</span></button>
+    <button data-section="intel" aria-pressed="false" title="Open-source intelligence: declassified documents and investigation tools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h5l2 2h8A1.5 1.5 0 0 1 21 8.5v10a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/><path d="M7 13.5h10" stroke-width="3"/></svg><span>Intel</span></button>
+    <button data-section="saved" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg><span>Saved</span></button>
+    <button data-section="about" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5v.5"/></svg><span>About</span></button>
+  </nav>
+
+  <aside class="drawer" id="layers" aria-label="Section">
+    <div class="drawer-head"><h2 id="drawer-title">Layers</h2><button class="icon" id="drawer-close" aria-label="Close this section" title="Close (Esc)">×</button></div>
+    <section class="sect" id="sect-layers">
+      <div class="layer-filter"><input id="layer-filter" type="search" placeholder="Filter layers…" aria-label="Filter layers" autocomplete="off" /></div>
+      <div id="layer-list"></div>
+      <div class="apply-bar" id="apply-bar" hidden><span id="apply-count"></span><button class="btn ghost" id="apply-undo">Undo</button><button class="btn" id="apply-now">Apply</button></div>
+    </section>
+    <section class="sect" id="sect-map" hidden><div class="sect-body map-sect">
+        <h4>Base map</h4>
+        <p class="muted">What the planet’s surface looks like. Satellite and Streets switch to detailed tiles as you zoom in.</p>
+        <div class="basemaps" role="radiogroup" aria-label="Base map">
+          <button data-base="daynight" role="radio">Day/night</button>
+          <button data-base="bluemarble" role="radio">Relief</button>
+          <button data-base="gibs" role="radio" title="Yesterday's Earth from NASA's VIIRS instrument">NASA daily</button>
+          <button data-base="imagery" role="radio">Satellite</button>
+          <button data-base="streets" role="radio">Streets</button>
+          <button data-base="night" role="radio">City lights</button>
+        </div>
+        <label class="gibs-pick" id="gibs-pick" hidden>Date <input type="date" id="gibs-date-input" min="2012-01-19" /></label>
+        <h4>Sensor look</h4>
+        <p class="muted">Colour filters over the whole view (keys 1–5). HUD adds an overlay; press S to scan.</p>
+        <div class="looks" role="radiogroup" aria-label="Sensor look">
+          <button data-look="normal" role="radio" title="Normal (1)">Normal</button>
+          <button data-look="nvg" role="radio" title="Night vision (2)">NVG</button>
+          <button data-look="flir" role="radio" title="Thermal (3)">Thermal</button>
+          <button data-look="crt" role="radio" title="CRT screen (4)">CRT</button>
+          <button data-look="hud" role="radio" title="Overwatch HUD (5) — press S to scan">HUD</button>
+        </div>
+        <label class="toggle" title="Switch to high-resolution tiles automatically when you zoom close"><input type="checkbox" id="autodetail" checked /> Sharp satellite imagery when zoomed in</label>
+      
+        <h4>Performance</h4>
+        <p class="muted">Auto lowers the quality if the frame rate drops. Fast draws fewer markers and fewer pixels.</p>
+        <div class="row"><span id="fps2" class="muted">—</span></div>
+      </div></section>
+    <section class="sect" id="sect-live" hidden><div class="sect-body"></div></section>
+    <section class="sect" id="sect-explore" hidden><div class="sect-body"></div></section>
+    <section class="sect" id="sect-tools" hidden><div class="sect-body"></div></section>
+    <section class="sect" id="sect-intel" hidden><div class="sect-body"></div></section>
+    <section class="sect" id="sect-saved" hidden><div class="sect-body"></div></section>
+    <section class="sect" id="sect-about" hidden><div class="sect-body"></div></section>
+  </aside>
+
+  <main class="stage" id="stage">
+    <div id="globe" aria-label="Interactive 3D globe. Drag to rotate, scroll or pinch to zoom." role="application"></div>
+    <div class="look-overlay" aria-hidden="true"></div>
+    <div class="ticker" aria-label="Live events"><span class="tk-label"><i class="live-dot"></i>Live</span><div class="tk-view"><div class="tk-track" id="ticker-track"></div></div></div>
+    <div class="toast" id="toast" role="status" hidden></div>
+    <div class="timebar" id="timebar" hidden role="group" aria-label="Time machine">
+      <b>Time machine</b>
+      <button id="time-back" title="Back 6 hours">−6 h</button>
+      <button id="time-slower" title="Slower / reverse ([)">◀◀</button>
+      <button id="time-play" title="Pause / play">❚❚</button>
+      <button id="time-faster" title="Faster (])">▶▶</button>
+      <span id="time-speed">Real time</span>
+      <button id="time-fwd" title="Forward 6 hours">+6 h</button>
+      <label class="tslider"><span>−7 d</span><input type="range" id="time-slider" min="-168" max="48" step="0.25" value="0" aria-label="Hours from now" /><span>+2 d</span></label>
+      <button id="time-replay" title="Replay the last 7 days of earthquakes">Replay quakes</button>
+      <button id="time-live" class="golive">● Live</button>
+    </div>
+    <div class="mapctl" aria-label="Map controls">
+      <button id="locate" title="Go to my location" aria-label="Go to my location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
+      <button id="zin" title="Zoom in (+)" aria-label="Zoom in">+</button>
+      <button id="zout" title="Zoom out (−)" aria-label="Zoom out">−</button>
+      <div class="scalebar" id="scalebar" aria-hidden="true"><i></i><span></span></div>
+    </div>
+    <div class="loading" id="loading"><div class="ring"></div><p>Loading the Earth…</p></div>
+  </main>
+
+  <aside class="panel notes" id="notes" aria-live="polite" aria-label="Details">
+    <div class="panel-head"><button class="icon" id="notes-back" hidden aria-label="Back" title="Back">←</button><h2 id="notes-title">Details</h2><button class="icon" data-close="notes" aria-label="Close details" title="Close (Esc)">×</button></div>
+    <div id="notes-body"></div>
+  </aside>
+
+  <footer class="statusbar">
+    <div class="readout" id="readout" aria-live="off"><span id="ro-lat">—</span><span id="ro-lng">—</span><span id="ro-alt">—</span></div>
+    <button class="clock" id="clock" title="Click for the time machine"></button>
+    <button class="sbtn" id="view-btn" title="Base map, sensor look and detail"><span id="view-label">Map</span> ▸</button>
+    <button class="icon" id="spin" title="Auto-rotate (R)" aria-pressed="false">⟳</button>
+    <button class="icon" id="shot" title="Save a picture of the globe">⤓</button>
+    <label class="quality" title="Rendering quality — Auto steps down if the frame rate drops"><span id="fps">— fps</span>
+      <select id="quality" aria-label="Rendering quality"><option value="auto">Auto</option><option value="high">High</option><option value="balanced">Balanced</option><option value="fast">Fast</option></select></label>
+    <button class="icon mobile-only" id="open-layers" title="Layers">≡</button>
+    <div class="attribution" id="attribution"></div>
+  </footer>
+  <noscript><p class="noscript">Global Intelligence Atlas needs JavaScript and WebGL to draw the globe.</p></noscript>
+
+  <!-- Sensor looks: SVG colour filters applied to the globe canvas -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="look-flir" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0.30 0.59 0.11 0 0  0.30 0.59 0.11 0 0  0.30 0.59 0.11 0 0  0 0 0 1 0" />
+      <feComponentTransfer>
+        <feFuncR type="table" tableValues="0 0.15 0.55 0.85 1 1 1" />
+        <feFuncG type="table" tableValues="0 0 0.05 0.3 0.6 0.85 1" />
+        <feFuncB type="table" tableValues="0.05 0.35 0.55 0.25 0 0.15 0.9" />
+      </feComponentTransfer>
+    </filter>
+    <filter id="look-nvg" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0.1 0.2 0.05 0 0  0.35 0.75 0.2 0 0.03  0.08 0.15 0.05 0 0  0 0 0 1 0" />
+      <feComponentTransfer><feFuncG type="gamma" amplitude="1.5" exponent="0.75" offset="0" /></feComponentTransfer>
+    </filter>
+  </svg>
+  <script type="module" src="js/main.js"></script>
+  <script>if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('../sw.js');</script>
+</body>
+</html>

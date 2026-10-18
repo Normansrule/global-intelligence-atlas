@@ -1,0 +1,10 @@
+node_modules/
+desktop/src-tauri/target/
+desktop/src-tauri/gen/schemas/
+video/out/
+live/
+.atlas-extract.tmp.mjs
+.vendor-entry.mjs
+__pycache__/
+tests/e2e/.intel/
+proxy/.wrangler/

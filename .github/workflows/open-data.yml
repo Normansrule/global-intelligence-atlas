@@ -1,0 +1,46 @@
+# Global Intelligence Atlas: open data for the infrastructure layers (tools/fetch-open-data.mjs), replacing
+# World Monitor's curated lists where an open source exists: Wikidata (nuclear plants, spaceports, exchanges and
+# central banks, critical-mineral mines), the NGA World Port Index and TeleGeography's Submarine Cable Map.
+# Each source that fails keeps its previous file; the orphan branch `open-data` is force-pushed as one commit.
+name: Open data
+on:
+  schedule:
+    - cron: '41 5 9 * *'
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Sources to refresh (nuclear,spaceports,economic,minerals,ports,cables)'
+        default: 'nuclear,spaceports,economic,minerals,ports,cables'
+permissions:
+  contents: write
+concurrency:
+  group: open-data
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            tools
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Previous open data
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: git clone --quiet --depth 1 --branch open-data "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" open-data || mkdir -p open-data
+      - name: Fetch
+        run: node tools/fetch-open-data.mjs open-data "${{ github.event.inputs.only || 'nuclear,spaceports,economic,minerals,ports,cables' }}"
+      - name: Publish
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          rm -rf open-data/.git
+          cd open-data && git init --quiet && git checkout --quiet --orphan open-data \
+            && git config user.name "global-intelligence-atlas-bot" \
+            && git config user.email "41898282+github-actions[bot]@users.noreply.github.com" \
+            && git add -A && git commit --quiet -m "open data $(date -u +%FT%TZ)" \
+            && git push --quiet --force "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" open-data

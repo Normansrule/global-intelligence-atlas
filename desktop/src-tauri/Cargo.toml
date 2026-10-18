@@ -1,0 +1,33 @@
+[package]
+name = "global-intelligence-atlas"
+version = "2.10.0"
+description = "Global Intelligence Atlas — an educational 3D Earth, built on World Monitor"
+license = "AGPL-3.0-only"
+edition = "2021"
+
+[lib]
+name = "global_intelligence_atlas_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+tauri-plugin-notification = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "gzip"] }
+# ships in view from AISStream (src/ais.rs)
+tokio = { version = "1", features = ["time"] }
+tokio-tungstenite = { version = "0.30", default-features = false, features = ["connect", "rustls-tls-webpki-roots"] }
+futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+webpki-roots = "1"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

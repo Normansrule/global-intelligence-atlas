@@ -1,0 +1,38 @@
+# Global Intelligence Atlas: the aircraft type table.
+# Once a week, downloads the OpenSky Network aircraft database and force-pushes it, split into 256 small files,
+# to the orphan branch `aircraft-db` (tools/build-aircraft-db.mjs). The live-data job reads it to fill in each
+# aircraft's ICAO type code, and the app reads it for planes it receives live. The branch never grows: every
+# run replaces it with one commit.
+name: Aircraft types
+on:
+  schedule:
+    - cron: '41 3 * * 1'   # Mondays 03:41 UTC
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: aircraft-db
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build the type table
+        run: node tools/build-aircraft-db.mjs adb
+      - name: Publish to the aircraft-db branch
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd adb && git init --quiet && git checkout --quiet --orphan aircraft-db \
+            && git config user.name "global-intelligence-atlas-bot" \
+            && git config user.email "41898282+github-actions[bot]@users.noreply.github.com" \
+            && git add -A && git commit --quiet -m "aircraft types $(date -u +%F)" \
+            && git push --quiet --force "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" aircraft-db
+          cat meta.json

@@ -1,0 +1,96 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-only — Global Intelligence Atlas, built on World Monitor (github.com/koala73/worldmonitor, (C) Elie Habib) -->
+<html lang="en" data-base="." data-page="home"><head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Global Intelligence Atlas (GIA) — a living 3D Earth to explore and learn from</title><meta name="description" content="Zoom from orbit to street level on a live 3D Earth: earthquakes, storms, satellites, aurora, undersea cables and trade routes — with guided tours, a quiz and a desktop app." /><meta name="theme-color" content="#081827" />
+<link rel="manifest" href="./manifest.webmanifest" /><link rel="icon" href="./icons/icon-192.png" /><link rel="apple-touch-icon" href="./icons/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./assets/site.css" />
+</head><body>
+
+<main id="main">
+<header class="hero">
+  <div id="hero-globe" aria-hidden="true"></div>
+  <div class="wrap">
+    <a class="ribbon" href="app/" data-rise><b>v2.10</b> Global Intelligence Atlas (GIA): the same app on the web and the desktop, faster in the browser · open data for ports, nuclear plants, cables and mines</a>
+    <h1 data-split>A living Earth you can hold</h1>
+    <p class="lede" data-rise>Spin a real-time 3D globe, zoom from orbit down to your street, and learn how the planet works — earthquakes, storms, satellites, aurora, the cables under the sea and the straits every ship squeezes through.</p>
+    <div class="row" data-rise><a class="btn beam" href="app/">Open the 3D Earth</a><a class="btn ghost" href="download/">Get the desktop app</a><a class="btn ghost" href="learn/">Start learning</a></div>
+    <p class="live" data-rise><span class="dot"></span>Live data straight from USGS, NASA, NOAA, CelesTrak and Open-Meteo — no account, no server.</p>
+  </div>
+</header>
+
+<section class="block"><div class="wrap">
+  <h2 class="title">Everything on one globe</h2>
+  <p class="intro">World Monitor’s curated infrastructure and geopolitics layers, joined by live public feeds and teaching layers. Each one has a “Learn” card that explains what you are seeing and how it is measured.</p>
+  <div class="stats">
+    <div><b data-count="86">86</b><span>undersea cables</span></div>
+    <div><b data-count="313">313</b><span>AI data centres</span></div>
+    <div><b data-count="367">367</b><span>nuclear sites</span></div>
+    <div><b data-count="52">52</b><span>tectonic plates</span></div>
+    <div><b data-count="35">35</b><span>layers to switch on</span></div>
+    <div><b data-count="6">6</b><span>guided tours</span></div>
+  </div>
+</div></section>
+
+<section class="block"><div class="wrap">
+  <h2 class="title">Ways to use it</h2>
+  <p class="intro">The globe is the heart of the site. The pages around it teach, explain, and let you take it offline.</p>
+  <div class="features">
+    <a class="card wide" href="app/"><h3>Explore the live Earth</h3><p>Six base maps — real day and night, relief, city lights, NASA’s picture of the planet from yesterday, satellite tiles down to street level, and street maps. Click anything for field notes, a country for its fact card, or bare ground for the weather and the nearest plate boundary.</p><img src="docs-media/app-daynight.jpg" alt="The Global Intelligence Atlas globe lit by the real Sun, with undersea cables and space stations" loading="lazy" onerror="this.remove()" /></a>
+    <a class="card" href="app/#@40,-40,1.8&b=daynight&l=aircraft,sun,cities"><h3>Every flight in the sky</h3><p>Tens of thousands of live aircraft as plane pointers on their real headings. Click one for a seatback-style flight view: route, altitude, speed, outside temperature, time to go and a photo of the aircraft.</p></a>
+    <a class="card" href="app/#@34.05,-118.25,0.08&b=streets&l=cameras,alpr,cities"><h3>Live cameras</h3><p>Thousands of public road cameras from California, New York City, London and Hong Kong — live video where the agency streams it — plus mapped licence-plate readers from OpenStreetMap.</p></a>
+    <a class="card wide" href="app/?mode=trace"><h3>Trace how any place is connected</h3><p>Click a spot and watch its links draw themselves: the nearest internet exchanges, the undersea cable landing and every coast it reaches, power stations, the airport, public cameras and radio receivers, and a beam to every satellite overhead — each with its light-speed delay.</p></a>
+    <a class="card" href="app/#@5,150,2.4&b=daynight&l=quakes,plates,sun,borders"><h3>Time machine</h3><p>Run the planet at up to six hours a second or wind it back a week: the Sun, satellites and space stations move, and earthquakes replay in order.</p></a>
+    <a class="card" href="app/#@20,-40,2.3&b=bluemarble&l=wind,borders,cities"><h3>Wind, launches and alerts</h3><p>Streaks drifting with the real wind over a temperature map, every upcoming rocket launch with a live countdown and webcast, and UN–EU disaster alerts.</p></a>
+    <a class="card wide" href="app/?look=hud#@34.05,-118.25,0.12&b=bluemarble&l=cities,aircraft,cameras,internet,power,radio"><h3>Overwatch HUD and Area scan</h3><p>A heads-up display over the globe. Press S and it scans everything public around the crosshair: aircraft overhead, the satellites that can see that spot right now, cameras, internet buildings, power plants, radio receivers and the weather.</p></a>
+    <a class="card" href="app/#@10,110,2.4&b=bluemarble&l=overlay,borders,cities"><h3>NASA overlays</h3><p>Wrap the globe in today’s clouds, rain falling in the last half hour, fires, night lights, ocean temperature, smoke or snow.</p></a>
+    <a class="card" href="app/#@45,5,1.4&b=night&l=cables,internet,power,borders,cities"><h3>The connected planet</h3><p>10,700 power plants, the buildings where internet networks meet, shortwave receivers you can listen to, and live ships.</p></a>
+    <a class="card" href="app/#@41.88,-87.66,0.03&b=streets&l=crime,cities"><h3>Crime maps</h3><p>Official incident reports for Chicago, San Francisco, New York, Los Angeles and all of England, Wales and Northern Ireland — as 3D hexagon columns and pins, with a lesson on reading them fairly.</p></a>
+    <a class="card" href="app/#@25,20,2.3&b=daynight&l=news,sun,borders,cities"><h3>News pins and the Live ticker</h3><p>Places in the news in the last 24 hours with their headlines, plus a live ticker of earthquakes, storms and flight emergencies you can tour hands-free.</p></a>
+    <a class="card" href="app/?mode=tours"><h3>Take a guided tour</h3><p>Ring of Fire, arteries of the internet, chokepoints of trade, orbits, seasons, and the physical supply chain of AI.</p></a>
+    <a class="card" href="app/?mode=quiz"><h3>Play “Where on Earth?”</h3><p>Eight places, one click each. Closer guesses score more — a quick way to learn the map.</p></a>
+    <a class="card" href="app/?mode=measure"><h3>Measure anything</h3><p>Great-circle distance, compass bearing, and how long light takes to cross it in an optical fibre.</p></a>
+    <a class="card" href="app/?look=nvg#@35.68,139.77,0.9&b=night&l=borders,cables,quakes"><h3>Change the optics</h3><p>Re-render the whole globe as night vision, thermal or an old CRT screen — keys 1 to 4.</p></a>
+    <a class="card" href="fluid/"><h3>Fluid lab</h3><p>Stir a real-time fluid simulation and meet the maths behind winds, currents and hurricanes.</p></a>
+    <a class="card" href="learn/"><h3>Learning hub</h3><p>Fifteen short lessons with the equations, the sources, and a button that opens each idea on the globe.</p></a>
+    <a class="card full" href="download/"><h3>Take it with you</h3><p>Install Global Intelligence Atlas from your browser as an app, or download the desktop build for Windows, macOS or Linux. It opens straight onto the globe.</p></a>
+  </div>
+</div></section>
+
+<section class="block"><div class="wrap">
+  <h2 class="title">Standing on generous shoulders</h2>
+  <p class="intro">Global Intelligence Atlas grew out of <a href="https://github.com/koala73/worldmonitor">World Monitor</a> by Elie Habib, and it borrows ideas, code and data from many open projects. The <a href="credits/">credits page</a> says exactly what came from where.</p>
+  <div class="marquee" aria-label="Projects and data sources"><div class="track">
+    <span>World Monitor</span><span>globe.gl</span><span>three.js</span><span>satellite.js</span><span>USGS earthquakes</span><span>NASA EONET</span><span>NASA GIBS</span><span>NOAA SWPC</span><span>CelesTrak</span><span>Open-Meteo</span><span>OpenStreetMap</span><span>Esri World Imagery</span><span>adsb.lol</span><span>OpenSky Network</span><span>Caltrans CCTV</span><span>NYC DOT cameras</span><span>TfL JamCams</span><span>Hong Kong TD</span><span>DeFlock / OpenStreetMap</span><span>OurAirports</span><span>Panoramax</span><span>hls.js</span><span>PB2002 plates</span><span>God’s Eye View</span><span>WebGL Fluid Simulation</span><span>GSAP</span><span>Magic UI</span><span>React Bits</span><span>Motion Primitives</span><span>Animate UI</span><span>Remotion</span><span>LLM Visualization</span><span>Transformer Explainer</span><span>Bruno Simon’s folio</span><span>Tauri</span>
+  </div></div>
+</div></section>
+</main>
+<script type="module">
+  import { Globe } from './app/vendor/vendor.min.mjs';
+  const el = document.getElementById('hero-globe');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wide = innerWidth > 900;
+  if (wide) el.style.left = '30%';
+  const g = new Globe(el, { animateIn: false, rendererConfig: { antialias: true, alpha: true } })
+    .width(el.clientWidth).height(el.clientHeight).backgroundColor('rgba(0,0,0,0)')
+    .globeImageUrl('app/textures/earth-blue-marble.jpg').bumpImageUrl('app/textures/earth-topology.png')
+    .atmosphereColor('#7fb6ff').atmosphereAltitude(0.18)
+    .arcColor(() => ['rgba(227,181,91,0.1)', 'rgba(227,181,91,0.95)']).arcStroke(0.45).arcDashLength(0.4).arcDashGap(0.2).arcDashAnimateTime(reduce ? 0 : 3500)
+    .pathPoints('pts').pathPointLat((p) => p[1]).pathPointLng((p) => p[0]).pathColor(() => 'rgba(126,214,196,0.85)').pathStroke(0.35);
+  g.pointOfView({ lat: 22, lng: 45, altitude: wide ? 2.0 : 2.8 }, 0);
+  window.heroGlobe = g;
+  const c = g.controls(); c.enableZoom = false; c.autoRotate = !reduce; c.autoRotateSpeed = 0.45;
+  addEventListener('resize', () => g.width(el.clientWidth).height(el.clientHeight));
+  fetch('app/data/worldmonitor-static.json').then((r) => r.json()).then((d) => {
+    g.pathsData(d.cables.filter((x) => x.major).map((x) => ({ pts: x.points })));
+    const arcs = [];
+    for (const r of d.tradeRoutes) for (let i = 0; i + 1 < r.stops.length; i++) arcs.push({ startLat: r.stops[i][0], startLng: r.stops[i][1], endLat: r.stops[i + 1][0], endLng: r.stops[i + 1][1] });
+    g.arcsData(arcs);
+  });
+</script>
+<script src="./assets/vendor/gsap.min.js"></script><script src="./assets/vendor/ScrollTrigger.min.js"></script>
+<script src="./assets/site.js"></script>
+<script>if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('./sw.js');</script>
+</body></html>

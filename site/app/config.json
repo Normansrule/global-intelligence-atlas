@@ -1,0 +1,9 @@
+{
+  "_help": "liveData: where the 10-minute live-data snapshot branch is served from. 'auto' works it out on *.github.io. liveDataFallback is used everywhere else (desktop app, localhost). proxy: optional URL of your Cloudflare Worker from proxy/ (e.g. https://global-intelligence-atlas-proxy.<you>.workers.dev) for real-time flights on the web. edition: 'full', 'classroom' or 'lite' (see js/registry.js). plugins: names of layer modules in app/plugins/ to add, e.g. [\"daylength\"]. datasets: 'auto' (open data where available, World Monitor's lists otherwise), 'open' or 'worldmonitor' (see js/opendata.js).",
+  "liveData": "auto",
+  "liveDataFallback": "https://raw.githubusercontent.com/Normansrule/global-intelligence-atlas/live-data/",
+  "proxy": "",
+  "edition": "full",
+  "plugins": [],
+  "datasets": "auto"
+}

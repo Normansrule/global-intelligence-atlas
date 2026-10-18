@@ -1,0 +1,55 @@
+# Global Intelligence Atlas: end-to-end tests in a headless browser (software WebGL), on every push and pull
+# request that touches the app. See tests/e2e/run.sh to run them locally.
+name: Tests
+on:
+  push:
+    branches: [main]
+    paths: ['site/**', 'tests/**', 'tools/fetch-live.mjs', 'README.md', 'HANDOFF.md', 'CHANGELOG.md', '.github/workflows/tests.yml']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright && python -m playwright install --with-deps chromium
+      - name: Regression test (recorded real snapshot)
+        run: MOCK_REAL=1 bash tests/e2e/run.sh test_v2.py | tee e2e.log && grep -q "SUMMARY 15 / 15" e2e.log
+      - name: v2.1 features (fires, radar, data health, watch areas, aircraft types)
+        run: bash tests/e2e/run.sh test_v21.py | tee v21.log && grep -q "SUMMARY 17 / 17" v21.log
+      - name: v2.2 ships worldwide (snapshot, Baltic fallback, proxy and desktop paths)
+        run: bash tests/e2e/run.sh test_v22.py | tee v22.log && grep -q "SUMMARY 18 / 18" v22.log
+      - name: v2.3 terrain and buildings (landscape, Street level, 3D surroundings)
+        run: bash tests/e2e/run.sh test_v23.py | tee v23.log && grep -q "SUMMARY 15 / 15" v23.log
+      - name: v2.10 repository launch (README, branding, browser tuning)
+        run: python3 tests/docs/check_readme.py && bash tests/e2e/run.sh test_v210.py | tee v210.log && grep -q "SUMMARY 10 / 10" v210.log
+      - name: v2.9 open data
+        run: node tests/opendata/test-open-data.mjs && bash tests/e2e/run.sh test_v29.py | tee v29.log && grep -q "SUMMARY 17 / 17" v29.log
+      - name: v2.8 Water Quality Portal
+        run: bash tests/e2e/run.sh test_v28.py | tee v28.log && grep -q "SUMMARY 11 / 11" v28.log
+      - name: v2.7 CalEnviroScreen and ECHO
+        run: bash tests/e2e/run.sh test_v27.py | tee v27.log && grep -q "SUMMARY 9 / 9" v27.log
+      - name: v2.6 chemicals and environment (pesticide use, county estimates, TRI)
+        run: bash tests/e2e/run.sh test_v26.py | tee v26.log && grep -q "SUMMARY 13 / 13" v26.log
+      - name: Regional data job and PLSS sections
+        run: node tests/regional/test-regional.mjs
+      - name: v2.5 layer registry (manifests, editions, plug-ins)
+        run: bash tests/e2e/run.sh test_v25.py | tee v25.log && grep -q "SUMMARY 20 / 20" v25.log
+      - name: v2.4 replay (history frames, slider, play, USGS window) and reference projects
+        run: bash tests/e2e/run.sh test_v24.py | tee v24.log && grep -q "SUMMARY 15 / 15" v24.log
+      - name: History frames (tools/build-history.mjs)
+        run: node tests/history/test-history.mjs
+      - name: AISStream reader and the live-data ship collector
+        run: npm install --no-save --no-audit --no-fund --prefix tests/ais ws@8.18.3 && node tests/ais/test-ais.mjs | tee ais.log && grep -q "SUMMARY 6 / 6" ais.log
+      - name: Intel section (documents, redaction inspector, tools)
+        run: bash tests/e2e/run.sh test_intel.py | tee intel.log && grep -qE "SUMMARY ([0-9]+) / \1$" intel.log
+      - name: Interface overlap check
+        run: bash tests/e2e/run.sh overlap.py | tee overlap.log && test "$(grep -c "no overlaps" overlap.log)" = 6
+      - name: Intelligence toolkit (offline checks and mocked registries)
+        run: node tests/intel/test-intel.mjs && bash tests/e2e/run.sh test_osint.py | tee osint.log && grep -qE "SUMMARY ([0-9]+) / \\1$" osint.log

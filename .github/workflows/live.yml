@@ -1,0 +1,88 @@
+# Global Intelligence Atlas: the live-data snapshot.
+# Fetches the feeds that browsers may not read directly (flights, plus fallbacks for launches, disaster
+# alerts and satellite orbits) and force-pushes them as ONE commit to the orphan branch `live-data`. The site
+# reads them from raw.githubusercontent.com, which sends CORS headers. The branch never grows: every publish
+# replaces it.
+#
+# GitHub often delays or drops schedules shorter than ~30 minutes, so a 10-minute cron left the snapshot an
+# hour old. Instead each run stays alive for about 50 minutes and publishes every 4 minutes. The schedule
+# starts one at :07 and :37 past the hour, and the concurrency group queues the next run behind the current
+# one, so coverage stays continuous even when GitHub is late.
+# OpenSky API clients get 4,000 credits a day; one worldwide request costs 4, so a request every 4 minutes
+# uses about 1,440.
+#
+# Optional, for a better flight feed: add repository secrets OPENSKY_CLIENT_ID and OPENSKY_CLIENT_SECRET
+# (free OpenSky account → Account → API client). Without them the job uses anonymous OpenSky or the
+# community ADS-B exchanges.
+# Optional: FIRMS_MAP_KEY (free NASA FIRMS map key, https://firms.modaps.eosdis.nasa.gov/api/map_key/) for the
+# fire hotspots; without it the public 24-hour global fire files are used.
+# Optional: AISSTREAM_KEY (free AISStream key, https://aisstream.io → sign in with GitHub → API Keys) for ships
+# worldwide. Each round listens to the stream for 60 seconds; without it the app shows the Finnish Baltic feed.
+name: Live data snapshot
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: 'How long this run keeps publishing (minutes; 0 = publish once)'
+        default: '50'
+permissions:
+  contents: write
+concurrency:
+  group: live-data
+  cancel-in-progress: false
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            tools
+            site/app/js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: WebSocket client with compression (AISStream asks for it)
+        run: npm install --no-save --no-audit --no-fund --prefix tools ws@8.18.3
+      - name: Previous snapshot (keeps slow feeds such as orbits between runs)
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: git clone --quiet --depth 1 --branch live-data "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" live || mkdir -p live
+      - name: Aircraft type table (weekly aircraft-db job; optional)
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git clone --quiet --depth 1 --branch aircraft-db "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" adb \
+            || echo "No aircraft-db branch yet. Run the Aircraft types workflow once."
+      - name: Fetch and publish every 4 minutes
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
+          OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}
+          FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}
+          AISSTREAM_KEY: ${{ secrets.AISSTREAM_KEY }}
+          MINUTES: ${{ github.event.inputs.minutes || '50' }}
+        run: |
+          publish() {
+            rm -rf live/.git
+            (cd live && git init --quiet && git checkout --quiet --orphan live-data \
+              && git config user.name "global-intelligence-atlas-bot" \
+              && git config user.email "41898282+github-actions[bot]@users.noreply.github.com" \
+              && git add -A && git commit --quiet -m "live snapshot $(date -u +%FT%TZ)" \
+              && git push --quiet --force "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" live-data) \
+              || echo "publish failed (will retry next round)"
+          }
+          end=$((SECONDS + MINUTES * 60))
+          round=0
+          while :; do
+            round=$((round + 1))
+            echo "::group::round ${round} $(date -u +%T)"
+            if node tools/fetch-live.mjs live; then publish; else echo "fetch failed this round"; fi
+            echo "::endgroup::"
+            [ "$SECONDS" -ge "$end" ] && break
+            sleep 240
+          done
+          ls -la live

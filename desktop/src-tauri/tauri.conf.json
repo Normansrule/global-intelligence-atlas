@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Global Intelligence Atlas",
+  "version": "2.10.0",
+  "identifier": "io.github.normansrule.globalintelligenceatlas",
+  "build": {
+    "frontendDist": "../../site"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Global Intelligence Atlas",
+        "url": "app/index.html",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 900,
+        "minHeight": 600,
+        "backgroundColor": "#081827",
+        "label": "main",
+        "additionalBrowserArgs": "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Education",
+    "shortDescription": "A living 3D Earth to explore and learn from",
+    "longDescription": "Global Intelligence Atlas is an educational 3D globe with live earthquakes, natural events, satellites, aurora, aircraft and infrastructure layers (cables, pipelines, ports and more, curated by World Monitor), plus guided tours, lessons, a geography quiz and a fluid-dynamics lab.",
+    "copyright": "Copyright (C) 2026 Aleksander Norman; includes World Monitor datasets, Copyright (C) 2024-2026 Elie Habib. AGPL-3.0-only.",
+    "licenseFile": "../../LICENSE",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

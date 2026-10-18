@@ -1,0 +1,13 @@
+{
+  "src": "U.S. Energy Information Administration, World Oil Transit Chokepoints (public domain); positions written by hand for Global Intelligence Atlas",
+  "rows": [
+    { "id": "hormuz", "name": "STRAIT OF HORMUZ", "lat": 26.57, "lon": 56.25, "description": "Links the Persian Gulf with the Gulf of Oman and the Arabian Sea. The EIA calls it the world's most important oil chokepoint." },
+    { "id": "malacca", "name": "STRAIT OF MALACCA", "lat": 2.5, "lon": 101.4, "description": "Between the Malay Peninsula and Sumatra: the shortest sea route between the Indian and Pacific Oceans, linking Middle Eastern and African suppliers with Asian markets." },
+    { "id": "suez", "name": "SUEZ CANAL", "lat": 30.6, "lon": 32.33, "description": "Connects the Red Sea and the Mediterranean; together with the SUMED pipeline beside it, the main route for oil and gas from the Persian Gulf to Europe." },
+    { "id": "bab_el_mandeb", "name": "BAB EL-MANDEB", "lat": 12.6, "lon": 43.33, "description": "Between Yemen and Djibouti and Eritrea, joining the Red Sea and the Gulf of Aden. Ships bound for the Suez Canal pass through it." },
+    { "id": "turkish_straits", "name": "TURKISH STRAITS", "lat": 41.12, "lon": 29.07, "description": "The Bosporus and the Dardanelles, through Istanbul: the only sea route from the Black Sea and its oil ports to the Mediterranean." },
+    { "id": "danish_straits", "name": "DANISH STRAITS", "lat": 55.6, "lon": 11.5, "description": "The Øresund and the Great and Little Belts between Denmark and Sweden: the route from Baltic ports, including Russia's, to the North Sea." },
+    { "id": "panama", "name": "PANAMA CANAL", "lat": 9.08, "lon": -79.68, "description": "Joins the Atlantic and Pacific across Panama; its locks limit the size of ships, and droughts that lower Gatun Lake limit how many can pass." },
+    { "id": "good_hope", "name": "CAPE OF GOOD HOPE", "lat": -34.36, "lon": 18.47, "description": "Not a strait but the long way round Africa, which tankers take when the Suez Canal or Bab el-Mandeb is closed or too dangerous." }
+  ]
+}

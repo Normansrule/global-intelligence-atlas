@@ -1,0 +1,49 @@
+# Global Intelligence Atlas: detailed regional records for the map (tools/fetch-regional.mjs).
+# California pesticide use by one-mile section (CDPR PUR), U.S. county pesticide estimates (USGS), industrial
+# chemical releases (EPA TRI), CalEnviroScreen census tracts (OEHHA), enforcement and compliance (EPA ECHO) and
+# pesticides measured in streams, lakes and wells (Water Quality Portal, one request per state).
+# Most are published once a year, so a monthly run is plenty. Each source that fails keeps its previous files;
+# the orphan branch `regional-data` is force-pushed as one commit.
+name: Regional data
+on:
+  schedule:
+    - cron: '17 6 3 * *'
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Sources to refresh (pur,usgs,tri,ces,echo,wqp)'
+        default: 'pur,usgs,tri,ces,echo,wqp'
+permissions:
+  contents: write
+concurrency:
+  group: regional
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            tools
+            site/app/js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Previous regional data
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: git clone --quiet --depth 1 --branch regional-data "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" regional || mkdir -p regional
+      - name: Fetch and boil down
+        run: node tools/fetch-regional.mjs regional "${{ github.event.inputs.only || 'pur,usgs,tri,ces,echo,wqp' }}"
+      - name: Publish
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          rm -rf regional/.git
+          cd regional && git init --quiet && git checkout --quiet --orphan regional-data \
+            && git config user.name "global-intelligence-atlas-bot" \
+            && git config user.email "41898282+github-actions[bot]@users.noreply.github.com" \
+            && git add -A && git commit --quiet -m "regional data $(date -u +%FT%TZ)" \
+            && git push --quiet --force "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" regional-data

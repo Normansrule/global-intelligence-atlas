@@ -1,0 +1,134 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+   Global Intelligence Atlas site pages — same chart-room palette as the app.
+   Effect ideas ported to plain CSS/JS from Magic UI, React Bits, Motion Primitives and Animate UI (MIT); see /credits/. */
+:root {
+  --abyss: #081827; --chart: #0c2136; --chart-a: rgba(12, 33, 54, .82); --rule: #24496b;
+  --brass: #e3b55b; --seaglass: #7ed6c4; --paper: #eef3f6; --mist: #a9bccb; --coral: #f07a63;
+  --display: 'Bricolage Grotesque', 'Segoe UI Variable Display', 'Avenir Next', system-ui, sans-serif;
+  --body: 'Atkinson Hyperlegible', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+body { margin: 0; background: var(--abyss); color: var(--paper); font: 17px/1.6 var(--body); }
+a { color: var(--seaglass); }
+a:hover { color: var(--paper); }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+img { max-width: 100%; }
+.wrap { width: min(1160px, 100% - 40px); margin: 0 auto; }
+.skip { position: absolute; left: -999px; } .skip:focus { left: 12px; top: 12px; z-index: 99; background: var(--brass); color: var(--abyss); padding: 8px 12px; }
+
+/* nav */
+.nav { position: sticky; top: 0; z-index: 20; background: rgba(8, 24, 39, .78); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(36, 73, 107, .6); }
+.nav .wrap { display: flex; align-items: center; gap: 22px; height: 64px; }
+.logo { display: flex; gap: 10px; align-items: center; color: var(--paper); text-decoration: none; font: 700 20px/1 var(--display); }
+.logo svg { width: 26px; height: 26px; fill: none; stroke: var(--brass); stroke-width: 4; } .logo svg path { stroke: var(--seaglass); stroke-width: 3; }
+.nav ul { display: flex; gap: 4px; list-style: none; margin: 0 0 0 auto; padding: 0; }
+.nav ul a { color: var(--mist); text-decoration: none; padding: 8px 12px; border-radius: 8px; }
+.nav ul a:hover, .nav ul a[aria-current='page'] { color: var(--paper); background: rgba(227, 181, 91, .12); }
+.btn { display: inline-flex; align-items: center; gap: 8px; background: var(--brass); color: var(--abyss); font-weight: 700; text-decoration: none; padding: 11px 20px; border-radius: 10px; border: 0; cursor: pointer; }
+.btn:hover { color: var(--abyss); filter: brightness(1.08); }
+.btn.ghost { background: none; color: var(--paper); border: 1px solid var(--rule); font-weight: 400; }
+.btn.ghost:hover { border-color: var(--mist); color: var(--paper); }
+
+/* border beam (after Magic UI) — a light travelling round the primary button */
+.beam { position: relative; isolation: isolate; }
+.beam::before { content: ''; position: absolute; inset: -2px; border-radius: 12px; padding: 2px; z-index: -1;
+  background: conic-gradient(from var(--a, 0deg), transparent 0 70%, var(--seaglass) 85%, #fff 90%, transparent 95%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: beam 3.5s linear infinite; }
+@property --a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes beam { to { --a: 360deg; } }
+
+/* hero */
+.hero { position: relative; min-height: calc(100vh - 64px); display: grid; align-items: center; overflow: hidden; }
+#hero-globe { position: absolute; inset: 0; }
+.hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--abyss) 0 30%, rgba(8, 24, 39, .6) 55%, transparent 80%); pointer-events: none; }
+.hero .wrap { position: relative; z-index: 2; pointer-events: none; }
+.hero .wrap > * { pointer-events: auto; }
+.hero h1 { font: 700 clamp(44px, 7vw, 92px)/.98 var(--display); letter-spacing: -.03em; margin: 0 0 22px; max-width: 11ch; }
+.hero p.lede { font-size: clamp(18px, 2vw, 21px); color: var(--mist); max-width: 46ch; margin: 0 0 28px; }
+.hero .row { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero .live { margin-top: 34px; color: var(--mist); font-size: 14px; display: flex; gap: 8px; align-items: center; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--seaglass); box-shadow: 0 0 0 0 rgba(126, 214, 196, .6); animation: ping 2s infinite; }
+@keyframes ping { 70% { box-shadow: 0 0 0 10px rgba(126, 214, 196, 0); } 100% { box-shadow: 0 0 0 0 rgba(126, 214, 196, 0); } }
+.split-word { display: inline-block; }
+
+/* sections */
+section.block { padding: 110px 0; border-top: 1px solid rgba(36, 73, 107, .5); }
+h2.title { font: 700 clamp(32px, 4.4vw, 54px)/1.04 var(--display); letter-spacing: -.02em; margin: 0 0 14px; max-width: 18ch; }
+p.intro { color: var(--mist); max-width: 60ch; margin: 0 0 44px; font-size: 19px; }
+
+/* number ticker strip */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0; border: 1px solid var(--rule); border-radius: 18px; overflow: hidden; }
+.stats div { padding: 26px 22px; border-right: 1px solid var(--rule); }
+.stats div:last-child { border-right: 0; }
+.stats b { display: block; font: 700 46px/1 var(--display); color: var(--brass); font-variant-numeric: tabular-nums; }
+.stats span { color: var(--mist); font-size: 15px; }
+
+/* feature grid with spotlight (Motion Primitives) + tilt (Animate UI / React Bits) */
+.features { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+.card { position: relative; grid-column: span 4; background: var(--chart); border: 1px solid var(--rule); border-radius: 18px; padding: 26px; overflow: hidden; transform-style: preserve-3d; transition: transform .2s ease-out, border-color .2s; text-decoration: none; color: var(--paper); display: block; }
+.card.wide { grid-column: span 8; } .card.full { grid-column: span 12; }
+.card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(420px circle at var(--mx, -500px) var(--my, -500px), rgba(227, 181, 91, .14), transparent 60%); pointer-events: none; }
+.card:hover { border-color: #3b6a93; color: var(--paper); }
+.card h3 { font: 700 23px/1.2 var(--display); margin: 0 0 8px; }
+.card p { color: var(--mist); margin: 0; }
+.card .glyph { width: 44px; height: 44px; margin-bottom: 18px; }
+.card img { border-radius: 12px; border: 1px solid var(--rule); margin-top: 18px; display: block; }
+
+/* marquee (Magic UI) */
+.marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+.marquee .track { display: flex; gap: 14px; width: max-content; animation: marquee 60s linear infinite; }
+.marquee:hover .track { animation-play-state: paused; }
+.marquee span { border: 1px solid var(--rule); border-radius: 999px; padding: 8px 16px; color: var(--mist); white-space: nowrap; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* pages */
+.page-head { padding: 90px 0 40px; }
+.page-head h1 { font: 700 clamp(40px, 6vw, 72px)/1 var(--display); letter-spacing: -.03em; margin: 0 0 16px; max-width: 16ch; }
+.page-head p { color: var(--mist); font-size: 20px; max-width: 60ch; margin: 0; }
+.lesson { display: grid; grid-template-columns: 300px 1fr; gap: 40px; padding: 56px 0; border-top: 1px solid rgba(36, 73, 107, .5); }
+.lesson h2 { font: 700 30px/1.1 var(--display); margin: 0 0 10px; }
+.lesson .meta { color: var(--brass); font-size: 15px; }
+.lesson p { max-width: 68ch; margin: 0 0 14px; }
+.lesson ul { max-width: 66ch; padding-left: 20px; }
+.lesson .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.eq { font: 500 19px/1.4 var(--display); background: var(--chart); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 16px; display: inline-block; margin: 6px 0 14px; }
+table { border-collapse: collapse; width: 100%; font-size: 16px; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { color: var(--brass); font-weight: 700; }
+td small { color: var(--mist); display: block; }
+.table-scroll { overflow-x: auto; }
+.dl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.dl-grid .card h3 { margin-top: 4px; }
+code { background: var(--chart); border: 1px solid var(--rule); border-radius: 6px; padding: 1px 6px; font-size: .9em; }
+pre { background: var(--chart); border: 1px solid var(--rule); border-radius: 12px; padding: 16px; overflow-x: auto; }
+pre code { border: 0; padding: 0; background: none; }
+footer.site { padding: 60px 0; border-top: 1px solid var(--rule); color: var(--mist); font-size: 15px; }
+footer.site .wrap { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 30px; }
+footer.site h4 { color: var(--paper); margin: 0 0 8px; font: 700 16px/1.2 var(--display); }
+footer.site ul { list-style: none; padding: 0; margin: 0; }
+footer.site li { margin: 4px 0; }
+
+/* fluid lab */
+.fluid-stage { position: relative; height: 72vh; min-height: 460px; border-radius: 20px; overflow: hidden; border: 1px solid var(--rule); }
+#fluid { width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; }
+.fluid-stage .dg.ac { position: absolute !important; top: 0; right: 0; }
+.fluid-hint { position: absolute; left: 16px; bottom: 16px; background: var(--chart-a); border: 1px solid var(--rule); border-radius: 10px; padding: 8px 12px; color: var(--mist); font-size: 14px; pointer-events: none; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 0; }
+
+.reveal { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+@media (max-width: 900px) {
+  .card, .card.wide { grid-column: span 12; }
+  .lesson { grid-template-columns: 1fr; gap: 10px; }
+  .nav ul { display: none; }
+  .hero::after { background: linear-gradient(0deg, var(--abyss) 10%, rgba(8, 24, 39, .55) 60%, transparent); }
+  .hero { align-items: end; padding-bottom: 60px; }
+  footer.site .wrap { grid-template-columns: 1fr; }
+  .stats div { border-right: 0; border-bottom: 1px solid var(--rule); }
+}
+.ribbon { display: inline-flex; gap: 10px; align-items: center; margin-bottom: 22px; padding: 7px 14px 7px 7px; border: 1px solid var(--rule); border-radius: 999px; background: rgba(12,33,54,.7); color: var(--paper); text-decoration: none; font-size: 15px; }
+.ribbon b { background: var(--seaglass); color: var(--abyss); border-radius: 999px; padding: 3px 10px; font-size: 13px; }
+.ribbon:hover { border-color: var(--seaglass); color: var(--paper); }

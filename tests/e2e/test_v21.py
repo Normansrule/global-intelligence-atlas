@@ -1,0 +1,47 @@
+import sys; sys.path.insert(0, sys.argv[-1]); from mock import handler, ARGS
+from playwright.sync_api import sync_playwright
+# v2.1: fire hotspots, weather radar, data health, watch areas and aircraft type lookups.
+res=[]
+def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok else 'FAIL ')+name, info)
+with sync_playwright() as p:
+    b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1440,'height':900}); errs=[]
+    pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
+    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-quality','high');localStorage.setItem('global-intelligence-atlas-version','2.10')}catch(e){}")
+    pg.goto('http://localhost:8765/app/#@-10,25,2.2&l=sun,borders,quakes,fires,radar', wait_until='commit'); pg.wait_for_timeout(14000)
+    check('version 2.10', pg.evaluate("() => gia.VERSION")=='2.10')
+    f=pg.evaluate("() => ({ n: gia.state.data.fires?.rows.length, st: gia.state.lstatus.fires, parts: gia.state.chan.fires?.particles.length })")
+    check('fire hotspots load from the snapshot', (f['n'] or 0) > 1000 and f['st']['s']=='ok', f)
+    check('fires drawn as 3 particle clouds', f['parts']==3, f)
+    pg.evaluate("() => gia.select({layer:'fires', d: gia.state.data.fires.rows[0]})"); pg.wait_for_timeout(400)
+    check('fire card opens', 'Fire hotspot' in pg.inner_text('#notes-body'))
+    r=pg.evaluate("() => ({ n: gia.state.data.radar?.frames.length, st: gia.state.lstatus.radar, map: !!gia.state.chan.radar?.custom[0].obj?.material.map })")
+    check('radar loads 13 frames with a texture', r['n']==13 and r['map'], r)
+    has=pg.evaluate("() => { const s=document.getElementById('radar-slider'); return s && !s.closest('[hidden]') && s.max }")
+    check('radar time slider under the layer', has=='12', has)
+    pg.evaluate("() => { const s=document.getElementById('radar-slider'); s.value='3'; s.dispatchEvent(new Event('input',{bubbles:true})); }"); pg.wait_for_timeout(2500)
+    t=pg.inner_text('#radar-time'); check('slider moves to an older frame', 'latest' not in t, t)
+    pg.click('#radar-play'); pg.wait_for_timeout(2500); pg.click('#radar-play')
+    check('play steps frames', pg.inner_text('#radar-time')!=t, pg.inner_text('#radar-time'))
+    # data health
+    pg.evaluate("() => gia.health.show()"); pg.wait_for_timeout(3000)
+    txt=pg.inner_text('#notes-body')
+    check('data health lists live-data feeds', 'Fire hotspots (NASA FIRMS)' in txt and 'Live-data job' in txt, txt[:200])
+    check('data health shows the failing feed', pg.evaluate("() => document.querySelectorAll('#notes-body .hrow[data-h=bad]').length") >= 1)
+    check('data health shows the aircraft table', '512,345' in txt)
+    check('data health lists camera sources', 'Caltrans' in txt and 'NYC DOT' in txt)
+    # watch areas: one around the mocked quakes near Taiwan (24, 122)
+    pg.evaluate("() => { gia.globe.pointOfView({lat:24,lng:122,altitude:1.5},0); gia.state.pov={lat:24,lng:122,altitude:1.5}; gia.watch.open(); }"); pg.wait_for_timeout(500)
+    pg.click('[data-watch=new]'); pg.wait_for_timeout(300)
+    pg.select_option('[data-wf=km]', '1000'); pg.select_option('[data-wf=quake]', '3')
+    pg.click('[data-watch=save]'); pg.wait_for_timeout(5000)
+    w=pg.evaluate("() => ({ areas: gia.watch.areas().length, on: gia.state.on.has('watch'), drawn: !!gia.state.chan.watch?.custom[0]?.obj, log: JSON.parse(localStorage.getItem('global-intelligence-atlas-watch')).log.length })")
+    check('watch area saved and drawn', w['areas']==1 and w['on'] and w['drawn'], w)
+    check('watch area alerts on a quake inside it', w['log'] > 0, w)
+    n=pg.evaluate("() => JSON.parse(localStorage.getItem('global-intelligence-atlas-watch')).log.length"); pg.evaluate("() => gia.watch.check()"); pg.wait_for_timeout(3000)
+    check('each event alerts only once', pg.evaluate("() => JSON.parse(localStorage.getItem('global-intelligence-atlas-watch')).log.length")==n)
+    # aircraft types from the aircraft-db branch
+    t=pg.evaluate("async () => { const m = await import('./js/flights.js'); const a=[{id:'ab0001'},{id:'cd0001'},{id:'ef1234'}]; const n = await m.fillTypes(a); return { n, t: a.map(x=>x.type||null), c: a[0].icaoClass } }")
+    check('aircraft types looked up from the table', t['n']==2 and t['t'][:2]==['A388','A388'] and t['c']=='L4J', t)
+    check('no page errors', not errs, errs[:3])
+    b.close()
+print(f"SUMMARY {sum(1 for _,ok in res if ok)} / {len(res)}")

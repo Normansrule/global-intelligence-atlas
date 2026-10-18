@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use Global Intelligence Atlas, please cite it as below, and cite World Monitor, which it grew out of."
+title: "Global Intelligence Atlas"
+version: 2.10.0
+date-released: 2026-10-18
+license: AGPL-3.0-only
+repository-code: "https://github.com/Normansrule/global-intelligence-atlas"
+url: "https://normansrule.github.io/global-intelligence-atlas/"
+type: software
+authors:
+  - family-names: Norman
+    given-names: Aleksander
+references:
+  - type: software
+    title: "World Monitor"
+    authors:
+      - family-names: Habib
+        given-names: Elie
+    repository-code: "https://github.com/koala73/worldmonitor"
+    license: AGPL-3.0-only

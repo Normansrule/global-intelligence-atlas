@@ -1,0 +1,45 @@
+# Global Intelligence Atlas: hourly history for the Replay layer.
+# Takes the current live-data snapshot, keeps a compact frame of it (aircraft, ships, disaster alerts, fire counts)
+# and force-pushes the orphan branch `history` as one commit, keeping HISTORY_DAYS of frames (14 by default; a
+# frame is about 200 KB, so 14 days is about 70 MB before git's compression). See tools/build-history.mjs.
+name: History for replay
+on:
+  schedule:
+    - cron: '29 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: history
+  cancel-in-progress: false
+jobs:
+  frame:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      HISTORY_DAYS: '14'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Current live-data snapshot and the history so far
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git clone --quiet --depth 1 --branch live-data "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" live
+          git clone --quiet --depth 1 --branch history "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" history || mkdir -p history
+      - name: Add this hour's frame
+        run: node tools/build-history.mjs live history
+      - name: Publish
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          rm -rf history/.git
+          cd history && git init --quiet && git checkout --quiet --orphan history \
+            && git config user.name "global-intelligence-atlas-bot" \
+            && git config user.email "41898282+github-actions[bot]@users.noreply.github.com" \
+            && git add -A && git commit --quiet -m "history $(date -u +%FT%TZ)" \
+            && git push --quiet --force "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" history

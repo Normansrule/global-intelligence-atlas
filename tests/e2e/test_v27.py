@@ -1,0 +1,35 @@
+import sys; sys.path.insert(0, sys.argv[-1]); from mock import handler, ARGS
+from playwright.sync_api import sync_playwright
+# v2.7: CalEnviroScreen tracts (OEHHA) and EPA ECHO violations.
+res=[]
+def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok else 'FAIL ')+name, info)
+with sync_playwright() as p:
+    b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1440,'height':900}); errs=[]
+    pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
+    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.10')}catch(e){}")
+    pg.goto('http://localhost:8765/app/#@36.7,-119.8,0.5&l=borders,ces,echo', wait_until='commit'); pg.wait_for_timeout(12000)
+    check('version 2.10', pg.evaluate("() => gia.VERSION")=='2.10')
+    st=pg.evaluate("() => ['ces','echo'].map(id => [id, gia.state.lstatus[id]?.s, gia.state.data[id]?.rows?.length])")
+    check('both layers load from the regional-data branch', all(s=='ok' and n for _,s,n in st), st)
+    if not pg.evaluate("() => document.body.classList.contains('left-open')"): pg.click('.rail [data-section=layers]')
+    pg.wait_for_timeout(800)
+    opts=pg.evaluate("() => [...document.querySelectorAll('#ces-ind option')].map(o => o.value)")
+    check('indicator picker lists the indicators', opts[:2]==['score','pesticides'], opts)
+    n0=pg.evaluate("() => gia.state.chan.ces.pick.length")
+    pg.select_option('#ces-ind', 'pesticides'); pg.wait_for_timeout(1500)
+    n1=pg.evaluate("() => gia.state.chan.ces.pick.length")
+    check('choosing an indicator recolours and drops tracts without a value', 0 < n1 < n0, (n0, n1))
+    pg.evaluate("() => gia.select({ layer: 'ces', d: gia.state.data.ces.rows[0] })"); pg.wait_for_timeout(900)
+    t=pg.inner_text('#notes-body')
+    check('tract card lists every indicator as a percentile', '99th percentile overall' in t and 'Pesticide use nearby' in t and '97th percentile' in t and 'Poverty' in t and '6019001000' in t, t[:300])
+    pg.evaluate("() => gia.select({ layer: 'echo', d: gia.state.data.echo.rows[0] })"); pg.wait_for_timeout(900)
+    t=pg.inner_text('#notes-body')
+    href=pg.evaluate("() => [...document.querySelectorAll('#notes-body a')].map(a => a.href).find(h => h.includes('detailed-facility-report'))")
+    check('facility card: status, penalties, inspections and the EPA report link', 'BIG PLANT, LLC' in t and 'significant non-compliance' in t and '$45,000' in t and href and 'fid=110000001' in href, (t[:250], href))
+    ch=pg.evaluate("() => ({ ces: gia.state.chan.ces.particles.length, echo: gia.state.chan.echo.particles.length })")
+    check('drawn as a few particle clouds', 1 <= ch['ces'] <= 5 and 1 <= ch['echo'] <= 4, ch)
+    calls=pg.evaluate("() => gia.globe.renderer().info.render.calls")
+    check('draw calls stay batched', calls < 140, calls)
+    check('no page errors', not errs, errs[:3])
+    b.close()
+print(f"SUMMARY {sum(1 for _,ok in res if ok)} / {len(res)}")

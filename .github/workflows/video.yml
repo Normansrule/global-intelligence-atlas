@@ -1,0 +1,20 @@
+# Global Intelligence Atlas — render the promo video with Remotion and upload it as a build artifact.
+name: Render promo video
+on:
+  workflow_dispatch:
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - working-directory: video
+        run: |
+          npm install
+          npx remotion render src/index.ts GlobalIntelligenceAtlasPromo out/global-intelligence-atlas-promo.mp4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: global-intelligence-atlas-promo
+          path: video/out/global-intelligence-atlas-promo.mp4
