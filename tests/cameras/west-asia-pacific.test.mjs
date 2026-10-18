@@ -82,7 +82,7 @@ t('sources: unique keys, names and run functions', () => sources.length === 6 &&
 const meta = JSON.parse(readFileSync(new URL('../../tools/cameras/west-asia-pacific.meta.json', import.meta.url), 'utf8'));
 t('meta: one entry per source key with APA pair', () => eq(meta.map((m) => m.key).sort(), sources.map((s) => s.key).sort()) && meta.every((m) => m.name && m.url.startsWith('https://') && m.license && m.role && m.apa.length === 2));
 const reg = readFileSync(new URL('../../site/app/js/sources.js', import.meta.url), 'utf8');
-t('meta: no key already in sources.js', () => meta.every((m) => !new RegExp(`^\\s*${m.key}:`, 'm').test(reg)));
+t('meta: every key is in sources.js', () => meta.every((m) => new RegExp(`^\\s*${m.key}:`, 'm').test(reg)));
 
 console.log(`SUMMARY ${pass} / ${total}`);
 process.exit(pass === total ? 0 : 1);

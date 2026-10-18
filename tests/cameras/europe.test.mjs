@@ -55,7 +55,7 @@ const meta = JSON.parse(readFileSync(new URL('../../tools/cameras/europe.meta.js
 check('sources export key, name and run', sources.length === 4 && sources.every((s) => /^[a-z0-9]+$/.test(s.key) && s.name && typeof s.run === 'function'));
 check('every source has metadata with an APA pair', sources.every((s) => { const m = meta.find((x) => x.key === s.key); return m && m.name && /^https:/.test(m.url) && m.license && m.role && m.apa?.length === 2; }));
 const existing = readFileSync(new URL('../../site/app/js/sources.js', import.meta.url), 'utf8');
-check('no metadata key is already in sources.js', meta.every((m) => !new RegExp(`^\\s+${m.key}:`, 'm').test(existing)));
+check('every metadata key is in sources.js', meta.every((m) => new RegExp(`^\\s+${m.key}:`, 'm').test(existing)));
 for (const s of sources.filter((x) => ['nadmorski24', 'eurocams'].includes(x.key))) { const r = await s.run(); check(`${s.key}.run() works offline`, r.length > 0 && r.every(goodRow)); }
 
 console.log(`SUMMARY ${pass} / ${n}`);
