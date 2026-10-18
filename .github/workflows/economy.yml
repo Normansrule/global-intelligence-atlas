@@ -4,7 +4,8 @@
 # Eurostat and Organisation for Economic Co-operation and Development (OECD) house price indices, CEPII BACI exports
 # and Climate TRACE industrial assets. Most are published monthly to yearly, so a monthly run is plenty. Each source
 # that fails keeps its previous file; the orphan branch `economy-data` is force-pushed as one commit.
-# No secret is needed. CENSUS_API_KEY is optional (the Census API answers these few requests without one).
+# CENSUS_API_KEY (free) is needed for the county home values: the Census data API refuses requests without a key.
+# The other sources need no secret.
 name: Economy data
 on:
   # a push to a branch other than main tries every source live and publishes nothing (a check before merging)

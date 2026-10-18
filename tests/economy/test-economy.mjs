@@ -89,6 +89,10 @@ const tacc = await E.traceCsvAssets(lines('trace_sources.csv'));
 const tc = E.traceRows([...tacc.values()].map((a) => { const y = Math.max(...a.byYear.keys()); return { ...a, t: a.byYear.get(y), year: y }; }));
 check('Climate TRACE CSV: months of the latest year summed, other gases ignored, iron-and-steel read as steel, textiles left out', tc.length === 2 && tc.find((r) => r[8] === '9001')[2] === 500000 && tc.find((r) => r[8] === '9001')[9] === 2024 && tc.find((r) => r[8] === '9001')[4] === 'steel' && tc.find((r) => r[8] === '9001')[7] === '5 Mt' && tc[0][4] === 'oil-and-gas-refining', tc);
 
+const live = { assets: [{ Id: 1566956, Name: 'POSCO Gwangyang steel plant', Country: 'KOR', Sector: 'iron-and-steel', AssetType: 'BF/BOF', EmissionsSummary: [{ Gas: 'co2e_100yr', EmissionsQuantity: 38336150.6 }], Owners: [{ CompanyId: 'E1', CompanyName: 'POSCO Holdings Inc' }], Centroid: { Geometry: [127.73, 34.92], SRID: 4326 } }] };
+const lv = E.traceRows(E.traceApiAssets(live)); const lq = E.traceRows(E.traceApiAssets(live, 'steel'));
+check('Climate TRACE API as it answers live (October 2026): Sector carries the subsector, AssetType is the process', lv.length === 1 && lv[0][4] === 'steel' && lv[0][6] === 'POSCO Holdings Inc' && lv[0][2] === 38336151 && lq.length === 1, { lv, lq });
+
 // ---- the whole job, offline
 const czip = join(dir, 'codepoint.zip'); execFileSync('zip', ['-q', '-r', czip, 'Data'], { cwd: join(FX, 'codepoint') });
 const out = join(dir, 'economy');

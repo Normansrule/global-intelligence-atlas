@@ -238,7 +238,7 @@ git tag v2.11.0 && git push origin v2.11.0
 
 The builds are not code-signed, so Windows SmartScreen and macOS Gatekeeper ask you to confirm the first launch (the Download page explains how).
 
-**Optional keys** (repository secrets): `OPENSKY_CLIENT_ID` and `OPENSKY_CLIENT_SECRET` for a better flight feed, `FIRMS_MAP_KEY` for fire hotspots, `AISSTREAM_KEY` for ships worldwide, `WSDOT_ACCESS_CODE` for Washington's official camera list (the public list is used without it), `CENSUS_API_KEY` for the county home values (optional). A small Cloudflare Worker in [`proxy/`](proxy/) gives the web app real-time flights too.
+**Optional keys** (repository secrets): `OPENSKY_CLIENT_ID` and `OPENSKY_CLIENT_SECRET` for a better flight feed, `FIRMS_MAP_KEY` for fire hotspots, `AISSTREAM_KEY` for ships worldwide, `WSDOT_ACCESS_CODE` for Washington's official camera list (the public list is used without it), `CENSUS_API_KEY` (free) for the U.S. county home values. A small Cloudflare Worker in [`proxy/`](proxy/) gives the web app real-time flights too.
 
 **Tests** (headless Chromium with software WebGL; the same tests run in GitHub Actions):
 

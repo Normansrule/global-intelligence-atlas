@@ -29,7 +29,7 @@
 // ACS_FILE + ACS_PREV_FILE (Census API JSON), UKHPI_FILE, CODEPOINT_ZIP, PPD_FILES (comma-separated CSVs),
 // EUROSTAT_FILE (JSON-stat), OECD_FILE (SDMX-CSV), BACI_ZIP, TRACE_FILE (API JSON, or a CSV or zip of CSVs),
 // COUNTRIES_FILE. Overrides: FHFA_URL, UKHPI_URL ({ym}), PPD_URL ({year}), CODEPOINT_URL, EUROSTAT_URL, OECD_URL,
-// BACI_URL, TRACE_API, TRACE_ZIP_URL, CENSUS_API_KEY (optional; the Census API works without one at this volume).
+// BACI_URL, TRACE_API, TRACE_ZIP_URL, CENSUS_API_KEY (free; the Census data API refuses requests without one, so the county home values need it).
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync, readdirSync, createReadStream } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -279,7 +279,7 @@ export function acsRows(now, prev, gaz) {
   return { rows: rows.sort((a, b) => (b[2] ?? 0) - (a[2] ?? 0)), unplaced };
 }
 async function acsVintage(year) {
-  const key = process.env.CENSUS_API_KEY ? `&key=${encodeURIComponent(process.env.CENSUS_API_KEY)}` : '';
+  const key = `&key=${encodeURIComponent(process.env.CENSUS_API_KEY)}`;
   return readAcs(await getJson(`https://api.census.gov/data/${year}/acs/acs5?get=NAME,B25077_001E,B25064_001E&for=county:*${key}`));
 }
 async function acs() {
@@ -287,6 +287,7 @@ async function acs() {
   let now; let prev; let year;
   if (local('ACS_FILE')) { now = readAcs(JSON.parse(readFileSync(local('ACS_FILE'), 'utf8'))); prev = local('ACS_PREV_FILE') ? readAcs(JSON.parse(readFileSync(local('ACS_PREV_FILE'), 'utf8'))) : null; year = Number(process.env.ACS_YEAR ?? 0) || null; }
   else {
+    if (!process.env.CENSUS_API_KEY) throw new Error('the Census data API answers "Missing Key" without one: add the free CENSUS_API_KEY repository secret');
     const errs = [];
     for (const y of [YEAR - 1, YEAR - 2, YEAR - 3]) { try { now = await acsVintage(y); year = y; break; } catch (e) { errs.push(`${y}: ${e.message}`); } }
     if (!now) throw new Error(errs.join('; '));
@@ -580,6 +581,8 @@ async function baci(prev) {
 
 // ------------------------------------------------------------------ heavy industry (Climate TRACE assets)
 /** Climate TRACE subsectors kept (power plants are already in the atlas from the World Resources Institute). */
+/** Our subsector key → the Climate TRACE API's subsector name, where they differ. */
+const TRACE_QUERY = { steel: 'iron-and-steel' };
 export const TRACE_SUBSECTORS = { steel: 'Iron and steel', cement: 'Cement', aluminum: 'Aluminium', chemicals: 'Chemicals', 'petrochemical-steam-cracking': 'Petrochemicals (steam cracking)', 'pulp-and-paper': 'Pulp and paper', glass: 'Glass', lime: 'Lime', 'oil-and-gas-refining': 'Oil refining' };
 const TRACE_API = process.env.TRACE_API ?? 'https://api.climatetrace.org/v6';
 const TRACE_ZIPS = process.env.TRACE_ZIP_URL ? [process.env.TRACE_ZIP_URL] : ['https://downloads.climatetrace.org/latest/sector_packages/manufacturing.zip', 'https://downloads.climatetrace.org/latest/sector_packages/fossil_fuel_operations.zip'];
@@ -597,7 +600,7 @@ export function traceApiAssets(j, subsector = null) {
     const co2e = Array.isArray(em) ? (em.find((e) => /co2e_100yr/i.test(pick(e, 'Gas') ?? '')) ?? em.find((e) => /co2e/i.test(pick(e, 'Gas') ?? ''))) : null;
     const t = co2e ? Number(pick(co2e, 'EmissionsQuantity', 'quantity')) : Number(pick(a, 'Emissions', 'emissions_quantity'));
     const owners = pick(a, 'Owners'); const owner = Array.isArray(owners) ? owners.map((o) => (typeof o === 'string' ? o : pick(o, 'Name', 'CompanyName'))).filter(Boolean).slice(0, 3).join(', ') : pick(a, 'Owner', 'ReportingEntityName');
-    out.push({ id: String(pick(a, 'Id', 'AssetId', 'source_id')), name: pick(a, 'Name', 'source_name') ?? 'Industrial site', lat, lng, sub: normSub(pick(a, 'Subsector', 'AssetType') ?? subsector), iso3: pick(a, 'Country', 'iso3_country'), t: Number.isFinite(t) ? t : null, owner: owner || null, year: Number(pick(a, 'Year')) || null });
+    out.push({ id: String(pick(a, 'Id', 'AssetId', 'source_id')), name: pick(a, 'Name', 'source_name') ?? 'Industrial site', lat, lng, sub: normSub(subsector ?? pick(a, 'Subsector') ?? (TRACE_SUBSECTORS[normSub(pick(a, 'Sector'))] ? pick(a, 'Sector') : pick(a, 'AssetType'))), iso3: pick(a, 'Country', 'iso3_country'), t: Number.isFinite(t) ? t : null, owner: owner || null, year: Number(pick(a, 'Year')) || null });
   }
   return out;
 }
@@ -628,16 +631,13 @@ export function traceRows(assets) {
 async function traceFromApi() {
   const out = []; const errs = [];
   for (const sub of Object.keys(TRACE_SUBSECTORS)) {
-    let got = false;
-    for (const param of ['subsectors', 'sectors']) {
-      try {
-        for (let off = 0; off < 20000; off += 1000) {
-          const page = traceApiAssets(await getJson(`${TRACE_API}/assets?${param}=${encodeURIComponent(sub)}&limit=1000&offset=${off}`, 120_000), sub);
-          out.push(...page); got = true; if (page.length < 1000) break;
-        }
-        if (got) break;
-      } catch (e) { errs.push(`${sub} (${param}): ${e.message}`); }
-    }
+    // only the subsectors filter: the API ignores sectors= and returns every kind of asset
+    try {
+      for (let off = 0; off < 20000; off += 1000) {
+        const page = traceApiAssets(await getJson(`${TRACE_API}/assets?subsectors=${encodeURIComponent(TRACE_QUERY[sub] ?? sub)}&limit=1000&offset=${off}`, 120_000), sub);
+        out.push(...page); if (page.length < 1000) break;
+      }
+    } catch (e) { errs.push(`${sub}: ${e.message}`); }
   }
   if (!out.length) throw new Error(errs.slice(0, 2).join('; ') || 'no assets');
   return out;
