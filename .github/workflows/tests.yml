@@ -33,6 +33,8 @@ jobs:
         run: bash tests/e2e/run.sh test_colocated.py | tee colo.log && grep -q "SUMMARY 7 / 7" colo.log
       - name: v2.11 camera source parsers (offline)
         run: for t in tests/cameras/*.test.mjs; do node "$t" || exit 1; done
+      - name: v2.11 economy, property and industry (offline job and layers)
+        run: node tests/economy/test-economy.mjs && bash tests/e2e/run.sh test_economy.py | tee econ.log && grep -q "SUMMARY 21 / 21" econ.log
       - name: v2.10 repository launch (README, branding, browser tuning)
         run: python3 tests/docs/check_readme.py && bash tests/e2e/run.sh test_v210.py | tee v210.log && grep -q "SUMMARY 10 / 10" v210.log
       - name: v2.9 open data

@@ -220,12 +220,22 @@ E = {
  'plss': ('White, 1983', 'White, C. A. (1983). *A history of the rectangular survey system*. U.S. Department of the Interior, Bureau of Land Management.'),
  'usgsepest': ('U.S. Geological Survey, n.d.-b', 'U.S. Geological Survey. (n.d.-b). *Pesticide National Synthesis Project: Estimated annual agricultural pesticide use* [Data set]. ' + RET + 'https://water.usgs.gov/nawqa/pnsp/usage/maps/'),
  'bakerstone': ('Baker & Stone, 2015', 'Baker, N. T., & Stone, W. W. (2015). *Estimated annual agricultural pesticide use for counties of the conterminous United States, 2008–12* (Data Series 907). U.S. Geological Survey. https://doi.org/10.3133/ds907'),
- 'censusgaz': ('U.S. Census Bureau, n.d.', 'U.S. Census Bureau. (n.d.). *Gazetteer files* [Data set]. https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html'),
+ 'censusgaz': ('U.S. Census Bureau, n.d.-a', 'U.S. Census Bureau. (n.d.-a). *Gazetteer files* [Data set]. https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html'),
  'epatri': ('U.S. Environmental Protection Agency, n.d.-c', 'U.S. Environmental Protection Agency. (n.d.-c). *TRI basic data files: Calendar years 1987–present* [Data set]. ' + RET + 'https://www.epa.gov/toxics-release-inventory-tri-program/tri-basic-data-files-calendar-years-1987-present'),
  'epaecho': ('U.S. Environmental Protection Agency, n.d.-a', 'U.S. Environmental Protection Agency. (n.d.-a). *ECHO Exporter* [Data set]. Enforcement and Compliance History Online. ' + RET + 'https://echo.epa.gov/tools/data-downloads'),
  'calenviroscreen': ('California Office of Environmental Health Hazard Assessment, 2021', 'California Office of Environmental Health Hazard Assessment. (2021). *CalEnviroScreen 4.0* [Data set]. https://oehha.ca.gov/calenviroscreen/report/calenviroscreen-40'),
  'wqp': ('National Water Quality Monitoring Council, n.d.', 'National Water Quality Monitoring Council. (n.d.). *Water Quality Portal* [Data set]. U.S. Geological Survey and U.S. Environmental Protection Agency. ' + RET + 'https://www.waterqualitydata.us'),
  'epamcl': ('U.S. Environmental Protection Agency, n.d.-b', 'U.S. Environmental Protection Agency. (n.d.-b). *National primary drinking water regulations*. ' + RET + 'https://www.epa.gov/ground-water-and-drinking-water/national-primary-drinking-water-regulations'),
+ 'fhfahpi': ('U.S. Federal Housing Finance Agency, n.d.', 'U.S. Federal Housing Finance Agency. (n.d.). *House Price Index datasets* [Data set]. ' + RET + 'https://www.fhfa.gov/data/hpi'),
+ 'censusacs': ('U.S. Census Bureau, n.d.-b', 'U.S. Census Bureau. (n.d.-b). *American Community Survey 5-year estimates: Median value (B25077) and median gross rent (B25064)* [Data set]. ' + RET + 'https://www.census.gov/programs-surveys/acs'),
+ 'ukhpi': ('HM Land Registry, n.d.-a', 'HM Land Registry. (n.d.-a). *UK House Price Index* [Data set]. ' + RET + 'https://www.gov.uk/government/collections/uk-house-price-index-reports'),
+ 'landregpp': ('HM Land Registry, n.d.-b', 'HM Land Registry. (n.d.-b). *Price paid data* [Data set]. ' + RET + 'https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads'),
+ 'codepointopen': ('Ordnance Survey, n.d.', 'Ordnance Survey. (n.d.). *Code-Point Open* [Data set]. ' + RET + 'https://www.ordnancesurvey.co.uk/products/code-point-open'),
+ 'eurostathpi': ('Eurostat, n.d.', 'Eurostat. (n.d.). *House price index – quarterly data (prc_hpi_q)* [Data set]. ' + RET + 'https://ec.europa.eu/eurostat/databrowser/view/prc_hpi_q/default/table'),
+ 'oecdhpi': ('Organisation for Economic Co-operation and Development [OECD], n.d.', 'Organisation for Economic Co-operation and Development. (n.d.). *Analytical house price indicators* [Data set]. ' + RET + 'https://www.oecd.org/en/data/indicators/housing-prices.html'),
+ 'baci': ('Gaulier & Zignago, 2010', 'Gaulier, G., & Zignago, S. (2010). *BACI: International trade database at the product-level. The 1994–2007 version* (CEPII Working Paper No. 2010-23). CEPII. https://www.cepii.fr/CEPII/en/publications/wp/abstract.asp?NoDoc=2726'),
+ 'climatetrace': ('Climate TRACE, n.d.', 'Climate TRACE. (n.d.). *Climate TRACE emissions inventory: Asset-level data* [Data set]. ' + RET + 'https://climatetrace.org/data'),
+ 'economydata': ('Norman, 2026e', 'Norman, A. (2026e). *Global Intelligence Atlas economy data* [Data set]. GitHub. https://github.com/Normansrule/global-intelligence-atlas/tree/economy-data'),
 }
 # extra rows for the usage table (things not in sources.js)
 EXTRA_USE = [

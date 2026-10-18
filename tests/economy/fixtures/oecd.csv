@@ -1,0 +1,10 @@
+STRUCTURE,STRUCTURE_ID,STRUCTURE_NAME,ACTION,REF_AREA,Reference area,FREQ,Frequency of observation,MEASURE,Measure,UNIT_MEASURE,Unit of measure,TIME_PERIOD,Time period,OBS_VALUE,Observation value
+DATAFLOW,OECD.ECO.MPD:DSD_AN_HOUSE_PRICES@DF_HOUSE_PRICES(1.0),Analytical house prices indicators,I,JPN,Japan,Q,Quarterly,HPI,Nominal house prices,IX,Index,2021-Q2,,110,
+DATAFLOW,OECD.ECO.MPD:DSD_AN_HOUSE_PRICES@DF_HOUSE_PRICES(1.0),Analytical house prices indicators,I,JPN,Japan,Q,Quarterly,HPI,Nominal house prices,IX,Index,2025-Q2,,125,
+DATAFLOW,OECD.ECO.MPD:DSD_AN_HOUSE_PRICES@DF_HOUSE_PRICES(1.0),Analytical house prices indicators,I,JPN,Japan,Q,Quarterly,HPI,Nominal house prices,IX,Index,2026-Q2,,130,
+DATAFLOW,OECD.ECO.MPD:DSD_AN_HOUSE_PRICES@DF_HOUSE_PRICES(1.0),Analytical house prices indicators,I,JPN,Japan,Q,Quarterly,RHP,Real house prices,IX,Index,2025-Q2,,100,
+DATAFLOW,OECD.ECO.MPD:DSD_AN_HOUSE_PRICES@DF_HOUSE_PRICES(1.0),Analytical house prices indicators,I,JPN,Japan,Q,Quarterly,RHP,Real house prices,IX,Index,2026-Q2,,101,
+DATAFLOW,OECD.ECO.MPD:DSD_AN_HOUSE_PRICES@DF_HOUSE_PRICES(1.0),Analytical house prices indicators,I,JPN,Japan,Q,Quarterly,HPI,Nominal house prices,PA,Growth rate,2026-Q2,,4,
+DATAFLOW,OECD.ECO.MPD:DSD_AN_HOUSE_PRICES@DF_HOUSE_PRICES(1.0),Analytical house prices indicators,I,OECD,OECD,Q,Quarterly,HPI,Nominal house prices,IX,Index,2026-Q2,,120,
+DATAFLOW,OECD.ECO.MPD:DSD_AN_HOUSE_PRICES@DF_HOUSE_PRICES(1.0),Analytical house prices indicators,I,CAN,Canada,A,Annual,HPI,Nominal house prices,IX,Index,2025,,150,
+DATAFLOW,OECD.ECO.MPD:DSD_AN_HOUSE_PRICES@DF_HOUSE_PRICES(1.0),Analytical house prices indicators,I,CAN,Canada,Q,Quarterly,PIR,Price to income,IX,Index,2026-Q2,,90,

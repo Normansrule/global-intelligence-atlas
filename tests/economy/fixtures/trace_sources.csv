@@ -1,0 +1,7 @@
+source_id,source_name,source_type,iso3_country,sector,subsector,start_time,end_time,lat,lon,geometry_ref,gas,emissions_quantity,temporal_granularity,capacity,capacity_units
+9001,Port Talbot Steelworks,steel,GBR,manufacturing,iron-and-steel,2023-01-01T00:00:00Z,2023-12-31T00:00:00Z,51.57,-3.78,x,co2e_100yr,5000000,annual,4.5,Mt
+9001,Port Talbot Steelworks,steel,GBR,manufacturing,iron-and-steel,2024-01-01T00:00:00Z,2024-01-31T00:00:00Z,51.57,-3.78,x,co2e_100yr,300000,month,4.5,Mt
+9001,Port Talbot Steelworks,steel,GBR,manufacturing,iron-and-steel,2024-02-01T00:00:00Z,2024-02-29T00:00:00Z,51.57,-3.78,x,co2e_100yr,200000,month,4.5,Mt
+9001,Port Talbot Steelworks,steel,GBR,manufacturing,iron-and-steel,2024-02-01T00:00:00Z,2024-02-29T00:00:00Z,51.57,-3.78,x,co2,190000,month,4.5,Mt
+9002,Pernis refinery,oil-and-gas-refining,NLD,fossil-fuel-operations,oil-and-gas-refining,2024-01-01T00:00:00Z,2024-12-31T00:00:00Z,51.88,4.38,x,co2e_100yr,8000000,annual,,
+9003,A textile mill,textiles,BGD,manufacturing,textiles-leather-apparel,2024-01-01T00:00:00Z,2024-12-31T00:00:00Z,23.8,90.4,x,co2e_100yr,1000,annual,,

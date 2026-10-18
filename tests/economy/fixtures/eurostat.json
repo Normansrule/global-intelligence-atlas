@@ -1,0 +1,9 @@
+{"version":"2.0","class":"dataset","label":"House price index (2015 = 100) - quarterly data","source":"ESTAT","updated":"2026-10-03T23:00:00+0200",
+ "value":{"0":150,"1":160,"2":166.4,"3":90,"4":100,"5":108,"6":140,"7":150,"8":155,"11":4.1},
+ "id":["freq","purchase","unit","geo","time"],"size":[1,1,2,3,3],
+ "dimension":{
+  "freq":{"label":"Time frequency","category":{"index":{"Q":0},"label":{"Q":"Quarterly"}}},
+  "purchase":{"label":"Purchases","category":{"index":{"TOTAL":0},"label":{"TOTAL":"Total"}}},
+  "unit":{"label":"Unit of measure","category":{"index":{"I15_Q":0,"RCH_A":1},"label":{"I15_Q":"Index, 2015=100","RCH_A":"Annual rate of change"}}},
+  "geo":{"label":"Geopolitical entity","category":{"index":{"DE":0,"EL":1,"EU27_2020":2},"label":{"DE":"Germany","EL":"Greece","EU27_2020":"European Union - 27 countries (from 2020)"}}},
+  "time":{"label":"Time","category":{"index":{"2021-Q2":0,"2025-Q2":1,"2026-Q2":2},"label":{"2021-Q2":"2021-Q2","2025-Q2":"2025-Q2","2026-Q2":"2026-Q2"}}}}}

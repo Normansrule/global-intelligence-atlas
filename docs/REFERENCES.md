@@ -94,6 +94,8 @@ City of Ottawa. (n.d.). *Ottawa traffic cameras* [Data set]. Retrieved October 1
 
 City of Toronto. (n.d.). *Traffic cameras* [Data set]. City of Toronto Open Data. https://open.toronto.ca/dataset/traffic-cameras/
 
+Climate TRACE. (n.d.). *Climate TRACE emissions inventory: Asset-level data* [Data set]. Retrieved October 14, 2026, from https://climatetrace.org/data
+
 Croft, B. (2023). *LLM visualization* [Computer software]. GitHub. https://github.com/bbycroft/llm-viz
 
 Cybersecurity and Infrastructure Security Agency. (n.d.). *Known exploited vulnerabilities catalog* [Data set]. Retrieved October 14, 2026, from https://www.cisa.gov/known-exploited-vulnerabilities-catalog
@@ -116,6 +118,8 @@ Embraer. (n.d.). *E175: Specifications* [Manufacturer specifications]. https://w
 
 Esri. (n.d.). *World Imagery* [Basemap]. Esri, Maxar, Earthstar Geographics, and the GIS User Community. https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9
 
+Eurostat. (n.d.). *House price index – quarterly data (prc_hpi_q)* [Data set]. Retrieved October 14, 2026, from https://ec.europa.eu/eurostat/databrowser/view/prc_hpi_q/default/table
+
 Exec. Order No. 13526, 75 Fed. Reg. 707 (2010). https://www.federalregister.gov/d/E9-31418
 
 Federal Bureau of Investigation. (n.d.). *FBI records: The Vault* [Data set]. Retrieved October 14, 2026, from https://vault.fbi.gov/
@@ -129,6 +133,8 @@ Florida Department of Transportation. (n.d.). *FL511: Traffic cameras* [Data set
 Forum of Incident Response and Security Teams. (n.d.). *Exploit Prediction Scoring System (EPSS) API* [Data set]. Retrieved October 14, 2026, from https://www.first.org/epss/
 
 Freeway Bureau, Ministry of Transportation and Communications. (n.d.). *Road surveillance cameras (CCTV): Static locations and video stream addresses* [Data set]. Government Open Data Platform (Taiwan). https://data.gov.tw/dataset/173813
+
+Gaulier, G., & Zignago, S. (2010). *BACI: International trade database at the product-level. The 1994–2007 version* (CEPII Working Paper No. 2010-23). CEPII. https://www.cepii.fr/CEPII/en/publications/wp/abstract.asp?NoDoc=2726
 
 The GDELT Project. (n.d.). *GDELT GEO 2.0 API and GDELT 2.0 event database* [Data set]. Retrieved October 14, 2026, from https://www.gdeltproject.org
 
@@ -149,6 +155,10 @@ Habib, E. (2026). *World Monitor* [Computer software]. GitHub. https://github.co
 Hagberg, A. A., Schult, D. A., & Swart, P. J. (2008). Exploring network structure, dynamics, and function using NetworkX. In G. Varoquaux, T. Vaught, & J. Millman (Eds.), *Proceedings of the 7th Python in Science Conference* (pp. 11–15). https://doi.org/10.25080/TCWV9851
 
 Harris, M. J. (2004). Fast fluid dynamics simulation on the GPU. In R. Fernando (Ed.), *GPU gems: Programming techniques, tips, and tricks for real-time graphics* (pp. 637–665). Addison-Wesley.
+
+HM Land Registry. (n.d.-a). *UK House Price Index* [Data set]. Retrieved October 14, 2026, from https://www.gov.uk/government/collections/uk-house-price-index-reports
+
+HM Land Registry. (n.d.-b). *Price paid data* [Data set]. Retrieved October 14, 2026, from https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads
 
 Hollenbeck, S., & Newton, A. (2015). *JSON responses for the Registration Data Access Protocol (RDAP)* (RFC 7483). Internet Engineering Task Force. https://doi.org/10.17487/RFC7483
 
@@ -282,6 +292,8 @@ Norman, A. (2026c). *Global Intelligence Atlas regional data* [Data set]. GitHub
 
 Norman, A. (2026d). *Global Intelligence Atlas open data* [Data set]. GitHub. https://github.com/Normansrule/global-intelligence-atlas/tree/open-data
 
+Norman, A. (2026e). *Global Intelligence Atlas economy data* [Data set]. GitHub. https://github.com/Normansrule/global-intelligence-atlas/tree/economy-data
+
 North Carolina Department of Transportation. (n.d.). *DriveNC: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://drivenc.gov/
 
 NZ Transport Agency Waka Kotahi. (n.d.). *Traffic cameras API* [Data set]. https://www.nzta.govt.nz/traffic-and-travel-information/infoconnect-section-page/about-the-apis/traffic-cameras/
@@ -306,7 +318,11 @@ OpenSky Network. (n.d.-c). *Aircraft database* [Data set]. Retrieved October 14,
 
 OpenStreetMap contributors. (n.d.). *OpenStreetMap* [Data set]. OpenStreetMap Foundation. https://www.openstreetmap.org
 
+Ordnance Survey. (n.d.). *Code-Point Open* [Data set]. Retrieved October 14, 2026, from https://www.ordnancesurvey.co.uk/products/code-point-open
+
 Oregon Department of Transportation. (n.d.). *TripCheck: Road cameras inventory* [Data set]. Retrieved October 14, 2026, from https://www.tripcheck.com/
+
+Organisation for Economic Co-operation and Development. (n.d.). *Analytical house price indicators* [Data set]. Retrieved October 14, 2026, from https://www.oecd.org/en/data/indicators/housing-prices.html
 
 OurAirports. (n.d.). *OurAirports open data* [Data set]. https://ourairports.com/data/
 
@@ -378,7 +394,9 @@ Transport for NSW. (n.d.). *Live Traffic NSW: Traffic cameras* [Data set]. Retri
 
 Turf contributors. (n.d.). *Turf.js: Advanced geospatial analysis* [Computer software]. GitHub. https://github.com/Turfjs/turf
 
-U.S. Census Bureau. (n.d.). *Gazetteer files* [Data set]. https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html
+U.S. Census Bureau. (n.d.-a). *Gazetteer files* [Data set]. https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html
+
+U.S. Census Bureau. (n.d.-b). *American Community Survey 5-year estimates: Median value (B25077) and median gross rent (B25064)* [Data set]. Retrieved October 14, 2026, from https://www.census.gov/programs-surveys/acs
 
 U.S. Energy Information Administration. (n.d.). *World oil transit chokepoints*. https://www.eia.gov/international/analysis/special-topics/World_Oil_Transit_Chokepoints
 
@@ -387,6 +405,8 @@ U.S. Environmental Protection Agency. (n.d.-a). *ECHO Exporter* [Data set]. Enfo
 U.S. Environmental Protection Agency. (n.d.-b). *National primary drinking water regulations*. Retrieved October 14, 2026, from https://www.epa.gov/ground-water-and-drinking-water/national-primary-drinking-water-regulations
 
 U.S. Environmental Protection Agency. (n.d.-c). *TRI basic data files: Calendar years 1987–present* [Data set]. Retrieved October 14, 2026, from https://www.epa.gov/toxics-release-inventory-tri-program/tri-basic-data-files-calendar-years-1987-present
+
+U.S. Federal Housing Finance Agency. (n.d.). *House Price Index datasets* [Data set]. Retrieved October 14, 2026, from https://www.fhfa.gov/data/hpi
 
 U.S. Geological Survey. (n.d.-a). *Earthquake Hazards Program: GeoJSON summary feeds* [Data set]. Retrieved October 14, 2026, from https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
 
@@ -595,7 +615,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (White, 1983) | Township, range and section grid used to place California’s pesticide records. | Public domain (U.S. Government) |
 | (U.S. Geological Survey, n.d.-b) | Estimated farm use of each pesticide in every county of the lower 48 states. | Public domain (U.S. Government) |
 | (Baker & Stone, 2015) | How the county estimates are made (EPest-low and EPest-high). | Public domain (U.S. Government) |
-| (U.S. Census Bureau, n.d.) | County centres and land area for the county estimates. | Public domain (U.S. Government) |
+| (U.S. Census Bureau, n.d.-a) | County centres and land area for the county estimates. | Public domain (U.S. Government) |
 | (U.S. Environmental Protection Agency, n.d.-c) | Toxic chemical releases reported by each industrial facility. | Public domain (U.S. Government) |
 | (California Office of Environmental Health Hazard Assessment, 2021) | Pollution, pesticide and health burden of every California census tract. | Public data (State of California); cite OEHHA |
 | (U.S. Environmental Protection Agency, n.d.-a) | Inspections, violations, enforcement actions and penalties at regulated facilities. | Public domain (U.S. Government) |
@@ -621,6 +641,16 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Rhodes, 2019) | Modelling theory: accurate positions of the Sun, Moon and satellites, used to check the app’s own formulas. | MIT |
 | (Nordine, n.d.) | Reference for organising open-source intelligence tools as a browsable tree (the Intel directory). | MIT |
 | (Hagberg et al., 2008) | Modelling theory: graph and network analysis for cables, pipelines, power and trade routes (Hagberg et al., 2008). | BSD-3-Clause |
+| (U.S. Federal Housing Finance Agency, n.d.) | Quarterly house price index and its 1- and 5-year change for every U.S. state and metropolitan area. | Public domain (U.S. Government) |
+| (U.S. Census Bureau, n.d.-b) | Median value of owner-occupied homes and median gross rent in every U.S. county. | Public domain (U.S. Government) |
+| (HM Land Registry, n.d.-a) | Average house prices, their 1- and 5-year change and sales volumes in every UK local authority. | Open Government Licence v3.0 (contains HM Land Registry data © Crown copyright and database right) |
+| (HM Land Registry, n.d.-b) | Number of homes sold, median price, new builds and property types in each postcode district over the last 12 months. | Open Government Licence v3.0 (contains HM Land Registry data © Crown copyright and database right); addresses are not kept |
+| (Ordnance Survey, n.d.) | Postcode positions, averaged into the centres of postcode districts and local authorities in Great Britain. | Open Government Licence v3.0 (contains OS data © Crown copyright and database right; Royal Mail data © Royal Mail copyright and database right; National Statistics data © Crown copyright and database right) |
+| (Eurostat, n.d.) | House price index and yearly change for European Union and European Free Trade Association countries. | CC BY 4.0 (© European Union) |
+| (Organisation for Economic Co-operation and Development [OECD], n.d.) | Nominal and real house price indices for OECD and partner countries outside Eurostat's coverage. | CC BY 4.0 (OECD) |
+| (Gaulier & Zignago, 2010) | Each country's exports of goods by product: totals, top product groups and top products. | Etalab Open Licence 2.0 (CEPII; built from UN Comtrade) |
+| (Climate TRACE, n.d.) | Steelworks, cement and lime kilns, aluminium smelters, chemical and petrochemical plants, pulp and paper mills, glassworks and refineries, with estimated emissions. | CC BY 4.0 (Climate TRACE) |
+| (Norman, 2026e) | Boiled-down copies of the house price, sales, export and industrial site statistics for the Economy, property and industry layers. | AGPL-3.0-only (the records carry the terms of their sources) |
 | (Asturiano, 2026b) | Globe mesh, tile engine and example textures (topology bump map, dark Earth). | MIT |
 | (Tauri Programme, 2024) | Desktop app shell (Rust + system web view). | MIT / Apache-2.0 |
 | (Wallace, n.d.) | Bundles the 3D libraries into one module; runs the World Monitor data extractor. | MIT |
