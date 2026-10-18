@@ -21,7 +21,7 @@ export function stopCameraMedia() { clearInterval(camTimer); camTimer = null; if
 export function camerasLayer(api) {
   return {
     id: 'cameras', group: 'cams', label: 'Live traffic cameras', swatch: '#7ed6c4', on: false, viewDependent: true, pin: 'camera',
-    sources: ['caltrans', 'nycdot', 'tfl', 'hktd', 'digitraffic', 'on511', 'ab511', 'autobahn', 'drivebc', 'nzta', 'twfreeway', 'qc511', 'nswlive', 'vegagerdin', 'dgt'],
+    sources: ['caltrans', 'nycdot', 'tfl', 'hktd', 'digitraffic', 'on511', 'ab511', 'autobahn', 'drivebc', 'nzta', 'twfreeway', 'qc511', 'nswlive', 'vegagerdin', 'dgt', 'az511', 'fl511', 'ga511', 'drivenc', 'la511', 'yegtraffic', 'indot', 'midrive', 'wsdot', 'ottawatraffic', 'torontocams', 'transtar', 'ndot', 'udot', 'odot', 'ltasg', 'mlitriver', 'autostrade', 'trafikverket', 'nadmorski24', 'eurocams', 'osiris'],
     async load() {
       const d = await getLocal('data/cameras.json').catch(() => { throw new Error('the camera list has not been collected yet — run the “Refresh camera data” workflow once (see the README)'); });
       const src = d.sources.map((s) => s.name);
@@ -39,10 +39,10 @@ export function camerasLayer(api) {
     describeLayer: (d) => ({ rows: [['Cameras', d.cams.length.toLocaleString()], ['Collected', new Date(d.at).toUTCString()], ...d.src.map((s) => [s.name, `${s.count.toLocaleString()} cameras`])] }),
     open: (c) => openCamera(c, api),
     learn: {
-      what: 'Public road cameras published by transport agencies: California, New York City, British Columbia, Québec, Ontario and Alberta; London, Finland, Germany, Spain and Iceland; Hong Kong and Taiwan; New Zealand and New South Wales. Zoom in to see camera pins; click one to watch it. Most show a still image that refreshes every 15 seconds; many Caltrans cameras stream live video, London’s JamCams play a short recent clip and Taiwan’s freeway cameras are live motion pictures. Mainland China’s road agencies publish no open camera feeds, so Hong Kong and Taiwan are the cameras in the region.',
+      what: 'Public road cameras published by transport agencies: California, Washington, Oregon, Nevada, Utah, Arizona, Texas, Louisiana, Florida, Georgia, North Carolina, Indiana, Michigan and New York City; British Columbia, Alberta, Ontario, Québec, Edmonton, Ottawa and Toronto; London, Finland, Germany, Spain, Italy, Sweden, Poland, Iceland and the Balkans; Hong Kong, Taiwan, Singapore and Japan; New Zealand and New South Wales. Zoom in to see camera pins; click one to watch it. Most show a still image that refreshes every 15 seconds; many Caltrans cameras stream live video, London’s JamCams play a short recent clip and Taiwan’s freeway cameras are live motion pictures. Mainland China’s road agencies publish no open camera feeds, so Hong Kong and Taiwan are the cameras in the region.',
       how: 'Agencies publish open lists of their cameras with a snapshot address. A GitHub Action collects the lists every day into one file for this site; the pictures themselves always come straight from the agency when you open a camera, so they are as fresh as the agency makes them.',
       try: 'Open a freeway camera at rush hour, then switch on Live flights near the same city and watch the approach path overhead.',
-      refs: ['caltrans', 'nycdot', 'tfl', 'hktd', 'digitraffic', 'on511', 'ab511', 'autobahn', 'drivebc', 'nzta', 'twfreeway', 'qc511', 'nswlive', 'vegagerdin', 'dgt'],
+      refs: ['caltrans', 'nycdot', 'tfl', 'hktd', 'digitraffic', 'on511', 'ab511', 'autobahn', 'drivebc', 'nzta', 'twfreeway', 'qc511', 'nswlive', 'vegagerdin', 'dgt', 'az511', 'fl511', 'ga511', 'drivenc', 'la511', 'yegtraffic', 'indot', 'midrive', 'wsdot', 'ottawatraffic', 'torontocams', 'transtar', 'ndot', 'udot', 'odot', 'ltasg', 'mlitriver', 'autostrade', 'trafikverket', 'nadmorski24', 'eurocams', 'osiris'],
     },
   };
 }
@@ -60,7 +60,7 @@ export async function openCamera(c, api, near = null) {
     <figure class="cam">
       ${c.stream ? '<video id="cam-video" muted autoplay playsinline controls hidden></video>' : ''}
       <img id="cam-img" ${still ? `src="${esc(bust())}"` : 'hidden'} alt="Latest image from ${esc(c.name)}" />
-      <figcaption><span class="live-dot"></span><span id="cam-status">${c.stream ? 'Connecting to the live stream…' : mjpeg ? 'Live motion picture' : 'Still image · refreshes every 15 s'}</span></figcaption>
+      <figcaption><span class="live-dot"></span><span id="cam-status">${c.stream ? 'Connecting to the live stream…' : mjpeg ? 'Live motion picture' : still ? 'Still image · refreshes every 15 s' : 'This publisher shows the live view on its own page: use the button below'}</span></figcaption>
     </figure>
     <div class="row"><button class="btn ghost" data-fly="${c.lat},${c.lng},0.004">Fly to it</button>${still ? `<a class="btn ghost" href="${esc(c.img)}" target="_blank" rel="noopener">Open image</a>` : ''}${c.page ? `<a class="btn ghost" href="${esc(c.page)}" target="_blank" rel="noopener">Publisher’s page</a>` : ''}
       <a class="btn ghost" href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${c.lat},${c.lng}" target="_blank" rel="noopener">Street View here</a>

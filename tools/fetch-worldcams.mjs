@@ -14,6 +14,7 @@
 // Cameras that tools/fetch-cameras.mjs already collects straight from the agency are skipped here.
 // Only metadata is stored; images always load from the publisher. Usage: node tools/fetch-worldcams.mjs [file.geojson]
 import { mkdirSync, writeFileSync, rmSync, readFileSync, existsSync } from 'node:fs';
+import { mergeIntoWorldcams } from './cameras/osiris-webcams.mjs'; // v2.11: Osiris's curated public webcams (SkylineWebcams, YouTube live, city sites)
 
 const DIR = 'site/app/data/worldcams';
 const UPSTREAM = process.env.WORLDCAM_URL ?? 'https://raw.githubusercontent.com/MALCO2BZ/malco2b/master/public/cameras.geojson';
@@ -132,6 +133,9 @@ for (const f of gj.features ?? []) {
   total++;
 }
 if (total < 1000) { console.error(`Only ${total} cameras passed the checks; keeping the existing snapshot.`); process.exit(0); }
+const osiris = mergeIntoWorldcams({ cells, pubs, pubIx, pubCount, density, uniq, types: TYPES });
+total += osiris.added; for (const [why, n] of Object.entries(osiris.skipped)) drop[`Osiris list: ${why}`] = n;
+console.log(`Osiris list: ${osiris.added} public webcams added`);
 // Shared address prefixes ("https://imgproxy.windy.com/_/preview/plain/current/") are stored once in index.json
 // and written as "~<index>/<rest>" in the rows, which roughly halves the snapshot.
 const URL_COLS = [4, 5, 10]; const pfxCount = new Map();
@@ -147,7 +151,7 @@ writeFileSync(`${DIR}/index.json`, JSON.stringify({
   generatedAt: new Date().toISOString(), upstream: UPSTREAM, total, upstreamTotal: gj.features?.length ?? 0,
   cells: Object.fromEntries(Object.entries(cells).map(([k, v]) => [k, v.length])),
   publishers: pubs.map(([name, kind], i) => ({ name, kind, count: pubCount[i] })), kinds: KIND, types: TYPES, prefixes, dropped: drop,
-  attribution: 'Camera list: WorldCam / WorldScope (MALCO2BZ, MIT licence; derived from Argus by GoSlowPoke168). Images © their publishers.',
+  attribution: 'Camera list: WorldCam / WorldScope (MALCO2BZ, MIT licence; derived from Argus by GoSlowPoke168). Public webcams also from Osiris (simplifaisoul, MIT). Images © their publishers.',
 }));
 console.log(`WorldCam: ${gj.features?.length ?? 0} records → ${total} kept from ${pubs.length} publishers in ${Object.keys(cells).length} cells`);
 for (const [why, n] of Object.entries(drop).sort((a, b) => b[1] - a[1])) console.log(`  dropped ${n.toLocaleString('en')}: ${why}`);

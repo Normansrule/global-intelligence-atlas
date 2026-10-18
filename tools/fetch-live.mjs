@@ -58,14 +58,14 @@ async function openskyToken() {
   return (await r.json()).access_token;
 }
 async function fromOpenSky() {
-  let token = null;
-  try { token = await openskyToken(); } catch (e) { log('OpenSky login failed, trying anonymous:', e.message); }
+  let token = null; let why = process.env.OPENSKY_CLIENT_ID && process.env.OPENSKY_CLIENT_SECRET ? '' : ', no API client keys set';
+  try { token = await openskyToken(); } catch (e) { why = `, API client login failed: ${e.message}`; log('OpenSky login failed, trying anonymous:', e.message); }
   const j = await get('https://opensky-network.org/api/states/all?extended=1', { timeout: 60_000, headers: token ? { Authorization: `Bearer ${token}` } : {} });
   const rows = (j.states ?? []).filter((s) => s[5] != null && s[6] != null).map((s) => [
     s[0], (s[1] ?? '').trim(), r1(s[6], 3), r1(s[5], 3), r1((s[13] ?? s[7] ?? 0) * 3.281), s[8] ? 1 : 0,
     s[9] != null ? r1(s[9] * 1.944) : null, r1(s[10] ?? 0), s[11] != null ? r1(s[11] * 196.85) : null, s[14] ?? null, null, null, s[17] > 1 ? s[17] : null,
   ]);
-  return { src: `OpenSky Network (worldwide${token ? ', API client' : ', anonymous'})`, at: (j.time ?? Date.now() / 1000) * 1000, rows };
+  return { src: `OpenSky Network (worldwide${token ? ', API client' : `, anonymous${why}`})`, at: (j.time ?? Date.now() / 1000) * 1000, rows };
 }
 // Regional fallback: community ADS-B exchanges only answer "within N nautical miles of a point", so we
 // sweep the busiest airspace (1 request a second to respect their limits) and merge by ICAO address.

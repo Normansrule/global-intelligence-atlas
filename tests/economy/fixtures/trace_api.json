@@ -1,0 +1,7 @@
+{"assets":[
+ {"Id":101,"Name":"Shougang Jingtang steel plant","Country":"CHN","Sector":"manufacturing","Subsector":"steel","Centroid":{"Geometry":[118.53,39.2],"SRID":4326},"EmissionsSummary":[{"Gas":"co2","EmissionsQuantity":20000000},{"Gas":"co2e_100yr","EmissionsQuantity":21500000.4}],"Owners":[{"Name":"Shougang Group"}],"Year":2024},
+ {"Id":102,"Name":"Cemex Monterrey","Country":"MEX","AssetType":"Cement","Centroid":{"Geometry":[-100.3,25.7]},"EmissionsSummary":[{"Gas":"co2e_100yr","EmissionsQuantity":3000000}]},
+ {"Id":103,"Name":"Some power station","Country":"USA","Subsector":"electricity-generation","Centroid":{"Geometry":[-90,30]},"EmissionsSummary":[]},
+ {"Id":104,"Name":"No position","Subsector":"steel"},
+ {"Id":101,"Name":"Shougang duplicate","Subsector":"steel","Centroid":{"Geometry":[118.53,39.2]}}
+]}

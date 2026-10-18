@@ -1,0 +1,10 @@
+hpi_type,hpi_flavor,frequency,level,place_name,place_id,yr,period,index_nsa,index_sa
+traditional,purchase-only,monthly,State,California,CA,2026,6,400.0,401.0
+traditional,all-transactions,quarterly,State,California,CA,2021,2,600.0,
+traditional,all-transactions,quarterly,State,California,CA,2025,2,780.0,
+traditional,all-transactions,quarterly,State,California,CA,2026,2,811.2,
+traditional,all-transactions,quarterly,MSA,"Los Angeles-Long Beach-Glendale, CA (MSAD)",31084,2026,2,700.0,
+traditional,all-transactions,quarterly,MSA,"Riverside-San Bernardino-Ontario, CA",40140,2025,2,500.0,
+traditional,all-transactions,quarterly,MSA,"Riverside-San Bernardino-Ontario, CA",40140,2026,2,490.0,
+traditional,all-transactions,quarterly,USA or Census Division,Pacific Division,DV_PAC,2026,2,500.0,
+distress-free,all-transactions,quarterly,State,California,CA,2026,2,999.0,

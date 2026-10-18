@@ -8,6 +8,7 @@ licence (see [`LICENSE`](LICENSE)). As required by section 5 of the AGPL, this f
 
 | Date | Change |
 |---|---|
+| 2026-10 | v2.11.0: traffic camera sources for 22 more agencies (`tools/cameras/`), ported from Osiris's camera routes (© 2026 simplifaisoul, MIT licence; notice in [`LICENSES/osiris-MIT.txt`](LICENSES/osiris-MIT.txt)) and re-implemented as plain Node.js fetchers; Osiris's public webcam list converted to `tools/data/osiris-webcams.json` (`tools/build-osiris-webcams.mjs`). World Monitor's remaining static map datasets as layers (`site/app/js/wmbaseline.js`). Economy, property and industry layers (`site/app/js/economy.js`, `tools/fetch-economy.mjs`, `.github/workflows/economy.yml`). |
 | 2026-10 | v2.10.0: the Global Intelligence Atlas (GIA) repository launch. New README (World Monitor credited as the basis), version notes moved to CHANGELOG.md, browser tuning (modulepreload, service-worker cache for heavy files), screenshots retaken from the app; no change to what comes from World Monitor. |
 | 2026-10 | v2.9.0: open data (Wikidata, NGA World Port Index, TeleGeography, EIA) can replace World Monitor’s lists for seven infrastructure layers; World Monitor’s datasets are still shipped, still the choice for pipelines, trade routes, AI data centres, conflict zones and watch regions, and still credited. |
 | 2026-10 | v2.8.0: Water Quality Portal pesticide results in rivers, lakes and wells (with EPA drinking-water limits) added to the Chemicals and environment group and the regional-data job. World Monitor’s datasets are unchanged. |

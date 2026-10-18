@@ -4,6 +4,12 @@
 // Runs daily in GitHub Actions (.github/workflows/data.yml). Each source is optional: if one is down,
 // the others are still written. Only camera metadata is stored; images always load from the agency.
 import { writeFileSync, readFileSync, existsSync } from 'node:fs';
+// v2.11: sources adapted from Osiris (simplifaisoul, MIT), one module per region in tools/cameras/.
+import { sources as northAmerica } from './cameras/north-america.mjs';
+import { sources as westAsiaPacific } from './cameras/west-asia-pacific.mjs';
+import { sources as europe } from './cameras/europe.mjs';
+const MODULE_SOURCES = [...northAmerica, ...westAsiaPacific, ...europe];
+const fromModule = (key) => MODULE_SOURCES.find((s) => s.key === key);
 
 const OUT = 'site/app/data/cameras.json';
 const UA = { 'User-Agent': 'GlobalIntelligenceAtlas/1.12 (+https://github.com/Normansrule/global-intelligence-atlas; educational map)' };
@@ -145,7 +151,13 @@ async function newZealand() {
 // Taiwan: Freeway Bureau CCTV (MOTC v2.0 static list). Each camera is a live motion-JPEG stream, which an
 // <img> element plays directly.
 async function taiwan() {
-  const xml = await get('https://tisvcloud.freeway.gov.tw/history/motc20/CCTV.xml', 'text');
+  // The list itself is public XML with no media in it, so the plain-HTTP address is tried when the HTTPS one fails
+  // (the bureau's certificate chain is often incomplete for Node); the camera streams below stay HTTPS-only.
+  let xml;
+  try { xml = await get('https://tisvcloud.freeway.gov.tw/history/motc20/CCTV.xml', 'text'); } catch (e) {
+    console.warn(`taiwan https: ${e.message} ${e.cause?.code ?? ''}`);
+    xml = await get('http://tisvcloud.freeway.gov.tw/history/motc20/CCTV.xml', 'text');
+  }
   return [...xml.matchAll(/<CCTV>([\s\S]*?)<\/CCTV>/g)].map(([, b]) => {
     const lat = Number(xmlTag(b, 'PositionLat')); const lng = Number(xmlTag(b, 'PositionLon')); const url = xmlTag(b, 'VideoStreamURL') ?? xmlTag(b, 'VideoImageURL');
     if (!ok(lat, lng) || !url || !/^https:/.test(url)) return null;
@@ -227,8 +239,9 @@ async function spain() {
 const SOURCES = [
   { name: 'Caltrans (California DOT)', run: caltrans },
   { name: 'NYC DOT', run: nyc },
-  { name: '511 Ontario', run: () => five11('https://511on.ca', 2, 'on', 'ONTARIO_511_KEY') },
-  { name: '511 Alberta', run: () => five11('https://511.alberta.ca', 3, 'ab', 'ALBERTA_511_KEY') },
+  // v2.11: the public camera lists behind 511on.ca and 511.alberta.ca need no key (the developer API does: kept as a fallback)
+  { name: '511 Ontario', run: () => fromModule('on511').run().catch((e) => (process.env.ONTARIO_511_KEY ? five11('https://511on.ca', 2, 'on', 'ONTARIO_511_KEY') : Promise.reject(e))) },
+  { name: '511 Alberta', run: () => fromModule('ab511').run().catch((e) => (process.env.ALBERTA_511_KEY ? five11('https://511.alberta.ca', 3, 'ab', 'ALBERTA_511_KEY') : Promise.reject(e))) },
   { name: 'Transport for London (JamCams)', run: tfl },
   { name: 'Hong Kong Transport Department', run: hongKong },
   { name: 'Fintraffic weather cameras (Finland)', run: finland },
@@ -241,6 +254,8 @@ const SOURCES = [
   { name: 'Live Traffic NSW (Australia)', run: nsw },
   { name: 'Vegagerðin (Iceland)', run: iceland },
   { name: 'DGT (Spain)', run: spain },
+  // v2.11: everything else from tools/cameras/ (keys on511 and ab511 are used above)
+  ...MODULE_SOURCES.filter((m) => !['on511', 'ab511', 'butleroh'].includes(m.key)).map((m) => ({ name: m.name, key: m.key, run: m.run })),
 ];
 const prev = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : null;
 // Each source's outcome is stored with the list, so the app's Data health panel can show which ones work.
@@ -248,7 +263,7 @@ const prev = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : null;
 const cams = []; const sources = []; const now = new Date().toISOString();
 for (const [i, s] of SOURCES.entries()) {
   let rows = []; let error = '';
-  try { rows = await s.run(); } catch (e) { error = e.message.slice(0, 200); console.warn(`${s.name}: ${error}`); }
+  try { rows = (await s.run()).map((r) => { r[6] = i; return r; }); } catch (e) { error = e.message.slice(0, 200); console.warn(`${s.name}: ${error}`); }
   const fresh = rows.length;
   const before = prev?.sources?.[i] ?? {};
   if (!fresh && prev) { rows = prev.cams.filter((c) => c[6] === i); console.warn(`${s.name}: keeping ${rows.length} cameras from the previous run`); }

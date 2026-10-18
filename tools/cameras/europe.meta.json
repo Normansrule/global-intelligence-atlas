@@ -1,0 +1,34 @@
+[
+  {
+    "key": "autostrade",
+    "name": "Autostrade per l'Italia — motorway webcams (viabilita.autostrade.it)",
+    "url": "https://www.autostrade.it/it/webcam",
+    "license": "Public data (Autostrade per l'Italia S.p.A.); clips © Autostrade per l'Italia",
+    "role": "Italian motorway cameras: short video clips re-recorded every few minutes. Source list adapted from Osiris (simplifaisoul, MIT).",
+    "apa": ["Autostrade per l'Italia, n.d.", "Autostrade per l'Italia. (n.d.). *Webcam: Viabilità in tempo reale* [Data set]. Retrieved October 14, 2026, from https://www.autostrade.it/it/webcam"]
+  },
+  {
+    "key": "trafikverket",
+    "name": "Trafikverket — road cameras (Trafikverket open API; keyless fallback via Kolla Trafiken county lists)",
+    "url": "https://data.trafikverket.se/",
+    "license": "Public data (Trafikverket, Swedish Transport Administration); images © Trafikverket",
+    "role": "Swedish road cameras, still images. Uses the TRAFIKVERKET_KEY secret when set, otherwise Kolla Trafiken's lists of Trafikverket pictures (as in Osiris by simplifaisoul, MIT).",
+    "apa": ["Trafikverket, n.d.", "Trafikverket. (n.d.). *Trafikverket open API: Camera (road.infrastructure)* [Data set]. Retrieved October 14, 2026, from https://data.trafikverket.se/"]
+  },
+  {
+    "key": "nadmorski24",
+    "name": "nadmorski24.pl / Telewizja Chopin — live coastal cameras (ls.tkchopin.pl)",
+    "url": "https://nadmorski24.pl/",
+    "license": "Public live streams; © Telewizja Chopin / nadmorski24.pl",
+    "role": "Live HLS cameras on Poland's Baltic coast and lower Vistula. List adapted from Osiris (simplifaisoul, MIT).",
+    "apa": ["Telewizja Chopin, n.d.", "Telewizja Chopin. (n.d.). *nadmorski24.pl: Kamery na żywo* [Video streams]. Retrieved October 14, 2026, from https://nadmorski24.pl/"]
+  },
+  {
+    "key": "eurocams",
+    "name": "City and border-crossing webcams in Bulgaria, North Macedonia, Serbia, Romania, Poland and Switzerland (curated in Osiris)",
+    "url": "https://github.com/simplifaisoul/osiris/tree/main/src/app/api/cctv",
+    "license": "MIT (list); images and streams © each publisher (Smart Burgas, UAB, Neotel, AMSS, Uživo Beograd, home-solutions.bg, meteo.chavo.biz, Urząd Miasta Słupsk, CHUV)",
+    "role": "A few public city webcams and border-crossing streams in south-east and central Europe.",
+    "apa": ["simplifaisoul, 2026", "simplifaisoul. (2026). *Osiris: Open source intelligence & reconnaissance integrated system* [Computer software]. GitHub. https://github.com/simplifaisoul/osiris"]
+  }
+]

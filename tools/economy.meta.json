@@ -1,0 +1,85 @@
+{
+  "_comment": "Sources for site/app/js/economy.js and tools/fetch-economy.mjs. Add each to site/app/js/sources.js (key: {name, url, license, role}) and to E in tools/build-references.py (key: (inText, fullAPA7)); 'RET + ' marks where the APA entry takes build-references.py's RET retrieval-date prefix. The existing 'censusgaz' entry ('U.S. Census Bureau, n.d.') should become 'U.S. Census Bureau, n.d.-a' (in-text and reference) now that censusacs is n.d.-b. Existing keys reused: censusgaz, osm, overpass.",
+  "sources": [
+    {
+      "key": "fhfahpi",
+      "name": "U.S. Federal Housing Finance Agency (FHFA) House Price Index (HPI), master file",
+      "url": "https://www.fhfa.gov/data/hpi",
+      "license": "Public domain (U.S. Government)",
+      "role": "Quarterly house price index and its 1- and 5-year change for every U.S. state and metropolitan area.",
+      "apa": ["U.S. Federal Housing Finance Agency, n.d.", "U.S. Federal Housing Finance Agency. (n.d.). *House Price Index datasets* [Data set]. RET + https://www.fhfa.gov/data/hpi"]
+    },
+    {
+      "key": "censusacs",
+      "name": "U.S. Census Bureau American Community Survey (ACS) 5-year estimates, tables B25077 and B25064 (Census data API)",
+      "url": "https://www.census.gov/programs-surveys/acs",
+      "license": "Public domain (U.S. Government)",
+      "role": "Median value of owner-occupied homes and median gross rent in every U.S. county.",
+      "apa": ["U.S. Census Bureau, n.d.-b", "U.S. Census Bureau. (n.d.-b). *American Community Survey 5-year estimates: Median value (B25077) and median gross rent (B25064)* [Data set]. RET + https://www.census.gov/programs-surveys/acs"]
+    },
+    {
+      "key": "ukhpi",
+      "name": "HM Land Registry UK House Price Index (UK HPI), full file",
+      "url": "https://www.gov.uk/government/collections/uk-house-price-index-reports",
+      "license": "Open Government Licence v3.0 (contains HM Land Registry data © Crown copyright and database right)",
+      "role": "Average house prices, their 1- and 5-year change and sales volumes in every UK local authority.",
+      "apa": ["HM Land Registry, n.d.-a", "HM Land Registry. (n.d.-a). *UK House Price Index* [Data set]. RET + https://www.gov.uk/government/collections/uk-house-price-index-reports"]
+    },
+    {
+      "key": "landregpp",
+      "name": "HM Land Registry Price Paid Data (England and Wales), aggregated to postcode district",
+      "url": "https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads",
+      "license": "Open Government Licence v3.0 (contains HM Land Registry data © Crown copyright and database right); addresses are not kept",
+      "role": "Number of homes sold, median price, new builds and property types in each postcode district over the last 12 months.",
+      "apa": ["HM Land Registry, n.d.-b", "HM Land Registry. (n.d.-b). *Price paid data* [Data set]. RET + https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads"]
+    },
+    {
+      "key": "codepointopen",
+      "name": "Ordnance Survey (OS) Code-Point Open",
+      "url": "https://www.ordnancesurvey.co.uk/products/code-point-open",
+      "license": "Open Government Licence v3.0 (contains OS data © Crown copyright and database right; Royal Mail data © Royal Mail copyright and database right; National Statistics data © Crown copyright and database right)",
+      "role": "Postcode positions, averaged into the centres of postcode districts and local authorities in Great Britain.",
+      "apa": ["Ordnance Survey, n.d.", "Ordnance Survey. (n.d.). *Code-Point Open* [Data set]. RET + https://www.ordnancesurvey.co.uk/products/code-point-open"]
+    },
+    {
+      "key": "eurostathpi",
+      "name": "Eurostat house price index, quarterly (prc_hpi_q)",
+      "url": "https://ec.europa.eu/eurostat/databrowser/view/prc_hpi_q/default/table",
+      "license": "CC BY 4.0 (© European Union)",
+      "role": "House price index and yearly change for European Union and European Free Trade Association countries.",
+      "apa": ["Eurostat, n.d.", "Eurostat. (n.d.). *House price index – quarterly data (prc_hpi_q)* [Data set]. RET + https://ec.europa.eu/eurostat/databrowser/view/prc_hpi_q/default/table"]
+    },
+    {
+      "key": "oecdhpi",
+      "name": "Organisation for Economic Co-operation and Development (OECD) analytical house price indicators",
+      "url": "https://www.oecd.org/en/data/indicators/housing-prices.html",
+      "license": "CC BY 4.0 (OECD)",
+      "role": "Nominal and real house price indices for OECD and partner countries outside Eurostat's coverage.",
+      "apa": ["Organisation for Economic Co-operation and Development [OECD], n.d.", "Organisation for Economic Co-operation and Development. (n.d.). *Analytical house price indicators* [Data set]. RET + https://www.oecd.org/en/data/indicators/housing-prices.html"]
+    },
+    {
+      "key": "baci",
+      "name": "CEPII BACI (Base pour l'Analyse du Commerce International), HS 1992 (Gaulier & Zignago, 2010)",
+      "url": "https://www.cepii.fr/CEPII/en/bdd_modele/bdd_modele_item.asp?id=37",
+      "license": "Etalab Open Licence 2.0 (CEPII; built from UN Comtrade)",
+      "role": "Each country's exports of goods by product: totals, top product groups and top products.",
+      "apa": ["Gaulier & Zignago, 2010", "Gaulier, G., & Zignago, S. (2010). *BACI: International trade database at the product-level. The 1994–2007 version* (CEPII Working Paper No. 2010-23). CEPII. https://www.cepii.fr/CEPII/en/publications/wp/abstract.asp?NoDoc=2726"]
+    },
+    {
+      "key": "climatetrace",
+      "name": "Climate TRACE asset-level emissions (manufacturing and oil refining)",
+      "url": "https://climatetrace.org/data",
+      "license": "CC BY 4.0 (Climate TRACE)",
+      "role": "Steelworks, cement and lime kilns, aluminium smelters, chemical and petrochemical plants, pulp and paper mills, glassworks and refineries, with estimated emissions.",
+      "apa": ["Climate TRACE, n.d.", "Climate TRACE. (n.d.). *Climate TRACE emissions inventory: Asset-level data* [Data set]. RET + https://climatetrace.org/data"]
+    },
+    {
+      "key": "economydata",
+      "name": "Global Intelligence Atlas economy data (tools/fetch-economy.mjs, monthly)",
+      "url": "https://github.com/Normansrule/global-intelligence-atlas/tree/economy-data",
+      "license": "AGPL-3.0-only (the records carry the terms of their sources)",
+      "role": "Boiled-down copies of the house price, sales, export and industrial site statistics for the Economy, property and industry layers.",
+      "apa": ["Norman, 2026e", "Norman, A. (2026e). *Global Intelligence Atlas economy data* [Data set]. GitHub. https://github.com/Normansrule/global-intelligence-atlas/tree/economy-data"]
+    }
+  ]
+}

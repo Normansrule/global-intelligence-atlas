@@ -23,10 +23,12 @@ import { moonLayer } from './moon.js';
 import { firesLayer, radarLayer } from './hazards.js';
 import { replayLayer } from './replay.js';
 import { pesticideUseLayer, pesticideEstimatesLayer, toxicReleasesLayer, calEnviroScreenLayer, enforcementLayer, waterQualityLayer } from './chemicals.js';
+import { WM_BASELINE } from './wmbaseline.js';
+import { housePricesLayer, homeValuesLayer, propertySalesLayer, exportsLayer, industryLayer, osmWorksLayer } from './economy.js';
 import { SOURCES } from './sources.js';
 
 /** Groups the registry adds to the core ones, with the index they take. */
-export const EXTRA_GROUPS = [[1, { id: 'cams', label: 'Cameras' }], [3, { id: 'places', label: 'Places' }], [2, { id: 'civic', label: 'Civic data' }], [6, { id: 'chem', label: 'Chemicals and environment' }]];
+export const EXTRA_GROUPS = [[1, { id: 'cams', label: 'Cameras' }], [3, { id: 'places', label: 'Places' }], [2, { id: 'civic', label: 'Civic data' }], [6, { id: 'chem', label: 'Chemicals and environment' }], [7, { id: 'econ', label: 'Economy, property and industry' }]];
 
 /** Layers added on top of layers.js, in order: make(api, ctx) returns the layer, after names the layer it follows. */
 export const REGISTRY = [
@@ -57,6 +59,15 @@ export const REGISTRY = [
   { make: (api) => calEnviroScreenLayer(api), after: 'tri' },
   { make: () => enforcementLayer(), after: 'ces' },
   { make: (api) => waterQualityLayer(api), after: 'echo' },
+  // v2.11 economy, property and industry (economy.js)
+  { make: (api) => housePricesLayer(api), after: 'wqp' },
+  { make: (api) => homeValuesLayer(api), after: 'houseprices' },
+  { make: (api) => propertySalesLayer(api), after: 'homevalues' },
+  { make: (api) => exportsLayer(api), after: 'propsales' },
+  { make: (api) => industryLayer(api), after: 'exports' },
+  { make: (api) => osmWorksLayer(api), after: 'industry' },
+  // the rest of World Monitor's static map datasets (wmbaseline.js)
+  ...WM_BASELINE.map(([layer, after]) => ({ make: () => layer, after })),
 ];
 
 /** Editions: what each one leaves out. Layers and rail sections not listed stay. */
@@ -64,14 +75,14 @@ export const EDITIONS = {
   full: { label: 'Full atlas', about: 'Every layer and section.', exclude: [], hideSections: [] },
   classroom: {
     label: 'Classroom',
-    about: 'For schools: the live Earth, space, science, infrastructure and places, without surveillance cameras, licence-plate readers, crime maps, conflict zones, news pins, watch areas or the Intel section.',
-    exclude: ['cameras', 'webcams', 'alpr', 'crime', 'conflicts', 'hotspots', 'news', 'watch', 'declass'],
+    about: 'For schools: the live Earth, space, science, infrastructure and places, without surveillance cameras, licence-plate readers, crime maps, conflict zones, military bases, news pins, watch areas or the Intel section.',
+    exclude: ['cameras', 'webcams', 'alpr', 'crime', 'conflicts', 'hotspots', 'bases', 'news', 'watch', 'declass'],
     hideSections: ['intel'],
   },
   lite: {
     label: 'Lite',
-    about: 'For slow computers and phones: leaves out the heaviest layers (camera lists, the wind field, weather radar, replay, crime maps and square-mile pesticide records).',
-    exclude: ['cameras', 'webcams', 'alpr', 'crime', 'wind', 'radar', 'replay', 'pur'],
+    about: 'For slow computers and phones: leaves out the heaviest layers (camera lists, the wind field, weather radar, replay, crime maps and square-mile pesticide records, home sales by postcode and factories mapped in OpenStreetMap).',
+    exclude: ['cameras', 'webcams', 'alpr', 'crime', 'wind', 'radar', 'replay', 'pur', 'propsales', 'osmworks'],
     hideSections: [],
   },
 };

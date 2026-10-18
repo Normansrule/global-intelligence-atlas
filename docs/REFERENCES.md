@@ -24,7 +24,7 @@ airplanes.live. (n.d.). *airplanes.live REST API* [Data set]. Retrieved October 
 
 AISStream. (n.d.). *AISStream: Global AIS data over WebSocket* [Data set]. Retrieved October 14, 2026, from https://aisstream.io/documentation.html
 
-Alberta Transportation and Economic Corridors. (n.d.). *511 Alberta open data API* [Data set]. https://511.alberta.ca/developers/doc
+Alberta Transportation and Economic Corridors. (n.d.). *511 Alberta: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511.alberta.ca/
 
 American Civil Liberties Union. (2013). *You are being tracked: How license plate readers are being used to record Americans’ movements*. https://www.aclu.org/issues/privacy-technology/location-tracking/you-are-being-tracked
 
@@ -33,6 +33,8 @@ American Psychological Association. (2020). *Publication manual of the American 
 Animate UI. (n.d.). *Animate UI* [Computer software]. https://animate-ui.com
 
 Apache Software Foundation. (n.d.). *Apache ECharts* [Computer software]. GitHub. https://github.com/apache/echarts
+
+Arizona Department of Transportation. (n.d.). *AZ511: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://az511.gov/
 
 Arquivo Nacional. (n.d.). *Arquivo Nacional*. Government of Brazil. Retrieved October 14, 2026, from https://www.gov.br/arquivonacional/
 
@@ -43,6 +45,8 @@ Asturiano, V. (2026a). *globe.gl* [Computer software]. GitHub. https://github.co
 Asturiano, V. (2026b). *three-globe* [Computer software]. GitHub. https://github.com/vasturiano/three-globe
 
 ATR. (n.d.). *ATR 72-600: Specifications* [Manufacturer specifications]. https://www.atr-aircraft.com
+
+Autostrade per l'Italia. (n.d.). *Webcam: Viabilità in tempo reale* [Data set]. Retrieved October 14, 2026, from https://www.autostrade.it/it/webcam
 
 Baker, N. T., & Stone, W. W. (2015). *Estimated annual agricultural pesticide use for counties of the conterminous United States, 2008–12* (Data Series 907). U.S. Geological Survey. https://doi.org/10.3133/ds907
 
@@ -84,6 +88,14 @@ City and County of San Francisco. (n.d.). *Police Department incident reports: 2
 
 City of Chicago. (n.d.). *Crimes – 2001 to present* [Data set]. Chicago Data Portal. https://data.cityofchicago.org/d/ijzp-q8t2
 
+City of Edmonton. (n.d.). *Edmonton traffic cameras* [Data set]. Retrieved October 14, 2026, from https://edmontontrafficcam.com/
+
+City of Ottawa. (n.d.). *Ottawa traffic cameras* [Data set]. Retrieved October 14, 2026, from https://traffic.ottawa.ca/
+
+City of Toronto. (n.d.). *Traffic cameras* [Data set]. City of Toronto Open Data. https://open.toronto.ca/dataset/traffic-cameras/
+
+Climate TRACE. (n.d.). *Climate TRACE emissions inventory: Asset-level data* [Data set]. Retrieved October 14, 2026, from https://climatetrace.org/data
+
 Croft, B. (2023). *LLM visualization* [Computer software]. GitHub. https://github.com/bbycroft/llm-viz
 
 Cybersecurity and Infrastructure Security Agency. (n.d.). *Known exploited vulnerabilities catalog* [Data set]. Retrieved October 14, 2026, from https://www.cisa.gov/known-exploited-vulnerabilities-catalog
@@ -106,6 +118,8 @@ Embraer. (n.d.). *E175: Specifications* [Manufacturer specifications]. https://w
 
 Esri. (n.d.). *World Imagery* [Basemap]. Esri, Maxar, Earthstar Geographics, and the GIS User Community. https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9
 
+Eurostat. (n.d.). *House price index – quarterly data (prc_hpi_q)* [Data set]. Retrieved October 14, 2026, from https://ec.europa.eu/eurostat/databrowser/view/prc_hpi_q/default/table
+
 Exec. Order No. 13526, 75 Fed. Reg. 707 (2010). https://www.federalregister.gov/d/E9-31418
 
 Federal Bureau of Investigation. (n.d.). *FBI records: The Vault* [Data set]. Retrieved October 14, 2026, from https://vault.fbi.gov/
@@ -114,11 +128,17 @@ Fedkiw, R., Stam, J., & Jensen, H. W. (2001). Visual simulation of smoke. In *Pr
 
 Fintraffic. (n.d.). *Digitraffic: Marine AIS and road weather camera APIs* [Data set]. https://www.digitraffic.fi/en/
 
+Florida Department of Transportation. (n.d.). *FL511: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://fl511.com/
+
 Forum of Incident Response and Security Teams. (n.d.). *Exploit Prediction Scoring System (EPSS) API* [Data set]. Retrieved October 14, 2026, from https://www.first.org/epss/
 
 Freeway Bureau, Ministry of Transportation and Communications. (n.d.). *Road surveillance cameras (CCTV): Static locations and video stream addresses* [Data set]. Government Open Data Platform (Taiwan). https://data.gov.tw/dataset/173813
 
+Gaulier, G., & Zignago, S. (2010). *BACI: International trade database at the product-level. The 1994–2007 version* (CEPII Working Paper No. 2010-23). CEPII. https://www.cepii.fr/CEPII/en/publications/wp/abstract.asp?NoDoc=2726
+
 The GDELT Project. (n.d.). *GDELT GEO 2.0 API and GDELT 2.0 event database* [Data set]. Retrieved October 14, 2026, from https://www.gdeltproject.org
+
+Georgia Department of Transportation. (n.d.). *511GA: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511ga.org/
 
 Global Disaster Alert and Coordination System. (n.d.). *GDACS disaster alerts* [Data set]. United Nations Office for the Coordination of Humanitarian Affairs and European Commission Joint Research Centre. Retrieved October 14, 2026, from https://www.gdacs.org
 
@@ -136,11 +156,19 @@ Hagberg, A. A., Schult, D. A., & Swart, P. J. (2008). Exploring network structur
 
 Harris, M. J. (2004). Fast fluid dynamics simulation on the GPU. In R. Fernando (Ed.), *GPU gems: Programming techniques, tips, and tricks for real-time graphics* (pp. 637–665). Addison-Wesley.
 
+HM Land Registry. (n.d.-a). *UK House Price Index* [Data set]. Retrieved October 14, 2026, from https://www.gov.uk/government/collections/uk-house-price-index-reports
+
+HM Land Registry. (n.d.-b). *Price paid data* [Data set]. Retrieved October 14, 2026, from https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads
+
 Hollenbeck, S., & Newton, A. (2015). *JSON responses for the Registration Data Access Protocol (RDAP)* (RFC 7483). Internet Engineering Task Force. https://doi.org/10.17487/RFC7483
 
 Home Office. (n.d.). *data.police.uk API: Street-level crimes* [Data set]. https://data.police.uk/docs/
 
+Houston TranStar. (n.d.). *Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://traffic.houstontranstar.org/
+
 ibelick. (n.d.). *Motion Primitives* [Computer software]. GitHub. https://github.com/ibelick/motion-primitives
+
+Indiana Department of Transportation. (n.d.). *511 Indiana (TrafficWise): Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511in.org/
 
 International Atomic Energy Agency. (n.d.). *Power Reactor Information System (PRIS)* [Data set]. https://pris.iaea.org
 
@@ -170,6 +198,8 @@ Kious, W. J., & Tilling, R. I. (1996). *This dynamic Earth: The story of plate t
 
 Labbe, R. R. (n.d.). *FilterPy: Kalman filters and other optimal and non-optimal estimation filters in Python* [Computer software]. GitHub. https://github.com/rlabbe/filterpy
 
+Land Transport Authority. (n.d.). *Traffic images* [Data set]. data.gov.sg. Retrieved October 14, 2026, from https://api.data.gov.sg/v1/transport/traffic-images
+
 Leetaru, K., & Schrodt, P. A. (2013, April 3–6). *GDELT: Global data on events, location, and tone, 1979–2012* [Paper presentation]. International Studies Association Annual Convention, San Francisco, CA, United States.
 
 Library and Archives Canada. (n.d.). *Library and Archives Canada*. Retrieved October 14, 2026, from https://library-archives.canada.ca/
@@ -179,6 +209,8 @@ linkfanel. (n.d.). *Public KiwiSDR receiver list* [Data set]. http://rx.linkfane
 Lockheed Martin. (n.d.). *F-16 Fighting Falcon* [Manufacturer specifications]. https://www.lockheedmartin.com/en-us/products/f-16.html
 
 Los Angeles Police Department. (n.d.). *Crime data from 2020 to present* [Data set]. City of Los Angeles Open Data. https://data.lacity.org/d/2nrs-mtv8
+
+Louisiana Department of Transportation and Development. (n.d.). *511LA: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511la.org/
 
 Magic UI. (n.d.). *Magic UI* [Computer software]. GitHub. https://github.com/magicuidesign/magicui
 
@@ -191,6 +223,10 @@ MapLibre contributors. (n.d.). *MapLibre GL JS* [Computer software]. GitHub. htt
 MDN contributors. (n.d.). *Cross-Origin Resource Sharing (CORS)*. Mozilla. https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS
 
 Meeus, J. (1998). *Astronomical algorithms* (2nd ed.). Willmann-Bell.
+
+Michigan Department of Transportation. (n.d.). *MiDrive: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://mdotjboss.state.mi.us/MiDrive/
+
+Ministry of Land, Infrastructure, Transport and Tourism. (n.d.). *River disaster prevention information: Live camera images* [Data set]. Retrieved October 14, 2026, from https://www.river.go.jp/
 
 Ministère des Transports et de la Mobilité durable du Québec. (n.d.). *Québec 511: Road cameras* [Data set]. Données Québec. https://www.donneesquebec.ca/
 
@@ -232,6 +268,8 @@ National Water Quality Monitoring Council. (n.d.). *Water Quality Portal* [Data 
 
 Natural Earth. (n.d.). *Natural Earth: Free vector and raster map data* [Data set]. https://www.naturalearthdata.com
 
+Nevada Department of Transportation. (n.d.). *NVRoads: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://www.nvroads.com/
+
 New York City Department of Transportation. (n.d.). *NYC real-time traffic cameras* [Data set]. Retrieved October 14, 2026, from https://webcams.nyctmc.org
 
 New York City Police Department. (n.d.). *NYPD complaint data current (year to date)* [Data set]. NYC Open Data. https://data.cityofnewyork.us/d/5uac-w243
@@ -254,6 +292,10 @@ Norman, A. (2026c). *Global Intelligence Atlas regional data* [Data set]. GitHub
 
 Norman, A. (2026d). *Global Intelligence Atlas open data* [Data set]. GitHub. https://github.com/Normansrule/global-intelligence-atlas/tree/open-data
 
+Norman, A. (2026e). *Global Intelligence Atlas economy data* [Data set]. GitHub. https://github.com/Normansrule/global-intelligence-atlas/tree/economy-data
+
+North Carolina Department of Transportation. (n.d.). *DriveNC: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://drivenc.gov/
+
 NZ Transport Agency Waka Kotahi. (n.d.). *Traffic cameras API* [Data set]. https://www.nzta.govt.nz/traffic-and-travel-information/infoconnect-section-page/about-the-apis/traffic-cameras/
 
 Observable. (n.d.). *Observable Plot* [Computer software]. GitHub. https://github.com/observablehq/plot
@@ -264,7 +306,7 @@ Olbricht, R. (n.d.). *Overpass API* [Computer software]. https://overpass-api.de
 
 Olive, X. (2019). traffic, a toolbox for processing and analysing air traffic data. *Journal of Open Source Software, 4*(39), Article 1518. https://doi.org/10.21105/joss.01518
 
-Ontario Ministry of Transportation. (n.d.). *511 Ontario open data API* [Data set]. https://511on.ca/developers/doc
+Ontario Ministry of Transportation. (n.d.). *511 Ontario: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511on.ca/
 
 OpenLayers contributors. (n.d.). *OpenLayers* [Computer software]. GitHub. https://github.com/openlayers/openlayers
 
@@ -275,6 +317,12 @@ OpenSky Network. (n.d.-b). *OpenSky REST API documentation*. https://openskynetw
 OpenSky Network. (n.d.-c). *Aircraft database* [Data set]. Retrieved October 14, 2026, from https://opensky-network.org/data/aircraft
 
 OpenStreetMap contributors. (n.d.). *OpenStreetMap* [Data set]. OpenStreetMap Foundation. https://www.openstreetmap.org
+
+Ordnance Survey. (n.d.). *Code-Point Open* [Data set]. Retrieved October 14, 2026, from https://www.ordnancesurvey.co.uk/products/code-point-open
+
+Oregon Department of Transportation. (n.d.). *TripCheck: Road cameras inventory* [Data set]. Retrieved October 14, 2026, from https://www.tripcheck.com/
+
+Organisation for Economic Co-operation and Development. (n.d.). *Analytical house price indicators* [Data set]. Retrieved October 14, 2026, from https://www.oecd.org/en/data/indicators/housing-prices.html
 
 OurAirports. (n.d.). *OurAirports open data* [Data set]. https://ourairports.com/data/
 
@@ -308,7 +356,11 @@ Sidhu, B. (n.d.). *God’s eye view* [Computer software]. GitHub. https://github
 
 Simon, B. (2019). *folio-2019* [Computer software]. GitHub. https://github.com/brunosimon/folio-2019
 
+simplifaisoul. (2026). *Osiris* (public webcam lists: src/app/api/cctv) [Computer software and data set]. GitHub. Retrieved October 14, 2026, from https://github.com/simplifaisoul/osiris
+
 simplifaisoul. (2026). *Osiris: Open source intelligence & reconnaissance integrated system* [Computer software]. GitHub. https://github.com/simplifaisoul/osiris
+
+SkylineWebcams. (n.d.). *SkylineWebcams: Live webcams around the world* [Data set]. Retrieved October 14, 2026, from https://www.skylinewebcams.com
 
 snapview. (n.d.). *tokio-tungstenite* (Version 0.30) [Computer software]. GitHub. https://github.com/snapview/tokio-tungstenite
 
@@ -324,11 +376,15 @@ Tauri Programme within The Commons Conservancy. (n.d.). *Notification plugin* (V
 
 TeleGeography. (n.d.). *Submarine cable map* [Data set]. Retrieved October 14, 2026, from https://www.submarinecablemap.com
 
+Telewizja Chopin. (n.d.). *nadmorski24.pl: Kamery na żywo* [Video streams]. Retrieved October 14, 2026, from https://nadmorski24.pl/
+
 Textron Aviation. (n.d.). *Cessna Skyhawk: Specifications* [Manufacturer specifications]. https://cessna.txtav.com
 
 three.js authors. (2026). *three.js* (Version 0.186) [Computer software]. https://threejs.org
 
 Tilezen. (n.d.). *Terrain Tiles* [Data set]. Registry of Open Data on AWS. Retrieved October 14, 2026, from https://registry.opendata.aws/terrain-tiles/
+
+Trafikverket. (n.d.). *Trafikverket open API: Camera (road.infrastructure)* [Data set]. Retrieved October 14, 2026, from https://data.trafikverket.se/
 
 Transport Department, Government of the Hong Kong Special Administrative Region. (n.d.). *Traffic snapshot images* [Data set]. DATA.GOV.HK. https://data.gov.hk/en-data/dataset/hk-td-tis_2-traffic-snapshot-images
 
@@ -338,7 +394,9 @@ Transport for NSW. (n.d.). *Live Traffic NSW: Traffic cameras* [Data set]. Retri
 
 Turf contributors. (n.d.). *Turf.js: Advanced geospatial analysis* [Computer software]. GitHub. https://github.com/Turfjs/turf
 
-U.S. Census Bureau. (n.d.). *Gazetteer files* [Data set]. https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html
+U.S. Census Bureau. (n.d.-a). *Gazetteer files* [Data set]. https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html
+
+U.S. Census Bureau. (n.d.-b). *American Community Survey 5-year estimates: Median value (B25077) and median gross rent (B25064)* [Data set]. Retrieved October 14, 2026, from https://www.census.gov/programs-surveys/acs
 
 U.S. Energy Information Administration. (n.d.). *World oil transit chokepoints*. https://www.eia.gov/international/analysis/special-topics/World_Oil_Transit_Chokepoints
 
@@ -347,6 +405,8 @@ U.S. Environmental Protection Agency. (n.d.-a). *ECHO Exporter* [Data set]. Enfo
 U.S. Environmental Protection Agency. (n.d.-b). *National primary drinking water regulations*. Retrieved October 14, 2026, from https://www.epa.gov/ground-water-and-drinking-water/national-primary-drinking-water-regulations
 
 U.S. Environmental Protection Agency. (n.d.-c). *TRI basic data files: Calendar years 1987–present* [Data set]. Retrieved October 14, 2026, from https://www.epa.gov/toxics-release-inventory-tri-program/tri-basic-data-files-calendar-years-1987-present
+
+U.S. Federal Housing Finance Agency. (n.d.). *House Price Index datasets* [Data set]. Retrieved October 14, 2026, from https://www.fhfa.gov/data/hpi
 
 U.S. Geological Survey. (n.d.-a). *Earthquake Hazards Program: GeoJSON summary feeds* [Data set]. Retrieved October 14, 2026, from https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
 
@@ -357,6 +417,8 @@ U.S. Naval Observatory. (n.d.). *Approximate solar coordinates*. https://aa.usno
 Uber Technologies. (n.d.). *H3: A hexagonal hierarchical geospatial indexing system* [Computer software]. GitHub. https://github.com/uber/h3
 
 United Nations Conference on Trade and Development. (n.d.). *Review of maritime transport*. https://unctad.org/topic/transport-and-trade-logistics/review-of-maritime-transport
+
+Utah Department of Transportation. (n.d.). *UDOT Traffic: Cameras* [Data set]. Retrieved October 14, 2026, from https://udottraffic.utah.gov/
 
 Vallado, D. A., Crawford, P., Hujsak, R., & Kelso, T. S. (2006). Revisiting Spacetrack Report #3. In *AIAA/AAS Astrodynamics Specialist Conference and Exhibit* (Paper AIAA 2006-6753). American Institute of Aeronautics and Astronautics. https://doi.org/10.2514/6.2006-6753
 
@@ -369,6 +431,8 @@ video-dev. (n.d.). *hls.js* [Computer software]. GitHub. https://github.com/vide
 vis.gl contributors. (n.d.). *deck.gl* [Computer software]. GitHub. https://github.com/visgl/deck.gl
 
 Wallace, E. (n.d.). *esbuild* [Computer software]. GitHub. https://github.com/evanw/esbuild
+
+Washington State Department of Transportation. (n.d.). *Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://wsdot.com/travel/real-time/map/
 
 websockets. (n.d.). *ws: A Node.js WebSocket library* (Version 8) [Computer software]. GitHub. https://github.com/websockets/ws
 
@@ -387,6 +451,8 @@ Windyty, SE. (n.d.). *Windy webcams* [Data set]. Retrieved October 14, 2026, fro
 World Bank. (n.d.). *World Bank Open Data API* [Data set]. https://datahelpdesk.worldbank.org/knowledgebase/articles/889392
 
 World Resources Institute. (2021). *Global power plant database* (Version 1.3.0) [Data set]. https://datasets.wri.org/dataset/globalpowerplantdatabase
+
+YouTube. (n.d.). *YouTube Live* [Video streaming service]. Retrieved October 14, 2026, from https://www.youtube.com
 
 Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.7970649
 
@@ -416,8 +482,8 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (New York City Department of Transportation, n.d.) | New York City traffic cameras. | Public data (City of New York) |
 | (Transport for London, n.d.) | London traffic cameras with short video clips. | Powered by TfL Open Data (OGL v2.0) |
 | (Transport Department, n.d.) | Hong Kong traffic cameras. | DATA.GOV.HK terms of use |
-| (Ontario Ministry of Transportation, n.d.) | Ontario highway cameras. | Open Government Licence – Ontario |
-| (Alberta Transportation and Economic Corridors, n.d.) | Alberta highway cameras. | Open Government Licence – Alberta |
+| (Ontario Ministry of Transportation, n.d.) | Ontario highway cameras, read from the same list the 511on.ca camera page uses (no developer key). | Open Government Licence – Ontario |
+| (Alberta Transportation and Economic Corridors, n.d.) | Alberta highway cameras, read from the same list the 511.alberta.ca camera page uses (no developer key). | Open Government Licence – Alberta |
 | (Die Autobahn GmbH des Bundes, n.d.) | German motorway webcams. | Public data (Die Autobahn GmbH des Bundes); documented by bund.dev |
 | (British Columbia Ministry of Transportation and Transit, n.d.) | British Columbia highway cameras. | Open Government Licence – British Columbia |
 | (NZ Transport Agency Waka Kotahi, n.d.) | New Zealand highway cameras. | CC BY 4.0 (NZ Transport Agency) |
@@ -426,6 +492,30 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Transport for NSW, n.d.) | Sydney and New South Wales traffic cameras. | Transport for NSW open data terms |
 | (Vegagerðin, n.d.) | Icelandic road cameras. | Public data (Vegagerðin) |
 | (Dirección General de Tráfico, n.d.) | Spanish road cameras. | Public data (DGT, Spain) |
+| (Autostrade per l'Italia, n.d.) | Italian motorway cameras: short video clips re-recorded every few minutes. Source list adapted from Osiris (simplifaisoul, MIT). | Public data (Autostrade per l'Italia S.p.A.); clips © Autostrade per l'Italia |
+| (Trafikverket, n.d.) | Swedish road cameras, still images. Uses the TRAFIKVERKET_KEY secret when set, otherwise Kolla Trafiken's lists of Trafikverket pictures (as in Osiris by simplifaisoul, MIT). | Public data (Trafikverket, Swedish Transport Administration); images © Trafikverket |
+| (Telewizja Chopin, n.d.) | Live HLS cameras on Poland's Baltic coast and lower Vistula. List adapted from Osiris (simplifaisoul, MIT). | Public live streams; © Telewizja Chopin / nadmorski24.pl |
+| (simplifaisoul, 2026) | A few public city webcams and border-crossing streams in south-east and central Europe. | MIT (list); images and streams © each publisher (Smart Burgas, UAB, Neotel, AMSS, Uživo Beograd, home-solutions.bg, meteo.chavo.biz, Urząd Miasta Słupsk, CHUV) |
+| (Arizona Department of Transportation, n.d.) | Arizona freeway and highway camera stills. | Public data (State of Arizona) |
+| (Florida Department of Transportation, n.d.) | Florida highway camera stills (the video streams need a session the atlas cannot use). | Public data (State of Florida) |
+| (Georgia Department of Transportation, n.d.) | Georgia highway and metro Atlanta camera stills. | Public data (State of Georgia) |
+| (North Carolina Department of Transportation, n.d.) | North Carolina highway camera stills. | Public data (State of North Carolina) |
+| (Louisiana Department of Transportation and Development, n.d.) | Louisiana highway cameras, stills and live streams. | Public data (State of Louisiana) |
+| (City of Edmonton, n.d.) | Live video from Edmonton road cameras. | Public data (City of Edmonton) |
+| (Indiana Department of Transportation, n.d.) | Indiana highway cameras, poster frames and live streams. | Public data (State of Indiana) |
+| (Michigan Department of Transportation, n.d.) | Michigan highway camera stills. | Public data (State of Michigan) |
+| (Washington State Department of Transportation, n.d.) | Washington highway camera stills. | Public data (Washington State) |
+| (City of Ottawa, n.d.) | Ottawa road camera stills. | Public data (City of Ottawa) |
+| (City of Toronto, n.d.) | Toronto road camera stills. | Open Government Licence – Toronto |
+| (simplifaisoul, 2026) | Curated list of about 900 public webcams in 74 countries — SkylineWebcams across Asia, Africa, Latin America and Europe, and webcams their operators broadcast on their own sites or YouTube channels — added to the worldwide webcam layer as links to each publisher (a few owner-run streams play in place). Coordinates were resolved by Osiris with OpenStreetMap Nominatim. | MIT (code and camera lists); images and streams © each publisher |
+| (SkylineWebcams, n.d.) | Live tourism webcams on every continent, including mainland China, Japan, South Korea and Southeast Asia; the atlas links to each camera’s page on skylinewebcams.com. | Images © SkylineWebcams and camera owners; linked, never copied or embedded |
+| (YouTube, n.d.) | About 200 webcams in the Osiris directory are run by their operators (towns, harbours, hotels, tourist boards) as YouTube live channels; the atlas links to the channel’s live page. | Streams © each channel owner; linked, never copied |
+| (Houston TranStar, n.d.) | Houston-area and eastern Yoakum-district highway cameras, Texas. | Public data (Houston TranStar consortium; Texas Department of Transportation) |
+| (Nevada Department of Transportation, n.d.) | Nevada highway cameras, stills and live streams. | Public data (Nevada Department of Transportation) |
+| (Utah Department of Transportation, n.d.) | Utah highway cameras. | Public data (Utah Department of Transportation) |
+| (Oregon Department of Transportation, n.d.) | Oregon highway cameras. | Public data (Oregon Department of Transportation) |
+| (Land Transport Authority, n.d.) | Singapore expressway cameras. | Singapore Open Data Licence, version 1.0 |
+| (Ministry of Land, Infrastructure, Transport and Tourism, n.d.) | River and bridge cameras in Tokyo and Yokohama, Japan. | Public data (MLIT, Japan; Government of Japan Standard Terms of Use) |
 | (MALCO2BZ, 2026) | Worldwide list of about 229,000 public camera records; the atlas keeps about 170,000 published on purpose by agencies, cities, research groups and webcam directories. | MIT (code and camera list); images © each publisher |
 | (GoSlowPoke168, n.d.) | Original project WorldCam is derived from. | MIT |
 | (Windyty, n.d.) | Owner-submitted tourism and weather webcams, the largest publisher in the worldwide webcam layer. | Images © webcam owners; shown with attribution to Windy.com |
@@ -449,7 +539,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Fintraffic, n.d.) | Live ships in the Baltic and Finnish road cameras. | CC BY 4.0 — Fintraffic / digitraffic.fi |
 | (The Space Devs, n.d.) | Upcoming and recent rocket launches, pads and webcasts. | Free API (15 requests/hour anonymous); community data |
 | (Global Disaster Alert and Coordination System, n.d.) | Orange and red disaster alerts. | Free public alerts; cite GDACS |
-| (simplifaisoul, 2026) | Design of the Intelligence toolkit (domain, network, vulnerability, sanctions and wallet lookups) and the conflict-zone list in the conflict monitor. | MIT |
+| (simplifaisoul, 2026) | Design of the Intelligence toolkit (domain, network, vulnerability, sanctions and wallet lookups), the conflict-zone list in the conflict monitor, and the camera source list (tools/cameras/, v2.11). | MIT |
 | (Google, n.d.) | Domain Name System (DNS) records in the Intelligence toolkit. | Google Public DNS terms of service |
 | (Hollenbeck & Newton, 2015) | Who registered a domain, internet address block or network, and when. | Public registration data; each registry’s terms apply |
 | (Sectigo, n.d.) | Security certificates and subdomains of a domain. | Free public service |
@@ -525,7 +615,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (White, 1983) | Township, range and section grid used to place California’s pesticide records. | Public domain (U.S. Government) |
 | (U.S. Geological Survey, n.d.-b) | Estimated farm use of each pesticide in every county of the lower 48 states. | Public domain (U.S. Government) |
 | (Baker & Stone, 2015) | How the county estimates are made (EPest-low and EPest-high). | Public domain (U.S. Government) |
-| (U.S. Census Bureau, n.d.) | County centres and land area for the county estimates. | Public domain (U.S. Government) |
+| (U.S. Census Bureau, n.d.-a) | County centres and land area for the county estimates. | Public domain (U.S. Government) |
 | (U.S. Environmental Protection Agency, n.d.-c) | Toxic chemical releases reported by each industrial facility. | Public domain (U.S. Government) |
 | (California Office of Environmental Health Hazard Assessment, 2021) | Pollution, pesticide and health burden of every California census tract. | Public data (State of California); cite OEHHA |
 | (U.S. Environmental Protection Agency, n.d.-a) | Inspections, violations, enforcement actions and penalties at regulated facilities. | Public domain (U.S. Government) |
@@ -551,6 +641,16 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Rhodes, 2019) | Modelling theory: accurate positions of the Sun, Moon and satellites, used to check the app’s own formulas. | MIT |
 | (Nordine, n.d.) | Reference for organising open-source intelligence tools as a browsable tree (the Intel directory). | MIT |
 | (Hagberg et al., 2008) | Modelling theory: graph and network analysis for cables, pipelines, power and trade routes (Hagberg et al., 2008). | BSD-3-Clause |
+| (U.S. Federal Housing Finance Agency, n.d.) | Quarterly house price index and its 1- and 5-year change for every U.S. state and metropolitan area. | Public domain (U.S. Government) |
+| (U.S. Census Bureau, n.d.-b) | Median value of owner-occupied homes and median gross rent in every U.S. county. | Public domain (U.S. Government) |
+| (HM Land Registry, n.d.-a) | Average house prices, their 1- and 5-year change and sales volumes in every UK local authority. | Open Government Licence v3.0 (contains HM Land Registry data © Crown copyright and database right) |
+| (HM Land Registry, n.d.-b) | Number of homes sold, median price, new builds and property types in each postcode district over the last 12 months. | Open Government Licence v3.0 (contains HM Land Registry data © Crown copyright and database right); addresses are not kept |
+| (Ordnance Survey, n.d.) | Postcode positions, averaged into the centres of postcode districts and local authorities in Great Britain. | Open Government Licence v3.0 (contains OS data © Crown copyright and database right; Royal Mail data © Royal Mail copyright and database right; National Statistics data © Crown copyright and database right) |
+| (Eurostat, n.d.) | House price index and yearly change for European Union and European Free Trade Association countries. | CC BY 4.0 (© European Union) |
+| (Organisation for Economic Co-operation and Development [OECD], n.d.) | Nominal and real house price indices for OECD and partner countries outside Eurostat's coverage. | CC BY 4.0 (OECD) |
+| (Gaulier & Zignago, 2010) | Each country's exports of goods by product: totals, top product groups and top products. | Etalab Open Licence 2.0 (CEPII; built from UN Comtrade) |
+| (Climate TRACE, n.d.) | Steelworks, cement and lime kilns, aluminium smelters, chemical and petrochemical plants, pulp and paper mills, glassworks and refineries, with estimated emissions. | CC BY 4.0 (Climate TRACE) |
+| (Norman, 2026e) | Boiled-down copies of the house price, sales, export and industrial site statistics for the Economy, property and industry layers. | AGPL-3.0-only (the records carry the terms of their sources) |
 | (Asturiano, 2026b) | Globe mesh, tile engine and example textures (topology bump map, dark Earth). | MIT |
 | (Tauri Programme, 2024) | Desktop app shell (Rust + system web view). | MIT / Apache-2.0 |
 | (Wallace, n.d.) | Bundles the 3D libraries into one module; runs the World Monitor data extractor. | MIT |

@@ -1,0 +1,158 @@
+[
+ {
+  "key": "on511",
+  "name": "511 Ontario — traffic cameras (keyless camera list behind 511on.ca)",
+  "url": "https://511on.ca/",
+  "license": "Open Government Licence – Ontario",
+  "role": "Ontario highway cameras, read from the same list the 511on.ca camera page uses (no developer key).",
+  "apa": [
+   "Ontario Ministry of Transportation, n.d.",
+   "Ontario Ministry of Transportation. (n.d.). *511 Ontario: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511on.ca/"
+  ],
+  "replace": true
+ },
+ {
+  "key": "ab511",
+  "name": "511 Alberta — traffic cameras (keyless camera list behind 511.alberta.ca)",
+  "url": "https://511.alberta.ca/",
+  "license": "Open Government Licence – Alberta",
+  "role": "Alberta highway cameras, read from the same list the 511.alberta.ca camera page uses (no developer key).",
+  "apa": [
+   "Alberta Transportation and Economic Corridors, n.d.",
+   "Alberta Transportation and Economic Corridors. (n.d.). *511 Alberta: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511.alberta.ca/"
+  ],
+  "replace": true
+ },
+ {
+  "key": "az511",
+  "name": "AZ511 — Arizona Department of Transportation traffic cameras",
+  "url": "https://az511.gov/",
+  "license": "Public data (State of Arizona)",
+  "role": "Arizona freeway and highway camera stills.",
+  "apa": [
+   "Arizona Department of Transportation, n.d.",
+   "Arizona Department of Transportation. (n.d.). *AZ511: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://az511.gov/"
+  ]
+ },
+ {
+  "key": "fl511",
+  "name": "FL511 — Florida Department of Transportation traffic cameras",
+  "url": "https://fl511.com/",
+  "license": "Public data (State of Florida)",
+  "role": "Florida highway camera stills (the video streams need a session the atlas cannot use).",
+  "apa": [
+   "Florida Department of Transportation, n.d.",
+   "Florida Department of Transportation. (n.d.). *FL511: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://fl511.com/"
+  ]
+ },
+ {
+  "key": "ga511",
+  "name": "511GA — Georgia Department of Transportation traffic cameras",
+  "url": "https://511ga.org/",
+  "license": "Public data (State of Georgia)",
+  "role": "Georgia highway and metro Atlanta camera stills.",
+  "apa": [
+   "Georgia Department of Transportation, n.d.",
+   "Georgia Department of Transportation. (n.d.). *511GA: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511ga.org/"
+  ]
+ },
+ {
+  "key": "drivenc",
+  "name": "DriveNC — North Carolina Department of Transportation traffic cameras",
+  "url": "https://drivenc.gov/",
+  "license": "Public data (State of North Carolina)",
+  "role": "North Carolina highway camera stills.",
+  "apa": [
+   "North Carolina Department of Transportation, n.d.",
+   "North Carolina Department of Transportation. (n.d.). *DriveNC: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://drivenc.gov/"
+  ]
+ },
+ {
+  "key": "la511",
+  "name": "511LA — Louisiana Department of Transportation and Development traffic cameras",
+  "url": "https://511la.org/",
+  "license": "Public data (State of Louisiana)",
+  "role": "Louisiana highway cameras, stills and live streams.",
+  "apa": [
+   "Louisiana Department of Transportation and Development, n.d.",
+   "Louisiana Department of Transportation and Development. (n.d.). *511LA: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511la.org/"
+  ]
+ },
+ {
+  "key": "yegtraffic",
+  "name": "City of Edmonton — Traffic Management Centre cameras",
+  "url": "https://edmontontrafficcam.com/",
+  "license": "Public data (City of Edmonton)",
+  "role": "Live video from Edmonton road cameras.",
+  "apa": [
+   "City of Edmonton, n.d.",
+   "City of Edmonton. (n.d.). *Edmonton traffic cameras* [Data set]. Retrieved October 14, 2026, from https://edmontontrafficcam.com/"
+  ]
+ },
+ {
+  "key": "indot",
+  "name": "INDOT TrafficWise — 511 Indiana traffic cameras",
+  "url": "https://511in.org/",
+  "license": "Public data (State of Indiana)",
+  "role": "Indiana highway cameras, poster frames and live streams.",
+  "apa": [
+   "Indiana Department of Transportation, n.d.",
+   "Indiana Department of Transportation. (n.d.). *511 Indiana (TrafficWise): Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511in.org/"
+  ]
+ },
+ {
+  "key": "midrive",
+  "name": "MDOT MiDrive — Michigan Department of Transportation traffic cameras",
+  "url": "https://mdotjboss.state.mi.us/MiDrive/",
+  "license": "Public data (State of Michigan)",
+  "role": "Michigan highway camera stills.",
+  "apa": [
+   "Michigan Department of Transportation, n.d.",
+   "Michigan Department of Transportation. (n.d.). *MiDrive: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://mdotjboss.state.mi.us/MiDrive/"
+  ]
+ },
+ {
+  "key": "wsdot",
+  "name": "WSDOT — Washington State Department of Transportation traffic cameras",
+  "url": "https://wsdot.com/travel/real-time/map/",
+  "license": "Public data (Washington State)",
+  "role": "Washington highway camera stills.",
+  "apa": [
+   "Washington State Department of Transportation, n.d.",
+   "Washington State Department of Transportation. (n.d.). *Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://wsdot.com/travel/real-time/map/"
+  ]
+ },
+ {
+  "key": "ottawatraffic",
+  "name": "City of Ottawa — traffic cameras",
+  "url": "https://traffic.ottawa.ca/",
+  "license": "Public data (City of Ottawa)",
+  "role": "Ottawa road camera stills.",
+  "apa": [
+   "City of Ottawa, n.d.",
+   "City of Ottawa. (n.d.). *Ottawa traffic cameras* [Data set]. Retrieved October 14, 2026, from https://traffic.ottawa.ca/"
+  ]
+ },
+ {
+  "key": "torontocams",
+  "name": "City of Toronto Open Data — traffic cameras",
+  "url": "https://open.toronto.ca/dataset/traffic-cameras/",
+  "license": "Open Government Licence – Toronto",
+  "role": "Toronto road camera stills.",
+  "apa": [
+   "City of Toronto, n.d.",
+   "City of Toronto. (n.d.). *Traffic cameras* [Data set]. City of Toronto Open Data. https://open.toronto.ca/dataset/traffic-cameras/"
+  ]
+ },
+ {
+  "key": "butleroh",
+  "name": "Butler County Sheriff’s Office (Ohio) — tower cameras",
+  "url": "https://www.butlersheriff.org/",
+  "license": "Publicly published camera images (Butler County Sheriff’s Office)",
+  "role": "Two public tower-camera stills in Butler County, Ohio.",
+  "apa": [
+   "Butler County Sheriff’s Office, n.d.",
+   "Butler County Sheriff’s Office. (n.d.). *Tower cameras* [Data set]. Retrieved October 14, 2026, from https://www.butlersheriff.org/"
+  ]
+ }
+]

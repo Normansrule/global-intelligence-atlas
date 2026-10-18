@@ -4,6 +4,17 @@ Release notes for Global Intelligence Atlas (GIA), newest first. Versions before
 
 ---
 
+## 🌐 v2.11: cameras worldwide, the World Monitor baseline, property and industry
+
+- **Traffic cameras from 22 more agencies:** Arizona, Florida, Georgia, North Carolina, Louisiana, Indiana, Michigan, Washington, Nevada, Utah, Oregon and Houston in the United States; Edmonton, Ottawa and Toronto in Canada; Singapore; Japan's river cameras; Italy's motorways, Sweden, Poland and city cameras in the Balkans and Switzerland. Ontario and Alberta no longer need a key. The last live check collected 34,537 traffic cameras.
+- **900 public webcams in 74 countries from [Osiris](https://github.com/simplifaisoul/osiris)'s list**, including Japan, South Korea, Southeast Asia, Africa, Latin America and the two public mainland China webcams it lists. Mainland China publishes no open traffic camera feeds; Hong Kong and Taiwan are covered by their transport departments. Cameras whose publishers block embedding are page links only.
+- **The rest of World Monitor's map datasets as layers:** military bases (all operators), gamma irradiators, technology headquarters, cloud regions, AI labs, startup ecosystems, financial centres, mining sites, commodity hubs and Gulf investments.
+- **Markers that share a spot:** close up they fan out round it, each with its own symbol; further out a click on the "+N" badge or the spot lists every one. Satellites and other things in space are never spread or listed, and still show at their own height.
+- **Economy, property and industry** (new group): house prices by area (U.S. Federal Housing Finance Agency (FHFA), UK House Price Index, Eurostat, Organisation for Economic Co-operation and Development (OECD)), U.S. county home values and rents (American Community Survey (ACS)), homes sold in England and Wales by postcode district (HM Land Registry Price Paid Data, no addresses kept), what each country exports (CEPII BACI), heavy industry with emissions (Climate TRACE) and factories mapped in OpenStreetMap. The monthly `economy.yml` job writes the `economy-data` branch.
+- **Checks before merging:** `camera-check.yml` and `economy.yml` try every source live on a branch push and publish nothing; the live-data status now says whether OpenSky Network keys are missing or their login failed.
+
+---
+
 ## 🚀 v2.10: the Global Intelligence Atlas (GIA) repository launch
 
 - **A new README** with a feature gallery, a web app versus desktop app comparison, a progress tracker, architecture diagrams and the references; the version notes moved here.

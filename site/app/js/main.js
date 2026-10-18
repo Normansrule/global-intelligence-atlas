@@ -42,7 +42,7 @@ import { installWatch } from './watch.js';
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.10';
+export const VERSION = '2.11';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg } from './icons.js';
@@ -419,25 +419,32 @@ function markerPass(acc) {
     // Declutter in screen space, like a web map: the nearest markers win, cards never overlap,
     // and markers too close to a kept one fold into it as a "+N" cluster badge.
     const placed = []; const cards = []; state.clustered = [];
+    if (v.altitude < 0.12) { // v2.11: things at the very same spot fan out round it, each with its own symbol (space objects are never pins)
+      const spot = new Map(); for (const c of cand) { const k = `${Math.round(c.p.lat * 1e4)},${Math.round(c.p.lng * 1e4)}`; (spot.get(k) ?? spot.set(k, []).get(k)).push(c); }
+      const kpx = kmPerPx();
+      // the ring is wide enough that neighbouring symbols sit at least 32 px apart, so none of them folds into another
+      let gi = 0;
+      for (const g of spot.values()) if (g.length > 1 && g.length <= 24) { gi++; const rkm = kpx * Math.max(30, 16 / Math.sin(Math.PI / g.length)); g.forEach((c, k) => { const a = (2 * Math.PI * k) / g.length; c.grp = gi; c.at = { lat: c.p.lat + (rkm * Math.sin(a)) / 111, lng: c.p.lng + (rkm * Math.cos(a)) / (111 * Math.max(0.05, Math.cos(c.p.lat * Math.PI / 180))) }; }); }
+    }
     for (const c of cand) {
       const isSel = !!selD && c.p.ref?.d === selD;
       if (!isSel && (pins.length >= q.pins || (perLayer[c.l.id] ?? 0) >= q.pinsPerLayer)) { cols.push(c.p); continue; }
-      const sc = globe.getScreenCoords(c.p.lat, c.p.lng, markers.floatAlt);
+      const at = c.at ?? c.p; const sc = globe.getScreenCoords(at.lat, at.lng, markers.floatAlt);
       if (!sc || sc.x < -40 || sc.y < -40 || sc.x > stageSize.w + 40 || sc.y > stageSize.h + 40) { cols.push(c.p); continue; }
-      const hitsCard = cards.some((r) => sc.x + 14 > r.x0 && sc.x - 14 < r.x1 && sc.y + 14 > r.y0 && sc.y - 14 < r.y1);
-      const near = placed.find((o) => Math.abs(o.x - sc.x) < 22 && Math.abs(o.y - sc.y) < 26) ?? (hitsCard ? placed.reduce((b, o) => (!b || Math.hypot(o.x - sc.x, o.y - sc.y) < Math.hypot(b.x - sc.x, b.y - sc.y) ? o : b), null) : null);
-      if (near && !isSel) { near.pin.more = (near.pin.more ?? 0) + 1; if (v.altitude > 0.3 && !far) cols.push(c.p); else state.clustered.push(c.p); continue; } // up close the "+N" badge stands in for the column
+      const hitsCard = !c.grp && cards.some((r) => sc.x + 14 > r.x0 && sc.x - 14 < r.x1 && sc.y + 14 > r.y0 && sc.y - 14 < r.y1);
+      const near = placed.find((o) => (!c.grp || o.grp !== c.grp) && Math.abs(o.x - sc.x) < 22 && Math.abs(o.y - sc.y) < 26) ?? (hitsCard ? placed.reduce((b, o) => (!b || Math.hypot(o.x - sc.x, o.y - sc.y) < Math.hypot(b.x - sc.x, b.y - sc.y) ? o : b), null) : null);
+      if (near && !isSel) { near.pin.more = (near.pin.more ?? 0) + 1; (near.pin.members ??= []).push(c.p); if (v.altitude > 0.3 && !far) cols.push(c.p); else state.clustered.push(c.p); continue; } // up close the "+N" badge stands in for the column
       perLayer[c.l.id] = (perLayer[c.l.id] ?? 0) + 1;
       const icon = typeof c.l.pin === 'function' ? c.l.pin(c.p.ref.d) : c.l.pin;
       const [title, sub] = tipParts(c.p);
       const rect = { x0: sc.x + 14, x1: sc.x + 40 + Math.min(240, 7.2 * Math.max(title.length, sub.length * 0.9)), y0: sc.y - 18, y1: sc.y + 18 };
-      const cardFree = isSel || cards.length < (far ? Math.min(6, q.cards) : q.cards) && !cards.some((r) => r.x0 < rect.x1 && rect.x0 < r.x1 && r.y0 < rect.y1 && rect.y0 < r.y1)
+      const cardFree = isSel || !c.grp && cards.length < (far ? Math.min(6, q.cards) : q.cards) && !cards.some((r) => r.x0 < rect.x1 && rect.x0 < r.x1 && r.y0 < rect.y1 && rect.y0 < r.y1)
         && !placed.some((o) => o.x + 14 > rect.x0 && o.x - 14 < rect.x1 && o.y + 14 > rect.y0 && o.y - 14 < rect.y1);
       if (cardFree) cards.push(rect);
       // bigger things get bigger symbols: size follows the marker's radius (magnitude, megawatts, networks…)
       const size = Math.round(Math.max(24, Math.min(38, 20 + (c.p.r ?? 0.22) * 36)) / 2) * 2;
-      const pin = { lat: c.p.lat, lng: c.p.lng, alt: c.p.alt, icon, size, color: solid(c.p.color, c.l.swatch), title, sub, detailed: cardFree, selected: isSel, ref: c.p.ref, tip: c.p.tip };
-      pins.push(pin); placed.push({ x: sc.x, y: sc.y, pin });
+      const pin = { lat: at.lat, lng: at.lng, home: c.at ? { lat: c.p.lat, lng: c.p.lng } : null, alt: c.p.alt, icon, size, color: solid(c.p.color, c.l.swatch), title, sub, detailed: cardFree, selected: isSel, ref: c.p.ref, tip: c.p.tip };
+      pins.push(pin); placed.push({ x: sc.x, y: sc.y, pin, grp: c.grp });
     }
   }
   markerPass.prev = new Set(pins.map((p) => p.ref?.d));
@@ -861,6 +868,7 @@ document.addEventListener('click', (e) => {
   if (t.id === 'quiz-start' || t.id === 'quiz-again') startQuiz();
   if (t.id === 'quiz-next') nextQuestion();
   if (t.dataset.fly) { const [a, b, c] = t.dataset.fly.split(',').map(Number); fly(a, b, c); }
+  if (t.dataset.here) { const p = state.here?.[Number(t.dataset.here)]; if (p?.ref) select(p.ref); }
   if (t.dataset.action) runAction(t.dataset.action);
   if (t.dataset.board) extras?.flightsBoard();
   if (t.dataset.share) shareLink();
@@ -1297,16 +1305,27 @@ $('#globe').addEventListener('pointerup', (e) => {
   if (e.target.closest?.('.pinx')) return;
   const rect = $('#globe').getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top;
   const hit = pickAt(x, y);
-  if (hit?.zoom) { state.hitAt = performance.now(); state.clickConsumed = true; globe.pointOfView({ lat: hit.lat, lng: hit.lng, altitude: Math.max(0.0006, state.pov.altitude / 3) }, reduceMotion ? 0 : 900); toast(`Zooming in on ${hit.more + 1} markers here`); return; }
+  if (hit?.zoom) { state.hitAt = performance.now(); state.clickConsumed = true; openHere(hit); return; }
   if (hit) { state.hitAt = performance.now(); state.clickConsumed = true; select(hit.ref); }
 }, true);
+// v2.11: a "+N" badge opens a list of everything folded into it, so markers that share a spot are always reachable.
+function openHere(hit) {
+  state.here = hit.group ?? [];
+  const rows = state.here.map((p, i) => { const [t, sub] = tipParts(p); const l = layerById[p.ref?.layer]; return `<button class="tour-card" data-here="${i}"><b>${esc(t || l?.label || 'Marker')}</b><span>${esc([l?.label, sub].filter(Boolean).join(' · '))}</span></button>`; }).join('');
+  openNotes(`${state.here.length} things here`, `<p class="sub">These markers sit too close together to show one by one at this zoom. Pick one, or zoom in to see them spread out.</p>
+    <div class="tour-list">${rows}</div><p><button class="btn ghost" data-fly="${hit.lat},${hit.lng},${Math.max(0.0006, state.pov.altitude / 4)}">Zoom in here</button></p>`, 'here');
+}
 function kmPerPx() { const fov = (globe.camera().fov * Math.PI) / 180; return Math.max(0.0005, (2 * state.pov.altitude * astro.R_EARTH_KM * Math.tan(fov / 2)) / (stageSize.h || innerHeight)); }
 const occludedFn = () => { const c = globe.camera().position; const cl = c.length(); return (d) => { const w = globe.getCoords(d.lat, d.lng, d.alt ?? 0); return (w.x * c.x + w.y * c.y + w.z * c.z) / (Math.hypot(w.x, w.y, w.z) * cl) < R / cl - 0.002; }; };
 function pickAt(x, y, { elevated = true } = {}) {
   const pin = markers.hitPin(x, y, occludedFn()); if (pin) return pin;
   const g = globe.toGlobeCoords(x, y);
   if (g) {
-    const n = state.index.nearest(g.lat, g.lng, kmPerPx() * 9); if (n) return n.item;
+    const n = state.index.nearest(g.lat, g.lng, kmPerPx() * 9);
+    if (n) { // v2.11: several things at the same spot (within 20 m) → list them all instead of silently picking one
+      const same = state.index.within(n.item.lat, n.item.lng, 0.02).filter((it, i, a) => it.ref && a.findIndex((o) => o.ref?.d === it.ref.d) === i);
+      return same.length > 1 ? { zoom: true, lat: n.item.lat, lng: n.item.lng, more: same.length - 1, group: same, tip: `<div class="tip"><b>${same.length} things here</b><span>Click to see them all</span></div>` } : n.item;
+    }
     // merged line layers (cables, pipelines): the nearest segment within a few pixels
     let best = null;
     for (const set of state.lineSets ?? []) { const r = nearestLine(set.segs, g.lat, g.lng, best ? best.km : kmPerPx() * 6); if (r) best = { ...r, set }; }
@@ -1657,7 +1676,14 @@ if (NEW_VERSION) { if (!state.pendingSel) setTimeout(whatsNew, 600); try { local
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>Global Intelligence Atlas (GIA) gets its own repository</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>Cameras worldwide, property and industry</h3>
+    <div class="newlist">
+      <span>${g('camera', '#7ed6c4')}<b>Cameras from 22 more agencies:</b> U.S. states from Arizona to Washington, Edmonton, Ottawa and Toronto, Singapore, Japan, Italy, Sweden and Poland, plus 900 public webcams in 74 countries from Osiris’s list.</span>
+      <span>${g('factory', '#ff6b5a')}<b>Economy, property and industry:</b> house prices by area, U.S. home values and rents, homes sold in England and Wales, what each country exports, heavy industry and mapped factories.</span>
+      <span>${g('dossier', '#e3b55b')}<b>The rest of World Monitor’s map:</b> military bases, technology offices, cloud regions, AI labs, startups, financial centres, mining and commodity hubs.</span>
+      <span>${g('anchor', '#9fc3e6')}<b>Markers that share a spot</b> fan out up close, and a “+N” badge lists every one of them.</span>
+    </div>
+    <h4>From v2.10 — Global Intelligence Atlas (GIA) gets its own repository</h4>
     <div class="newlist">
       <span>${g('dossier', '#e3b55b')}<b>One app, web and desktop:</b> the website and the desktop app run exactly the same code, so every layer and tool is in both. The desktop app adds native fetching, the flights board feed, the ship collector and system notifications.</span>
       <span>${g('anchor', '#7ed6c4')}<b>Faster in the browser:</b> the globe engine and the first modules load in parallel, and on repeat visits the engine, Earth textures and images come straight from the offline cache while it refreshes in the background.</span>
