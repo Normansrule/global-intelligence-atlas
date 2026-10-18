@@ -1,0 +1,14 @@
+[
+  { "key": "transtar", "name": "Houston TranStar — traffic camera snapshots, joined to TxDOT ITS camera inventory", "url": "https://traffic.houstontranstar.org/", "license": "Public data (Houston TranStar consortium; Texas Department of Transportation)", "role": "Houston-area and eastern Yoakum-district highway cameras, Texas.",
+    "apa": ["Houston TranStar, n.d.", "Houston TranStar. (n.d.). *Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://traffic.houstontranstar.org/"] },
+  { "key": "ndot", "name": "Nevada Department of Transportation — nvroads.com cameras (IBI 511)", "url": "https://www.nvroads.com/", "license": "Public data (Nevada Department of Transportation)", "role": "Nevada highway cameras, stills and live streams.",
+    "apa": ["Nevada Department of Transportation, n.d.", "Nevada Department of Transportation. (n.d.). *NVRoads: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://www.nvroads.com/"] },
+  { "key": "udot", "name": "Utah Department of Transportation — UDOT Traffic cameras (IBI 511)", "url": "https://udottraffic.utah.gov/", "license": "Public data (Utah Department of Transportation)", "role": "Utah highway cameras.",
+    "apa": ["Utah Department of Transportation, n.d.", "Utah Department of Transportation. (n.d.). *UDOT Traffic: Cameras* [Data set]. Retrieved October 14, 2026, from https://udottraffic.utah.gov/"] },
+  { "key": "odot", "name": "Oregon Department of Transportation — TripCheck road cameras", "url": "https://www.tripcheck.com/", "license": "Public data (Oregon Department of Transportation)", "role": "Oregon highway cameras.",
+    "apa": ["Oregon Department of Transportation, n.d.", "Oregon Department of Transportation. (n.d.). *TripCheck: Road cameras inventory* [Data set]. Retrieved October 14, 2026, from https://www.tripcheck.com/"] },
+  { "key": "ltasg", "name": "Land Transport Authority — traffic images (data.gov.sg)", "url": "https://api.data.gov.sg/v1/transport/traffic-images", "license": "Singapore Open Data Licence, version 1.0", "role": "Singapore expressway cameras.",
+    "apa": ["Land Transport Authority, n.d.", "Land Transport Authority. (n.d.). *Traffic images* [Data set]. data.gov.sg. Retrieved October 14, 2026, from https://api.data.gov.sg/v1/transport/traffic-images"] },
+  { "key": "mlitriver", "name": "Ministry of Land, Infrastructure, Transport and Tourism — river camera images (river.go.jp)", "url": "https://www.river.go.jp/", "license": "Public data (MLIT, Japan; Government of Japan Standard Terms of Use)", "role": "River and bridge cameras in Tokyo and Yokohama, Japan.",
+    "apa": ["Ministry of Land, Infrastructure, Transport and Tourism, n.d.", "Ministry of Land, Infrastructure, Transport and Tourism. (n.d.). *River disaster prevention information: Live camera images* [Data set]. Retrieved October 14, 2026, from https://www.river.go.jp/"] }
+]

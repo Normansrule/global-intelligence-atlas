@@ -1,0 +1,6 @@
+{"items":[{"timestamp":"2026-10-18T09:00:00+08:00","cameras":[
+{"timestamp":"2026-10-18T08:59:12+08:00","image":"https://images.data.gov.sg/api/traffic-images/2026/10/7a2f5d7e-1001.jpg","location":{"latitude":1.29531332,"longitude":103.871146},"camera_id":"1001","image_metadata":{"height":240,"width":320,"md5":"x"}},
+{"timestamp":"2026-10-18T08:59:12+08:00","image":"https://images.data.gov.sg/api/traffic-images/2026/10/1b0e-1002.jpg","location":{"latitude":1.319541067,"longitude":103.8785627},"camera_id":"1002","image_metadata":{"height":240,"width":320,"md5":"y"}},
+{"timestamp":"2026-10-18T08:59:12+08:00","image":"","location":{"latitude":1.3,"longitude":103.8},"camera_id":"1003"},
+{"timestamp":"2026-10-18T08:59:12+08:00","image":"https://images.data.gov.sg/api/traffic-images/x.jpg","location":{},"camera_id":"1004"}
+]}],"api_info":{"status":"healthy"}}
