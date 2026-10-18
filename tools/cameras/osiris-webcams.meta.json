@@ -1,0 +1,35 @@
+[
+  {
+    "key": "osiriswebcams",
+    "name": "Osiris — public webcam directory (simplifaisoul)",
+    "url": "https://github.com/simplifaisoul/osiris",
+    "license": "MIT (code and camera lists); images and streams © each publisher",
+    "role": "Curated list of about 900 public webcams in 74 countries — SkylineWebcams across Asia, Africa, Latin America and Europe, and webcams their operators broadcast on their own sites or YouTube channels — added to the worldwide webcam layer as links to each publisher (a few owner-run streams play in place). Coordinates were resolved by Osiris with OpenStreetMap Nominatim.",
+    "apa": [
+      "simplifaisoul, 2026",
+      "simplifaisoul. (2026). *Osiris* (public webcam lists: src/app/api/cctv) [Computer software and data set]. GitHub. Retrieved October 14, 2026, from https://github.com/simplifaisoul/osiris"
+    ]
+  },
+  {
+    "key": "skylinewebcams",
+    "name": "SkylineWebcams (SkylineWebcams srl)",
+    "url": "https://www.skylinewebcams.com",
+    "license": "Images © SkylineWebcams and camera owners; linked, never copied or embedded",
+    "role": "Live tourism webcams on every continent, including mainland China, Japan, South Korea and Southeast Asia; the atlas links to each camera’s page on skylinewebcams.com.",
+    "apa": [
+      "SkylineWebcams, n.d.",
+      "SkylineWebcams. (n.d.). *SkylineWebcams: Live webcams around the world* [Data set]. Retrieved October 14, 2026, from https://www.skylinewebcams.com"
+    ]
+  },
+  {
+    "key": "youtubelive",
+    "name": "YouTube Live — webcams broadcast by their operators on their own channels",
+    "url": "https://www.youtube.com",
+    "license": "Streams © each channel owner; linked, never copied",
+    "role": "About 200 webcams in the Osiris directory are run by their operators (towns, harbours, hotels, tourist boards) as YouTube live channels; the atlas links to the channel’s live page.",
+    "apa": [
+      "YouTube, n.d.",
+      "YouTube. (n.d.). *YouTube Live* [Video streaming service]. Retrieved October 14, 2026, from https://www.youtube.com"
+    ]
+  }
+]

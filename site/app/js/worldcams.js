@@ -24,7 +24,7 @@ export function webcamsLayer(api) {
   };
   return {
     id: 'webcams', group: 'cams', label: 'Public webcams worldwide', swatch: SWATCH, on: false, viewDependent: true, reloadOnView: true, pin: 'camera',
-    sources: ['worldcam', 'argus', 'windywebcams'],
+    sources: ['worldcam', 'argus', 'windywebcams', 'osiriswebcams', 'skylinewebcams', 'youtubelive'],
     options: [{ id: 'show', label: 'Show', choices: [['all', 'All webcams'], ['traffic', 'Roads and borders'], ['scenic', 'Cities, nature and resorts'], ['weather', 'Weather, airports and science']], value: 'all' }],
     async load(o, ctx) {
       const v = ctx.view;
@@ -73,7 +73,7 @@ export function webcamsLayer(api) {
       what: 'Public webcams on every continent: road and border cameras, city and beach views, ski resorts, volcanoes, airfields and weather stations. Every camera here is published on purpose by its operator — a transport agency, a city, a weather service, a university, or the owner who submitted it to a webcam directory such as Windy Webcams. Zoom in to see the pins; click one to watch it.',
       how: 'The list comes from WorldCam, an open-source collection of about 229,000 camera records. A weekly GitHub Action keeps only HTTPS feeds on named domains with no passwords in the address, from government, research or reviewed publisher sites, and skips cameras this atlas already collects straight from the agency. Cameras exposed by accident, such as unsecured home or business cameras, are never included. Images load straight from the publisher when you open a camera.',
       try: 'Fly to the Alps in winter and compare ski-resort webcams with the road cameras on the passes below them. Then find a volcano webcam in Japan or Iceland.',
-      refs: ['worldcam', 'argus', 'windywebcams'],
+      refs: ['worldcam', 'argus', 'windywebcams', 'osiriswebcams', 'skylinewebcams', 'youtubelive'],
     },
   };
 }
