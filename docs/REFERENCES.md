@@ -538,7 +538,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 
 | Citation | Used for | Licence or terms |
 |---|---|---|
-| (Habib, 2026) | Original design, 3D globe concept, layer catalogue and the curated static datasets (cables, pipelines, ports, trade routes, chokepoints, AI data centres, spaceports, nuclear sites, economic centres, critical minerals, conflict zones, hotspots, country borders, textures). | AGPL-3.0-only |
+| (Habib, 2026) | Original design, 3D globe concept, layer catalogue and the curated static datasets (cables, pipelines, ports, trade routes, chokepoints, AI data centres, spaceports, nuclear sites, economic centres, critical minerals, conflict zones, hotspots, country borders, textures), and the news feeds and live news panel the News tab follows. | AGPL-3.0-only |
 | (Asturiano, 2026a) | 3D globe rendering, slippy-map tile engine for deep zoom. | MIT |
 | (three.js authors, 2026) | WebGL engine underneath globe.gl; day/night shader. | MIT |
 | (Kandadai, n.d.) | Propagating satellite orbits from TLEs in the browser. | MIT |
@@ -730,7 +730,6 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Climate TRACE, n.d.) | Steelworks, cement and lime kilns, aluminium smelters, chemical and petrochemical plants, pulp and paper mills, glassworks and refineries, with estimated emissions. | CC BY 4.0 (Climate TRACE) |
 | (Norman, 2026e) | Boiled-down copies of the house price, sales, export and industrial site statistics for the Economy, property and industry layers. | AGPL-3.0-only (the records carry the terms of their sources) |
 | (Norman, 2026f) | Reads the publishers’ feeds and checks which live channels are on air and may be embedded, for the News tab. | AGPL-3.0-only code; headlines stay the publishers’ own (title, time and link only) |
-| (Habib, 2026) | Baseline for the News tab: the choice of world feeds and live channels, and the ownership labels. | AGPL-3.0-only |
 | (BBC News, n.d.) | Headlines for the News tab (United Kingdom, public). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
 | (The Guardian, n.d.) | Headlines for the News tab (United Kingdom, commercial). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
 | (Deutsche Welle, n.d.) | Headlines for the News tab (Germany, public). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |

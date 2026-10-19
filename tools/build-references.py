@@ -241,7 +241,6 @@ E = {
 # Authors that appear more than once in the whole list get n.d.-a, n.d.-b, ... as APA requires.
 NEWS = json.loads(subprocess.run(['node', '-e', "import('./site/app/js/newslist.js').then(m=>console.log(JSON.stringify({p:m.PUBLISHERS,c:m.CHANNELS})))"], cwd=REPO, capture_output=True, text=True, check=True).stdout)
 E['newsdata'] = ('Norman, 2026f', 'Norman, A. (2026f). *Global Intelligence Atlas news data* [Data set]. GitHub. https://github.com/Normansrule/global-intelligence-atlas/tree/news-data')
-E['worldmonitornews'] = ('Habib, 2026', None)
 RET_NEWS = 'Retrieved October 18, 2026, from '
 _news = [('news_' + p['key'], p['author'], "*World news feeds* [RSS feed]. " + RET_NEWS + p['feeds'][0][1]) for p in NEWS['p']]
 _news += [('tv_' + c['key'], c['author'], f"*{c['name']} live* [Video live stream]. " + (f"YouTube. https://www.youtube.com/channel/{c['yt']}/live" if c.get('yt') else RET_NEWS + c['hls'][0])) for c in NEWS['c']]
