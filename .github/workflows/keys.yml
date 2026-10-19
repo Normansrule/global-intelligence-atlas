@@ -20,6 +20,7 @@ jobs:
         with:
           node-version: 22
       - name: Check keys
+        shell: bash  # with pipefail, so a refused key turns the run red
         env:
           OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
           OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}
