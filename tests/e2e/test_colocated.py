@@ -4,7 +4,7 @@ from playwright.sync_api import sync_playwright
 # further out the "+N" badge (or a click on the spot) lists every one of them. Space objects are never spread.
 res=[]
 def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok else 'FAIL ')+name, info)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}"
 LAT, LNG = 12.9716, 77.5946   # eight technology offices in Bengaluru share this exact point
 SPOT=f"(d) => Math.abs(d.lat - {LAT}) < 1e-4 && Math.abs(d.lon - {LNG}) < 1e-4"
 with sync_playwright() as p:

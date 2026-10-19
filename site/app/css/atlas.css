@@ -431,6 +431,7 @@ body { overflow: hidden; }
 .rail button:hover { color: var(--paper); background: rgba(255, 255, 255, 0.04); }
 .rail button[aria-pressed='true'] { color: var(--brass); background: var(--brass-dim); }
 .rail button .badge { font-size: 10px; background: var(--coral); color: #fff; border-radius: 999px; padding: 0 5px; margin-top: -2px; }
+@media (max-height: 760px) and (min-width: 861px) { .rail { gap: 2px; padding: 6px; } .rail button { gap: 2px; padding: 6px 2px 5px; } .rail button svg { width: 20px; height: 20px; } } /* nine sections fit short windows */
 
 .drawer { position: fixed; top: var(--top); bottom: var(--bottom); left: var(--rail); width: var(--dl); background: var(--chart); border-right: 1px solid var(--rule); z-index: 6; display: none; flex-direction: column; }
 body.left-open .drawer { display: flex; }

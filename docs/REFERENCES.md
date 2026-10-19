@@ -100,7 +100,7 @@ California Office of Environmental Health Hazard Assessment. (2021). *CalEnviroS
 
 Camera & Imaging Products Association. (2023). *Exchangeable image file format for digital still cameras: Exif version 3.0* (CIPA DC-008-2023). https://www.cipa.jp/e/std/std-sec.html
 
-CBC News. (n.d.-a). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.cbc.ca/webfeed/rss/rss-world
+CBC News. (n.d.-a). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.cbc.ca/cmlink/rss-world
 
 CBC News. (n.d.-b). *CBC News live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCuFFtHWoLl5fauMMD5Ww2jA/live
 
@@ -468,8 +468,6 @@ TRT World. (n.d.). *TRT World live* [Video live stream]. Retrieved October 18, 2
 
 Turf contributors. (n.d.). *Turf.js: Advanced geospatial analysis* [Computer software]. GitHub. https://github.com/Turfjs/turf
 
-TV5Monde. (n.d.). *TV5Monde Info live* [Video live stream]. Retrieved October 18, 2026, from https://ott.tv5monde.com/Content/HLS/Live/channel(info)/index.m3u8
-
 U.S. Census Bureau. (n.d.-a). *Gazetteer files* [Data set]. https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html
 
 U.S. Census Bureau. (n.d.-b). *American Community Survey 5-year estimates: Median value (B25077) and median gross rent (B25064)* [Data set]. Retrieved October 14, 2026, from https://www.census.gov/programs-surveys/acs
@@ -771,7 +769,6 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (ABC News (Australia), n.d.) | Live TV in the News tab (public broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
 | (ARD, n.d.) | Live TV in the News tab (public broadcaster). | Broadcaster’s free live stream, played from its own server |
 | (RTVE, n.d.) | Live TV in the News tab (public broadcaster). | Broadcaster’s free live stream, played from its own server |
-| (TV5Monde, n.d.) | Live TV in the News tab (public broadcaster). | Broadcaster’s free live stream, played from its own server |
 | (Asturiano, 2026b) | Globe mesh, tile engine and example textures (topology bump map, dark Earth). | MIT |
 | (Tauri Programme, 2024) | Desktop app shell (Rust + system web view). | MIT / Apache-2.0 |
 | (Wallace, n.d.) | Bundles the 3D libraries into one module; runs the World Monitor data extractor. | MIT |

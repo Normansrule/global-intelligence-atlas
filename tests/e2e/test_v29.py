@@ -4,7 +4,7 @@ import json
 # v2.9: open data in place of World Monitor's curated lists (opendata.js, About → Datasets).
 res=[]
 def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok else 'FAIL ')+name, info)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}"
 OPEN={
  'ports.json': {'rows':[{'id':'wpi-57010','name':'Shanghai','lat':31.233,'lon':121.483,'country':'China','type':'large harbour','size':'Large','harbourType':'River natural','locode':'CN SHA','channelDepthM':12.5,'maxVesselLengthM':400,'wpi':'57010'},
                         {'id':'wpi-1','name':'Little Port','lat':30,'lon':120,'country':'China','type':'small harbour','size':'Small','wpi':'1'}]},

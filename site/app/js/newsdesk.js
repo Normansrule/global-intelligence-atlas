@@ -31,7 +31,7 @@ export function channelRows(snap) {
   const got = Object.fromEntries((snap?.channels ?? []).map((c) => [c.key, c]));
   return CHANNELS.map((c) => {
     const s = got[c.key];
-    return { ...c, checked: s?.checked ?? null, live: s ? !!s.live : null, video: s?.video ?? null, title: s?.title ?? null, okHls: s ? s.hls ?? [] : [] };
+    return { ...c, checked: s?.checked ?? null, live: s ? (s.live == null ? null : !!s.live) : null, video: s?.video ?? null, title: s?.title ?? null, okHls: s ? s.hls ?? [] : [] };
   }).filter((c) => c.live !== false || c.yt); // offline channels without a YouTube channel have nothing to try
 }
 

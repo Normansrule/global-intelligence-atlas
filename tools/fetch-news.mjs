@@ -38,6 +38,7 @@ export const decode = (s) => String(s ?? '')
   .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
   .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
   .replace(/&([a-z]+);/gi, (m, n) => ENT[n.toLowerCase()] ?? m)
+  .replace(/<\/?[a-z][^>]*>/gi, '') // markup that was escaped inside the title (Atom type="html")
   .replace(/\s+/g, ' ').trim();
 const tag = (block, name) => { const m = block.match(new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)</${name}>`, 'i')); return m ? m[1] : null; };
 const safeUrl = (u) => { try { const x = new URL(decode(u)); return x.protocol === 'https:' || x.protocol === 'http:' ? x.href : null; } catch { return null; } };

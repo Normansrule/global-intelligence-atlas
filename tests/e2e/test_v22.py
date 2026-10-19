@@ -9,7 +9,7 @@ def baltic(route):
     if 'meri.digitraffic.fi/api/ais/v1/locations' in u: return route.fulfill(status=200, body=BALTIC, headers={'Content-Type':'application/json','Access-Control-Allow-Origin':'*'})
     if 'meri.digitraffic.fi/api/ais/v1/vessels' in u: return route.fulfill(status=200, body='[]', headers={'Content-Type':'application/json','Access-Control-Allow-Origin':'*'})
     return handler(route)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}"
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1440,'height':900}); errs=[]
     pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))

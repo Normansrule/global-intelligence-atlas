@@ -4,6 +4,16 @@ Release notes for Global Intelligence Atlas (GIA), newest first. Versions before
 
 ---
 
+## 📰 v2.12: a News tab with world headlines and free live news channels
+
+- **News in the rail** (between Tools and Intel), modelled on World Monitor's news feeds and live news panel.
+- **Headlines:** the latest stories from 16 publishers' own RSS and Atom feeds: BBC News (world and six regions), The Guardian, Deutsche Welle (DW), France 24, NPR (National Public Radio), CBC News (Canadian Broadcasting Corporation), MercoPress, Al Jazeera, Africanews, The Hindu, CNA (Channel NewsAsia), The Japan Times, The Kyiv Independent, ABC News (Australian Broadcasting Corporation), RNZ (Radio New Zealand) and UN News. Filter by region or word; each story opens on the publisher's site. Only the title, time and link are kept.
+- **Live TV:** 22 news channels from broadcasters' official free streams: their YouTube live stream through the embedded player, or their own HLS stream where browsers may play it (Al Jazeera, DW, NHK World-Japan, TRT World, CGTN, Arirang, CBS News, tagesschau24 and RTVE's Canal 24 Horas). Sound starts muted, one channel plays at a time and playback stops when you leave the tab. No relays, re-streams or sanctioned channels.
+- **Ownership labels** on every headline and channel: public, state-controlled or state-funded, commercial or intergovernmental.
+- **`news.yml`** reads the feeds and checks the channels every 30 minutes and writes the `news-data` branch; a branch push checks every source live and publishes nothing. Each publisher and channel is credited in `sources.js` and the APA references.
+
+---
+
 ## 🌐 v2.11: cameras worldwide, the World Monitor baseline, property and industry
 
 - **Traffic cameras from 22 more agencies:** Arizona, Florida, Georgia, North Carolina, Louisiana, Indiana, Michigan, Washington, Nevada, Utah, Oregon and Houston in the United States; Edmonton, Ottawa and Toronto in Canada; Singapore; Japan's river cameras; Italy's motorways, Sweden, Poland and city cameras in the Balkans and Switzerland. Ontario and Alberta no longer need a key. The last live check collected 34,537 traffic cameras.

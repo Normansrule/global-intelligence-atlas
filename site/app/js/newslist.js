@@ -41,7 +41,7 @@ export const PUBLISHERS = [
   { key: 'npr', name: 'NPR (National Public Radio)', author: 'NPR', owner: 'public', country: 'United States', home: 'https://www.npr.org/sections/world/', feeds: [
     ['world', 'https://feeds.npr.org/1004/rss.xml']] },
   { key: 'cbc', name: 'CBC News (Canadian Broadcasting Corporation)', author: 'CBC News', owner: 'public', country: 'Canada', home: 'https://www.cbc.ca/news/world', feeds: [
-    ['americas', 'https://www.cbc.ca/webfeed/rss/rss-world']] },
+    ['americas', 'https://www.cbc.ca/cmlink/rss-world']] },
   { key: 'mercopress', name: 'MercoPress', author: 'MercoPress', owner: 'commercial', country: 'Uruguay', home: 'https://en.mercopress.com', feeds: [
     ['americas', 'https://en.mercopress.com/rss/']] },
   { key: 'aljazeera', name: 'Al Jazeera English', author: 'Al Jazeera', owner: 'state', country: 'Qatar', home: 'https://www.aljazeera.com', feeds: [
@@ -92,5 +92,4 @@ export const CHANNELS = [
   { key: 'abcau', name: 'ABC News (Australia)', author: 'ABC News (Australia)', owner: 'public', region: 'oceania', lang: 'en', yt: 'UCVgO39Bk5sMo66-6o6Spn6Q', video: 'vOTiJkg1voo', hls: [] },
   { key: 'tagesschau', name: 'tagesschau24 (ARD)', author: 'ARD', owner: 'public', region: 'europe', lang: 'de', hls: ['https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8'] },
   { key: 'rtve24h', name: 'Canal 24 Horas (RTVE)', author: 'RTVE', owner: 'public', region: 'europe', lang: 'es', hls: ['https://rtvelivestream.rtve.es/rtvesec/24h/24h_main_dvr.m3u8'] },
-  { key: 'tv5info', name: 'TV5Monde Info', author: 'TV5Monde', owner: 'public', region: 'europe', lang: 'fr', hls: ['https://ott.tv5monde.com/Content/HLS/Live/channel(info)/index.m3u8'] },
 ];

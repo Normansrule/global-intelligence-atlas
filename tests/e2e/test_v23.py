@@ -6,7 +6,7 @@ def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1440,'height':900}); errs=[]
     pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
-    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}")
+    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@51.5,-0.12,1.5&l=borders,aircraft,cameras', wait_until='commit'); pg.wait_for_timeout(14000)
     check('version 2.11', pg.evaluate("() => gia.VERSION")=='2.11')
     u=pg.evaluate("""async () => { const m = await import('./js/landscape.js');

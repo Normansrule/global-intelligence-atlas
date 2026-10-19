@@ -4,7 +4,7 @@ import json, os
 # World Monitor baseline: the rest of World Monitor's static map datasets as layers (wmbaseline.js).
 res=[]
 def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok else 'FAIL ')+name, info)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}"
 WM=json.load(open(os.path.join(sys.argv[-1], '..', '..', 'site', 'app', 'data', 'worldmonitor-static.json')))
 # layer id -> (JSON key, group, a field label its card must show)
 LAYERS={

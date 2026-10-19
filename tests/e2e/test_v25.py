@@ -3,7 +3,7 @@ from playwright.sync_api import sync_playwright
 # v2.5: the layer registry (manifests), editions and plug-in layers.
 res=[]
 def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok else 'FAIL ')+name, info)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}"
 BROKEN="export default { id: 'Bad Id', group: 'nowhere', label: '', swatch: 'red', sources: ['nope'] };"
 def page(b, url, wait=11000):
     pg=b.new_page(viewport={'width':1440,'height':900}); errs=[]

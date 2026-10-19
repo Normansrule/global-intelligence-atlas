@@ -27,6 +27,8 @@ jobs:
         run: bash tests/e2e/run.sh test_v22.py | tee v22.log && grep -q "SUMMARY 18 / 18" v22.log
       - name: v2.3 terrain and buildings (landscape, Street level, 3D surroundings)
         run: bash tests/e2e/run.sh test_v23.py | tee v23.log && grep -q "SUMMARY 15 / 15" v23.log
+      - name: v2.12 News tab (headlines, live TV, offline fetcher checks)
+        run: node tests/news/test-news.mjs && bash tests/e2e/run.sh test_news.py | tee news.log && grep -q "SUMMARY 25 / 25" news.log
       - name: v2.11 World Monitor baseline layers
         run: bash tests/e2e/run.sh test_wmbaseline.py | tee wmb.log && grep -qE "SUMMARY ([0-9]+) / \\1$" wmb.log
       - name: v2.11 markers that share a spot (spread up close, listed from afar)
