@@ -34,6 +34,7 @@ import { clock, SPEEDS, speedLabel } from './clock.js';
 import { launchesLayer, alertsLayer, countdown } from './launches.js';
 import { installTrace } from './trace.js';
 import { installIntel } from './intel.js';
+import { installNewsDesk } from './newsdesk.js';
 import { windLayer } from './wind.js';
 import { smallCircle } from './astro.js';
 import { firesLayer, radarLayer } from './hazards.js';
@@ -42,7 +43,7 @@ import { installWatch } from './watch.js';
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.11';
+export const VERSION = '2.12';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg } from './icons.js';
@@ -1653,6 +1654,7 @@ api.liveOverview = () => {
 };
 shell = installShell({ $, esc, TOURS, closeNotes, closeDetails: () => { state.leftAuto = false; closeNotes(); }, openLive: () => live.openFeed('all'), openSaved: () => extras.viewsPanel(), openAbout: () => aboutPanel(), sky: () => sky.open(state.pov.lat, state.pov.lng), palette: () => extras.open() });
 installIntel({ ...api, shell });
+installNewsDesk({ ...api, shell });
 $('#flights-chip').addEventListener('click', () => extras.flightsBoard());
 // Live countdowns in any open card
 setInterval(() => document.querySelectorAll('.countdown[data-net]').forEach((el) => { el.textContent = countdown(Number(el.dataset.net) - Date.now()); }), 1000);
@@ -1676,7 +1678,13 @@ if (NEW_VERSION) { if (!state.pendingSel) setTimeout(whatsNew, 600); try { local
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>Cameras worldwide, property and industry</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>News from around the world, and free live news channels</h3>
+    <div class="newlist">
+      <span>${g('news', '#ff9ec7')}<b>A News tab in the rail:</b> the latest headlines from 16 news organisations’ own feeds, from every region, with a filter by region or word. Each story opens on the publisher’s site.</span>
+      <span>${g('camera', '#7ed6c4')}<b>Live TV:</b> 22 free news channels, from Al Jazeera, DW and NHK World to CBS News, Africanews and ABC Australia, played from each broadcaster’s own official stream. Sound starts muted.</span>
+      <span>${g('dossier', '#e3b55b')}<b>Who owns it:</b> every headline and channel is labelled public, state-funded or commercial.</span>
+    </div>
+    <h4>From v2.11 — cameras worldwide, property and industry</h4>
     <div class="newlist">
       <span>${g('camera', '#7ed6c4')}<b>Cameras from 22 more agencies:</b> U.S. states from Arizona to Washington, Edmonton, Ottawa and Toronto, Singapore, Japan, Italy, Sweden and Poland, plus 900 public webcams in 74 countries from Osiris’s list.</span>
       <span>${g('factory', '#ff6b5a')}<b>Economy, property and industry:</b> house prices by area, U.S. home values and rents, homes sold in England and Wales, what each country exports, heavy industry and mapped factories.</span>

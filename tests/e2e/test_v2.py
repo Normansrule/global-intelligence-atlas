@@ -12,7 +12,7 @@ with sync_playwright() as p:
     pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
     pg.route('**/*', h); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-quality','high');localStorage.setItem('global-intelligence-atlas-version','1.11')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@30,10,2.2&l=sun,borders,cities,news,quakes,aircraft', wait_until='commit'); pg.wait_for_timeout(16000)
-    check('version 2.11', pg.evaluate("() => gia.VERSION")=='2.11')
+    check('version 2.12', pg.evaluate("() => gia.VERSION")=='2.12')
     st = pg.evaluate("() => ({n: gia.state.data.news?.items?.length, err: gia.state.lstatus?.news})")
     check('news loads from snapshot when GDELT is blocked', (st['n'] or 0) > 0, st)
     w = pg.evaluate("() => [...document.querySelectorAll('.newlist > span')].map(s => s.getBoundingClientRect().width)")

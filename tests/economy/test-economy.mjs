@@ -129,5 +129,14 @@ check('helpers: short product names, big dollar amounts, OpenStreetMap works row
 
 // the browser test (tests/e2e/test_economy.py) serves this offline output as the economy-data branch
 if (process.env.ECONOMY_TEST_OUT) cpSync(out, process.env.ECONOMY_TEST_OUT, { recursive: true });
+// Census data API refusals are HTML pages: say what is wrong instead of a JSON parse error, without the key itself
+{
+  const page = '<html style="font-family: sans-serif"><head><title>Invalid Key</title></head><body><p>A valid <em>key</em> must be included with each data API request. You included a key with this request, however, it is not valid.</p></body></html>';
+  const k = 'a'.repeat(40);
+  const m = E.censusRefusal(200, page, k);
+  check('Census: an invalid or unactivated key is named as such', /refused CENSUS_API_KEY as invalid/.test(m) && /activation link/.test(m) && /has the shape/.test(m) && !m.includes(k), m);
+  check('Census: a secret that is not a key is pointed out', /does not have the shape/.test(E.censusRefusal(200, page, 'my key here')));
+  check('Census: an unpublished year is not blamed on the key', /not published yet/.test(E.censusRefusal(404, '<html>error: unknown/unsupported geography hierarchy</html>', k)));
+}
 console.log(`SUMMARY ${pass} / ${n}`);
 if (pass !== n) process.exitCode = 1;

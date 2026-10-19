@@ -237,6 +237,23 @@ E = {
  'climatetrace': ('Climate TRACE, n.d.', 'Climate TRACE. (n.d.). *Climate TRACE emissions inventory: Asset-level data* [Data set]. ' + RET + 'https://climatetrace.org/data'),
  'economydata': ('Norman, 2026e', 'Norman, A. (2026e). *Global Intelligence Atlas economy data* [Data set]. GitHub. https://github.com/Normansrule/global-intelligence-atlas/tree/economy-data'),
 }
+# News tab: publishers and live channels come from site/app/js/newslist.js, so their entries are generated here.
+# Authors that appear more than once in the whole list get n.d.-a, n.d.-b, ... as APA requires.
+NEWS = json.loads(subprocess.run(['node', '-e', "import('./site/app/js/newslist.js').then(m=>console.log(JSON.stringify({p:m.PUBLISHERS,c:m.CHANNELS})))"], cwd=REPO, capture_output=True, text=True, check=True).stdout)
+E['newsdata'] = ('Norman, 2026f', 'Norman, A. (2026f). *Global Intelligence Atlas news data* [Data set]. GitHub. https://github.com/Normansrule/global-intelligence-atlas/tree/news-data')
+RET_NEWS = 'Retrieved October 18, 2026, from '
+_news = [('news_' + p['key'], p['author'], "*World news feeds* [RSS feed]. " + RET_NEWS + p['feeds'][0][1]) for p in NEWS['p']]
+_news += [('tv_' + c['key'], c['author'], f"*{c['name']} live* [Video live stream]. " + (f"YouTube. https://www.youtube.com/channel/{c['yt']}/live" if c.get('yt') else RET_NEWS + c['hls'][0])) for c in NEWS['c']]
+_count = {}
+for _, a, _r in _news: _count[a] = _count.get(a, 0) + 1
+for _a in list(_count):
+    for _k, (_cit, _ref) in E.items():
+        if _ref and _ref.startswith(_a + '. (n.d.'): _count[_a] += 1
+_seen = {}
+for key, a, rest in _news:
+    n = _count[a]; i = _seen.get(a, 0); _seen[a] = i + 1
+    d = 'n.d.' if n == 1 else f'n.d.-{chr(97 + i)}'
+    E[key] = (f'{a}, {d}', f'{a}. ({d}). {rest}')
 # extra rows for the usage table (things not in sources.js)
 EXTRA_USE = [
  ('threeglobe', 'Globe mesh, tile engine and example textures (topology bump map, dark Earth).', 'MIT'),

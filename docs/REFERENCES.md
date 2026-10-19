@@ -8,6 +8,10 @@ Global Intelligence Atlas grew out of World Monitor (Habib, 2026) and ships its 
 
 0xB10C. (2021). *OFAC sanctioned digital currency addresses* [Computer software and data set]. GitHub. https://github.com/0xB10C/ofac-sanctioned-digital-currency-addresses
 
+ABC News (Australia). (n.d.). *ABC News (Australia) live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCVgO39Bk5sMo66-6o6Spn6Q/live
+
+ABC News. (n.d.). *ABC News Live (U.S.) live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCBi2mrWuNuyYy4gbM6fU18Q/live
+
 adsb.fi. (n.d.-a). *adsb.fi open data API* [Data set]. GitHub. https://github.com/adsbfi/opendata
 
 adsb.fi. (n.d.-b). [Issue 6: Missing CORS headers prevent use from a browser] [GitHub issue]. GitHub. https://github.com/adsbfi/opendata/issues/6
@@ -16,6 +20,10 @@ adsb.lol. (n.d.). *adsb.lol open ADS-B data and API* [Data set]. Retrieved Octob
 
 adsbdb. (n.d.). *adsbdb: Aircraft and flight route API* [Data set]. Retrieved October 14, 2026, from https://www.adsbdb.com
 
+africanews. (n.d.). *Africanews live* [Video live stream]. YouTube. https://www.youtube.com/channel/UC1_E8NeF5QHY2dtdLRBCCLA/live
+
+Africanews. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.africanews.com/feed/rss
+
 Ahlenius, H. (2014). *Tectonic plates: PB2002 plate boundaries in GeoJSON* [Data set]. GitHub. https://github.com/fraxen/tectonicplates
 
 Airbus. (n.d.). *A320 family and Airbus helicopters: Aircraft dimensions* [Manufacturer specifications]. https://www.airbus.com
@@ -23,6 +31,10 @@ Airbus. (n.d.). *A320 family and Airbus helicopters: Aircraft dimensions* [Manuf
 airplanes.live. (n.d.). *airplanes.live REST API* [Data set]. Retrieved October 14, 2026, from https://airplanes.live
 
 AISStream. (n.d.). *AISStream: Global AIS data over WebSocket* [Data set]. Retrieved October 14, 2026, from https://aisstream.io/documentation.html
+
+Al Jazeera English. (n.d.). *Al Jazeera English live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCNye-wNBqNL5ZzHSJj3l8Bg/live
+
+Al Jazeera. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.aljazeera.com/xml/rss/all.xml
 
 Alberta Transportation and Economic Corridors. (n.d.). *511 Alberta: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511.alberta.ca/
 
@@ -33,6 +45,12 @@ American Psychological Association. (2020). *Publication manual of the American 
 Animate UI. (n.d.). *Animate UI* [Computer software]. https://animate-ui.com
 
 Apache Software Foundation. (n.d.). *Apache ECharts* [Computer software]. GitHub. https://github.com/apache/echarts
+
+ARD. (n.d.). *tagesschau24 (ARD) live* [Video live stream]. Retrieved October 18, 2026, from https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8
+
+Arirang News. (n.d.). *Arirang News live* [Video live stream]. Retrieved October 18, 2026, from https://amdlive-ch01-ctnd-com.akamaized.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8
+
+Arise News. (n.d.). *Arise News live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCyEJX-kSj0kOOCS7Qlq2G7g/live
 
 Arizona Department of Transportation. (n.d.). *AZ511: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://az511.gov/
 
@@ -46,9 +64,13 @@ Asturiano, V. (2026b). *three-globe* [Computer software]. GitHub. https://github
 
 ATR. (n.d.). *ATR 72-600: Specifications* [Manufacturer specifications]. https://www.atr-aircraft.com
 
+Australian Broadcasting Corporation. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.abc.net.au/news/feed/51120/rss.xml
+
 Autostrade per l'Italia. (n.d.). *Webcam: Viabilità in tempo reale* [Data set]. Retrieved October 14, 2026, from https://www.autostrade.it/it/webcam
 
 Baker, N. T., & Stone, W. W. (2015). *Estimated annual agricultural pesticide use for counties of the conterminous United States, 2008–12* (Data Series 907). U.S. Geological Survey. https://doi.org/10.3133/ds907
+
+BBC News. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://feeds.bbci.co.uk/news/world/rss.xml
 
 Bird, P. (2003). An updated digital model of plate boundaries. *Geochemistry, Geophysics, Geosystems, 4*(3), Article 1027. https://doi.org/10.1029/2001GC000252
 
@@ -57,6 +79,8 @@ The Black Vault. (n.d.). *The Black Vault*. https://www.theblackvault.com/
 Blockscout. (n.d.). *Blockscout Ethereum explorer API* [Web service]. Retrieved October 14, 2026, from https://docs.blockscout.com
 
 Blockstream. (n.d.). *Esplora HTTP API* [Web service]. Retrieved October 14, 2026, from https://github.com/Blockstream/esplora/blob/master/API.md
+
+Bloomberg Television. (n.d.). *Bloomberg Television live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCIALMKvObZNtJ6AmdCLP7Lg/live
 
 Boeing. (n.d.). *777: Airplane characteristics for airport planning* [Manufacturer specifications]. https://www.boeing.com/commercial/airports/plan_manuals
 
@@ -76,9 +100,19 @@ California Office of Environmental Health Hazard Assessment. (2021). *CalEnviroS
 
 Camera & Imaging Products Association. (2023). *Exchangeable image file format for digital still cameras: Exif version 3.0* (CIPA DC-008-2023). https://www.cipa.jp/e/std/std-sec.html
 
+CBC News. (n.d.-a). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.cbc.ca/cmlink/rss-world
+
+CBC News. (n.d.-b). *CBC News live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCuFFtHWoLl5fauMMD5Ww2jA/live
+
+CBS News. (n.d.). *CBS News 24/7 live* [Video live stream]. Retrieved October 18, 2026, from https://cbsn-us.cbsnstream.cbsnews.com/out/v1/55a8648e8f134e82a470f83d562deeca/master.m3u8
+
 Central Intelligence Agency. (n.d.). *CIA FOIA electronic reading room* [Data set]. Retrieved October 14, 2026, from https://www.cia.gov/readingroom/
 
 Cesium GS. (n.d.). *CesiumJS* [Computer software]. GitHub. https://github.com/CesiumGS/cesium
+
+CGTN. (n.d.). *CGTN (China Global Television Network) live* [Video live stream]. Retrieved October 18, 2026, from https://english-livebkali.cgtn.com/live/encgtn.m3u8
+
+Channels Television. (n.d.). *Channels Television live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCEXGDNclvmg6RW0vipJYsTQ/live
 
 Cho, A., Kim, G. C., Karpekov, A., Helbling, A., Wang, Z. J., Lee, S., Hoover, B., & Chau, D. H. (2024). *Transformer Explainer: Interactive learning of text-generative models* (arXiv:2408.04619). arXiv. https://doi.org/10.48550/arXiv.2408.04619
 
@@ -96,6 +130,10 @@ City of Toronto. (n.d.). *Traffic cameras* [Data set]. City of Toronto Open Data
 
 Climate TRACE. (n.d.). *Climate TRACE emissions inventory: Asset-level data* [Data set]. Retrieved October 14, 2026, from https://climatetrace.org/data
 
+CNA. (n.d.-a). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml&category=6311
+
+CNA. (n.d.-b). *CNA (Channel NewsAsia) live* [Video live stream]. YouTube. https://www.youtube.com/channel/UC83jt4dlz1Gjl58fzQrrHZg/live
+
 Croft, B. (2023). *LLM visualization* [Computer software]. GitHub. https://github.com/bbycroft/llm-viz
 
 Cybersecurity and Infrastructure Security Agency. (n.d.). *Known exploited vulnerabilities catalog* [Data set]. Retrieved October 14, 2026, from https://www.cisa.gov/known-exploited-vulnerabilities-catalog
@@ -104,11 +142,15 @@ DavidHDev. (n.d.). *React Bits* [Computer software]. GitHub. https://github.com/
 
 DeFlock. (n.d.). *DeFlock: Crowdsourced map of automated license plate readers* [Data set]. https://deflock.me
 
+Deutsche Welle. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://rss.dw.com/xml/rss-en-all
+
 Die Autobahn GmbH des Bundes. (n.d.). *Autobahn App API: Webcams* [Data set]. Documented by bund.dev. https://autobahn.api.bund.dev/
 
 Dirección General de Tráfico. (n.d.). *National Access Point: Traffic cameras (DATEX II)* [Data set]. https://nap.dgt.es/
 
 Dobryakov, P. (2017). *WebGL fluid simulation* [Computer software]. GitHub. https://github.com/PavelDoGreat/WebGL-Fluid-Simulation
+
+DW News. (n.d.). *DW News live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCknLrEdhRCp1aegoMqRaCZg/live
 
 El Hattab, H. (n.d.). *reveal.js* [Computer software]. GitHub. https://github.com/hakimel/reveal.js
 
@@ -117,6 +159,8 @@ Electronic Frontier Foundation. (n.d.). *Automated license plate readers (ALPRs)
 Embraer. (n.d.). *E175: Specifications* [Manufacturer specifications]. https://www.embraercommercialaviation.com
 
 Esri. (n.d.). *World Imagery* [Basemap]. Esri, Maxar, Earthstar Geographics, and the GIS User Community. https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9
+
+euronews. (n.d.). *Euronews live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCSrZ3UV4jOidv8ppoVuvW9Q/live
 
 Eurostat. (n.d.). *House price index – quarterly data (prc_hpi_q)* [Data set]. Retrieved October 14, 2026, from https://ec.europa.eu/eurostat/databrowser/view/prc_hpi_q/default/table
 
@@ -131,6 +175,10 @@ Fintraffic. (n.d.). *Digitraffic: Marine AIS and road weather camera APIs* [Data
 Florida Department of Transportation. (n.d.). *FL511: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://fl511.com/
 
 Forum of Incident Response and Security Teams. (n.d.). *Exploit Prediction Scoring System (EPSS) API* [Data set]. Retrieved October 14, 2026, from https://www.first.org/epss/
+
+FRANCE 24 English. (n.d.). *France 24 English live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCQfwfsi5VrQ8yKZ-UWmAEFg/live
+
+France 24. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.france24.com/en/rss
 
 Freeway Bureau, Ministry of Transportation and Communications. (n.d.). *Road surveillance cameras (CCTV): Static locations and video stream addresses* [Data set]. Government Open Data Platform (Taiwan). https://data.gov.tw/dataset/173813
 
@@ -150,11 +198,15 @@ Graser, A. (2019). MovingPandas: Efficient structures for movement data in Pytho
 
 GreenSock. (n.d.). *GSAP* [Computer software]. https://gsap.com
 
+The Guardian. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.theguardian.com/world/rss
+
 Habib, E. (2026). *World Monitor* [Computer software]. GitHub. https://github.com/koala73/worldmonitor
 
 Hagberg, A. A., Schult, D. A., & Swart, P. J. (2008). Exploring network structure, dynamics, and function using NetworkX. In G. Varoquaux, T. Vaught, & J. Millman (Eds.), *Proceedings of the 7th Python in Science Conference* (pp. 11–15). https://doi.org/10.25080/TCWV9851
 
 Harris, M. J. (2004). Fast fluid dynamics simulation on the GPU. In R. Fernando (Ed.), *GPU gems: Programming techniques, tips, and tricks for real-time graphics* (pp. 637–665). Addison-Wesley.
+
+The Hindu. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.thehindu.com/news/international/feeder/default.rss
 
 HM Land Registry. (n.d.-a). *UK House Price Index* [Data set]. Retrieved October 14, 2026, from https://www.gov.uk/government/collections/uk-house-price-index-reports
 
@@ -186,6 +238,8 @@ Internet Archive. (n.d.-b). *Wayback Machine* [Data set]. Retrieved October 14, 
 
 Japan Center for Asian Historical Records. (n.d.). *JACAR* [Data set]. National Archives of Japan. Retrieved October 14, 2026, from https://www.jacar.go.jp/english/
 
+The Japan Times. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.japantimes.co.jp/feed/
+
 Kalman, R. E. (1960). A new approach to linear filtering and prediction problems. *Journal of Basic Engineering, 82*(1), 35–45. https://doi.org/10.1115/1.3662552
 
 Kandadai, S. (n.d.). *satellite.js* [Computer software]. GitHub. https://github.com/shashwatak/satellite-js
@@ -195,6 +249,8 @@ Kelso, T. S. (n.d.). *CelesTrak: Current GP element sets* [Data set]. CelesTrak.
 kepler.gl contributors. (n.d.). *kepler.gl* [Computer software]. GitHub. https://github.com/keplergl/kepler.gl
 
 Kious, W. J., & Tilling, R. I. (1996). *This dynamic Earth: The story of plate tectonics*. U.S. Geological Survey. https://pubs.usgs.gov/gip/dynamic/dynamic.html
+
+The Kyiv Independent. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://kyivindependent.com/news-archive/rss/
 
 Labbe, R. R. (n.d.). *FilterPy: Kalman filters and other optimal and non-optimal estimation filters in Python* [Computer software]. GitHub. https://github.com/rlabbe/filterpy
 
@@ -223,6 +279,8 @@ MapLibre contributors. (n.d.). *MapLibre GL JS* [Computer software]. GitHub. htt
 MDN contributors. (n.d.). *Cross-Origin Resource Sharing (CORS)*. Mozilla. https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS
 
 Meeus, J. (1998). *Astronomical algorithms* (2nd ed.). Willmann-Bell.
+
+MercoPress. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://en.mercopress.com/rss/
 
 Michigan Department of Transportation. (n.d.). *MiDrive: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://mdotjboss.state.mi.us/MiDrive/
 
@@ -268,11 +326,15 @@ National Water Quality Monitoring Council. (n.d.). *Water Quality Portal* [Data 
 
 Natural Earth. (n.d.). *Natural Earth: Free vector and raster map data* [Data set]. https://www.naturalearthdata.com
 
+NBC News. (n.d.). *NBC News NOW live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCeY0bbntWzzVIaj2z3QigXg/live
+
 Nevada Department of Transportation. (n.d.). *NVRoads: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://www.nvroads.com/
 
 New York City Department of Transportation. (n.d.). *NYC real-time traffic cameras* [Data set]. Retrieved October 14, 2026, from https://webcams.nyctmc.org
 
 New York City Police Department. (n.d.). *NYPD complaint data current (year to date)* [Data set]. NYC Open Data. https://data.cityofnewyork.us/d/5uac-w243
+
+NHK World-Japan. (n.d.). *NHK World-Japan live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCSPEjw8F2nQDtmUKPFNF7_A/live
 
 NOAA Ocean Service. (n.d.). *Tides and water levels* [Tutorial]. https://oceanservice.noaa.gov/education/tutorial_tides/
 
@@ -294,7 +356,11 @@ Norman, A. (2026d). *Global Intelligence Atlas open data* [Data set]. GitHub. ht
 
 Norman, A. (2026e). *Global Intelligence Atlas economy data* [Data set]. GitHub. https://github.com/Normansrule/global-intelligence-atlas/tree/economy-data
 
+Norman, A. (2026f). *Global Intelligence Atlas news data* [Data set]. GitHub. https://github.com/Normansrule/global-intelligence-atlas/tree/news-data
+
 North Carolina Department of Transportation. (n.d.). *DriveNC: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://drivenc.gov/
+
+NPR. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://feeds.npr.org/1004/rss.xml
 
 NZ Transport Agency Waka Kotahi. (n.d.). *Traffic cameras API* [Data set]. https://www.nzta.govt.nz/traffic-and-travel-information/infoconnect-section-page/about-the-apis/traffic-cameras/
 
@@ -344,6 +410,10 @@ Riebeek, H. (2009). *Catalog of Earth satellite orbits*. NASA Earth Observatory.
 
 RIPE Network Coordination Centre. (n.d.). *RIPEstat Data API* [Data set]. Retrieved October 14, 2026, from https://stat.ripe.net/docs/data-api/ripestat-data-api
 
+RNZ. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.rnz.co.nz/rss/pacific.xml
+
+RTVE. (n.d.). *Canal 24 Horas (RTVE) live* [Video live stream]. Retrieved October 18, 2026, from https://rtvelivestream.rtve.es/rtvesec/24h/24h_main_dvr.m3u8
+
 Schrodt, P. A. (2012). *CAMEO: Conflict and Mediation Event Observations event and actor codebook* (Version 1.1b3). Pennsylvania State University.
 
 Schroeder, W., Oliva, P., Giglio, L., & Csiszar, I. A. (2014). The new VIIRS 375 m active fire detection data product: Algorithm description and initial assessment. *Remote Sensing of Environment, 143*, 85–96. https://doi.org/10.1016/j.rse.2013.12.008
@@ -359,6 +429,8 @@ Simon, B. (2019). *folio-2019* [Computer software]. GitHub. https://github.com/b
 simplifaisoul. (2026). *Osiris* (public webcam lists: src/app/api/cctv) [Computer software and data set]. GitHub. Retrieved October 14, 2026, from https://github.com/simplifaisoul/osiris
 
 simplifaisoul. (2026). *Osiris: Open source intelligence & reconnaissance integrated system* [Computer software]. GitHub. https://github.com/simplifaisoul/osiris
+
+Sky News. (n.d.). *Sky News live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCoMdktPbSTixAyNGwb-UYkQ/live
 
 SkylineWebcams. (n.d.). *SkylineWebcams: Live webcams around the world* [Data set]. Retrieved October 14, 2026, from https://www.skylinewebcams.com
 
@@ -392,6 +464,8 @@ Transport for London. (n.d.). *Unified API: JamCams* [Data set]. Retrieved Octob
 
 Transport for NSW. (n.d.). *Live Traffic NSW: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://www.livetraffic.com/
 
+TRT World. (n.d.). *TRT World live* [Video live stream]. Retrieved October 18, 2026, from https://tv-trtworld.medya.trt.com.tr/master.m3u8
+
 Turf contributors. (n.d.). *Turf.js: Advanced geospatial analysis* [Computer software]. GitHub. https://github.com/Turfjs/turf
 
 U.S. Census Bureau. (n.d.-a). *Gazetteer files* [Data set]. https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html
@@ -417,6 +491,8 @@ U.S. Naval Observatory. (n.d.). *Approximate solar coordinates*. https://aa.usno
 Uber Technologies. (n.d.). *H3: A hexagonal hierarchical geospatial indexing system* [Computer software]. GitHub. https://github.com/uber/h3
 
 United Nations Conference on Trade and Development. (n.d.). *Review of maritime transport*. https://unctad.org/topic/transport-and-trade-logistics/review-of-maritime-transport
+
+United Nations. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://news.un.org/feed/subscribe/en/news/all/rss.xml
 
 Utah Department of Transportation. (n.d.). *UDOT Traffic: Cameras* [Data set]. Retrieved October 14, 2026, from https://udottraffic.utah.gov/
 
@@ -448,6 +524,8 @@ Wilson Center. (n.d.). *Wilson Center digital archive: International history dec
 
 Windyty, SE. (n.d.). *Windy webcams* [Data set]. Retrieved October 14, 2026, from https://www.windy.com/webcams
 
+WION. (n.d.). *WION (World Is One News) live* [Video live stream]. YouTube. https://www.youtube.com/channel/UC_gUM8rL-Lrg6O3adPW9K1g/live
+
 World Bank. (n.d.). *World Bank Open Data API* [Data set]. https://datahelpdesk.worldbank.org/knowledgebase/articles/889392
 
 World Resources Institute. (2021). *Global power plant database* (Version 1.3.0) [Data set]. https://datasets.wri.org/dataset/globalpowerplantdatabase
@@ -460,7 +538,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 
 | Citation | Used for | Licence or terms |
 |---|---|---|
-| (Habib, 2026) | Original design, 3D globe concept, layer catalogue and the curated static datasets (cables, pipelines, ports, trade routes, chokepoints, AI data centres, spaceports, nuclear sites, economic centres, critical minerals, conflict zones, hotspots, country borders, textures). | AGPL-3.0-only |
+| (Habib, 2026) | Original design, 3D globe concept, layer catalogue and the curated static datasets (cables, pipelines, ports, trade routes, chokepoints, AI data centres, spaceports, nuclear sites, economic centres, critical minerals, conflict zones, hotspots, country borders, textures), and the news feeds and live news panel the News tab follows. | AGPL-3.0-only |
 | (Asturiano, 2026a) | 3D globe rendering, slippy-map tile engine for deep zoom. | MIT |
 | (three.js authors, 2026) | WebGL engine underneath globe.gl; day/night shader. | MIT |
 | (Kandadai, n.d.) | Propagating satellite orbits from TLEs in the browser. | MIT |
@@ -651,6 +729,45 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Gaulier & Zignago, 2010) | Each country's exports of goods by product: totals, top product groups and top products. | Etalab Open Licence 2.0 (CEPII; built from UN Comtrade) |
 | (Climate TRACE, n.d.) | Steelworks, cement and lime kilns, aluminium smelters, chemical and petrochemical plants, pulp and paper mills, glassworks and refineries, with estimated emissions. | CC BY 4.0 (Climate TRACE) |
 | (Norman, 2026e) | Boiled-down copies of the house price, sales, export and industrial site statistics for the Economy, property and industry layers. | AGPL-3.0-only (the records carry the terms of their sources) |
+| (Norman, 2026f) | Reads the publishers’ feeds and checks which live channels are on air and may be embedded, for the News tab. | AGPL-3.0-only code; headlines stay the publishers’ own (title, time and link only) |
+| (BBC News, n.d.) | Headlines for the News tab (United Kingdom, public). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (The Guardian, n.d.) | Headlines for the News tab (United Kingdom, commercial). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (Deutsche Welle, n.d.) | Headlines for the News tab (Germany, public). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (France 24, n.d.) | Headlines for the News tab (France, public). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (NPR, n.d.) | Headlines for the News tab (United States, public). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (CBC News, n.d.-a) | Headlines for the News tab (Canada, public). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (MercoPress, n.d.) | Headlines for the News tab (Uruguay, commercial). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (Al Jazeera, n.d.) | Headlines for the News tab (Qatar, state-funded). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (Africanews, n.d.) | Headlines for the News tab (Republic of the Congo, commercial). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (The Hindu, n.d.) | Headlines for the News tab (India, commercial). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (CNA, n.d.-a) | Headlines for the News tab (Singapore, state-funded). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (The Japan Times, n.d.) | Headlines for the News tab (Japan, commercial). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (The Kyiv Independent, n.d.) | Headlines for the News tab (Ukraine, commercial). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (Australian Broadcasting Corporation, n.d.) | Headlines for the News tab (Australia, public). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (RNZ, n.d.) | Headlines for the News tab (New Zealand, public). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (United Nations, n.d.) | Headlines for the News tab (International, intergovernmental). | Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site |
+| (Al Jazeera English, n.d.) | Live TV in the News tab (state-funded broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (DW News, n.d.) | Live TV in the News tab (public broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (FRANCE 24 English, n.d.) | Live TV in the News tab (public broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (euronews, n.d.) | Live TV in the News tab (commercial broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (Sky News, n.d.) | Live TV in the News tab (commercial broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (Bloomberg Television, n.d.) | Live TV in the News tab (commercial broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (ABC News, n.d.) | Live TV in the News tab (commercial broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (NBC News, n.d.) | Live TV in the News tab (commercial broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (CBS News, n.d.) | Live TV in the News tab (commercial broadcaster). | Broadcaster’s free live stream, played from its own server |
+| (CBC News, n.d.-b) | Live TV in the News tab (public broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (africanews, n.d.) | Live TV in the News tab (commercial broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (Channels Television, n.d.) | Live TV in the News tab (commercial broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (Arise News, n.d.) | Live TV in the News tab (commercial broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (TRT World, n.d.) | Live TV in the News tab (state-funded broadcaster). | Broadcaster’s free live stream, played from its own server |
+| (NHK World-Japan, n.d.) | Live TV in the News tab (public broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (CNA, n.d.-b) | Live TV in the News tab (state-funded broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (WION, n.d.) | Live TV in the News tab (commercial broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (CGTN, n.d.) | Live TV in the News tab (state-funded broadcaster). | Broadcaster’s free live stream, played from its own server |
+| (Arirang News, n.d.) | Live TV in the News tab (state-funded broadcaster). | Broadcaster’s free live stream, played from its own server |
+| (ABC News (Australia), n.d.) | Live TV in the News tab (public broadcaster). | Broadcaster’s free live stream, played through the YouTube embedded player |
+| (ARD, n.d.) | Live TV in the News tab (public broadcaster). | Broadcaster’s free live stream, played from its own server |
+| (RTVE, n.d.) | Live TV in the News tab (public broadcaster). | Broadcaster’s free live stream, played from its own server |
 | (Asturiano, 2026b) | Globe mesh, tile engine and example textures (topology bump map, dark Earth). | MIT |
 | (Tauri Programme, 2024) | Desktop app shell (Rust + system web view). | MIT / Apache-2.0 |
 | (Wallace, n.d.) | Bundles the 3D libraries into one module; runs the World Monitor data extractor. | MIT |

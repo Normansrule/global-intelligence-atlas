@@ -48,7 +48,7 @@ const ADSB_CAT = { A1: 2, A2: 3, A3: 4, A4: 5, A5: 6, A6: 7, A7: 8, B1: 9, B2: 1
 const r1 = (x, d = 0) => (x == null || Number.isNaN(x) ? null : Math.round(x * 10 ** d) / 10 ** d);
 
 async function openskyToken() {
-  const id = process.env.OPENSKY_CLIENT_ID; const secret = process.env.OPENSKY_CLIENT_SECRET;
+  const id = process.env.OPENSKY_CLIENT_ID?.trim(); const secret = process.env.OPENSKY_CLIENT_SECRET?.trim();
   if (!id || !secret) return null;
   const r = await fetch('https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token', {
     method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', ...UA },
@@ -60,6 +60,7 @@ async function openskyToken() {
 async function fromOpenSky() {
   let token = null; let why = process.env.OPENSKY_CLIENT_ID && process.env.OPENSKY_CLIENT_SECRET ? '' : ', no API client keys set';
   try { token = await openskyToken(); } catch (e) { why = `, API client login failed: ${e.message}`; log('OpenSky login failed, trying anonymous:', e.message); }
+  if (!token && !why) why = ', API client login gave no token';
   const j = await get('https://opensky-network.org/api/states/all?extended=1', { timeout: 60_000, headers: token ? { Authorization: `Bearer ${token}` } : {} });
   const rows = (j.states ?? []).filter((s) => s[5] != null && s[6] != null).map((s) => [
     s[0], (s[1] ?? '').trim(), r1(s[6], 3), r1(s[5], 3), r1((s[13] ?? s[7] ?? 0) * 3.281), s[8] ? 1 : 0,

@@ -1,0 +1,34 @@
+# Global Intelligence Atlas: check that each repository secret is set and accepted by its service (tools/check-keys.mjs).
+# No value is ever printed; the result is a table in the job summary. Run it by hand after adding or changing a secret.
+name: Check keys
+on:
+  push:
+    branches-ignore: [main]
+    paths: ['tools/check-keys.mjs', '.github/workflows/keys.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check keys
+        shell: bash  # with pipefail, so a refused key turns a run started by hand red
+        env:
+          OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
+          OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+          FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}
+          WSDOT_ACCESS_CODE: ${{ secrets.WSDOT_ACCESS_CODE }}
+          ONTARIO_511_KEY: ${{ secrets.ONTARIO_511_KEY }}
+          ALBERTA_511_KEY: ${{ secrets.ALBERTA_511_KEY }}
+          AISSTREAM_KEY: ${{ secrets.AISSTREAM_KEY }}
+        # on a branch push it only reports, so a secret to fix does not block a pull request
+        run: node tools/check-keys.mjs | tee -a "$GITHUB_STEP_SUMMARY" || [ "${{ github.event_name }}" = push ]

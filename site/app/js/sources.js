@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Global Intelligence Atlas — every data source, library and reference the app relies on.
 // The About panel renders this list, and docs/REFERENCES.md mirrors it.
+import { PUBLISHERS, CHANNELS } from './newslist.js';
 
 export const SOURCES = {
   worldmonitor: {
     name: 'World Monitor by Elie Habib',
     url: 'https://github.com/koala73/worldmonitor',
     license: 'AGPL-3.0-only',
-    role: 'Original design, 3D globe concept, layer catalogue and the curated static datasets (cables, pipelines, ports, trade routes, chokepoints, AI data centres, spaceports, nuclear sites, economic centres, critical minerals, conflict zones, hotspots, country borders, textures).',
+    role: 'Original design, 3D globe concept, layer catalogue and the curated static datasets (cables, pipelines, ports, trade routes, chokepoints, AI data centres, spaceports, nuclear sites, economic centres, critical minerals, conflict zones, hotspots, country borders, textures), and the news feeds and live news panel the News tab follows.',
   },
   globegl: { name: 'globe.gl / three-globe (Vasco Asturiano)', url: 'https://github.com/vasturiano/globe.gl', license: 'MIT', role: '3D globe rendering, slippy-map tile engine for deep zoom.' },
   three: { name: 'three.js', url: 'https://threejs.org', license: 'MIT', role: 'WebGL engine underneath globe.gl; day/night shader.' },
@@ -206,5 +207,10 @@ export const SOURCES = {
   climatetrace: { name: 'Climate TRACE asset-level emissions (manufacturing and oil refining)', url: 'https://climatetrace.org/data', license: 'CC BY 4.0 (Climate TRACE)', role: 'Steelworks, cement and lime kilns, aluminium smelters, chemical and petrochemical plants, pulp and paper mills, glassworks and refineries, with estimated emissions.' },
   economydata: { name: 'Global Intelligence Atlas economy data (tools/fetch-economy.mjs, monthly)', url: 'https://github.com/Normansrule/global-intelligence-atlas/tree/economy-data', license: 'AGPL-3.0-only (the records carry the terms of their sources)', role: 'Boiled-down copies of the house price, sales, export and industrial site statistics for the Economy, property and industry layers.' },
 };
+
+// News tab (newsdesk.js): each publisher's own feeds and each broadcaster's official live stream, from newslist.js.
+SOURCES.newsdata = { name: 'Global Intelligence Atlas news data (tools/fetch-news.mjs, every 30 minutes)', url: 'https://github.com/Normansrule/global-intelligence-atlas/tree/news-data', license: 'AGPL-3.0-only code; headlines stay the publishers’ own (title, time and link only)', role: 'Reads the publishers’ feeds and checks which live channels are on air and may be embedded, for the News tab.' };
+for (const p of PUBLISHERS) SOURCES[`news_${p.key}`] = { name: `${p.name}: news feeds (RSS)`, url: p.home, license: 'Headlines and links only, from the publisher’s public feed; stories stay on the publisher’s site', role: `Headlines for the News tab (${p.country}, ${p.owner === 'state' ? 'state-funded' : p.owner === 'public' ? 'public' : p.owner === 'intergov' ? 'intergovernmental' : 'commercial'}).` };
+for (const c of CHANNELS) SOURCES[`tv_${c.key}`] = { name: `${c.name}: official live stream`, url: c.yt ? `https://www.youtube.com/channel/${c.yt}` : new URL(c.hls[0]).origin, license: c.yt ? 'Broadcaster’s free live stream, played through the YouTube embedded player' : 'Broadcaster’s free live stream, played from its own server', role: `Live TV in the News tab (${c.owner === 'state' ? 'state-funded' : c.owner === 'public' ? 'public' : 'commercial'} broadcaster).` };
 
 export const src = (id) => SOURCES[id];

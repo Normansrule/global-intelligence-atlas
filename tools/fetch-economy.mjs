@@ -278,9 +278,24 @@ export function acsRows(now, prev, gaz) {
   }
   return { rows: rows.sort((a, b) => (b[2] ?? 0) - (a[2] ?? 0)), unplaced };
 }
+/** What a Census data API answer that is not JSON means. It answers an HTML page, not an error code, for key problems. */
+export function censusRefusal(status, text, rawKey = '') {
+  const t = String(text);
+  const key = String(rawKey); const trimmed = key.trim();
+  const shape = /^[0-9a-f]{40}$/i.test(trimmed) ? 'it has the shape of a Census key (40 letters and digits)' : 'it does not have the shape of a Census key (40 letters and digits), so the secret probably holds something else';
+  if (/Invalid Key|key with this request, however, it is not valid/i.test(t)) return `the Census data API refused CENSUS_API_KEY as invalid; ${shape}. A new key works only after its activation link (in the email from the Census Bureau) is opened, so open that link or request a new key at https://api.census.gov/data/key_signup.html and save it as the secret`;
+  if (/Missing Key/i.test(t)) return 'the Census data API says no key was sent';
+  if (status === 404 || /unknown\/unsupported|error: unknown/i.test(t)) return `that year is not published yet (HTTP ${status})`;
+  const title = t.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim();
+  return `HTTP ${status}, a web page instead of data${title ? ` ("${title.slice(0, 80)}")` : ''}`;
+}
 async function acsVintage(year) {
-  const key = `&key=${encodeURIComponent(process.env.CENSUS_API_KEY)}`;
-  return readAcs(await getJson(`https://api.census.gov/data/${year}/acs/acs5?get=NAME,B25077_001E,B25064_001E&for=county:*${key}`));
+  const key = `&key=${encodeURIComponent(String(process.env.CENSUS_API_KEY).trim())}`;
+  const r = await fetch(`https://api.census.gov/data/${year}/acs/acs5?get=NAME,B25077_001E,B25064_001E&for=county:*${key}`, { headers: UA, signal: AbortSignal.timeout(180_000) });
+  const text = await r.text();
+  let j; try { j = JSON.parse(text); } catch { throw new Error(censusRefusal(r.status, text, process.env.CENSUS_API_KEY)); }
+  if (!r.ok) throw new Error(`HTTP ${r.status} from api.census.gov`);
+  return readAcs(j);
 }
 async function acs() {
   const gaz = await gazetteer('counties', 'COUNTY_GAZ_FILE');
@@ -289,8 +304,14 @@ async function acs() {
   else {
     if (!process.env.CENSUS_API_KEY) throw new Error('the Census data API answers "Missing Key" without one: add the free CENSUS_API_KEY repository secret');
     const errs = [];
-    for (const y of [YEAR - 1, YEAR - 2, YEAR - 3]) { try { now = await acsVintage(y); year = y; break; } catch (e) { errs.push(`${y}: ${e.message}`); } }
+    for (const y of [YEAR - 1, YEAR - 2, YEAR - 3]) {
+      try { now = await acsVintage(y); year = y; break; } catch (e) {
+        if (/refused CENSUS_API_KEY/.test(e.message)) throw e; // a key problem fails every year the same way
+        errs.push(`${y}: ${e.message}`);
+      }
+    }
     if (!now) throw new Error(errs.join('; '));
+    if (process.env.CENSUS_API_KEY !== process.env.CENSUS_API_KEY.trim()) log('note: CENSUS_API_KEY had spaces or a line break around it; they are trimmed');
     prev = await acsVintage(year - 5).catch(() => null); // non-overlapping 5-year periods, as the Census Bureau advises
   }
   const { rows, unplaced } = acsRows(now, prev, gaz);

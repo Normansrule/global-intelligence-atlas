@@ -13,7 +13,7 @@ Built on the basis of [World Monitor](https://github.com/koala73/worldmonitor) b
 [![Download the desktop app](https://img.shields.io/badge/Download-Windows_·_macOS_·_Linux-eef3f6?style=for-the-badge&logo=tauri&logoColor=081827)](https://github.com/Normansrule/global-intelligence-atlas/releases/latest)
 [![Website](https://img.shields.io/badge/Website-home-7ed6c4?style=for-the-badge&logo=githubpages&logoColor=081827)](https://normansrule.github.io/global-intelligence-atlas/)
 
-[![Version](https://img.shields.io/badge/version-2.11.0-e3b55b)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.12.0-e3b55b)](CHANGELOG.md)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Deploy to Pages](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml)
 [![Tests](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml)
@@ -33,7 +33,7 @@ Built on the basis of [World Monitor](https://github.com/koala73/worldmonitor) b
 | | |
 |---|---|
 | **65 layers in 11 groups** | Live Earth, economy and property, chemicals and environment, cameras, civic data, sky and space, Earth science, places, infrastructure, geopolitics and Intel |
-| **171 data sources, 225 references** | Every source is listed in the app (About) and in [`docs/REFERENCES.md`](docs/REFERENCES.md) in APA 7th edition style |
+| **210 data sources, 264 references** | Every source is listed in the app (About) and in [`docs/REFERENCES.md`](docs/REFERENCES.md) in APA 7th edition style |
 | **No server, no account, no key** | A static site on GitHub Pages; scheduled GitHub Actions jobs collect what browsers cannot fetch directly |
 | **Learn as you go** | Every layer has a card: what you are seeing, how it is measured, something to try, and its sources. Fifteen lessons, six guided tours and a quiz |
 | **Two ways to run it, one codebase** | The web app and the desktop app run the same `site/` folder, so they have the same features |
@@ -110,6 +110,12 @@ Undersea cables, pipelines, trade routes, chokepoints, ports, AI data centres, n
 </details>
 
 <details open>
+<summary><b>📰 News: world headlines and live news channels</b></summary>
+
+The News tab lists the latest stories from 16 publishers' own feeds around the world (filter by region or word; each opens on the publisher's site) and plays 22 free live news channels from the broadcasters' official streams: their YouTube live stream, or their own HLS stream. Every headline and channel says who owns it (public, state or commercial), as World Monitor does. `news.yml` refreshes both every 30 minutes.
+</details>
+
+<details open>
 <summary><b>🕵 Intel and the Intelligence toolkit</b></summary>
 
 Declassified documents on a map and timeline, a redaction inspector for PDF files, photo location from its metadata, a shadow clock and web-archive lookups. The toolkit, adapted from [Osiris](https://github.com/simplifaisoul/osiris), looks up domains, networks, software flaws (Common Vulnerabilities and Exposures (CVE)), sanctions lists and crypto wallets straight from public registries, and ranks conflict zones by live reports.
@@ -166,7 +172,8 @@ Fifteen lessons on the [Learn page](https://normansrule.github.io/global-intelli
 | v2.6 – v2.8 | Chemicals and environment |
 | v2.9 | Open data for seven infrastructure layers |
 | v2.10 | The Global Intelligence Atlas (GIA) repository launch: this README, browser tuning, release branding |
-| **v2.11** | **Cameras from 22 more agencies and Osiris's worldwide webcam list, the rest of World Monitor's map datasets, markers that share a spot, economy, property and industry** |
+| v2.11 | Cameras from 22 more agencies and Osiris's worldwide webcam list, the rest of World Monitor's map datasets, markers that share a spot, economy, property and industry |
+| **v2.12** | **A News tab: headlines from 16 publishers' own feeds around the world and free live news channels from broadcasters' official streams** |
 
 Full release notes: [`CHANGELOG.md`](CHANGELOG.md).
 
@@ -228,12 +235,12 @@ git clone https://github.com/Normansrule/global-intelligence-atlas.git && cd glo
 cd site && python3 -m http.server 8080          # open http://localhost:8080/app/
 ```
 
-**Publish your own copy:** Settings → Pages → Source: GitHub Actions. [`pages.yml`](.github/workflows/pages.yml) publishes `site/` on every push. Start the data jobs once by hand (`gh workflow run live.yml`, `intel.yml`, `data.yml`, `regional.yml`, `open-data.yml`, `economy.yml`, `aircraft-db.yml`, then `history.yml`); after that they run on their schedules.
+**Publish your own copy:** Settings → Pages → Source: GitHub Actions. [`pages.yml`](.github/workflows/pages.yml) publishes `site/` on every push. Start the data jobs once by hand (`gh workflow run live.yml`, `intel.yml`, `data.yml`, `regional.yml`, `open-data.yml`, `economy.yml`, `news.yml`, `aircraft-db.yml`, then `history.yml`); after that they run on their schedules.
 
 **Desktop release:** push a version tag and [`desktop.yml`](.github/workflows/desktop.yml) builds every platform and attaches the files to a GitHub Release:
 
 ```bash
-git tag v2.11.0 && git push origin v2.11.0
+git tag v2.12.0 && git push origin v2.12.0
 ```
 
 The builds are not code-signed, so Windows SmartScreen and macOS Gatekeeper ask you to confirm the first launch (the Download page explains how).

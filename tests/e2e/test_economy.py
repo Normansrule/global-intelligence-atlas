@@ -15,7 +15,7 @@ def econ(route):
 def works(route):
     body={'elements':[{'type':'way','id':7,'center':{'lat':51.51,'lon':-0.12},'tags':{'man_made':'works','name':'Test Brewery','product':'beer'}}]}
     return route.fulfill(status=200, body=json.dumps(body), headers={'Content-Type':'application/json','Access-Control-Allow-Origin':'*'})
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}"
 LAYERS=['houseprices','homevalues','propsales','exports','industry','osmworks']
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS)

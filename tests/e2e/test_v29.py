@@ -4,7 +4,7 @@ import json
 # v2.9: open data in place of World Monitor's curated lists (opendata.js, About → Datasets).
 res=[]
 def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok else 'FAIL ')+name, info)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}"
 OPEN={
  'ports.json': {'rows':[{'id':'wpi-57010','name':'Shanghai','lat':31.233,'lon':121.483,'country':'China','type':'large harbour','size':'Large','harbourType':'River natural','locode':'CN SHA','channelDepthM':12.5,'maxVesselLengthM':400,'wpi':'57010'},
                         {'id':'wpi-1','name':'Little Port','lat':30,'lon':120,'country':'China','type':'small harbour','size':'Small','wpi':'1'}]},
@@ -26,7 +26,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS)
     # no open-data branch yet: auto falls back to World Monitor's lists, except the chokepoints that ship with the site
     pg, errs = page(b, f'http://localhost:8765/app/#@30,60,2.4&{L}', serve=False)
-    check('version 2.11', pg.evaluate("() => gia.VERSION")=='2.11')
+    check('version 2.12', pg.evaluate("() => gia.VERSION")=='2.12')
     o=pg.evaluate("async () => { const m = await import('./js/opendata.js'); return { mode: m.datasetMode(), o: { ...m.origins }, ports: gia.state.data.ports?.length, ww: gia.state.data.waterways?.length, note: gia.state.lstatus.ports?.note } }")
     check('auto without the branch: World Monitor lists, chokepoints from the EIA file', o['mode']=='auto' and o['o'].get('ports')=='worldmonitor' and o['o'].get('cables')=='worldmonitor' and o['o'].get('waterways')=='open' and o['ports']==62 and o['ww']==8, o)
     check('the status says why the open file was not used', 'open data not available yet' in (o['note'] or ''), o['note'])

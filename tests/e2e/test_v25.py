@@ -3,7 +3,7 @@ from playwright.sync_api import sync_playwright
 # v2.5: the layer registry (manifests), editions and plug-in layers.
 res=[]
 def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok else 'FAIL ')+name, info)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.11')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}"
 BROKEN="export default { id: 'Bad Id', group: 'nowhere', label: '', swatch: 'red', sources: ['nope'] };"
 def page(b, url, wait=11000):
     pg=b.new_page(viewport={'width':1440,'height':900}); errs=[]
@@ -14,7 +14,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS)
     # full edition: every layer has a valid manifest
     pg, errs = page(b, 'http://localhost:8765/app/#@20,0,2.4&l=borders,sun')
-    check('version 2.11', pg.evaluate("() => gia.VERSION")=='2.11')
+    check('version 2.12', pg.evaluate("() => gia.VERSION")=='2.12')
     m=pg.evaluate("() => gia.layerManifest()")
     ids=[l['id'] for l in m['layers']]
     check('manifest lists every layer once', len(ids)==len(set(ids)) and len(ids) >= 40 and m['edition']=='full', len(ids))
