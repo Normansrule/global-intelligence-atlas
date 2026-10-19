@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 22
       - name: Check keys
-        shell: bash  # with pipefail, so a refused key turns the run red
+        shell: bash  # with pipefail, so a refused key turns a run started by hand red
         env:
           OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
           OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}
@@ -30,4 +30,5 @@ jobs:
           ONTARIO_511_KEY: ${{ secrets.ONTARIO_511_KEY }}
           ALBERTA_511_KEY: ${{ secrets.ALBERTA_511_KEY }}
           AISSTREAM_KEY: ${{ secrets.AISSTREAM_KEY }}
-        run: node tools/check-keys.mjs | tee -a "$GITHUB_STEP_SUMMARY"
+        # on a branch push it only reports, so a secret to fix does not block a pull request
+        run: node tools/check-keys.mjs | tee -a "$GITHUB_STEP_SUMMARY" || [ "${{ github.event_name }}" = push ]
