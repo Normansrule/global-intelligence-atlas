@@ -21,7 +21,7 @@ def page(b, url):
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS)
     pg, errs = page(b, 'http://localhost:8765/app/#@25,40,2.4&l=borders,'+','.join(LAYERS))
-    check('version 2.11', pg.evaluate("() => gia.VERSION")=='2.11')
+    check('version 2.12', pg.evaluate("() => gia.VERSION")=='2.12')
     m=pg.evaluate("() => gia.layerManifest()")
     man={l['id']: l for l in m['layers']}
     for lid,(key,group,field) in LAYERS.items():

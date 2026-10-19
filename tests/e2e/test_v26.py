@@ -8,7 +8,7 @@ with sync_playwright() as p:
     pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
     pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@36.6,-119.8,0.4&l=borders,pur,pestus,tri', wait_until='commit'); pg.wait_for_timeout(13000)
-    check('version 2.11', pg.evaluate("() => gia.VERSION")=='2.11')
+    check('version 2.12', pg.evaluate("() => gia.VERSION")=='2.12')
     st=pg.evaluate("() => ['pur','pestus','tri'].map(id => [id, gia.state.lstatus[id]?.s, gia.state.data[id]?.rows?.length])")
     check('three chemical layers load from the regional-data branch', all(s=='ok' and n for _,s,n in st), st)
     g=pg.evaluate("() => [...document.querySelectorAll('#layer-list .group')].map(g => g.dataset.group)")

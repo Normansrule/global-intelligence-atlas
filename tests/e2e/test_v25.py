@@ -14,7 +14,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS)
     # full edition: every layer has a valid manifest
     pg, errs = page(b, 'http://localhost:8765/app/#@20,0,2.4&l=borders,sun')
-    check('version 2.11', pg.evaluate("() => gia.VERSION")=='2.11')
+    check('version 2.12', pg.evaluate("() => gia.VERSION")=='2.12')
     m=pg.evaluate("() => gia.layerManifest()")
     ids=[l['id'] for l in m['layers']]
     check('manifest lists every layer once', len(ids)==len(set(ids)) and len(ids) >= 40 and m['edition']=='full', len(ids))

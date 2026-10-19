@@ -10,7 +10,7 @@ with sync_playwright() as p:
     pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
     pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@30,0,2.4&l=borders,sun,replay', wait_until='commit'); pg.wait_for_timeout(12000)
-    check('version 2.11', pg.evaluate("() => gia.VERSION")=='2.11')
+    check('version 2.12', pg.evaluate("() => gia.VERSION")=='2.12')
     st=pg.evaluate("() => ({ s: gia.state.lstatus?.replay, d: !!gia.state.data.replay, frames: gia.state.data.replay?.index.frames.length, quakes: gia.state.data.replay?.quakes?.length, note: gia.state.data.replay?.statusNote })")
     check('replay loads 48 hourly frames and the USGS window', st['d'] and st['frames']==48 and st['quakes']==140, st)
     c=pg.evaluate("async () => { const { clock } = await import('./js/clock.js'); return { t: clock.now(), paused: clock.paused } }")
