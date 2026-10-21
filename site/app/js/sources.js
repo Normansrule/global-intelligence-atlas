@@ -101,6 +101,7 @@ export const SOURCES = {
   blockstream: { name: 'Blockstream Esplora API (blockstream.info)', url: 'https://github.com/Blockstream/esplora/blob/master/API.md', license: 'Free public API', role: 'Bitcoin address balances and transaction counts.' },
   blockscout: { name: 'Blockscout Ethereum explorer API (eth.blockscout.com)', url: 'https://docs.blockscout.com', license: 'Free public API', role: 'Ethereum address balances and transaction counts.' },
   openmeteo: { name: 'Open-Meteo forecast & elevation APIs', url: 'https://open-meteo.com', license: 'CC BY 4.0', role: 'Weather and ground elevation for any clicked point.' },
+  wmocodes: { name: 'WMO Manual on Codes (WMO-No. 306), code table 4677: present weather', url: 'https://library.wmo.int/idurl/4/35713', license: 'Reference (WMO)', role: 'What the weather codes from Open-Meteo mean: thunderstorms (95–99), snow (71–77, 85–86) and the rest, for the clouds, rain and storms layer.' },
   restcountries: { name: 'REST Countries', url: 'https://restcountries.com', license: 'MPL-2.0', role: 'Capital, population, languages, currencies for the country card.' },
   worldbank: { name: 'World Bank Open Data API', url: 'https://datahelpdesk.worldbank.org/knowledgebase/articles/889392', license: 'CC BY 4.0', role: 'GDP, life expectancy, internet use and renewable share indicators.' },
   wikipedia: { name: 'Wikipedia REST API (page summaries)', url: 'https://en.wikipedia.org/api/rest_v1/', license: 'CC BY-SA 4.0', role: 'Short encyclopaedia summaries in the country and place cards.' },

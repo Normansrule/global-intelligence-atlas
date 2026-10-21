@@ -33,20 +33,24 @@ export function parseFirms(csv) {
 const frpColor = (frp) => (frp >= 100 ? '#fff1a8' : frp >= 20 ? '#ffb340' : '#ff5a36');
 const inView = (v, lat, lng) => Math.abs(lat - v.lat) * 111 < v.radiusKm && haversineKm(v.lat, v.lng, lat, lng) < v.radiusKm;
 
+/** Every hotspot of the last 24 hours, from the live-data snapshot (or NASA directly in the desktop app). Shared by the
+ *  fire hotspots layer and the fire glow and smoke in skyfx.js, so both draw the same fires from one cached download. */
+export async function loadFireRows() {
+  if (isDesktop) {
+    const rows = parseFirms(await getFeed('firms', FIRMS_PUBLIC, { type: 'text', ttl: 30 * 60_000, timeout: 90_000 }));
+    return { rows, src: 'NASA FIRMS · VIIRS NOAA-20, global 24 hours (live)', at: Date.now() };
+  }
+  const j = await getSnapshot('firms', 'fires.json', { ttl: 10 * 60_000 });
+  return { rows: j.rows, src: j.src, at: Date.parse(j.generatedAt) };
+}
+
 export function firesLayer() {
   return {
     id: 'fires', group: 'live', label: 'Fire hotspots (NASA FIRMS)', swatch: '#ff7a3c', on: false, refresh: 15 * 60_000, viewDependent: true, pin: 'flame',
     sources: ['firms', 'livedata'],
     options: [{ id: 'conf', label: 'Confidence', choices: [['1', 'Nominal and high'], ['2', 'High only'], ['0', 'All detections']], value: '1' }],
     async load(o) {
-      let rows; let src; let at;
-      if (isDesktop) {
-        rows = parseFirms(await getFeed('firms', FIRMS_PUBLIC, { type: 'text', ttl: 30 * 60_000, timeout: 90_000 }));
-        src = 'NASA FIRMS · VIIRS NOAA-20, global 24 hours (live)'; at = Date.now();
-      } else {
-        const j = await getSnapshot('firms', 'fires.json', { ttl: 10 * 60_000 });
-        rows = j.rows; src = j.src; at = Date.parse(j.generatedAt);
-      }
+      const { rows, src, at } = await loadFireRows();
       const min = Number(o.conf);
       const fires = rows.filter((r) => r[3] >= min);
       return { rows: fires, total: rows.length, src, at, statusNote: `${fires.length.toLocaleString()} hotspots in the last 24 hours · ${src}${isDesktop ? '' : ` · saved ${ago(Date.now() - at)}`}` };

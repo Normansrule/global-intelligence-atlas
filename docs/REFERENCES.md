@@ -528,6 +528,8 @@ WION. (n.d.). *WION (World Is One News) live* [Video live stream]. YouTube. http
 
 World Bank. (n.d.). *World Bank Open Data API* [Data set]. https://datahelpdesk.worldbank.org/knowledgebase/articles/889392
 
+World Meteorological Organization. (2019). *Manual on codes: International codes, Volume I.1, Part A: Alphanumeric codes* (WMO-No. 306; 2011 ed., updated 2019). https://library.wmo.int/idurl/4/35713
+
 World Resources Institute. (2021). *Global power plant database* (Version 1.3.0) [Data set]. https://datasets.wri.org/dataset/globalpowerplantdatabase
 
 YouTube. (n.d.). *YouTube Live* [Video streaming service]. Retrieved October 14, 2026, from https://www.youtube.com
@@ -630,6 +632,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Blockstream, n.d.) | Bitcoin address balances and transaction counts. | Free public API |
 | (Blockscout, n.d.) | Ethereum address balances and transaction counts. | Free public API |
 | (Zippenfenig, 2023) | Weather and ground elevation for any clicked point. | CC BY 4.0 |
+| (World Meteorological Organization, 2019) | What the weather codes from Open-Meteo mean: thunderstorms (95–99), snow (71–77, 85–86) and the rest, for the clouds, rain and storms layer. | Reference (WMO) |
 | (REST Countries, n.d.) | Capital, population, languages, currencies for the country card. | MPL-2.0 |
 | (World Bank, n.d.) | GDP, life expectancy, internet use and renewable share indicators. | CC BY 4.0 |
 | (Wikimedia Foundation, n.d.-b) | Short encyclopaedia summaries in the country and place cards. | CC BY-SA 4.0 |

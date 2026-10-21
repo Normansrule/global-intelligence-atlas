@@ -4,6 +4,19 @@ Release notes for Global Intelligence Atlas (GIA), newest first. Versions before
 
 ---
 
+## 🎨 Unreleased: Counted world redesign and weather you can see
+
+- **New look for the app and the website**, after Otto Neurath and Gerd Arntz's Isotype picture statistics: a flat red, ultramarine, ochre and green palette where each colour names a category, Jost for headings and numbers, Atkinson Hyperlegible for reading, nearly square corners, no gradients, glow or frosted glass. The README's new Design section explains the principles.
+- **Light and dark themes** for the app and the website. They follow the system setting until you pick one with the half-filled circle at the top right; the choice is shared between the two. The globe sits on paper in the light theme and among stars in the dark one.
+- **The world right now, counted:** the top of the Live section draws earthquakes, disaster alerts, thunderstorms, fires, aircraft and news as rows of identical figures, each row saying what one figure stands for. Click a row to switch the layer on or fly to it.
+- **Weather you can see:** a new Clouds, rain, storms and fire smoke layer draws real clouds from the Open-Meteo forecast, rain and snow where they are falling, lightning inside thunderstorms and the glow and smoke of large fires from NASA's Fire Information for Resource Management System (FIRMS), lit by the real Sun.
+- **Home page rebuilt** around live counts from the US Geological Survey (USGS) and NASA's Earth Observatory Natural Event Tracker (EONET), tied to a globe that shows where they are. The feature card wall became a plain index; the auto-scrolling marquee, the travelling button border, the split-text hero and card tilt are gone, along with the GreenSock Animation Platform (GSAP) files they needed.
+- **Calmer motion:** buttons press in when tapped, figures count in only when a number changes, the Live ticker holds still (scroll it sideways), and the pulsing dots and spinning reticle are still. With reduced motion on, nothing travels.
+- **Pins stay visible down to the closest zoom.** Zoom onto a ship in the Atlantic, an earthquake or a power plant and its symbol stays on it all the way to about 570 m up; before, symbols right under the camera faded out below about 3 km. Planes are drawn below the camera however close you get, so a plane you zoom onto never vanishes behind you.
+- **Accessibility:** consistent focus rings, sentence-case headings in the right order, and colours checked for contrast in both themes. The phone navigation on the website now scrolls instead of disappearing.
+
+---
+
 ## 📰 v2.12: a News tab with world headlines and free live news channels
 
 - **News in the rail** (between Tools and Intel), modelled on World Monitor's news feeds and live news panel.
