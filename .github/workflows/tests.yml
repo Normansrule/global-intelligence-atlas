@@ -12,7 +12,7 @@ permissions:
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -61,5 +61,9 @@ jobs:
         run: bash tests/e2e/run.sh test_intel.py | tee intel.log && grep -qE "SUMMARY ([0-9]+) / \1$" intel.log
       - name: Interface overlap check
         run: bash tests/e2e/run.sh overlap.py | tee overlap.log && test "$(grep -c "no overlaps" overlap.log)" = 6
+      - name: Physical weather layer (clouds, rain, lightning, fire smoke)
+        run: bash tests/e2e/run.sh test_sky.py
+      - name: Pins stay visible down to the closest zoom
+        run: bash tests/e2e/run.sh test_pins_zoom.py | tee pins.log && grep -q "SUMMARY 4 / 4" pins.log
       - name: Intelligence toolkit (offline checks and mocked registries)
         run: node tests/intel/test-intel.mjs && bash tests/e2e/run.sh test_osint.py | tee osint.log && grep -qE "SUMMARY ([0-9]+) / \\1$" osint.log

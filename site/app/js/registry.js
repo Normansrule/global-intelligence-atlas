@@ -19,6 +19,7 @@ import { webcamsLayer } from './worldcams.js';
 import { powerLayer, internetLayer, radioLayer, shipsLayer, overlayLayer } from './networks.js';
 import { launchesLayer, alertsLayer } from './launches.js';
 import { windLayer } from './wind.js';
+import { skyLayer } from './skyfx.js';
 import { moonLayer } from './moon.js';
 import { firesLayer, radarLayer } from './hazards.js';
 import { replayLayer } from './replay.js';
@@ -48,6 +49,7 @@ export const REGISTRY = [
   { make: () => launchesLayer, after: 'stations' },
   { make: () => alertsLayer, after: 'events' },
   { make: (api) => windLayer(api), after: 'grid' },
+  { make: (api) => skyLayer(api), after: 'wind' },
   { make: () => moonLayer, after: 'sun' },
   { make: (api) => firesLayer(api), after: 'events' },
   { make: (api) => radarLayer(api), after: 'fires' },

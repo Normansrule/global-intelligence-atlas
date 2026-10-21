@@ -115,12 +115,41 @@ def _wq_sum(name,mcl):
     return {"name":name,"mcl":mcl,"sites":len(xs),"detectedAt":sum(1 for c in xs if c[2]),"samples":sum(c[3] for c in xs),"detections":sum(c[2] for c in xs)}
 WQP=json.dumps({"generatedAt":iso(now),"years":3,"src":"Water Quality Portal","chems":[_wq_sum(n,m) for n,m in _WQ_CHEMS],"fields":['lat','lng','kind','name','siteId','organization','samples','detections','chemsDetected','maxRatioToLimit','chems'],"chemFields":['name','maxUgL','detections','samples','lastDate'],"rows":_WQ_ROWS})
 REGIONAL={"wqp/sites.json":WQP,"ces/tracts.json":CES,"echo/facilities.json":ECHO,"pur/index.json":PUR_INDEX,"pur/sections.json":PUR_SECTIONS,**{"pur/"+k:v for k,v in PUR_CHEM.items()},"usgs/index.json":USGS_INDEX,"usgs/counties.json":USGS_COUNTIES,**{"usgs/"+k:v for k,v in USGS_COMP.items()},"tri/facilities.json":TRI}
+# v2.13: weather grid for the wind and sky layers (data/weather.json is written at deploy time, so tests serve one):
+# trade winds and westerlies, a typhoon east of the Philippines, thunderstorms over the Congo basin, the US Midwest and
+# the Bay of Bengal, a rain band across the North Atlantic and snow over Siberia and Canada.
+def weather_grid():
+    import math
+    S,LA0,LO0,NLA,NLO=6,-84,-180,29,60
+    W={k:[] for k in ['u','v','t','cc','cl','ch','pr','wc']}
+    def g(la,lo,cla,clo,r): d=((la-cla)**2+(((lo-clo+180)%360-180)*math.cos(math.radians(cla)))**2)/(r*r); return math.exp(-d)
+    storms=[(21,130,6,18),(0,20,5,9),(38,-96,5,11),(15,88,5,10)]
+    for i in range(NLA):
+        for j in range(NLO):
+            la,lo=LA0+i*S,LO0+j*S; a=abs(la)
+            u=-6 if a<25 else (10 if a<60 else -3); v=1.5*math.sin(math.radians(lo*3))
+            t=round(31*math.cos(math.radians(la))-8-(6 if la>0 else 0)*(a>45),1)
+            cc=15+55*math.exp(-((la-5)/7)**2)+60*math.exp(-((a-52)/10)**2)+15*math.sin(math.radians(lo*2+la*3))
+            pr=0.0; wc=3 if cc>60 else 1
+            front=g(la,lo,40,-60,9)+g(la,lo,46,-45,9)+g(la,lo,52,-30,9)+g(la,lo,56,-15,8)
+            if front>0.35: cc=max(cc,92); pr=max(pr,round(1+4*min(1,front),1)); wc=63
+            for (sla,slo,r,p) in storms:
+                k=g(la,lo,sla,slo,r)
+                if k>0.25: cc=max(cc,95); pr=max(pr,round(p*k,1)); wc=95 if k>0.5 else max(wc,81)
+                if (sla,slo)==(21,130) and k>0.05: u,v=u-12*(la-sla)/r,v+12*((lo-slo)/r)
+            if g(la,lo,62,100,14)>0.4 or g(la,lo,58,-100,10)>0.4: cc=max(cc,85); pr=0.8; wc=73; t=-12.0
+            W['u'].append(round(u,1)); W['v'].append(round(v,1)); W['t'].append(t); W['cc'].append(int(max(0,min(100,cc))))
+            W['cl'].append(int(max(0,min(100,cc*0.7)))); W['ch'].append(int(max(0,min(100,cc*(0.9 if a>30 else 0.4)))))
+            W['pr'].append(pr); W['wc'].append(wc)
+    return json.dumps({"generatedAt":iso(now-40*60000),"source":"Open-Meteo (CC BY 4.0)","step":S,"lat0":LA0,"lon0":LO0,"nlat":NLA,"nlon":NLO,**W})
+WEATHER=weather_grid()
 def handler(route):
     u=route.request.url
     if 'elevation-tiles-prod/terrarium/' in u: return route.fulfill(status=200, body=TERRAIN_TILE, headers={'Content-Type':'image/png','Access-Control-Allow-Origin':'*'})
     if 'overpass-api.de/api/interpreter' in u and 'building' in __import__('urllib.parse').parse.unquote(u):
         import re as _re; m=_re.search(r'around:\d+,(-?[\d.]+),(-?[\d.]+)', __import__('urllib.parse').parse.unquote(u))
         return route.fulfill(status=200, body=buildings_json(float(m.group(1)), float(m.group(2))), headers={'Content-Type':'application/json','Access-Control-Allow-Origin':'*'})
+    if u.startswith('http://localhost') and '/app/data/weather.json' in u and not os.environ.get('MOCK_NO_WEATHER'): return route.fulfill(status=200, body=WEATHER, headers={'Content-Type':'application/json'})
     if u.startswith('http://localhost'): return route.continue_()
     b=None; ct='application/json'
     if 'api.rainviewer.com' in u: return route.fulfill(status=200, body=RADAR, headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})

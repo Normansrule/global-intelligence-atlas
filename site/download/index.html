@@ -2,16 +2,17 @@
 <!-- SPDX-License-Identifier: AGPL-3.0-only — Global Intelligence Atlas, built on World Monitor (github.com/koala73/worldmonitor, (C) Elie Habib) -->
 <html lang="en" data-base=".." data-page="download"><head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Download — Global Intelligence Atlas (GIA)</title><meta name="description" content="Install Global Intelligence Atlas from your browser, or download the desktop app for Windows, macOS and Linux." /><meta name="theme-color" content="#081827" />
+<title>Download — Global Intelligence Atlas (GIA)</title><meta name="description" content="Install Global Intelligence Atlas from your browser, or download the desktop app for Windows, macOS and Linux." /><meta name="theme-color" content="#f3f4f0" />
 <link rel="manifest" href="../manifest.webmanifest" /><link rel="icon" href="../icons/icon-192.png" /><link rel="apple-touch-icon" href="../icons/icon-192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Jost:wght@500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../assets/site.css" />
+<script src="../app/js/theme-boot.js"></script>
 </head><body>
 
 <main id="main"><div class="wrap">
-<header class="page-head"><h1 data-split>Take the Earth with you</h1>
-<p data-rise>Two ways to install. Both open straight onto the 3D globe and keep the lessons, tours and quiz.</p></header>
+<header class="page-head"><h1>Take the Earth with you</h1>
+<p>Two ways to install. Both open straight onto the 3D globe and keep the lessons, tours and quiz.</p></header>
 <section class="block" style="border:0;padding-top:20px"><h2 class="title">Desktop app</h2>
 <p class="intro">A small native window around the same globe, built with <a href="https://tauri.app">Tauri</a> — the framework World Monitor uses for its own desktop app. Built automatically by GitHub Actions for every release.</p>
 <div class="dl-grid">
@@ -32,7 +33,6 @@ cd global-intelligence-atlas/site
 python3 -m http.server 8080      # then open http://localhost:8080</code></pre>
 <p class="intro">To build the desktop app yourself you need Rust and Node.js: <code>cd desktop && npm install && npx tauri build</code>.</p></section>
 </div></main>
-<script src="../assets/vendor/gsap.min.js"></script><script src="../assets/vendor/ScrollTrigger.min.js"></script>
 <script src="../assets/site.js"></script>
 <script>if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('../sw.js');</script>
 </body></html>

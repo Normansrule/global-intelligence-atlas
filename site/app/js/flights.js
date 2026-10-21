@@ -231,7 +231,9 @@ const altColor = (ft, ground) => (ground ? '#8aa0b3' : ft < 10000 ? '#7ed6c4' : 
 // from a low camera is a real ground-level perspective.
 const exaggeration = (camAlt) => 1 + Math.min(8, camAlt * 5);
 const liftOf = (camAlt) => Math.min(0.0004, Math.max(0.000004, camAlt * 0.0016)); // keeps planes off the ground layer
-export const planeAlt = (a, camAlt) => (a.ground ? liftOf(camAlt) * 0.5 : liftOf(camAlt) + (a.altFt / 3281 / 6371) * exaggeration(camAlt));
+// Never above 60 % of the camera height: zoomed right in on a plane cruising at 11 km, it would otherwise be
+// behind the camera and vanish. Squeezing the height down keeps it in view all the way to the closest zoom.
+export const planeAlt = (a, camAlt) => (a.ground ? liftOf(camAlt) * 0.5 : Math.min(camAlt * 0.6, liftOf(camAlt) + (a.altFt / 3281 / 6371) * exaggeration(camAlt)));
 
 /** Place every plane. Size follows the camera so planes stay a readable size on screen, until you are close
     enough to see them at their real size. Written straight into the instance buffers with plain maths (no

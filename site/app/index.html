@@ -8,11 +8,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Global Intelligence Atlas (GIA) — a 3D Earth to explore and learn from</title>
   <meta name="description" content="A zoomable 3D Earth with live earthquakes, natural events, satellites, aurora, day and night, plate tectonics and World Monitor's infrastructure layers — plus guided tours, a geography quiz and a measuring tool." />
-  <meta name="theme-color" content="#081827" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%230c2136' stroke='%23e3b55b' stroke-width='4'/%3E%3Cpath d='M8 32h48M32 4c10 9 10 47 0 56M32 4c-10 9-10 47 0 56' stroke='%237ed6c4' stroke-width='3' fill='none'/%3E%3C/svg%3E" />
+  <meta name="theme-color" content="#f3f4f0" />
+  <script src="js/theme-boot.js"></script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%231f4e9c' stroke='%23c4312b' stroke-width='4'/%3E%3Cpath d='M8 32h48M32 4c10 9 10 47 0 56M32 4c-10 9-10 47 0 56' stroke='%23ffffff' stroke-width='3' fill='none'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Jost:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/atlas.css" />
   <!-- Browser tuning (v2.10): fetch the globe engine and the first modules in parallel with the page, instead of one import at a time. -->
   <link rel="modulepreload" href="vendor/vendor.min.mjs" />
@@ -38,6 +39,7 @@
     <div class="top-status">
       <button id="live-open" class="chipbtn liveb" title="What is happening right now"><i class="live-dot"></i><span id="live-count">Live</span></button>
       <button id="flights-chip" class="chipbtn" title="Flights board" hidden></button>
+      <button id="theme-toggle" class="chipbtn themeb" aria-pressed="false" title="Dark theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg><span>Dark</span></button>
       <button id="pal-open" class="chipbtn palb" title="Find any layer, place, flight, tour or action (Ctrl+K)">⌘K <span>Find anything</span></button>
     </div>
   </header>
@@ -62,7 +64,7 @@
       <div class="apply-bar" id="apply-bar" hidden><span id="apply-count"></span><button class="btn ghost" id="apply-undo">Undo</button><button class="btn" id="apply-now">Apply</button></div>
     </section>
     <section class="sect" id="sect-map" hidden><div class="sect-body map-sect">
-        <h4>Base map</h4>
+        <h3>Base map</h3>
         <p class="muted">What the planet’s surface looks like. Satellite and Streets switch to detailed tiles as you zoom in.</p>
         <div class="basemaps" role="radiogroup" aria-label="Base map">
           <button data-base="daynight" role="radio">Day/night</button>
@@ -73,7 +75,7 @@
           <button data-base="night" role="radio">City lights</button>
         </div>
         <label class="gibs-pick" id="gibs-pick" hidden>Date <input type="date" id="gibs-date-input" min="2012-01-19" /></label>
-        <h4>Sensor look</h4>
+        <h3>Sensor look</h3>
         <p class="muted">Colour filters over the whole view (keys 1–5). HUD adds an overlay; press S to scan.</p>
         <div class="looks" role="radiogroup" aria-label="Sensor look">
           <button data-look="normal" role="radio" title="Normal (1)">Normal</button>
@@ -84,7 +86,7 @@
         </div>
         <label class="toggle" title="Switch to high-resolution tiles automatically when you zoom close"><input type="checkbox" id="autodetail" checked /> Sharp satellite imagery when zoomed in</label>
       
-        <h4>Performance</h4>
+        <h3>Performance</h3>
         <p class="muted">Auto lowers the quality if the frame rate drops. Fast draws fewer markers and fewer pixels.</p>
         <div class="row"><span id="fps2" class="muted">—</span></div>
       </div></section>

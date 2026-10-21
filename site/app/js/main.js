@@ -46,9 +46,10 @@ import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraDa
 export const VERSION = '2.12';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
-import { glyphSvg } from './icons.js';
+import { glyphSvg, unitSvg } from './icons.js';
+import { installTheme } from './theme.js';
 // The symbol shown next to each layer name (layers with pins use their own; the rest are listed here).
-const LAYER_GLYPH = { quakes: 'quake', events: 'flame', alerts: 'alert', aircraft: 'plane', stations: 'sat', satellites: 'sat', sun: 'sun', moon: 'moon', power: 'bolt', internet: 'server', ships: 'ship', crime: 'badge', cities: 'city', aurora: 'snow', wind: 'dust', overlay: 'sat', cables: 'ix', pipelines: 'oil', routes: 'ship', plates: 'quake', conflicts: 'swords', grid: 'eye', borders: 'pin', radar: 'storm', fires: 'flame', watch: 'eye', replay: 'clock' };
+const LAYER_GLYPH = { quakes: 'quake', events: 'flame', alerts: 'alert', aircraft: 'plane', stations: 'sat', satellites: 'sat', sun: 'sun', moon: 'moon', power: 'bolt', internet: 'server', ships: 'ship', crime: 'badge', cities: 'city', aurora: 'snow', wind: 'dust', skyfx: 'storm', overlay: 'sat', cables: 'ix', pipelines: 'oil', routes: 'ship', plates: 'quake', conflicts: 'swords', grid: 'eye', borders: 'pin', radar: 'storm', fires: 'flame', watch: 'eye', replay: 'clock' };
 const layerGlyph = (l) => LAYER_GLYPH[l.id] ?? (typeof l.pin === 'string' ? l.pin : null);
 /** The symbol for one item (a wildfire → flame, a tanker → tanker…). */
 const itemGlyph = (ref) => { const l = ref && layerById[ref.layer]; if (!l) return null; try { return (typeof l.pin === 'function' ? l.pin(ref.d) : l.pin) ?? layerGlyph(l); } catch { return layerGlyph(l); } };
@@ -228,7 +229,8 @@ const controls = globe.controls();
 controls.autoRotateSpeed = 0.35;
 globe.renderer().setPixelRatio(Math.min(devicePixelRatio, 1.75)); // 4K phones don't need 3× pixels for a globe
 const nav = installNavigation({ globe, R, $, reduceMotion, onLocate: (lat, lng) => { fly(lat, lng, 0.012); state.home = [lat, lng]; setTimeout(() => probeCard(lat, lng), 400); } });
-// Procedural star field (replaces a 900 kB background image).
+// Procedural star field (replaces a 900 kB background image). Shown only in the dark theme.
+let stars = null;
 {
   const n = 4000; const pos = new Float32Array(n * 3); const col = new Float32Array(n * 3);
   for (let i = 0; i < n; i++) {
@@ -238,9 +240,11 @@ const nav = installNavigation({ globe, R, $, reduceMotion, onLocate: (lat, lng) 
     col.set([b, b * (warm ? 0.9 : 0.97), b * (warm ? 0.78 : 1)], i * 3);
   }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  globe.scene().add(new THREE.Points(g, new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.85, depthWrite: false })));
+  stars = new THREE.Points(g, new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.85, depthWrite: false }));
+  globe.scene().add(stars);
   globe.camera().far = Math.max(globe.camera().far, 12000); globe.camera().updateProjectionMatrix();
 }
+installTheme({ globe, stars, button: $('#theme-toggle') });
 // Swap the quick 2K day/night textures for 4K ones once the page is idle.
 (window.requestIdleCallback ?? ((f) => setTimeout(f, 2500)))(() => {
   const aniso = globe.renderer().capabilities.getMaxAnisotropy?.() ?? 1; // sharper when the globe is seen at an angle
@@ -533,8 +537,11 @@ function cullSprites() {
     if (!sp.userData.d) continue;
     if (!sp.userData.want) { sp.visible = false; continue; }
     // Fade sprites out as they reach the planet's edge instead of letting them pile up on the rim and pop.
-    const p = sp.position; const dot = (p.x * c.x + p.y * c.y + p.z * c.z) / (p.length() * cl); const edge = (R * 1.0) / cl;
-    const fade = Math.max(0, Math.min(1, (dot - edge) / (sp.userData.pin ? 0.03 : 0.06)));
+    // The fade works on the angle to the horizon, not its cosine: close to the ground the horizon is only a few
+    // degrees away, and a fixed cosine band would fade out a pin standing right under the camera.
+    const p = sp.position; const dot = (p.x * c.x + p.y * c.y + p.z * c.z) / (p.length() * cl);
+    const ang = Math.acos(Math.min(1, dot)); const horizon = Math.acos(Math.min(1, R / cl));
+    const fade = Math.max(0, Math.min(1, (horizon - ang) / (horizon * (sp.userData.pin ? 0.12 : 0.2))));
     sp.visible = fade > 0.02; sp.material.opacity = fade;
   }
 }
@@ -584,7 +591,7 @@ function setLStatus(id, s, note = '') {
 const PRESETS = [
   ['Connected planet', ['sun', 'borders', 'cities', 'cables', 'internet', 'power', 'aircraft', 'ships', 'radio', 'stations', 'satellites']],
   ['Live world', ['sun', 'borders', 'cities', 'quakes', 'events', 'alerts', 'news', 'aircraft', 'stations', 'launches']],
-  ['Weather', ['sun', 'borders', 'cities', 'wind', 'events', 'alerts']],
+  ['Weather', ['sun', 'borders', 'cities', 'skyfx', 'wind', 'events', 'alerts']],
   ['Space & time', ['sun', 'borders', 'stations', 'satellites', 'launches', 'aurora']],
   ['Aviation', ['sun', 'borders', 'cities', 'airports', 'aircraft']],
   ['Cameras', ['borders', 'cities', 'cameras', 'alpr']],
@@ -1633,24 +1640,44 @@ extras = installExtras({
   whatsNew: () => whatsNew(), layer: (id) => layerById[id], solarElevation: astro.solarElevation, sky: (lat, lng) => sky.open(lat, lng),
 });
 $('#pal-open').addEventListener('click', () => extras.open());
-// Overview tiles at the top of the Live section: the state of the planet at a glance, each one clickable.
+// "The world right now, counted": the top of the Live section as an Isotype chart. Quantities are rows of
+// identical units (one unit = a round number of things, stated in the row); single facts get one glyph. Every
+// row is a button that switches on, or flies to, what it counts.
+const UNIT_STEPS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000];
+const unitFor = (n, max = 12) => UNIT_STEPS.find((u) => n / u <= max) ?? 20000;
+const lastCount = new Map(); // label -> number shown last time, so units only count in when the number changed
+const countedRow = (attrs, glyph, tone, label, n, sub) => {
+  const same = lastCount.get(label) === n; lastCount.set(label, n);
+  const per = unitFor(n); const whole = Math.floor(n / per); const part = n / per - whole;
+  const units = Array.from({ length: whole }, (_, i) => `<i style="--i:${i}">${unitSvg(glyph)}</i>`).join('')
+    + (part >= 0.1 ? `<i class="part" style="--i:${whole};--p:${Math.round(part * 100)}%">${unitSvg(glyph)}</i>` : '');
+  return `<button class="crow tone-${tone}${same ? ' still' : ''}" ${attrs}><span class="crow-l">${esc(label)}</span><b>${n.toLocaleString()}</b>`
+    + `<span class="crow-u" role="img" aria-label="${n.toLocaleString()} ${esc(label.toLowerCase())}">${units || '<em>none</em>'}</span>`
+    + `<small>${per > 1 ? `one figure = ${per.toLocaleString()} · ` : ''}${sub}</small></button>`;
+};
+const factRow = (attrs, glyph, tone, label, value, sub) => `<button class="crow fact tone-${tone}" ${attrs}><span class="crow-l">${esc(label)}</span><b>${value}</b><span class="crow-u">${unitSvg(glyph, 18)}</span><small>${sub}</small></button>`;
+const offRow = (attrs, glyph, label, sub) => `<button class="crow off" ${attrs}><span class="crow-l">${esc(label)}</span><b>Off</b><span class="crow-u">${unitSvg(glyph, 18)}</span><small>${sub}</small></button>`;
 api.liveOverview = () => {
-  const now = clock.date().getTime(); const t = [];
-  const tile = (attrs, glyph, color, label, value, sub) => `<button class="stat" ${attrs}>${glyphSvg(glyph, color, 20)}<span>${esc(label)}</span><b>${value}</b><small>${sub}</small></button>`;
-  const qs = (state.data.quakes ?? []).filter((f) => now - f.properties.time < 86_400_000);
-  if (state.data.quakes) { const top = qs.reduce((b, f) => (!b || f.properties.mag > b.properties.mag ? f : b), null); t.push(tile(top ? `data-fly="${top.geometry.coordinates[1]},${top.geometry.coordinates[0]},1.2"` : 'data-enable="quakes"', 'quake', '#f79d5c', 'Earthquakes, 24 h', qs.length.toLocaleString(), top ? `strongest M${top.properties.mag.toFixed(1)}` : 'none recorded')); }
-  else t.push(tile('data-enable="quakes"', 'quake', '#f79d5c', 'Earthquakes', '—', 'turn on'));
-  const ac = state.data.aircraft; t.push(tile(ac ? 'data-board="1"' : 'data-enable="aircraft"', 'plane', '#8ecbff', 'Aircraft tracked', ac ? ac.ac.length.toLocaleString() : '—', ac ? (ac.snapshotAge != null ? `snapshot ${Math.round(ac.snapshotAge)} min old` : 'live') : 'turn on'));
+  const now = clock.date().getTime(); const t = []; const f = [];
+  const qs = (state.data.quakes ?? []).filter((q) => now - q.properties.time < 86_400_000);
+  if (state.data.quakes) { const top = qs.reduce((b, q) => (!b || q.properties.mag > b.properties.mag ? q : b), null); t.push(countedRow(top ? `data-fly="${top.geometry.coordinates[1]},${top.geometry.coordinates[0]},1.2"` : 'data-enable="quakes"', 'quake', 'red', 'Earthquakes, last 24 hours', qs.length, top ? `strongest M${top.properties.mag.toFixed(1)}` : 'none recorded')); }
+  else t.push(offRow('data-enable="quakes"', 'quake', 'Earthquakes', 'turn on to count them'));
+  const al = state.data.alerts;
+  if (al) { const red = al.filter((a) => a.level === 'Red').length; const orange = al.filter((a) => a.level === 'Orange').length; t.push(countedRow('data-enable="alerts"', 'alert', 'red', 'Disaster alerts, red and orange', red + orange, `${red} red · ${orange} orange`)); }
+  else t.push(offRow('data-enable="alerts"', 'alert', 'Disaster alerts', 'turn on the Global Disaster Alert and Coordination System (GDACS)'));
+  const wx = api.skyStats?.();
+  if (wx) { t.push(countedRow('data-enable="skyfx"', 'bolt', 'blue', 'Thunderstorms on the globe', wx.storms, `${Math.round(wx.cloud * 100)} % of the Earth under cloud`)); if (wx.fires != null) t.push(countedRow('data-enable="skyfx"', 'flame', 'red', 'Fire hotspots', wx.fires, 'seen by satellite in the last day')); }
+  else t.push(offRow('data-enable="skyfx"', 'storm', 'Weather', 'turn on clouds, rain, lightning and fire'));
+  const ac = state.data.aircraft; if (ac) t.push(countedRow('data-board="1"', 'plane', 'blue', 'Aircraft tracked', ac.ac.length, ac.snapshotAge != null ? `snapshot ${Math.round(ac.snapshotAge)} min old` : 'live'));
+  const nw = state.data.news; if (nw) t.push(countedRow('data-enable="news"', 'news', 'green', 'Places in the news', nw.items?.length ?? 0, 'last 24 hours'));
   const iss = state.data.stations ? satPositions(state.data.stations, clock.date()).find((p) => /ISS \(ZARYA\)|^ISS$/.test(p.name)) : null;
-  t.push(tile(iss ? 'data-ride="on"' : 'data-enable="stations"', 'sat', '#ffd37a', 'ISS is over', iss ? esc(placeName(iss.lat, iss.lng).replace(/^the /, '')) : '—', iss ? `${Math.round(iss.altKm)} km up · ride along` : 'turn on space stations'));
+  f.push(iss ? factRow('data-ride="on"', 'sat', 'blue', 'The International Space Station (ISS) is over', esc(placeName(iss.lat, iss.lng).replace(/^the /, '')), `${Math.round(iss.altKm)} km up · ride along`) : offRow('data-enable="stations"', 'sat', 'International Space Station (ISS)', 'turn on space stations'));
   const next = (state.data.launches ?? []).filter((l) => l.net > now - 3600_000).sort((a, b) => a.net - b.net)[0];
-  t.push(tile(next ? `data-fly="${next.lat},${next.lng},1.4"` : 'data-enable="launches"', 'rocket', '#ff9e5e', 'Next launch', next ? countdown(next.net - now) : '—', next ? esc(next.name.split('|').pop().trim()) : 'turn on launches'));
-  const al = state.data.alerts; t.push(tile(al ? 'data-enable="alerts"' : 'data-enable="alerts"', 'alert', '#ff3b30', 'Disaster alerts', al ? `${al.filter((a) => a.level === 'Red').length} red` : '—', al ? `${al.filter((a) => a.level === 'Orange').length} orange` : 'turn on GDACS'));
-  const m = astro.moonState(clock.date()); t.push(tile('data-start="moon"', 'moon', '#e8eef3', 'The Moon', `${Math.round(m.illum * 100)} % lit`, esc(m.name)));
+  f.push(next ? factRow(`data-fly="${next.lat},${next.lng},1.4"`, 'rocket', 'ochre', 'Next launch', countdown(next.net - now), esc(next.name.split('|').pop().trim())) : offRow('data-enable="launches"', 'rocket', 'Next launch', 'turn on launches'));
+  const m = astro.moonState(clock.date()); f.push(factRow('data-start="moon"', 'moon', 'ink', 'The Moon', `${Math.round(m.illum * 100)} % lit`, esc(m.name)));
   const el = astro.solarElevation(state.pov.lat, state.pov.lng, clock.date());
-  t.push(tile('data-tool="sky"', 'sun', '#ffd37a', 'Sun at the view centre', `${Math.round(el)}°`, el > 0 ? 'daytime · see the sky' : el > -6 ? 'twilight · see the sky' : 'night · see the sky'));
-  const nw = state.data.news; t.push(tile(nw ? 'data-enable="news"' : 'data-enable="news"', 'news', '#ff9ec7', 'Places in the news', nw ? (nw.items?.length ?? 0).toLocaleString() : '—', nw ? 'last 24 hours' : 'turn on news'));
-  return `<h4>At a glance</h4><div class="stats-grid">${t.join('')}</div>`;
+  f.push(factRow('data-tool="sky"', 'sun', 'ochre', 'Sun at the view centre', `${Math.round(el)}°`, el > 0 ? 'daytime · see the sky' : el > -6 ? 'twilight · see the sky' : 'night · see the sky'));
+  return `<h3 class="counted-h">The world right now, counted</h3><div class="counted">${t.join('')}</div><div class="facts">${f.join('')}</div>`;
 };
 shell = installShell({ $, esc, TOURS, closeNotes, closeDetails: () => { state.leftAuto = false; closeNotes(); }, openLive: () => live.openFeed('all'), openSaved: () => extras.viewsPanel(), openAbout: () => aboutPanel(), sky: () => sky.open(state.pov.lat, state.pov.lng), palette: () => extras.open() });
 installIntel({ ...api, shell });
@@ -1670,7 +1697,7 @@ setInterval(() => {
 // Keep side panels clear of the bottom bar, whose height changes when it wraps on narrower windows.
 gov = installIdleGovernor(globe, {
   busy: () => controls.autoRotate || !!state.tour || flightState.follow || !!state.ride,
-  animating: () => compose.animating || state.on.has('wind') || state.on.has('aircraft') || !clock.isLive(),
+  animating: () => compose.animating || state.on.has('wind') || state.on.has('skyfx') || state.on.has('aircraft') || !clock.isLive(),
 });
 hud = installHud(api);
 if (state.look === 'hud') hud.show(true);

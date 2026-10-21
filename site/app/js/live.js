@@ -41,7 +41,6 @@ export function installLive(api) {
     const tk = $('#ticker-track'); if (!tk) return;
     const top = [...items].sort((a, b) => b.weight + b.t / 3.6e6 - (a.weight + a.t / 3.6e6)).slice(0, 18);
     tk.innerHTML = top.length ? top.map((i) => `<button data-live="${esc(i.id)}" style="--c:${i.color}"><i>${sym(i)}</i><b>${esc(i.kind)}</b> ${esc(i.title.slice(0, 90))} <small>${ago(i.t)}</small></button>`).join('') : '<span class="quiet">Waiting for live feeds…</span>';
-    tk.style.animationDuration = `${Math.max(40, top.length * 7)}s`;
     $('#live-count').textContent = items.length ? `${items.length} live` : 'Live';
     if (api.isOpen('live')) openFeed();
   }

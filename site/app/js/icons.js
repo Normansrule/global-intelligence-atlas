@@ -331,5 +331,15 @@ export function glyphSvg(name, color, size = 18) {
   return `<svg class="glyph" viewBox="-1.5 -1.5 27 27" width="${size}" height="${size}" aria-hidden="true">${halo}${body}</svg>`;
 }
 
+/** One flat Isotype unit: the glyph in a single colour (currentColor), details knocked out to the panel colour.
+ *  Used for counted rows, where every unit stands for the same number of things. */
+export function unitSvg(name, size = 16) {
+  const parts = GLYPHS[name] ?? GLYPHS.pin;
+  const body = parts.map(([d, st, w]) => (st[0] === 's'
+    ? `<path d="${d}" fill="none" stroke="currentColor" stroke-width="${w ?? 2.2}" stroke-linecap="round" stroke-linejoin="round"${st.endsWith('d') ? ' style="stroke:var(--panel)"' : ''}/>`
+    : `<path d="${d}" fill="currentColor" fill-rule="evenodd"${st.endsWith('d') ? ' style="fill:var(--panel)"' : ''}/>`)).join('');
+  return `<svg class="unit" viewBox="-1.5 -1.5 27 27" width="${size}" height="${size}" aria-hidden="true">${body}</svg>`;
+}
+
 /** Legacy SVG strings (dark ink), kept for anything that still wants them. */
 export const ICONS = Object.fromEntries(Object.keys(GLYPHS).map((k) => [k, glyphSvg(k, '#081827', 24)]));
