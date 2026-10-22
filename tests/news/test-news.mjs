@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // SPDX-License-Identifier: AGPL-3.0-only
 // v2.12 News: the offline parts of tools/fetch-news.mjs and site/app/js/newsdesk.js, with made-up feeds and pages.
-import { parseFeed, mergeHeadlines, parseYouTubePage, checkHls, decode } from '../../tools/fetch-news.mjs';
+import { parseFeed, mergeHeadlines, parseYouTubePage, checkHls, decode, imageOf } from '../../tools/fetch-news.mjs';
 import { PUBLISHERS, CHANNELS, REGIONS, OWNERS } from '../../site/app/js/newslist.js';
 import { SOURCES } from '../../site/app/js/sources.js';
 
@@ -28,6 +28,19 @@ const a = parseFeed(atom, NOW);
 check('Atom: reads the alternate link and updated time', a.length === 1 && a[0].u === 'https://example.org/c' && a[0].t === 'Atom', a);
 const many = `<rss><channel>${Array.from({ length: 40 }, (_, i) => `<item><title>S${i}</title><link>https://e.org/${i}</link><pubDate>${h(i / 10)}</pubDate></item>`).join('')}</channel></rss>`;
 check('at most 25 stories per feed', parseFeed(many, NOW).length === 25);
+const pics = `<rss><channel>
+<item><title>Thumb</title><link>https://e.org/t</link><pubDate>${h(1)}</pubDate><media:thumbnail width="240" url="https://img.e.org/s.jpg"/><media:thumbnail width="976" url="https://img.e.org/l.jpg"/></item>
+<item><title>Inline</title><link>https://e.org/i</link><pubDate>${h(2)}</pubDate><description>&lt;img src=&quot;https://img.e.org/in.png&quot;/&gt; words</description></item>
+<item><title>Plain</title><link>https://e.org/p</link><pubDate>${h(3)}</pubDate></item>
+</channel></rss>`;
+const pi = parseFeed(pics, NOW);
+check('feed pictures: the widest media:thumbnail is kept', pi[0].i === 'https://img.e.org/l.jpg', pi[0]);
+check('feed pictures: an <img> in the summary is used when there is no media tag', pi[1].i === 'https://img.e.org/in.png', pi[1]);
+check('feed pictures: a story without one has no image field', !('i' in pi[2]), pi[2]);
+check('feed pictures: image enclosures count, video and plain http do not',
+  imageOf('<enclosure url="https://n.org/p.jpg" type="image/jpeg"/>') === 'https://n.org/p.jpg'
+  && imageOf('<media:content url="https://v.org/c.mp4" medium="video"/>') === null
+  && imageOf('<enclosure url="http://n.org/p.jpg" type="image/jpeg"/>') === null);
 check('decode handles numeric and named entities', decode('A&#x2014;B &hellip; &#169;') === 'A—B … ©');
 
 const fresh = [{ t: 'x', u: 'https://e.org/1?a', at: new Date(NOW - 1e5).toISOString(), f: 'a:0' }];

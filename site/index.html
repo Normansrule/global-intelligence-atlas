@@ -11,58 +11,93 @@
 </head><body>
 
 <main id="main">
-<header class="hero">
-  <div class="wrap">
-    <div>
+<div class="journey" id="journey">
+  <div class="journey-text">
+    <header class="hero" data-ch="home">
       <p class="eyebrow"><a href="app/">Version 2.12</a> · free, no account, no server</p>
       <h1>The world right now, counted</h1>
-      <p class="lede">A live 3D Earth you can spin, zoom and click. Earthquakes, storms, fires, flights, satellites and the cables under the sea, each one explained: what it shows, how it is measured and where the numbers come from.</p>
-      <div class="row"><a class="btn" href="app/">Open the 3D Earth</a><a class="btn ghost" href="learn/">Start learning</a><a class="btn ghost" href="download/">Desktop app</a></div>
+      <p class="lede">A live 3D Earth. Click anything to see what it is, how it is measured and where the number comes from.</p>
+      <div class="row"><a class="btn magnetic" href="app/">Open the 3D Earth</a><a class="btn ghost" href="learn/">Start learning</a><a class="btn ghost" href="download/">Desktop app</a></div>
       <ul class="tally" id="tally" aria-label="Counts from live public data">
         <li><button class="tone-red" data-k="quakes" aria-pressed="false"><span class="l">Earthquakes in the last 24 hours <small id="tq-note">from the US Geological Survey (USGS)</small></span><b id="tq">…</b><span class="u wait" id="uq"></span></button></li>
         <li><button class="tone-ochre" data-k="fires" aria-pressed="false"><span class="l">Wildfires NASA is tracking <small>open events</small></span><b id="tf">…</b><span class="u wait" id="uf"></span></button></li>
         <li><button class="tone-blue" data-k="storms" aria-pressed="false"><span class="l">Severe storms <small>open events</small></span><b id="ts">…</b><span class="u wait" id="us"></span></button></li>
         <li><button class="tone-red" data-k="volcanoes" aria-pressed="false"><span class="l">Volcanoes erupting or restless <small>open events</small></span><b id="tv">…</b><span class="u wait" id="uv"></span></button></li>
       </ul>
-      <p class="tally-note" id="tally-note">Fires, storms and volcanoes come from the National Aeronautics and Space Administration (NASA) Earth Observatory Natural Event Tracker (EONET). Pick a row to see where they are.</p>
-    </div>
-    <figure class="stage"><div class="fallback" aria-hidden="true"></div><div id="hero-globe" aria-hidden="true"></div></figure>
+      <p class="tally-note" id="tally-note">Pick a row to find it on the globe. Fires, storms and volcanoes come from NASA’s Earth Observatory Natural Event Tracker (EONET).</p>
+    </header>
+    <section class="chapter" data-ch="quakes" data-view="5,150,1.55" aria-labelledby="ch1">
+      <p class="ch-n tone-red" aria-hidden="true">01</p>
+      <h2 id="ch1">The ground moves every few minutes</h2>
+      <p class="ch-big tone-red"><b data-count="quakes">…</b> <span data-one="earthquake since yesterday">earthquakes since yesterday</span></p>
+      <p>Most line the Pacific’s Ring of Fire, where one plate dives under another.</p>
+      <a class="ch-link" href="app/#@5,150,1.6&b=bluemarble&l=quakes,plates,borders">See them with the plates</a>
+    </section>
+    <section class="chapter" data-ch="fires" data-view="-5,20,1.8" aria-labelledby="ch2">
+      <p class="ch-n tone-ochre" aria-hidden="true">02</p>
+      <h2 id="ch2">Fire, seen from orbit</h2>
+      <p class="ch-big tone-ochre"><b data-count="fires">…</b> <span data-one="wildfire NASA is following">wildfires NASA is following</span></p>
+      <p>Satellites spot the heat of a fire within hours, day and night.</p>
+      <a class="ch-link" href="app/#@-5,20,1.8&b=weather&l=fires,sun,borders">See the fires and their smoke</a>
+    </section>
+    <section class="chapter" data-ch="storms" data-view="20,-60,1.9" aria-labelledby="ch3">
+      <p class="ch-n tone-blue" aria-hidden="true">03</p>
+      <h2 id="ch3">Weather you can watch</h2>
+      <p class="ch-big tone-blue"><b data-count="storms">…</b> <span data-one="severe storm open now">severe storms open now</span></p>
+      <p>Real clouds, rain and lightning from today’s forecast, drawn on the globe.</p>
+      <a class="ch-link" href="app/#@20,-60,2.2&b=weather&l=sun,borders">Open the Weather map</a>
+    </section>
+    <section class="chapter" data-ch="volcanoes" data-view="0,110,1.7" aria-labelledby="ch4">
+      <p class="ch-n tone-red" aria-hidden="true">04</p>
+      <h2 id="ch4">Mountains that breathe</h2>
+      <p class="ch-big tone-red"><b data-count="volcanoes">…</b> <span data-one="volcano erupting or restless">volcanoes erupting or restless</span></p>
+      <p>Each one is a vent where the mantle reaches the surface.</p>
+      <a class="ch-link" href="app/#@0,110,1.7&b=bluemarble&l=events,quakes,plates">See them beside the quakes</a>
+    </section>
+    <section class="chapter chapter-end" data-ch="all" data-view="20,0,2.6" aria-labelledby="ch5">
+      <p class="ch-n" aria-hidden="true">05</p>
+      <h2 id="ch5">And 60 more layers</h2>
+      <p>Flights, ships, satellites, cables, news and cameras, all on one Earth.</p>
+      <div class="row"><a class="btn magnetic" href="app/">Open the 3D Earth</a><a class="btn ghost" href="learn/">Start learning</a></div>
+    </section>
   </div>
-</header>
+  <div class="journey-stage"><figure class="stage"><div class="fallback" aria-hidden="true"></div><div id="hero-globe" aria-hidden="true"></div><figcaption class="stage-cap" id="stage-cap" aria-live="polite"></figcaption></figure>
+    <ol class="ch-dots" aria-label="Chapters"><li><a href="#journey" data-go="home" aria-label="Start"></a></li><li><a href="#ch1" data-go="quakes" aria-label="Earthquakes"></a></li><li><a href="#ch2" data-go="fires" aria-label="Fires"></a></li><li><a href="#ch3" data-go="storms" aria-label="Storms"></a></li><li><a href="#ch4" data-go="volcanoes" aria-label="Volcanoes"></a></li><li><a href="#ch5" data-go="all" aria-label="Everything"></a></li></ol>
+  </div>
+</div>
 
 <section class="block"><div class="wrap">
   <h2 class="title">What is on the globe</h2>
-  <p class="intro">World Monitor’s curated infrastructure and geopolitics layers, joined by live public feeds and teaching layers. Every layer has a Learn card that explains what you are seeing and how it is measured.</p>
+  <p class="intro">World Monitor’s infrastructure and geopolitics layers, plus live feeds and teaching layers. Open a line for more.</p>
   <div class="inventory">
-    <div><b style="--tone:var(--accent)">65</b><span>layers you can switch on<small>in 11 groups, from hazards to the economy</small></span></div>
-    <div><b style="--tone:var(--accent)">86</b><span>undersea cables<small>with every coast they land on</small></span></div>
-    <div><b style="--tone:var(--red)">367</b><span>nuclear sites<small>power, research and weapons sites from public lists</small></span></div>
-    <div><b style="--tone:var(--ochre)">313</b><span>artificial intelligence (AI) data centres<small>the physical supply chain of AI</small></span></div>
-    <div><b style="--tone:var(--accent-2)">52</b><span>tectonic plates<small>and the boundaries where earthquakes cluster</small></span></div>
-    <div><b style="--tone:var(--accent-2)">15</b><span>short lessons<small>with the equations, the sources and a button that opens each idea on the globe</small></span></div>
+    <details><summary><b style="--tone:var(--accent)">65</b><span>layers you can switch on</span></summary><div class="more"><p>in 11 groups, from hazards to the economy</p><a href="app/">See them on the globe</a></div></details>
+    <details><summary><b style="--tone:var(--accent)">86</b><span>undersea cables</span></summary><div class="more"><p>with every coast they land on</p><a href="app/#@25,-30,2.2&b=daynight&l=cables,sun">See them on the globe</a></div></details>
+    <details><summary><b style="--tone:var(--red)">367</b><span>nuclear sites</span></summary><div class="more"><p>power, research and weapons sites from public lists</p><a href="app/#@40,20,2.2&b=daynight&l=nuclear,borders">See them on the globe</a></div></details>
+    <details><summary><b style="--tone:var(--ochre)">313</b><span>artificial intelligence (AI) data centres</span></summary><div class="more"><p>the physical supply chain of AI</p><a href="app/#@35,-40,2.2&b=daynight&l=datacenters,cables">See them on the globe</a></div></details>
+    <details><summary><b style="--tone:var(--accent-2)">52</b><span>tectonic plates</span></summary><div class="more"><p>and the boundaries where earthquakes cluster</p><a href="app/#@0,160,2.3&b=bluemarble&l=plates,quakes">See them on the globe</a></div></details>
+    <details><summary><b style="--tone:var(--accent-2)">15</b><span>short lessons</span></summary><div class="more"><p>with the equations, the sources and a button that opens each idea on the globe</p><a href="learn/">Read them</a></div></details>
   </div>
 </div></section>
 
 <section class="block"><div class="wrap">
   <h2 class="title">Ways in</h2>
-  <p class="intro">Every link below opens the globe already set up for that idea.</p>
-  <figure class="shot"><img src="docs-media/app-daynight.jpg" alt="The Global Intelligence Atlas globe lit by the real Sun, with undersea cables and space stations" loading="lazy" width="1600" height="900" onerror="this.parentNode.remove()" /></figure>
+  <p class="intro">Each one opens the globe set up for one idea.</p>
   <ul class="index">
-    <li><a href="app/#@20,-40,2.3&b=bluemarble&l=skyfx,borders"><h3>Weather you can see</h3><p>Real clouds from today’s forecast, rain and snow falling where it is falling, lightning in thunderstorms and the glow and smoke of large fires.</p><span class="go">Open</span></a></li>
-    <li><a href="app/#@40,-40,1.8&b=daynight&l=aircraft,sun,cities"><h3>Every flight in the sky</h3><p>Tens of thousands of live aircraft on their real headings. Click one for its route, height, speed and a photo of the plane.</p><span class="go">Open</span></a></li>
-    <li><a href="app/?mode=trace"><h3>Trace how a place is connected</h3><p>Click a spot and watch its links draw: internet exchanges, the cable landing, power stations, the airport and every satellite overhead.</p><span class="go">Open</span></a></li>
-    <li><a href="app/#@5,150,2.4&b=daynight&l=quakes,plates,sun,borders"><h3>Time machine</h3><p>Run the planet at up to six hours a second or wind it back a week. Satellites move and earthquakes replay in order.</p><span class="go">Open</span></a></li>
-    <li><a href="app/#@34.05,-118.25,0.08&b=streets&l=cameras,cities"><h3>Live public cameras</h3><p>Road cameras from transport agencies in California, New York City, London and Hong Kong, with live video where the agency streams it.</p><span class="go">Open</span></a></li>
-    <li><a href="app/#@25,20,2.3&b=daynight&l=news,sun,borders,cities"><h3>News on the map</h3><p>Places in the news in the last day with their headlines, and free live news channels from around the world.</p><span class="go">Open</span></a></li>
-    <li><a href="app/?mode=tours"><h3>Guided tours</h3><p>The Ring of Fire, the arteries of the internet, chokepoints of trade, orbits, seasons and the supply chain of AI.</p><span class="go">Open</span></a></li>
-    <li><a href="app/?mode=quiz"><h3>Where on Earth?</h3><p>Eight places, one click each. Closer guesses score more.</p><span class="go">Play</span></a></li>
-    <li><a href="fluid/"><h3>Fluid lab</h3><p>Stir a real-time fluid simulation and meet the maths behind winds, currents and hurricanes.</p><span class="go">Open</span></a></li>
+    <li><details><summary><h3>Weather you can see</h3><span class="tag tone-red">Live</span></summary><div class="more"><p>Real clouds from today’s forecast, rain and snow falling where it is falling, lightning in thunderstorms and the glow and smoke of large fires.</p><a class="btn" href="app/#@20,-40,2.3&b=bluemarble&l=skyfx,borders">Open</a></div></details></li>
+    <li><details><summary><h3>Every flight in the sky</h3><span class="tag tone-red">Live</span></summary><div class="more"><p>Tens of thousands of live aircraft on their real headings. Click one for its route, height, speed and a photo of the plane.</p><a class="btn" href="app/#@40,-40,1.8&b=daynight&l=aircraft,sun,cities">Open</a></div></details></li>
+    <li><details><summary><h3>Trace how a place is connected</h3><span class="tag tone-blue">Tool</span></summary><div class="more"><p>Click a spot and watch its links draw: internet exchanges, the cable landing, power stations, the airport and every satellite overhead.</p><a class="btn" href="app/?mode=trace">Open</a></div></details></li>
+    <li><details><summary><h3>Time machine</h3><span class="tag tone-blue">Tool</span></summary><div class="more"><p>Run the planet at up to six hours a second or wind it back a week. Satellites move and earthquakes replay in order.</p><a class="btn" href="app/#@5,150,2.4&b=daynight&l=quakes,plates,sun,borders">Open</a></div></details></li>
+    <li><details><summary><h3>Live public cameras</h3><span class="tag tone-red">Live</span></summary><div class="more"><p>Road cameras from transport agencies in California, New York City, London and Hong Kong, with live video where the agency streams it.</p><a class="btn" href="app/#@34.05,-118.25,0.08&b=streets&l=cameras,cities">Open</a></div></details></li>
+    <li><details><summary><h3>News on the map</h3><span class="tag tone-red">Live</span></summary><div class="more"><p>Places in the news in the last day with their headlines, and free live news channels from around the world.</p><a class="btn" href="app/#@25,20,2.3&b=daynight&l=news,sun,borders,cities">Open</a></div></details></li>
+    <li><details><summary><h3>Guided tours</h3><span class="tag tone-green">Guided</span></summary><div class="more"><p>The Ring of Fire, the arteries of the internet, chokepoints of trade, orbits, seasons and the supply chain of AI.</p><a class="btn" href="app/?mode=tours">Open</a></div></details></li>
+    <li><details><summary><h3>Where on Earth?</h3><span class="tag tone-ochre">Game</span></summary><div class="more"><p>Eight places, one click each. Closer guesses score more.</p><a class="btn" href="app/?mode=quiz">Play</a></div></details></li>
+    <li><details><summary><h3>Fluid lab</h3><span class="tag tone-blue">Lab</span></summary><div class="more"><p>Stir a real-time fluid simulation and meet the maths behind winds, currents and hurricanes.</p><a class="btn" href="fluid/">Open</a></div></details></li>
   </ul>
 </div></section>
 
 <section class="block"><div class="wrap">
   <h2 class="title">Standing on generous shoulders</h2>
-  <p class="intro">Global Intelligence Atlas grew out of <a href="https://github.com/koala73/worldmonitor">World Monitor</a> by Elie Habib, and borrows ideas, code and data from many open projects. The <a href="credits/">credits page</a> says exactly what came from where.</p>
+  <p class="intro">Grew out of <a href="https://github.com/koala73/worldmonitor">World Monitor</a> by Elie Habib. The <a href="credits/">credits</a> say what came from where.</p>
   <ul class="names" aria-label="Projects and data sources"><li>World Monitor</li><li>globe.gl</li><li>three.js</li><li>satellite.js</li><li>USGS earthquakes</li><li>NASA EONET</li><li>NASA GIBS</li><li>NASA FIRMS</li><li>NOAA SWPC</li><li>CelesTrak</li><li>Open-Meteo</li><li>OpenStreetMap</li><li>Esri World Imagery</li><li>adsb.lol</li><li>OpenSky Network</li><li>Caltrans CCTV</li><li>NYC DOT cameras</li><li>TfL JamCams</li><li>Hong Kong TD</li><li>OurAirports</li><li>Panoramax</li><li>hls.js</li><li>PB2002 plates</li><li>WebGL Fluid Simulation</li><li>Remotion</li><li>Tauri</li></ul>
 </div></section>
 </main>

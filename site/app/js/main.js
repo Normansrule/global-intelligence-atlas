@@ -84,7 +84,11 @@ const TEX = {
   daynight: { attr: 'Day/night: NASA Blue Marble + Black Marble, lit from the real Sun position' },
   bluemarble: { img: 'textures/earth-blue-marble.jpg', bump: 'textures/earth-topology.png', attr: 'NASA Blue Marble, relief from three-globe' },
   night: { img: 'textures/earth-night.jpg', attr: 'NASA Black Marble city lights' },
+  // A weather map: the day/night Earth with its colour drained toward slate so live clouds, rain, lightning and
+  // smoke (the skyfx layer, switched on and off with this style) read first.
+  weather: { attr: 'Weather: NASA Blue Marble muted under clouds, rain and lightning from the Open-Meteo forecast and fire smoke from NASA FIRMS' },
 };
+const SHADED = new Set(['daynight', 'weather']); // bases drawn with the Sun-lit day/night shader
 let markers = null; let keeper = null; let gov = null;
 let perf = { q: { pins: 140, pinsPerLayer: 40, cards: 24, labels: 120, columns: 30000 }, moving() {} };
 readHash();
@@ -101,6 +105,7 @@ const dayNightMaterial = new THREE.ShaderMaterial({
     dayTexture: { value: loader.load('textures/earth-blue-marble-2k.jpg') },
     nightTexture: { value: loader.load('textures/earth-night-2k.jpg') },
     sunDir: { value: new THREE.Vector3(1, 0, 0) },
+    mute: { value: 0 },
   },
   vertexShader: `
     varying vec3 vNormal; varying vec2 vUv;
@@ -110,7 +115,7 @@ const dayNightMaterial = new THREE.ShaderMaterial({
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }`,
   fragmentShader: `
-    uniform sampler2D dayTexture; uniform sampler2D nightTexture; uniform vec3 sunDir;
+    uniform sampler2D dayTexture; uniform sampler2D nightTexture; uniform vec3 sunDir; uniform float mute;
     varying vec3 vNormal; varying vec2 vUv;
     void main() {
       float i = dot(normalize(vNormal), normalize(sunDir));
@@ -119,6 +124,8 @@ const dayNightMaterial = new THREE.ShaderMaterial({
       float k = smoothstep(-0.08, 0.12, i);           // civil-twilight-ish blend
       vec4 col = mix(night, day, k);
       col.rgb += vec3(1.0, 0.55, 0.25) * 0.12 * (1.0 - abs(k * 2.0 - 1.0)); // warm dusk band
+      float g = dot(col.rgb, vec3(0.299, 0.587, 0.114));
+      col.rgb = mix(col.rgb, vec3(g * 0.82, g * 0.9, g * 1.04 + 0.03), mute); // weather map: slate, so clouds lead
       gl_FragColor = col;
     }`,
 });
@@ -135,7 +142,7 @@ const nightShade = new THREE.Mesh(
 );
 nightShade.visible = false; nightShade.raycast = () => {};
 // Night shading also goes over the detail tiles, so the day/night line stays where it is when they switch in.
-function updateShade() { nightShade.visible = state.on.has('sun') && (state.base !== 'daynight' || !!state.detailTiles); }
+function updateShade() { nightShade.visible = state.on.has('sun') && (!SHADED.has(state.base) || !!state.detailTiles); }
 const DETAIL_ON = 0.75; const DETAIL_OFF = 1.0;
 function updateSun() {
   const s = astro.subsolarPoint(clock.date());
@@ -261,7 +268,12 @@ function restylePolygons() {
 }
 
 // ------------------------------------------------------------------ base-map switching
+let booted = false; // set once the layer panel exists; before that a layer is switched on by adding it to state.on
 function setBase(base) {
+  // The Weather style brings the weather layer with it and takes it away again when you leave, unless the layer
+  // was already on before you picked the style.
+  if (base === 'weather' && !state.on.has('skyfx') && !state.excluded?.has('skyfx')) { state.wxStyle = true; if (booted) toggleLayer('skyfx', true); else state.on.add('skyfx'); }
+  if (state.base === 'weather' && base !== 'weather' && state.wxStyle) { state.wxStyle = false; if (state.on.has('skyfx')) toggleLayer('skyfx', false); }
   state.base = base; state.detailTiles = null;
   document.querySelectorAll('[data-base]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.base === base)));
   viewLabel();
@@ -275,7 +287,8 @@ function applyBase() {
     globe.globeTileEngineMaxLevel(tiles.max).globeTileEngineUrl(tiles.url);
   } else {
     globe.globeTileEngineUrl(null);
-    if (state.base === 'daynight') { updateSun(); globe.globeMaterial(dayNightMaterial); } else {
+    dayNightMaterial.uniforms.mute.value = state.base === 'weather' ? 0.62 : 0;
+    if (SHADED.has(state.base)) { updateSun(); globe.globeMaterial(dayNightMaterial); } else {
       globe.globeMaterial(defaultMaterial);
       globe.globeImageUrl(TEX[state.base].img).bumpImageUrl(TEX[state.base].bump ?? null);
     }
@@ -1617,6 +1630,7 @@ globe.pointOfView(state.pov, 0);
 setBase(state.base);
 renderLayerPanel();
 for (const id of state.on) refreshLayer(id);
+booted = true;
 $('#apply-now').addEventListener('click', applyPending);
 $('#notes-back')?.addEventListener('click', detailsBack);
 $('#layer-filter')?.addEventListener('input', filterLayers);
@@ -1909,3 +1923,21 @@ if (window.__TAURI_INTERNALS__) {
   });
 }
 window.gia = { layerManifest, loadPlugins, applyEdition, health, watch, planeCounts, gov: () => gov, extras: () => extras, tracer: () => tracer, markers, pickAt: (x, y) => pickAt(x, y), live, applyPending, preset, VERSION, globe, state, setBase, toggleLayer, startTour, setMode, select, showLearn, surfaceClick, countryAt, setLook, refreshLayer, flightState }; // for tinkering in the console
+
+// Fewer words on screen: long explanatory lines in the section drawer fold to one line ending in "…"; click or
+// press Enter on one to read it all. Short notes and status lines are left as they are.
+{
+  const fold = (root) => root.querySelectorAll('.sect-body p.muted:not([data-fold]), .sect-body > p:not([class]):not([data-fold])').forEach((p) => {
+    p.dataset.fold = '';
+    if (p.textContent.trim().length < 110 || p.querySelector('input, button, select')) return;
+    p.classList.add('fold'); p.tabIndex = 0; p.setAttribute('role', 'button'); p.setAttribute('aria-expanded', 'false'); p.title = 'Show the full text';
+  });
+  const toggle = (e) => {
+    const p = e.target.closest('p.fold'); if (!p || e.target.closest('a')) return;
+    if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault(); const open = p.getAttribute('aria-expanded') !== 'true'; p.setAttribute('aria-expanded', String(open)); p.title = open ? '' : 'Show the full text';
+  };
+  const drawer = $('#layers');
+  drawer.addEventListener('click', toggle); drawer.addEventListener('keydown', toggle);
+  fold(drawer); new MutationObserver(() => fold(drawer)).observe(drawer, { childList: true, subtree: true });
+}

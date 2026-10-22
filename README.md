@@ -35,7 +35,7 @@ Built on the basis of [World Monitor](https://github.com/koala73/worldmonitor) b
 | **65 layers in 11 groups** | Live Earth, economy and property, chemicals and environment, cameras, civic data, sky and space, Earth science, places, infrastructure, geopolitics and Intel |
 | **Data sources and references** | Every source is listed in the app (About) and in [`docs/REFERENCES.md`](docs/REFERENCES.md) in American Psychological Association (APA) 7th edition style |
 | **No server, no account, no key** | No application programming interface (API) keys needed. A static site on GitHub Pages; scheduled GitHub Actions jobs collect what browsers cannot fetch directly |
-| **Weather you can see** | Real clouds from the forecast, rain and snow where they are falling, lightning in thunderstorms, and the glow and smoke of large fires, drawn on the globe rather than as symbols |
+| **Weather you can see** | Real clouds from the forecast, rain and snow where they are falling, lightning in thunderstorms, and the glow and smoke of large fires, drawn on the globe rather than as symbols. Pick the Weather map style to switch it all on over a muted Earth, and any other style to switch it off |
 | **Learn as you go** | Every layer has a card: what you are seeing, how it is measured, something to try, and its sources. Fifteen lessons, six guided tours and a quiz |
 | **Two ways to run it, one codebase** | The web app and the desktop app run the same `site/` folder, so they have the same features |
 
@@ -104,7 +104,7 @@ Undersea cables, pipelines, trade routes, chokepoints, ports, artificial intelli
 <details open>
 <summary><b>📰 News: world headlines and live news channels</b></summary>
 
-The News tab lists the latest stories from 16 publishers' own feeds around the world (filter by region or word; each opens on the publisher's site) and plays 22 free live news channels from the broadcasters' official streams: their YouTube live stream, or their own HTTP Live Streaming (HLS) stream. Every headline and channel says who owns it (public, state or commercial), as World Monitor does. `news.yml` refreshes both every 30 minutes.
+The News tab lists the latest stories from 16 publishers' own feeds around the world (filter by region or word; each opens on the publisher's site, with the picture the publisher attached to it in its feed) and plays 22 free live news channels from the broadcasters' official streams: their YouTube live stream, or their own HTTP Live Streaming (HLS) stream. Every headline and channel says who owns it (public, state or commercial), as World Monitor does. `news.yml` refreshes both every 30 minutes.
 </details>
 
 <details open>
@@ -178,8 +178,10 @@ The look is called **Counted world**. It borrows from Isotype, the picture-stati
 - **Quantities are counted, not decorated.** Where the app tells you how many of something there are, it draws a row of identical little figures, and the row says what one figure stands for ("one figure = 5"). Single facts get a single figure.
 - **Colour names a category.** A small flat palette: red for hazards and anything live, ultramarine for actions, selection and focus, ochre for warnings and time, green for links and things that are switched on. No gradients, no glow, no frosted glass.
 - **Two typefaces with jobs.** Jost, a geometric face in the spirit of the Isotype charts, for headings and numbers; Atkinson Hyperlegible, designed by the Braille Institute for low-vision readers, for everything you read.
-- **Light is a printed chart, dark is the same chart on ink.** Every colour is a token with a light and a dark value, checked for contrast in both. The globe sits on paper in the light theme and among stars in the dark one.
-- **Motion only answers you.** Buttons press in by 3 % when you tap them, figures count in when a number changes (never on a timer), and nothing moves just to look busy. With reduced motion switched on in your system, nothing travels; colour changes still show what happened.
+- **Day is a map on paper, night is the same map at sea.** Day is warm, slightly yellowed paper (#ece5d6) with ultramarine ink; night is deep navy (#0b1524) with pale blue, sea green and amber. Every colour is a token with a day and a night value, checked for contrast in both (every text pair is at least 4.6 to 1). A faint graticule sits behind the website's hero, the globe rests on paper by day and among stars at night, and switching spreads the new theme out from the button as a circle.
+- **Motion arrives, then holds still.** Things move when they appear or when you act: the website's hero settles in line by line, sections rise in as you scroll, numbers count up, links and rows answer the pointer, buttons press in by 3 %, and pages cross-fade. Nothing loops or moves on a timer, and only position and opacity are animated so it stays smooth. With reduced motion switched on in your system, nothing travels; colour changes still show what happened.
+- **One object, one story.** The home page pins a single live globe and lets the story scroll past it; every chapter steers the globe rather than showing a picture of it.
+- **Fewest words, most information.** Each item shows one line; click it for the full detail, the sources and a button into the globe. Long explanations fold to a single line until you open them.
 - **One spacing and type scale.** Five text sizes and a 4-point spacing scale, shared by the app and the website, so panels line up and nothing overlaps (checked at six window sizes by `tests/e2e/overlap.py`).
 - **The weather is physical.** Clouds, rain, lightning and smoke are drawn as things in the scene, lit by the real Sun, rather than as icons, in a handful of draw calls so ordinary laptops keep up.
 

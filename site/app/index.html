@@ -39,7 +39,7 @@
     <div class="top-status">
       <button id="live-open" class="chipbtn liveb" title="What is happening right now"><i class="live-dot"></i><span id="live-count">Live</span></button>
       <button id="flights-chip" class="chipbtn" title="Flights board" hidden></button>
-      <button id="theme-toggle" class="chipbtn themeb" aria-pressed="false" title="Dark theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg><span>Dark</span></button>
+      <button id="theme-toggle" class="chipbtn themeb" aria-pressed="false" title="Switch between day and night"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg><span>Night</span></button>
       <button id="pal-open" class="chipbtn palb" title="Find any layer, place, flight, tour or action (Ctrl+K)">⌘K <span>Find anything</span></button>
     </div>
   </header>
@@ -73,6 +73,7 @@
           <button data-base="imagery" role="radio">Satellite</button>
           <button data-base="streets" role="radio">Streets</button>
           <button data-base="night" role="radio">City lights</button>
+          <button data-base="weather" role="radio" title="Live clouds, rain, lightning and fire smoke over a muted Earth. Pick another style to switch the weather off.">Weather</button>
         </div>
         <label class="gibs-pick" id="gibs-pick" hidden>Date <input type="date" id="gibs-date-input" min="2012-01-19" /></label>
         <h3>Sensor look</h3>

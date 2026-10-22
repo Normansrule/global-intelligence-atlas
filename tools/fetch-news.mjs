@@ -4,8 +4,9 @@
 // (.github/workflows/news.yml) it reads each publisher's own RSS or Atom feed and checks each broadcaster's live
 // stream, using the lists in site/app/js/newslist.js.
 //
-//   headlines.json  { updated, items: [{ t: title, u: link, at: ISO time, p: publisher key, r: region, f: feed id }] }
-//                   Only the title, link and time are kept, from the last 48 hours, at most 25 per feed.
+//   headlines.json  { updated, items: [{ t: title, u: link, at: ISO time, i: image, p: publisher key, r: region, f: feed id }] }
+//                   Only the title, link, time and the picture the publisher attached to the story in its own feed
+//                   (i, https only, left out when there is none) are kept, from the last 48 hours, at most 25 per feed.
 //   channels.json   { updated, channels: [{ key, name, owner, region, lang, yt, video, live, title, hls, checked }] }
 //                   live: true, false, or null when YouTube would not show the runner the channel page.
 //                   video: the broadcaster's current YouTube live video when it is live and embedding is allowed;
@@ -43,6 +44,34 @@ export const decode = (s) => String(s ?? '')
 const tag = (block, name) => { const m = block.match(new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)</${name}>`, 'i')); return m ? m[1] : null; };
 const safeUrl = (u) => { try { const x = new URL(decode(u)); return x.protocol === 'https:' || x.protocol === 'http:' ? x.href : null; } catch { return null; } };
 
+const attr = (a, n) => a.match(new RegExp(`\\b${n}=["']([^"']+)["']`, 'i'))?.[1] ?? null;
+const IMG_EXT = /\.(jpe?g|png|webp|gif|avif)(\?|$)/i;
+/** The picture a publisher attached to one item: media:content or media:thumbnail (the widest one), an image
+ *  enclosure, an Atom enclosure link, or else the first <img> in the summary. https only, so the page never
+ *  loads mixed content; the browser fetches it from the publisher's own server like any feed reader would. */
+export function imageOf(b) {
+  const cands = [];
+  for (const m of b.matchAll(/<media:(content|thumbnail)\b([^>]*)>/gi)) {
+    const a = m[2]; const u = attr(a, 'url'); if (!u) continue;
+    const type = attr(a, 'type') ?? ''; const medium = attr(a, 'medium') ?? '';
+    if (m[1].toLowerCase() === 'content' && !(medium === 'image' || type.startsWith('image/') || (!medium && !type && IMG_EXT.test(u)))) continue;
+    cands.push({ u, w: Number(attr(a, 'width')) || 0 });
+  }
+  for (const m of b.matchAll(/<enclosure\b([^>]*)>/gi)) if ((attr(m[1], 'type') ?? '').startsWith('image/')) cands.push({ u: attr(m[1], 'url'), w: 0 });
+  for (const m of b.matchAll(/<link\b([^>]*)\/?>/gi)) if (/rel=["']enclosure["']/i.test(m[1]) && (attr(m[1], 'type') ?? '').startsWith('image/')) cands.push({ u: attr(m[1], 'href'), w: 0 });
+  if (!cands.length) {
+    const html = String(tag(b, 'content:encoded') ?? tag(b, 'description') ?? tag(b, 'summary') ?? tag(b, 'content') ?? '')
+      .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#0?39;|&apos;/g, "'");
+    const src = html.match(/<img\b[^>]*?\ssrc=["']([^"']+)["']/i)?.[1];
+    if (src) cands.push({ u: src, w: 0 });
+  }
+  cands.sort((x, y) => y.w - x.w);
+  for (const c of cands) {
+    try { const x = new URL(String(c.u).replace(/&amp;/g, '&')); if (x.protocol === 'https:' && !/(^|\.)(feedburner|doubleclick)\.|pixel|tracking|\/1x1\./i.test(x.href)) return x.href; } catch {}
+  }
+  return null;
+}
+
 /** RSS 2.0 items or Atom entries -> [{ t, u, at }], newest first, only the last 48 hours, at most `max`. */
 export function parseFeed(xml, now = Date.now(), max = PER_FEED) {
   const out = [];
@@ -58,7 +87,8 @@ export function parseFeed(xml, now = Date.now(), max = PER_FEED) {
     const when = Date.parse(decode(tag(b, 'pubDate') ?? tag(b, 'published') ?? tag(b, 'updated') ?? tag(b, 'dc:date') ?? ''));
     if (!t || !u || !Number.isFinite(when)) continue;
     if (now - when > MAX_AGE || when - now > 3600e3) continue;
-    out.push({ t: t.slice(0, 300), u, at: new Date(when).toISOString() });
+    const img = imageOf(b);
+    out.push({ t: t.slice(0, 300), u, at: new Date(when).toISOString(), ...(img ? { i: img.slice(0, 600) } : {}) });
   }
   return out.sort((a, b) => b.at.localeCompare(a.at)).slice(0, max);
 }

@@ -90,12 +90,16 @@ export function installNewsDesk(x) {
     root.querySelectorAll('[data-chan]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.chan === c.key)));
   }
 
+  // The story's own picture from the publisher's feed. Underneath sits a tile with the publisher's initials,
+  // so a story without a picture, or one whose picture will not load, still lines up with the rest.
+  const initials = (n) => String(n ?? '').replace(/\(.*?\)/g, '').split(/\s+/).filter((w) => /^[A-Z0-9]/.test(w)).slice(0, 2).map((w) => w[0]).join('') || '·';
+  const thumb = (i, p) => `<span class="news-thumb news-own-${esc(p?.owner ?? 'commercial')}" aria-hidden="true"><b>${esc(initials(p?.name ?? i.p))}</b>${/^https:\/\//.test(i.i ?? '') ? `<img src="${esc(i.i)}" alt="" loading="lazy" decoding="async" onerror="this.remove()"/>` : ''}</span>`;
   function headlineList(j) {
     const t = filt.text.toLowerCase();
     const items = (j.items ?? []).filter((i) => (filt.region === 'all' || i.r === filt.region) && (!t || i.t.toLowerCase().includes(t) || (PUB[i.p]?.name ?? '').toLowerCase().includes(t)));
     if (!items.length) return '<p class="muted">No headlines match. Try another region or clear the search.</p>';
     return `<ul class="news-list">${items.slice(0, 150).map((i) => { const p = PUB[i.p];
-      return `<li><a href="${esc(i.u)}" target="_blank" rel="noopener noreferrer">${esc(i.t)}</a><small>${esc(p?.name ?? i.p)} ${owner(p?.owner)} · <time datetime="${esc(i.at)}">${esc(ago(i.at))}</time></small></li>`; }).join('')}</ul>`;
+      return `<li>${thumb(i, p)}<div><a href="${esc(i.u)}" target="_blank" rel="noopener noreferrer">${esc(i.t)}</a><small>${esc(p?.name ?? i.p)} ${owner(p?.owner)} · <time datetime="${esc(i.at)}">${esc(ago(i.at))}</time></small></div></li>`; }).join('')}</ul>`;
   }
   function refreshList(j) {
     const l = root.querySelector('#news-list'); if (l) l.innerHTML = headlineList(j);

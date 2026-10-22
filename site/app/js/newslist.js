@@ -5,7 +5,8 @@
 //
 // Rules for adding one:
 //  - Headlines come only from a publisher's own RSS or Atom feed (no aggregators or redirect links). Only the title,
-//    link, time and publisher are kept; the story is read on the publisher's site.
+//    link, time, publisher and the picture the publisher attached in that feed are kept; the story is read on the
+//    publisher's site, and the picture loads from the publisher's own server (no proxies or copies).
 //  - Live channels play only through the broadcaster's own YouTube live stream (embedding is the broadcaster's
 //    setting, checked every run) or an HLS stream on the broadcaster's own host that browsers may read (open
 //    Cross-Origin Resource Sharing). No relays, re-streams, FAST-platform copies or spoofed requests.

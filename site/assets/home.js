@@ -14,11 +14,22 @@ const KINDS = {
   volcanoes: { glyph: 'volcano', color: '--red', b: 'tv', u: 'uv' },
 };
 const pts = { quakes: [], fires: [], storms: [], volcanoes: [] };
-let picked = null;
+let picked = null; // a kind, 'all' (every kind lit) or null
+const lit = () => (picked === 'all' ? null : picked);
+const rgba = (hex, a) => { const n = parseInt(hex.replace('#', ''), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a.toFixed(3)})`; };
 
 // Rows: one figure stands for a round number of things, chosen so a row never runs past about twelve figures.
 const STEPS = [1, 2, 5, 10, 20, 50, 100, 200, 500];
+// The number rolls up to its value alongside the figures (ease-out, so it slows into the real count).
+function tick(b, n) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { b.textContent = n.toLocaleString(); return; }
+  const t0 = performance.now();
+  const step = (t) => { const k = Math.min(1, (t - t0) / 900); b.textContent = Math.round(n * (1 - Math.pow(1 - k, 4))).toLocaleString(); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+const counts = {}; // kind -> number, for the chapter headlines (they count up when their chapter arrives)
 function draw(kind, n, note) {
+  counts[kind] = n; document.querySelectorAll(`[data-count="${kind}"] + span[data-one]`).forEach((sp) => { sp.dataset.many ??= sp.textContent; sp.textContent = n === 1 ? sp.dataset.one : sp.dataset.many; }); const big = document.querySelector(`[data-count="${kind}"]`); if (big && big.dataset.shown) tick(big, n);
   const k = KINDS[kind]; const per = STEPS.find((s) => n / s <= 12) ?? 1000;
   const whole = Math.floor(n / per); const part = n / per - whole;
   const u = $(k.u); u.classList.remove('wait');
@@ -26,13 +37,13 @@ function draw(kind, n, note) {
   u.innerHTML = Array.from({ length: whole }, (_, i) => `<i style="--i:${i}">${unitSvg(k.glyph, 18)}</i>`).join('')
     + (part >= 0.1 ? `<i class="part" style="--i:${whole};--p:${Math.round(part * 100)}%">${unitSvg(k.glyph, 18)}</i>` : '');
   u.setAttribute('role', 'img'); u.setAttribute('aria-label', `${n} ${per > 1 ? `(one figure = ${per})` : ''}`);
-  $(k.b).textContent = n.toLocaleString();
+  tick($(k.b), n);
   if (per > 1) u.title = `One figure = ${per}`;
   if (note) u.insertAdjacentHTML('beforeend', `<small style="align-self:center;color:var(--ink-2);font-size:13px;margin-left:6px">${note}</small>`);
 }
 function waiting() { for (const k of Object.values(KINDS)) $(k.u).innerHTML = Array.from({ length: 8 }, () => `<i>${unitSvg(k.glyph, 18)}</i>`).join(''); }
 function failed(kinds, what) {
-  for (const kind of kinds) { const k = KINDS[kind]; $(k.b).textContent = '–'; $(k.u).classList.remove('wait'); $(k.u).innerHTML = `<small style="color:var(--ink-2);font-size:13px">Couldn’t reach ${what} just now. The globe app retries on its own.</small>`; }
+  for (const kind of kinds) { const k = KINDS[kind]; $(k.b).textContent = '–'; document.querySelectorAll(`[data-count="${kind}"]`).forEach((b) => { b.textContent = '–'; }); $(k.u).classList.remove('wait'); $(k.u).innerHTML = `<small style="color:var(--ink-2);font-size:13px">Couldn’t reach ${what} just now. The globe app retries on its own.</small>`; }
 }
 waiting();
 
@@ -44,9 +55,11 @@ try {
     .width(stage.clientWidth).height(stage.clientHeight).backgroundColor('rgba(0,0,0,0)')
     .globeImageUrl('app/textures/earth-blue-marble-2k.jpg').bumpImageUrl('app/textures/earth-topology.png')
     .showAtmosphere(true).atmosphereAltitude(0.14)
-    .pointLat('lat').pointLng('lng').pointAltitude((d) => (picked && d.kind !== picked ? 0.002 : d.alt)).pointRadius('r')
-    .pointColor((d) => (picked && d.kind !== picked ? 'rgba(128,128,128,0.25)' : tone(KINDS[d.kind].color))).pointsMerge(false).pointResolution(8)
-    .pointLabel((d) => d.tip).pointsTransitionDuration(reduce ? 0 : 500);
+    .pointLat('lat').pointLng('lng').pointAltitude((d) => (lit() && d.kind !== lit() ? 0.002 : d.alt)).pointRadius('r')
+    .pointColor((d) => (lit() && d.kind !== lit() ? 'rgba(128,128,128,0.25)' : tone(KINDS[d.kind].color))).pointsMerge(false).pointResolution(8)
+    .pointLabel((d) => d.tip).pointsTransitionDuration(reduce ? 0 : 500)
+    .ringLat('lat').ringLng('lng').ringColor((d) => { const c = tone(KINDS[d.kind].color); return (t) => rgba(c, (1 - t) * 0.9); })
+    .ringMaxRadius(4).ringPropagationSpeed(1.6).ringRepeatPeriod(1400);
   g.pointOfView({ lat: 15, lng: 150, altitude: 1.75 }, 0);
   const c = g.controls(); c.enableZoom = false; c.autoRotate = !reduce; c.autoRotateSpeed = 0.35;
   stage.querySelector('.fallback')?.remove();
@@ -54,16 +67,63 @@ try {
   const atm = () => g.atmosphereColor(document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches) ? '#7fb6ff' : '#8fb0e0');
   atm(); document.addEventListener('themechange', () => { atm(); refresh(); });
 } catch { /* no WebGL: the counts still work, the grey disc stays */ }
-function refresh() { g?.pointsData([...pts.quakes, ...pts.fires, ...pts.storms, ...pts.volcanoes]); }
+function refresh() {
+  g?.pointsData([...pts.quakes, ...pts.fires, ...pts.storms, ...pts.volcanoes]);
+  // the picked kind's six biggest points send out slow rings, so the eye finds them
+  const top = picked && picked !== 'all' ? [...pts[picked]].sort((a, z) => z.w - a.w).slice(0, 6) : [];
+  g?.ringsData(reduce ? [] : top);
+}
 
-// Rows are toggle buttons: pick one to isolate it on the globe and turn the globe towards the biggest one.
-document.querySelectorAll('#tally button').forEach((b) => b.addEventListener('click', () => {
-  const k = b.dataset.k; picked = picked === k ? null : k;
+// One place decides what the globe shows: a tally row you press, or the chapter you scroll to. Each turns the
+// globe to its view (the biggest point of that kind when there is one) and lights only its own points.
+const cap = $('stage-cap'); const LABEL = { quakes: 'Earthquakes, last 24 hours', fires: 'Wildfires', storms: 'Severe storms', volcanoes: 'Volcanoes', all: 'Everything at once' };
+function show(kind, view) {
+  picked = kind && kind !== 'home' ? kind : null;
   document.querySelectorAll('#tally button').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.k === picked)));
-  refresh();
-  const top = picked && [...pts[picked]].sort((a, z) => z.w - a.w)[0];
-  if (g && top) { g.controls().autoRotate = false; g.pointOfView({ lat: top.lat, lng: top.lng, altitude: 2 }, reduce ? 0 : 1200); }
-}));
+  document.querySelectorAll('.ch-dots a').forEach((a) => { if (a.dataset.go === (kind ?? 'home')) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current'); });
+  if (cap) cap.textContent = LABEL[picked] ?? '';
+  const pool = picked && picked !== 'all' ? pts[picked] : [];
+  const topPt = !(picked === 'quakes' && view) && [...pool].sort((a, z) => z.w - a.w)[0];
+  const [la, ln, al] = (view ?? '').split(',').map(Number);
+  const to = topPt ? { lat: topPt.lat, lng: topPt.lng, altitude: al || 1.8 } : view ? { lat: la, lng: ln, altitude: al } : null;
+  if (g) {
+    g.controls().autoRotate = !reduce && (!picked || picked === 'all');
+    if (to) g.pointOfView(to, reduce ? 0 : 1600);
+    refresh();
+  }
+}
+document.querySelectorAll('#tally button').forEach((b) => b.addEventListener('click', () => show(picked === b.dataset.k ? null : b.dataset.k)));
+
+// Chapters: the one crossing the middle of the screen is the one the globe shows. Its big number counts up the
+// first time it arrives.
+const chapters = [...document.querySelectorAll('#journey [data-ch]')];
+let current = 'home';
+const io = new IntersectionObserver((list) => {
+  for (const x of list) {
+    if (!x.isIntersecting) continue;
+    const el = x.target; const kind = el.dataset.ch; if (kind === current) continue;
+    current = kind; show(kind, el.dataset.view);
+    el.classList.add('here'); chapters.forEach((c) => c !== el && c.classList.remove('here'));
+    const big = el.querySelector('[data-count]');
+    if (big && !big.dataset.shown) { big.dataset.shown = '1'; if (counts[big.dataset.count] != null) tick(big, counts[big.dataset.count]); }
+  }
+}, { rootMargin: matchMedia('(max-width: 900px)').matches ? '-62% 0px -28% 0px' : '-45% 0px -45% 0px' }); // on phones the globe covers the top of the screen
+chapters.forEach((c) => io.observe(c));
+
+// Depth: on a mouse or trackpad the globe leans a few degrees toward the pointer and springs back when it
+// leaves, like an object on a desk rather than a picture on a page.
+const fig = el.closest('.stage');
+if (fig && !reduce && matchMedia('(pointer: fine)').matches) {
+  let tx = 0; let ty = 0; let x = 0; let y = 0; let raf = 0;
+  const loop = () => {
+    x += (tx - x) * 0.08; y += (ty - y) * 0.08;
+    fig.style.transform = `perspective(1400px) rotateX(${(-y * 7).toFixed(2)}deg) rotateY(${(x * 9).toFixed(2)}deg)`;
+    raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.001 ? requestAnimationFrame(loop) : 0;
+  };
+  const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
+  addEventListener('pointermove', (e) => { const r = fig.getBoundingClientRect(); tx = Math.max(-1, Math.min(1, (e.clientX - r.left) / r.width * 2 - 1)); ty = Math.max(-1, Math.min(1, (e.clientY - r.top) / r.height * 2 - 1)); kick(); }, { passive: true });
+  document.addEventListener('pointerleave', () => { tx = 0; ty = 0; kick(); });
+}
 
 fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson').then((r) => (r.ok ? r.json() : Promise.reject())).then((d) => {
   const f = d.features.filter((q) => q.properties.mag != null);

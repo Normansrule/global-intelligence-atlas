@@ -4,10 +4,10 @@
    headings and numbers, quantities drawn as rows of identical figures. Light is the printed chart, dark is the
    same chart on ink. */
 :root {
-  --ground: #f3f4f0; --panel: #fbfbf8; --sunk: #e7e9e3; --line: #cfd3cb;
-  --ink: #1b1c1a; --ink-2: #51574f;
-  --accent: #1f4e9c; --on-accent: #ffffff; --accent-2: #2e6a3c; --red: #b0302a; --ochre: #8a5a06;
-  --globe-bg: transparent; color-scheme: light;
+  --ground: #f1ebde; --panel: #faf6ee; --sunk: #e6dfce; --line: #d3c9b4;
+  --ink: #1d2433; --ink-2: #545a66;
+  --accent: #1d4f9e; --on-accent: #ffffff; --accent-2: #256a5c; --red: #a8322a; --ochre: #835607;
+  --globe-bg: transparent; --grid: rgba(29,79,158,.07); color-scheme: light;
   --display: 'Jost', 'Futura', 'Century Gothic', 'Trebuchet MS', sans-serif;
   --body: 'Atkinson Hyperlegible', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   /* spacing: 4-point steps, named by use */
@@ -16,14 +16,15 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1); --settle: cubic-bezier(0.16, 1, 0.3, 1);
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme='light']) {
-  --ground: #0f1113; --panel: #1b1e21; --sunk: #24282b; --line: #33393d; --ink: #ecebe6; --ink-2: #a7aca4;
-  --accent: #84a9ff; --on-accent: #0c1424; --accent-2: #93c47d; --red: #ff6b5e; --ochre: #f0b445; color-scheme: dark; } }
+  --ground: #0b1524; --panel: #13233a; --sunk: #1a2e48; --line: #29425f; --ink: #eaeef4; --ink-2: #a7b5c6;
+  --accent: #93b6ff; --on-accent: #0b1524; --accent-2: #72d2be; --red: #ff8270; --ochre: #f2b84b; --grid: rgba(147,182,255,.07); color-scheme: dark; } }
 :root[data-theme='dark'] {
-  --ground: #0f1113; --panel: #1b1e21; --sunk: #24282b; --line: #33393d; --ink: #ecebe6; --ink-2: #a7aca4;
-  --accent: #84a9ff; --on-accent: #0c1424; --accent-2: #93c47d; --red: #ff6b5e; --ochre: #f0b445; color-scheme: dark; }
+  --ground: #0b1524; --panel: #13233a; --sunk: #1a2e48; --line: #29425f; --ink: #eaeef4; --ink-2: #a7b5c6;
+  --accent: #93b6ff; --on-accent: #0b1524; --accent-2: #72d2be; --red: #ff8270; --ochre: #f2b84b; --grid: rgba(147,182,255,.07); color-scheme: dark; }
 
 * { box-sizing: border-box; }
 html { scroll-padding-top: 80px; }
+html, body { overflow-x: clip; }
 body { margin: 0; background: var(--ground); color: var(--ink); font: 17px/1.6 var(--body); }
 a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1px; }
 a:hover { text-decoration-thickness: 2px; }
@@ -56,15 +57,39 @@ h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; 
 .btn:active, .theme:active { transform: scale(0.97); }
 
 /* hero: the counted chart on the left, the globe on the right */
-.hero { padding: var(--s7) 0 var(--s7); border-bottom: 1px solid var(--line); }
-.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: var(--s7); align-items: center; }
+.hero { min-height: calc(100svh - 61px); padding: var(--s7) 0; display: flex; flex-direction: column; justify-content: center; }
 .eyebrow { display: inline-block; font: 600 14px/1 var(--display); color: var(--ink-2); margin: 0 0 var(--s4); }
 .eyebrow a { color: inherit; }
 .hero h1 { font-size: clamp(40px, 4.6vw, 64px); line-height: 1; letter-spacing: -0.02em; margin: 0 0 var(--s4); max-width: 13ch; }
 .hero .lede { font-size: clamp(17px, 1.5vw, 19px); color: var(--ink-2); max-width: 46ch; margin: 0 0 var(--s5); }
 .row { display: flex; gap: var(--s3); flex-wrap: wrap; }
-.stage { position: relative; aspect-ratio: 1; width: 100%; max-width: 620px; justify-self: center; }
-#hero-globe { position: absolute; inset: 0; }
+.stage { position: relative; aspect-ratio: 1; width: 100%; max-width: min(640px, calc(100svh - 140px)); margin: 0; }
+
+/* ---------- The journey: one live globe pinned beside the story ----------
+   After Apple's product pages: the text scrolls, the globe stays and answers. Each chapter turns the globe to
+   its place and lights only its own points (home.js). The column is a normal grid item, so the stage inside
+   it can stick for as long as the story runs. */
+.journey { position: relative; isolation: isolate; width: min(1160px, 100% - 32px); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: var(--s7); border-bottom: 1px solid var(--line); }
+.journey-stage { position: relative; }
+.journey-stage .stage { isolation: isolate; position: sticky; top: calc(var(--nav-h, 61px) + (100svh - var(--nav-h, 61px) - min(640px, 100svh - 140px)) / 2); }
+.stage-cap { position: absolute; left: 0; right: 0; bottom: 2%; text-align: center; font: 600 14px/1.3 var(--display); color: var(--ink-2); pointer-events: none; transition: opacity 300ms var(--ease-out); }
+.stage-cap:empty { opacity: 0; }
+.chapter { min-height: 92svh; display: flex; flex-direction: column; justify-content: center; padding: var(--s7) 0; max-width: 34rem; }
+.chapter h2 { font-size: clamp(34px, 4vw, 56px); line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 var(--s4); }
+.chapter p { color: var(--ink-2); font-size: 19px; margin: 0 0 var(--s4); max-width: 40ch; }
+.chapter .ch-n { font: 700 clamp(72px, 9vw, 132px)/0.85 var(--display); margin: 0 0 var(--s3) !important; color: transparent !important; -webkit-text-stroke: 1.5px var(--tone, var(--ink-2)); letter-spacing: -0.04em; }
+.ch-big { display: flex; align-items: baseline; gap: var(--s3); flex-wrap: wrap; }
+.ch-big b { font: 700 clamp(48px, 6vw, 84px)/1 var(--display); color: var(--tone); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+.ch-big span { color: var(--ink); font-size: 19px; }
+.ch-link { font: 600 16px/1 var(--display); text-decoration: none; display: inline-flex; gap: 8px; align-items: center; width: fit-content; }
+.ch-link::after { content: '→'; transition: transform 300ms var(--settle); }
+.ch-link:hover::after { transform: translateX(5px); }
+.chapter-end h2 { font-size: clamp(40px, 5vw, 72px); }
+.ch-dots { position: sticky; top: calc(100svh - 60px); display: flex; justify-content: center; gap: 10px; list-style: none; margin: 0; padding: 0 0 var(--s4); }
+.ch-dots a { display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: transform 300ms var(--settle), background-color 200ms var(--ease-out); }
+.ch-dots a:hover { transform: scale(1.5); }
+.ch-dots a[aria-current='step'] { background: var(--accent); transform: scale(1.4); }
+#hero-globe { position: absolute; inset: 0; -webkit-mask-image: radial-gradient(circle closest-side, #000 86%, transparent); mask-image: radial-gradient(circle closest-side, #000 86%, transparent); }
 #hero-globe canvas { outline: none; }
 .stage .fallback { position: absolute; inset: 12%; border-radius: 50%; background: var(--sunk); }
 .stage figcaption { position: absolute; left: 0; right: 0; bottom: -8px; text-align: center; font-size: 13px; color: var(--ink-2); }
@@ -75,7 +100,8 @@ h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; 
 .tally button { display: grid; align-items: start; grid-template-columns: 1fr auto; grid-template-areas: 'l n' 'u u'; gap: 2px var(--s3); width: 100%; padding: 10px 4px; background: none; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; border-radius: var(--r); }
 .tally button:hover, .tally button[aria-pressed='true'] { background: var(--sunk); }
 .tally .l { grid-area: l; font-size: 15px; }
-.tally .l small { display: block; color: var(--ink-2); font-size: 13px; }
+.tally .l small { display: none; color: var(--ink-2); font-size: 13px; }
+.tally button[aria-pressed='true'] .l small { display: block; animation: rise 360ms var(--settle) both; }
 .tally b { grid-area: n; font: 600 22px/1.1 var(--display); font-variant-numeric: tabular-nums; }
 .tally .u { grid-area: u; display: flex; flex-wrap: wrap; gap: 3px; min-height: 20px; color: var(--tone); }
 .tally .u i { display: block; width: 18px; height: 18px; line-height: 0; animation: unit-in 460ms var(--settle) both; animation-delay: calc(var(--i) * 30ms); }
@@ -93,20 +119,22 @@ p.intro { color: var(--ink-2); max-width: 60ch; margin: 0 0 var(--s7); font-size
 
 /* inventory: what is on the globe, counted */
 .inventory { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--s7); border-top: 2px solid var(--ink); }
-.inventory > div { display: grid; grid-template-columns: 4.5ch 1fr; gap: 0 var(--s3); padding: var(--s4) 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.inventory > details { border-bottom: 1px solid var(--line); }
+.inventory summary { display: grid; grid-template-columns: 4.5ch 1fr auto; gap: 0 var(--s3); padding: var(--s4) 4px; align-items: baseline; }
+.inventory .more { padding: 0 4px var(--s4) calc(4.5ch + var(--s3) + 4px); color: var(--ink-2); font-size: 15px; }
+.inventory .more p { margin: 0 0 var(--s1); }
 .inventory b { font: 600 28px/1 var(--display); font-variant-numeric: tabular-nums; color: var(--tone, var(--ink)); }
 .inventory span { color: var(--ink); }
-.inventory span small { display: block; color: var(--ink-2); font-size: 15px; }
 
 /* ways in: a plain index, not a card wall */
 .index { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
 .index li { border-bottom: 1px solid var(--line); }
-.index a { display: grid; grid-template-columns: minmax(180px, 0.9fr) 2fr auto; gap: var(--s5); align-items: baseline; padding: var(--s4) 4px; color: var(--ink); text-decoration: none; transition: background-color 180ms var(--ease-out); }
-.index a:hover { background: var(--sunk); }
+.index summary { display: flex; align-items: baseline; gap: var(--s3); padding: var(--s4) 4px; color: var(--ink); }
+.index .tag { margin-left: auto; font: 600 13px/1 var(--display); color: var(--tone); border: 1px solid currentColor; border-radius: var(--r); padding: 4px 7px; }
+.index .more { display: flex; align-items: center; gap: var(--s5); padding: 0 4px var(--s4) 13px; }
+.index .more .btn { padding: 8px 14px; font-size: 15px; flex: none; }
 .index h3 { margin: 0; font-size: 21px; line-height: 1.25; }
 .index p { margin: 0; color: var(--ink-2); }
-.index .go { font: 600 15px/1 var(--display); color: var(--accent); white-space: nowrap; transition: transform 180ms var(--ease-out); }
-.index a:hover .go { transform: translateX(3px); }
 .shot { margin: 0 0 var(--s7); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--sunk); }
 .shot img { display: block; width: 100%; height: auto; }
 
@@ -118,6 +146,12 @@ p.intro { color: var(--ink-2); max-width: 60ch; margin: 0 0 var(--s7); font-size
 .page-head h1 { font-size: clamp(38px, 5.4vw, 64px); line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 var(--s4); max-width: 16ch; }
 .page-head p { color: var(--ink-2); font-size: 20px; max-width: 60ch; margin: 0; }
 .lesson { display: grid; grid-template-columns: 280px 1fr; gap: var(--s7); padding: var(--s7) 0; border-top: 1px solid var(--line); }
+.lesson:has(> details) { display: block; padding: 0; }
+.lesson > details > summary { display: grid; grid-template-columns: 200px minmax(0, 1fr) auto auto; gap: var(--s2) var(--s5); align-items: baseline; padding: var(--s4) 4px; }
+.lesson > details > summary .meta { margin: 0; font-size: 14px; }
+.lesson > details > summary h2 { margin: 0; font-size: 22px; }
+.lesson .key { font: 500 15px/1.3 var(--display); color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 32ch; }
+.lesson > details > .more { padding: 0 4px var(--s6) calc(200px + var(--s5) + 4px); }
 .lesson h2 { font-size: 28px; line-height: 1.1; margin: 0 0 var(--s2); }
 .lesson .meta { color: var(--ink-2); font-size: 15px; }
 .lesson p { max-width: 68ch; margin: 0 0 var(--s3); }
@@ -152,17 +186,131 @@ footer.site .logo { margin-bottom: var(--s3); }
 .fluid-hint { position: absolute; left: 16px; bottom: 16px; background: var(--panel); color: var(--ink-2); border-radius: var(--r); padding: 8px 12px; font-size: 14px; pointer-events: none; }
 .controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 0; }
 
+/* ---------- Disclosure: a short line you can open for the full detail ----------
+   Native <details>, so it works without scripts and with the keyboard. Where the browser can animate to
+   height:auto (interpolate-size), the body slides open; elsewhere it simply appears and fades in. */
+:root { interpolate-size: allow-keywords; }
+details > summary { list-style: none; cursor: pointer; transition: background-color 180ms var(--ease-out); }
+details > summary::-webkit-details-marker { display: none; }
+details > summary:hover { background: var(--sunk); }
+details > summary::after { content: ''; flex: none; align-self: center; width: 8px; height: 8px; margin: 0 6px 0 var(--s2); border-right: 2px solid var(--ink-2); border-bottom: 2px solid var(--ink-2); transform: translateY(-2px) rotate(45deg); transition: transform 300ms var(--settle); }
+details[open] > summary::after { transform: translateY(1px) rotate(225deg); }
+details::details-content { block-size: 0; overflow: clip; transition: block-size 420ms var(--settle), content-visibility 420ms allow-discrete; }
+details[open]::details-content { block-size: auto; }
+details[open] > .more { animation: rise 420ms var(--settle) both; }
+
+/* ---------- Motion: arrival, scroll and hover ----------
+   Everything here moves only transform and opacity (cheap for the compositor), arrives once and then holds
+   still. Scroll reveals are gated on html.js so a page without scripts is fully visible. */
+@view-transition { navigation: auto; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 260ms; animation-timing-function: var(--ease-out); }
+:root.theme-vt::view-transition-old(root) { animation: none; }
+:root.theme-vt::view-transition-new(root) { animation: theme-wipe 560ms var(--settle); }
+@keyframes theme-wipe { from { clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 0)); } to { clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 50%) var(--vt-y, 0)); } }
+
+/* Orbits: a faint wireframe of the globe and two satellite tracks behind the live one (assets/orbits.svg,
+   used as a mask so it takes the theme's line colour). It turns slowly as you scroll, for depth. */
+.journey-stage .stage::before { content: ''; position: absolute; inset: -22%; z-index: -1; pointer-events: none; background: var(--line);
+  -webkit-mask: url('orbits.svg') center / contain no-repeat; mask: url('orbits.svg') center / contain no-repeat; opacity: 0.9; }
+
+/* Reading progress along the bottom edge of the sticky nav, driven by the scroll position itself. */
+.nav::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: 0 50%; }
+@supports (animation-timeline: scroll()) {
+  .nav::after { animation: read-progress linear both; animation-timeline: scroll(root); }
+  .nav { animation: nav-lift linear both; animation-timeline: scroll(root); animation-range: 0 120px; }
+}
+@keyframes read-progress { to { transform: scaleX(1); } }
+@keyframes nav-lift { to { box-shadow: 0 6px 18px -12px rgba(0,0,0,.35); } }
+
+/* Hero arrival: the words settle in one after another, the globe opens up behind them. */
+.js .hero .eyebrow, .js .hero h1:not(.split), .js .hero .lede, .js .hero .row, .js .hero .tally, .js .hero .tally-note, .js .page-head > .wrap > * {
+  animation: rise 760ms var(--settle) both; }
+.js .hero h1, .js .page-head > .wrap > :nth-child(2) { animation-delay: 70ms; }
+.js .hero .lede, .js .page-head > .wrap > :nth-child(3) { animation-delay: 140ms; }
+.js .hero .row { animation-delay: 210ms; }
+.js .hero .tally { animation-delay: 280ms; }
+.js .hero .tally-note { animation-delay: 340ms; }
+.js .stage { animation: open-up 1100ms var(--settle) 120ms backwards; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes open-up { from { opacity: 0; transform: scale(0.94) rotate(-4deg); } }
+
+/* Headline words rise out of their own line, one after another (site.js wraps them). */
+h1.split .w { display: inline-block; overflow: clip; overflow-clip-margin: 0.12em; vertical-align: top; padding-bottom: 0.06em; }
+h1.split .w > span { display: inline-block; animation: word-up 1000ms var(--settle) both; animation-delay: calc(60ms + var(--i) * 70ms); }
+@keyframes word-up { from { transform: translateY(105%) rotate(4deg); opacity: 0; } 40% { opacity: 1; } }
+
+/* Magnetic buttons ease back when the pointer leaves; a light follows the pointer across rows. */
+.btn.magnetic { transition: translate 500ms var(--settle), transform 160ms var(--ease-out), background-color 180ms var(--ease-out); }
+details > summary, .tally button { background-image: radial-gradient(260px circle at var(--mx, -999px) var(--my, -999px), color-mix(in srgb, var(--accent) 11%, transparent), transparent 70%); }
+
+/* Section titles fill with ink as they cross the screen, as on Apple's product pages. Only where the
+   browser can tie an animation to scrolling; elsewhere they are simply solid. */
+@supports (animation-timeline: view()) {
+  h2.title, .chapter h2 { animation: ink-fill linear both; animation-timeline: view(); animation-range: entry 20% cover 40%; }
+  @keyframes ink-fill { from { color: color-mix(in srgb, var(--ink) 22%, var(--ground)); } to { color: var(--ink); } }
+  /* the graticule drifts slower than the page, so the story has depth */
+  .journey-stage .stage::before { animation: orbit-turn linear both; animation-timeline: scroll(root); }
+  @keyframes orbit-turn { to { transform: rotate(140deg) scale(1.08); } }
+}
+
+/* Scroll reveal: site.js tags blocks with data-reveal and a stagger index, and adds .in once seen. */
+.js [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity 700ms var(--ease-out), transform 800ms var(--settle); transition-delay: calc(var(--d, 0) * 55ms); }
+.js [data-reveal].in { opacity: 1; transform: none; }
+
+/* Nav links: an underline slides in from the left on hover; the current page keeps it. */
+.nav ul a { position: relative; }
+.nav ul a::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: 4px; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: 0 50%; transition: transform 260ms var(--ease-out); }
+.nav ul a:hover::after { transform: scaleX(1); }
+.nav ul a:hover { background: none; }
+
+/* Buttons: lift a pixel, and a light band sweeps across the solid one. */
+.btn { position: relative; overflow: hidden; transition: transform 160ms var(--ease-out), background-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out); }
+.btn:hover { transform: translateY(-1px); }
+.btn:not(.ghost)::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.28) 50%, transparent 70%); transform: translateX(-120%); pointer-events: none; }
+.btn:not(.ghost):hover::after { transform: translateX(120%); transition: transform 700ms var(--ease-out); }
+.btn:active { transform: scale(0.97); }
+
+/* Index rows: a coloured rule grows down the left edge and the title steps toward it. */
+.index summary { position: relative; }
+.index h3 { transition: transform 300ms var(--settle); }
+.index summary:hover h3, .index details[open] h3 { transform: translateX(10px); }
+
+/* Inventory and names: small responses so the page feels handled, not printed. */
+.inventory b { display: inline-block; transition: transform 300ms var(--settle); }
+.inventory summary:hover b { transform: translateY(-2px); }
+.names li { transition: transform 200ms var(--ease-out), border-color 200ms var(--ease-out), color 200ms var(--ease-out); }
+.names li:hover { transform: translateY(-2px); border-color: var(--accent); color: var(--ink); }
+.shot img { transition: transform 1200ms var(--settle); }
+.shot:hover img { transform: scale(1.015); }
+.theme svg { transition: transform 500ms var(--settle); }
+.theme[aria-pressed='true'] svg { transform: rotate(180deg); }
+.dl-grid .card h3 { transition: color 180ms var(--ease-out); }
+.dl-grid .card:hover h3 { color: var(--accent); }
+
 /* Reduced motion: nothing travels; colour changes stay so state is still visible. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; transition-property: color, background-color, box-shadow, opacity !important; }
+  h2.title, .chapter h2 { animation: none !important; color: var(--ink) !important; }
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; transition-property: color, background-color, box-shadow, opacity !important; transition-delay: 0ms !important; }
+  .nav::after { display: none; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
 @media (max-width: 900px) {
-  .hero { padding-top: var(--s6); }
-  .hero .wrap { grid-template-columns: 1fr; gap: var(--s5); }
-  .stage { max-width: 340px; }
+  .journey { grid-template-columns: 1fr; gap: 0; }
+  .journey-text { grid-row: 2; }
+  .journey-stage { grid-row: 1; position: sticky; top: var(--nav-h, 61px); z-index: 2; align-self: start; height: 38svh; display: flex; justify-content: center; background: linear-gradient(var(--ground) calc(100% - 14px), transparent); padding-bottom: 14px; }
+  .chapter { scroll-margin-top: calc(var(--nav-h, 61px) + 38svh); }
+  .journey-stage .stage { position: relative; top: 0; height: 100%; width: auto; max-width: none; }
+  .ch-dots { display: none; }
+  .hero { min-height: 0; padding: var(--s5) 0 var(--s7); }
+  .chapter { min-height: 62svh; }
+  .ch-n { font-size: 64px; }
   .inventory { grid-template-columns: 1fr; }
-  .index a { grid-template-columns: 1fr; gap: var(--s1); }
+  .index .more { flex-direction: column; align-items: flex-start; gap: var(--s2); }
   .lesson { grid-template-columns: 1fr; gap: var(--s2); }
+  .lesson > details > summary { grid-template-columns: minmax(0, 1fr) auto; }
+  .lesson > details > summary .meta { grid-column: 1 / -1; }
+  .lesson .key { display: none; }
+  .lesson > details > .more { padding-left: 4px; }
   footer.site .wrap { grid-template-columns: 1fr; }
   section.block { padding: var(--s8) 0; }
   .nav .wrap { flex-wrap: wrap; gap: var(--s2) var(--s3); padding: var(--s2) 0 0; }

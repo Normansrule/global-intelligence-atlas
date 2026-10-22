@@ -1,25 +1,24 @@
 /* SPDX-License-Identifier: AGPL-3.0-only
    Global Intelligence Atlas: "Counted world". After Otto Neurath and Gerd Arntz's Isotype charts (Vienna, 1925-1934),
    made so anyone could read public statistics. Flat colour that names a category, never decoration; a geometric
-   face for headings and numbers; quantities shown as counted units. Light is the printed chart, dark is the same
-   chart on ink. Every colour below is a token; components never use a literal that only works in one theme. */
+   face for headings and numbers; quantities shown as counted units. Day is a chart printed on warm map paper; night is the same chart on deep blue ink. Every colour below is a token; components never use a literal that only works in one theme. */
 :root {
   /* light: the printed chart */
-  --ground: #e9ebe6;      /* behind the globe */
-  --chrome: #f3f4f0;      /* top bar, section rail, status bar */
-  --panel: #fbfbf8;       /* drawers, cards, menus */
-  --sunk: #e4e7e1;        /* inputs and wells */
-  --line: #cfd3cb;
-  --ink: #1b1c1a;
-  --ink-2: #51574f;
-  --accent: #1f4e9c;      /* Isotype ultramarine: actions, selection, focus */
+  --ground: #ece5d6;      /* behind the globe: warm map paper */
+  --chrome: #f4efe3;      /* top bar, section rail, status bar */
+  --panel: #faf6ee;       /* drawers, cards, menus */
+  --sunk: #e3dccb;        /* inputs and wells */
+  --line: #d3c9b4;
+  --ink: #1d2433;          /* blue-black, like printing ink */
+  --ink-2: #545a66;
+  --accent: #1d4f9e;      /* Isotype ultramarine: actions, selection, focus */
   --on-accent: #ffffff;
-  --accent-2: #2e6a3c;    /* Isotype green: links, "on" states */
-  --red: #b0302a;         /* Isotype red: hazards, live, alerts */
-  --ochre: #8a5a06;       /* Isotype ochre: warnings, time travel */
-  --ok: #2c7a4b; --warn: #8a5a06; --danger: #b0302a; --danger-ink: #b02a24;
-  --shadow: 0 10px 30px rgba(27, 28, 26, 0.16);
-  --globe-bg: #e9ebe6;
+  --accent-2: #256a5c;    /* sea green: links, "on" states */
+  --red: #a8322a;         /* Isotype red: hazards, live, alerts */
+  --ochre: #835607;       /* Isotype ochre: warnings, time travel */
+  --ok: #256a5c; --warn: #835607; --danger: #a8322a; --danger-ink: #a8322a;
+  --shadow: 0 12px 32px rgba(60, 45, 20, 0.16);
+  --globe-bg: #e6dece;
   color-scheme: light;
   --display: 'Jost', 'Futura', 'Century Gothic', 'Trebuchet MS', sans-serif;
   --body: 'Atkinson Hyperlegible', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
@@ -33,15 +32,15 @@
   --dur-press: 120ms; --dur-ui: 180ms;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme='light']) {
-  --ground: #0f1113; --chrome: #15181a; --panel: #1b1e21; --sunk: #24282b; --line: #33393d;
-  --ink: #ecebe6; --ink-2: #a7aca4; --accent: #84a9ff; --on-accent: #0c1424; --accent-2: #93c47d;
-  --red: #ff6b5e; --ochre: #f0b445; --ok: #6fce8f; --warn: #f0b445; --danger: #ff6b5e; --danger-ink: #ffb3a6;
-  --shadow: 0 14px 40px rgba(0, 0, 0, 0.5); --globe-bg: #0b0d0f; color-scheme: dark; } }
+  --ground: #0b1524; --chrome: #0f1b2d; --panel: #13233a; --sunk: #1a2e48; --line: #29425f;
+  --ink: #eaeef4; --ink-2: #a7b5c6; --accent: #93b6ff; --on-accent: #0b1524; --accent-2: #72d2be;
+  --red: #ff8270; --ochre: #f2b84b; --ok: #72d2be; --warn: #f2b84b; --danger: #ff8270; --danger-ink: #ffb8aa;
+  --shadow: 0 16px 44px rgba(2, 8, 18, 0.6); --globe-bg: #070f1b; color-scheme: dark; } }
 :root[data-theme='dark'] {
-  --ground: #0f1113; --chrome: #15181a; --panel: #1b1e21; --sunk: #24282b; --line: #33393d;
-  --ink: #ecebe6; --ink-2: #a7aca4; --accent: #84a9ff; --on-accent: #0c1424; --accent-2: #93c47d;
-  --red: #ff6b5e; --ochre: #f0b445; --ok: #6fce8f; --warn: #f0b445; --danger: #ff6b5e; --danger-ink: #ffb3a6;
-  --shadow: 0 14px 40px rgba(0, 0, 0, 0.5); --globe-bg: #0b0d0f; color-scheme: dark; }
+  --ground: #0b1524; --chrome: #0f1b2d; --panel: #13233a; --sunk: #1a2e48; --line: #29425f;
+  --ink: #eaeef4; --ink-2: #a7b5c6; --accent: #93b6ff; --on-accent: #0b1524; --accent-2: #72d2be;
+  --red: #ff8270; --ochre: #f2b84b; --ok: #72d2be; --warn: #f2b84b; --danger: #ff8270; --danger-ink: #ffb8aa;
+  --shadow: 0 16px 44px rgba(2, 8, 18, 0.6); --globe-bg: #070f1b; color-scheme: dark; }
 :root { --accent-dim: color-mix(in srgb, var(--accent) 13%, transparent); --hover: color-mix(in srgb, var(--ink) 5%, transparent); }
 ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); color: var(--ink); }
 html { scrollbar-color: var(--line) transparent; scrollbar-width: thin; }
@@ -745,7 +744,11 @@ ul.health { list-style: none; margin: 4px 0 12px; padding: 0; display: grid; gap
 
 /* ---------- News section: headlines and live news channels (newsdesk.js) ---------- */
 .news-list { list-style: none; margin: 0; padding: 0; }
-.news-list li { padding: 9px 0; border-bottom: 1px solid var(--line); }
+.news-list li { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 10px; align-items: start; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.news-thumb { position: relative; display: grid; place-items: center; width: 76px; aspect-ratio: 3 / 2; overflow: hidden; border-radius: var(--r); background: var(--sunk); border: 1px solid var(--line); color: var(--ink-2); }
+.news-thumb b { font: 600 15px/1 var(--display); letter-spacing: .04em; }
+.news-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: fade-in 300ms var(--ease-out) both; }
+.news-list li:hover .news-thumb img { transform: scale(1.04); transition: transform 600ms var(--settle); }
 .news-list a { display: block; color: var(--ink); font-size: var(--fs-small); line-height: 1.35; text-decoration: none; }
 .news-list a:hover { color: var(--accent); text-decoration: underline; }
 .news-list small { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 3px; color: var(--ink-2); font-size: var(--fs-caption); }
@@ -796,3 +799,28 @@ button:active:not(:disabled), .btn:active, .chipbtn:active { transform: scale(0.
 /* Units count in on first paint and whenever the number changes; never on a timer. */
 @keyframes unit-in { from { opacity: 0; transform: translateY(4px) scale(0.6); } }
 .themeb[aria-pressed='true'] { background: var(--accent-dim); border-color: var(--accent); }
+
+/* ---------- Motion: panels arrive, the theme spreads ----------
+   Panel boxes appear in place (so the layout checks see their final size at once); only their contents rise
+   and fade in, a beat apart. Transform and opacity only; reduced motion keeps the fade and drops the travel. */
+body.left-open .drawer > *, .notes.open > * { animation: panel-in 380ms var(--settle) both; }
+body.left-open .drawer > :nth-child(2), .notes.open > :nth-child(2) { animation-delay: 45ms; }
+body.left-open .drawer > :nth-child(n+3), .notes.open > :nth-child(n+3) { animation-delay: 90ms; }
+#palette:not([hidden]) { animation: fade-in 180ms var(--ease-out) both; }
+#palette:not([hidden]) > * { animation: pop-in 260ms var(--settle) both; }
+.toast:not(.out) { animation: toast-in 360ms var(--settle) both; }
+.layer { transition: background-color 160ms var(--ease-out); }
+.themeb svg { transition: transform 500ms var(--settle); }
+.themeb[aria-pressed='true'] svg { transform: rotate(180deg); }
+@keyframes panel-in { from { opacity: 0; transform: translateY(8px); } }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(-6px) scale(0.98); } }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 10px); } }
+:root.theme-vt::view-transition-old(root) { animation: none; }
+:root.theme-vt::view-transition-new(root) { animation: theme-wipe 560ms var(--settle); }
+@keyframes theme-wipe { from { clip-path: circle(0 at var(--vt-x, 100%) var(--vt-y, 0)); } to { clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 100%) var(--vt-y, 0)); } }
+@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
+/* Folded explanations (main.js): one line until opened. */
+p.fold { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; line-clamp: 1; overflow: hidden; cursor: pointer; border-radius: var(--r); transition: background-color 160ms var(--ease-out); }
+p.fold:hover { background: var(--sunk); }
+p.fold[aria-expanded='true'] { -webkit-line-clamp: unset; line-clamp: none; cursor: default; background: none; animation: fade-in 260ms var(--ease-out) both; }

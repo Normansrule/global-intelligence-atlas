@@ -460,7 +460,7 @@ export function skyLayer(api) {
     const now = performance.now(); if (now - lastTick < 2) return; lastTick = now;
     U.uT.value = reduce ? frozenT : (now - t0) / 1000;
     const s = subsolarPoint(api.now()); const d = dir(s.lat, s.lng); U.uSun.value.set(d[0], d[1], d[2]);
-    U.uLit.value = api.state.base === 'daynight' || api.state.on.has('sun') ? 1 : 0;
+    U.uLit.value = api.state.base === 'daynight' || api.state.base === 'weather' || api.state.on.has('sun') ? 1 : 0;
     const view = api.view(); const a = view.altitude;
     U.uFade.value = Math.max(0, Math.min(1, (a - 0.012) / 0.04));
     renderer.getDrawingBufferSize(tmp); U.uPx.value = tmp.y / (2 * Math.tan((camera.fov ?? 50) * D2R / 2));

@@ -8,8 +8,8 @@ def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok
 now=datetime.datetime.now(datetime.timezone.utc)
 iso=lambda m: (now-datetime.timedelta(minutes=m)).strftime('%Y-%m-%dT%H:%M:%S.000Z')
 HEAD={'updated': iso(3), 'items': [
-  {'t':'Flooding closes roads across the region','u':'https://www.bbc.com/news/1','at':iso(5),'p':'bbc','r':'europe','f':'bbc:3'},
-  {'t':'Election results due in Nairobi','u':'https://www.africanews.com/2','at':iso(40),'p':'africanews','r':'africa','f':'africanews:0'},
+  {'t':'Flooding closes roads across the region','u':'https://www.bbc.com/news/1','at':iso(5),'p':'bbc','r':'europe','f':'bbc:3','i':'https://ichef.bbci.co.uk/news/976/flood.jpg'},
+  {'t':'Election results due in Nairobi','u':'https://www.africanews.com/2','at':iso(40),'p':'africanews','r':'africa','f':'africanews:0','i':'https://static.euronews.com/missing.jpg'},
   {'t':'Typhoon nears the coast','u':'https://www.japantimes.co.jp/3','at':iso(120),'p':'japantimes','r':'asia','f':'japantimes:0'},
   {'t':'Ceasefire talks resume','u':'https://www.aljazeera.com/4','at':iso(200),'p':'aljazeera','r':'mideast','f':'aljazeera:0'}]}
 CH={'updated': iso(3), 'channels': [
@@ -22,6 +22,11 @@ def news(route):
     body={'headlines.json':HEAD,'channels.json':CH}.get(k)
     if body is None: return route.fulfill(status=404, body='404: Not Found', headers={'Access-Control-Allow-Origin':'*'})
     return route.fulfill(status=200, body=json.dumps(body), headers={'Content-Type':'application/json','Access-Control-Allow-Origin':'*'})
+import base64
+PNG=base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==')
+def pic(route):
+    if 'missing' in route.request.url: return route.fulfill(status=404, body='')
+    return route.fulfill(status=200, body=PNG, headers={'Content-Type':'image/png'})
 embeds=[]
 def yt(route): embeds.append(route.request.url); return route.fulfill(status=200, body='<html><body>player</body></html>', headers={'Content-Type':'text/html'})
 def m3u8(route): return route.fulfill(status=200, body='#EXTM3U\n', headers={'Content-Type':'application/vnd.apple.mpegurl','Access-Control-Allow-Origin':'*'})
@@ -32,6 +37,7 @@ with sync_playwright() as p:
     pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
     pg.route('**/*', handler); pg.route('**/news-data/**', news)
     pg.route(lambda u: 'youtube' in u and '/embed/' in u, yt); pg.route('**/*.m3u8', m3u8)
+    pg.route(lambda u: u.endswith('.jpg') and ('ichef.bbci' in u or 'euronews' in u), pic)
     pg.add_init_script(INIT)
     pg.goto('http://localhost:8765/app/#@20,10,2.5&l=borders', wait_until='commit'); pg.wait_for_timeout(9000)
     btn=pg.locator('.rail [data-section="news"]')
@@ -43,6 +49,11 @@ with sync_playwright() as p:
     meta=pg.locator('#news-list li').first.inner_text()
     check('each headline shows the publisher, its ownership and how long ago', 'BBC News' in meta and 'Public' in meta and 'min ago' in meta, meta.replace('\n',' · '))
     check("headlines open on the publisher's site in a new tab, without passing the page", all(links.nth(i).get_attribute('target')=='_blank' and 'noopener' in links.nth(i).get_attribute('rel') and 'noreferrer' in links.nth(i).get_attribute('rel') for i in range(links.count())))
+    pg.wait_for_timeout(600)
+    th=pg.evaluate("() => [...document.querySelectorAll('#news-list li')].map((li) => { const t = li.querySelector('.news-thumb'); const im = t?.querySelector('img'); return { tile: !!t, initials: t?.querySelector('b')?.textContent, src: im?.getAttribute('src') ?? null, loaded: !!im && im.complete && im.naturalWidth > 0 }; })")
+    check("a headline shows the picture from the publisher's feed", th[0]['src']=='https://ichef.bbci.co.uk/news/976/flood.jpg' and th[0]['loaded'], th[0])
+    check('a picture that will not load falls back to the publisher tile', th[1]['tile'] and th[1]['src'] is None and th[1]['initials']=='A', th[1])
+    check('a story without a picture gets the publisher tile, so the list stays aligned', all(t['tile'] for t in th) and th[2]['src'] is None and th[2]['initials']=='TJ', th[2:])
     check('state-funded publishers are labelled', 'State' in pg.locator('#news-list li', has_text='Ceasefire').inner_text())
     pg.click('[data-news-region="africa"]'); pg.wait_for_timeout(300)
     check('a region chip shows only that region', links.count()==1 and 'Nairobi' in links.first.inner_text(), links.count())
