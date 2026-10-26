@@ -103,7 +103,7 @@ export const LAYERS = [
       return j.events;
     },
     channels(evs) {
-      const points = []; const paths = [];
+      const points = []; const paths = []; const rings = [];
       for (const e of evs) {
         const cat = e.categories?.[0]?.id ?? 'manmade'; const color = EONET_COLORS[cat] ?? '#ddd';
         const pts = e.geometry.filter((g) => g.type === 'Point').map((g) => [g.coordinates[1], g.coordinates[0]]);
@@ -111,9 +111,14 @@ export const LAYERS = [
         const last = pts.at(-1) ?? (polys[0] ? [polys[0].coordinates[0][0][1], polys[0].coordinates[0][0][0]] : null);
         if (!last) continue;
         points.push(point('events', e, last[0], last[1], color, 0.3, 0.02, tip(e.title, e.categories?.[0]?.title)));
-        if (pts.length > 2) paths.push({ pts: pts.map(([a, b]) => [a, b, 0.01]), color: [`${color}22`, color], stroke: 0.6, tip: tip(`${e.title} — track`), ref: { layer: 'events', d: e } });
+        // A track flows: dashes run along it from the first fix to the latest, so you see which way the storm is heading,
+        // and the latest position pulses slowly.
+        if (pts.length > 2) {
+          paths.push({ pts: pts.map(([a, b]) => [a, b, 0.01]), color: [`${color}66`, color], stroke: 1.2, dash: [0.14, 0.04], animMs: Math.max(4000, pts.length * 400), tip: tip(`${e.title} — track`), ref: { layer: 'events', d: e } });
+          rings.push({ lat: last[0], lng: last[1], color, maxR: 2.2, speed: 1.1, period: 2600 });
+        }
       }
-      return { points, paths };
+      return { points, paths, rings };
     },
     describe(e) {
       const g = e.geometry.at(-1);
@@ -126,7 +131,7 @@ export const LAYERS = [
       };
     },
     learn: {
-      what: 'Open natural events from NASA’s Earth Observatory Natural Event Tracker: wildfires, tropical storms (with their tracks), volcanoes, icebergs, floods and more.',
+      what: 'Open natural events from NASA’s Earth Observatory Natural Event Tracker: wildfires, tropical storms, volcanoes, icebergs, floods and more. An event that moves, such as a storm or an iceberg, draws its track with dashes flowing from its first sighting to its latest, which pulses.',
       how: 'EONET links each event to the agencies that report it (InciWeb, GDACS, JTWC, Smithsonian GVP, the U.S. National Ice Center…) and to satellite imagery of the same place and day.',
       try: 'Find a storm track and follow it: most tropical cyclones drift west in the trade winds, then curve poleward and east — the “recurve”.',
       refs: ['eonet'],

@@ -32,10 +32,12 @@ Built on the basis of [World Monitor](https://github.com/koala73/worldmonitor) b
 
 | | |
 |---|---|
-| **65 layers in 11 groups** | Live Earth, economy and property, chemicals and environment, cameras, civic data, sky and space, Earth science, places, infrastructure, geopolitics and Intel |
+| **67 layers in 11 groups** | Live Earth, economy and property, chemicals and environment, cameras, civic data, sky and space, Earth science, places, infrastructure, geopolitics and Intel |
 | **Data sources and references** | Every source is listed in the app (About) and in [`docs/REFERENCES.md`](docs/REFERENCES.md) in American Psychological Association (APA) 7th edition style |
 | **No server, no account, no key** | No application programming interface (API) keys needed. A static site on GitHub Pages; scheduled GitHub Actions jobs collect what browsers cannot fetch directly |
 | **Weather you can see** | Real clouds from the forecast, rain and snow where they are falling, lightning in thunderstorms, and the glow and smoke of large fires, drawn on the globe rather than as symbols. Pick the Weather map style to switch it all on over a muted Earth, and any other style to switch it off |
+| **Landmarks with photos** | Nearly 200 landmarks on every continent, drawn as what they are (ancient site, temple, castle, tower, bridge, natural wonder). Click one for its photo from Wikimedia Commons with the author's credit, a line from Wikipedia, its key figures from Wikidata and the landmarks nearby |
+| **The Moon and the planets** | The real star sky with the Milky Way behind the globe, and the Sun, the Moon, every planet, Pluto and Jupiter's four big moons where they really are right now. Fly to any of them, turn it round on NASA-made maps, read its card and fly on; Earth brings you back |
 | **Learn as you go** | Every layer has a card: what you are seeing, how it is measured, something to try, and its sources. Fifteen lessons, six guided tours and a quiz |
 | **Two ways to run it, one codebase** | The web app and the desktop app run the same `site/` folder, so they have the same features |
 
@@ -87,6 +89,14 @@ Both are built from the same files, so every layer, tool and lesson is in both. 
 <summary><b>🌋 Live Earth</b></summary>
 
 Earthquakes (U.S. Geological Survey (USGS)), natural events and storm tracks (NASA Earth Observatory Natural Event Tracker (EONET)), fire hotspots (NASA Fire Information for Resource Management System (FIRMS)), weather radar (RainViewer), physical clouds, rain, snow and lightning from the Open-Meteo forecast with fire glow and smoke from NASA FIRMS, disaster alerts (Global Disaster Alert and Coordination System (GDACS)), aurora (National Oceanic and Atmospheric Administration (NOAA) Space Weather Prediction Center (SWPC)), wind and temperature (Open-Meteo), rocket launches (Launch Library 2) and news pins (GDELT). Live flights worldwide with a flights board, 3D planes and a seat-back view; ships worldwide from the Automatic Identification System (AIS).
+</details>
+
+<details open>
+<summary><b>🪐 The Moon, the planets, eclipses and a cinematic Earth</b></summary>
+
+The globe is lit by the real Sun: mountains cast shading from the Sun's direction, the oceans glint where sunlight reflects toward you, the air glows blue on the day side and red-orange along the line of sunset, and city lights come on only where it is dark. Behind it is NASA's Tycho star map with the Milky Way, and the Sun, the Moon, the eight planets, Pluto and Jupiter's four big moons at their true positions, sizes and distances, worked out in the browser by [Astronomy Engine](https://github.com/cosinekitty/astronomy) and turned the way the International Astronomical Union (IAU) says each one faces, so the Moon shows its real phase and wobble (libration) and Saturn's rings their real tilt. Click a name, the planet button by the zoom buttons, or Explore → Fly to the Moon: the camera flies there and you can turn it and zoom in; the space bar flies on to the next one, Orbits draws their paths, and Earth flies back to the globe. Maps come from Solar System Scope (Creative Commons Attribution 4.0, made from NASA mission imagery) and NASA 3D Resources (public domain); close to the Moon, Mars or Mercury the atlas also loads NASA's own full global mosaic from Solar System Treks. Links can open in space (`#…&sp=saturn`).
+
+**Eclipses and landing sites.** Explore → Eclipses lists the coming eclipses of the Sun and the Moon; Watch runs the time machine through one while the real shadows are drawn: the Moon's shadow sweeping across the globe (its centre within 20 km of NASA's greatest-eclipse point) and the Earth's copper-red shadow on the Moon. Gold pins mark 17 landings on the Moon and 10 on Mars, each with its story.
 </details>
 
 <details open>
@@ -303,6 +313,8 @@ The full list, with retrieval dates for live feeds, is in [`docs/REFERENCES.md`]
 | [Osiris](https://github.com/simplifaisoul/osiris) · MIT | Design of the Intelligence toolkit, the conflict-zone list and its worldwide public webcam list |
 | [globe.gl](https://github.com/vasturiano/globe.gl) · [three.js](https://github.com/mrdoob/three.js) · MIT | 3D globe, tile engine, shaders |
 | [satellite.js](https://github.com/shashwatak/satellite-js) · MIT | Orbit propagation (Simplified General Perturbations 4, SGP4) |
+| [Astronomy Engine](https://github.com/cosinekitty/astronomy) · MIT | Positions and spin of the Sun, Moon, planets, Pluto and Jupiter's moons |
+| [Solar System Scope textures](https://www.solarsystemscope.com/textures/) · CC BY 4.0 · [NASA 3D Resources](https://github.com/nasa/NASA-3D-Resources) · public domain | Maps of the Sun, Moon and planets, and the star sky |
 | [Tauri](https://github.com/tauri-apps/tauri) · MIT / Apache-2.0 | Desktop app |
 | [WebGL Fluid Simulation](https://github.com/PavelDoGreat/WebGL-Fluid-Simulation) · MIT | Fluid lab |
 | [hls.js](https://github.com/video-dev/hls.js) · Apache-2.0 | Live camera video |

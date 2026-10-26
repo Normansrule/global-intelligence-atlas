@@ -78,6 +78,7 @@ export function installProgramKeeper(globe) {
         k.userData.keeper = true; k.frustumCulled = false; k.renderOrder = -1000; k.raycast = () => {};
         k.scale.setScalar(1e-4); // a speck at the Earth's centre: always hidden behind the globe, never seen
         if (k.count !== undefined && o.count !== undefined) k.count = Math.min(1, o.count);
+        if (k.geometry.isInstancedBufferGeometry) k.geometry.instanceCount = Math.min(1, o.geometry.instanceCount); // one speck, not every ring or trail again
         scene.add(k); kept.set(prog.cacheKey, k);
       } catch { kept.set(prog.cacheKey, null); }
     });

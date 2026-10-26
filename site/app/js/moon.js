@@ -32,7 +32,7 @@ export const moonLayer = {
       .map(([a, n]) => [n, nextMoonPhase(a)]).filter(([, t]) => t).sort((a, b) => a[1] - b[1]);
     const lightSec = m.distKm / 299792.458;
     return {
-      title: `${moonGlyph(m.age)} ${m.name}`, sub: `${Math.round(m.illum * 100)} % lit · ${m.waxing ? 'waxing (growing)' : 'waning (shrinking)'}`,
+      title: `${moonGlyph(m.age)} ${m.name}`, html: '<div class="row"><button class="btn" data-space="moon">Fly to the Moon</button></div>', sub: `${Math.round(m.illum * 100)} % lit · ${m.waxing ? 'waxing (growing)' : 'waning (shrinking)'}`,
       rows: [
         ['Overhead at', `${fmtLat(m.lat)}, ${fmtLng(m.lng)}`],
         ['Distance', `${Math.round(m.distKm).toLocaleString()} km (${lightSec.toFixed(2)} light-seconds)`],

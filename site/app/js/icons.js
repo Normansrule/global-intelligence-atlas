@@ -293,9 +293,46 @@ export const GLYPHS = {
     ['M12 7.6V12l3 2', 'sd', 1.8],
   ],
   moon: [['M15.6 2.2A9.8 9.8 0 1 0 21.8 17 7.8 7.8 0 0 1 15.6 2.2z', 'c']],
+  eclipse: [ // the Moon over the Sun: a bright corona around a dark disc
+    ['M12 1.6a10.4 10.4 0 1 1 0 20.8 10.4 10.4 0 0 1 0-20.8zm0 3.4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z', 'c'],
+    ['M12 5.6a6.4 6.4 0 1 1 0 12.8 6.4 6.4 0 0 1 0-12.8z', 'd'],
+  ],
   pin: [
     ['M12 22.4s7.4-7.6 7.4-13A7.4 7.4 0 0 0 4.6 9.4c0 5.4 7.4 13 7.4 13z', 'c'],
     ['M12 6.6a2.8 2.8 0 1 1 0 5.6 2.8 2.8 0 0 1 0-5.6z', 'd'],
+  ],
+  // ---------------------------------------------------------------- landmarks (landmarks.js)
+  columns: [ // a temple front, for ancient sites
+    ['M2.2 8.6 12 2.6l9.8 6z', 'c'],
+    ['M4.2 10.2h2.8v8.2H4.2zM10.6 10.2h2.8v8.2h-2.8zM17 10.2h2.8v8.2H17z', 'c'],
+    ['M2.2 19.4h19.6v2.4H2.2z', 'c'],
+    ['M7.4 7.4h9.2', 'sl', 1.4],
+  ],
+  dome: [ // a domed roof with a finial, for temples, churches, mosques and shrines
+    ['M12 1.4v3.4', 's', 1.8],
+    ['M4.4 13.2a7.6 7.6 0 0 1 15.2 0z', 'c'],
+    ['M3.2 14.4h17.6v7.4H3.2z', 'c'],
+    ['M10.2 21.8v-4a1.8 1.8 0 0 1 3.6 0v4z', 'd'],
+  ],
+  castle: [ // a crenellated keep, for castles, forts and palaces
+    ['M3 21.8V5.4h3.4v2.8h2.4V5.4h6.4v2.8h2.4V5.4H21v16.4z', 'c'],
+    ['M9.8 21.8v-4.6a2.2 2.2 0 0 1 4.4 0v4.6z', 'd'],
+    ['M6 11.8h2.2M15.8 11.8H18', 'sd', 1.6],
+  ],
+  tower: [ // a tapering tower, for towers, skyscrapers and monuments
+    ['M10.4 1.6h3.2l3 20.2H7.4z', 'c'],
+    ['M9.4 9.4h5.2M8.6 15h6.8', 'sd', 1.4],
+    ['M5.4 21.8h13.2', 's', 2],
+  ],
+  bridge: [ // an arched span, for bridges, dams, canals and other engineering
+    ['M1.6 8.6h20.8v2.6H1.6z', 'c'],
+    ['M3.4 11.2v10.4M20.6 11.2v10.4', 's', 2.2],
+    ['M3.6 21.4a8.4 8.4 0 0 1 16.8 0', 's', 2.4],
+    ['M8 11.2v3.6M12 11.2v2.2M16 11.2v3.6', 'sl', 1.4],
+  ],
+  peak: [ // a mountain with snow, for natural wonders
+    ['M1.4 21 9 6.8l3.8 6.4 2.8-4 7 11.8z', 'c'],
+    ['M9 6.8 6.6 11.3l2.4-1.1 2.2 1.3z', 'l'],
   ],
   // ---------------------------------------------------------------- open-source intelligence
   dossier: [ // file folder with a redaction bar

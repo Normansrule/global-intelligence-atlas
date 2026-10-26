@@ -46,6 +46,8 @@ Animate UI. (n.d.). *Animate UI* [Computer software]. https://animate-ui.com
 
 Apache Software Foundation. (n.d.). *Apache ECharts* [Computer software]. GitHub. https://github.com/apache/echarts
 
+Archinal, B. A., Acton, C. H., A’Hearn, M. F., Conrad, A., Consolmagno, G. J., Duxbury, T., Hestroffer, D., Hilton, J. L., Kirk, R. L., Klioner, S. A., McCarthy, D., Meech, K., Oberst, J., Ping, J., Seidelmann, P. K., Tholen, D. J., Thomas, P. C., & Williams, I. P. (2018). Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2015. *Celestial Mechanics and Dynamical Astronomy, 130*(3), Article 22. https://doi.org/10.1007/s10569-017-9805-5
+
 ARD. (n.d.). *tagesschau24 (ARD) live* [Video live stream]. Retrieved October 18, 2026, from https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8
 
 Arirang News. (n.d.). *Arirang News live* [Video live stream]. Retrieved October 18, 2026, from https://amdlive-ch01-ctnd-com.akamaized.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8
@@ -136,9 +138,13 @@ CNA. (n.d.-b). *CNA (Channel NewsAsia) live* [Video live stream]. YouTube. https
 
 Croft, B. (2023). *LLM visualization* [Computer software]. GitHub. https://github.com/bbycroft/llm-viz
 
+Cross, D. (2023). *Astronomy Engine* (Version 2.1.19) [Computer software]. GitHub. https://github.com/cosinekitty/astronomy
+
 Cybersecurity and Infrastructure Security Agency. (n.d.). *Known exploited vulnerabilities catalog* [Data set]. Retrieved October 14, 2026, from https://www.cisa.gov/known-exploited-vulnerabilities-catalog
 
 DavidHDev. (n.d.). *React Bits* [Computer software]. GitHub. https://github.com/DavidHDev/react-bits
+
+Davies, M. E., & Colvin, T. R. (2000). Lunar coordinates in the regions of the Apollo landers. *Journal of Geophysical Research: Planets, 105*(E8), 20277–20280. https://doi.org/10.1029/1999JE001165
 
 DeFlock. (n.d.). *DeFlock: Crowdsourced map of automated license plate readers* [Data set]. https://deflock.me
 
@@ -157,6 +163,8 @@ El Hattab, H. (n.d.). *reveal.js* [Computer software]. GitHub. https://github.co
 Electronic Frontier Foundation. (n.d.). *Automated license plate readers (ALPRs)*. Street-Level Surveillance. https://sls.eff.org/technologies/automated-license-plate-readers-alprs
 
 Embraer. (n.d.). *E175: Specifications* [Manufacturer specifications]. https://www.embraercommercialaviation.com
+
+Espenak, F. (n.d.). *NASA eclipse web site*. NASA Goddard Space Flight Center. https://eclipse.gsfc.nasa.gov/
 
 Esri. (n.d.). *World Imagery* [Basemap]. Esri, Maxar, Earthstar Geographics, and the GIS User Community. https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9
 
@@ -296,6 +304,8 @@ MuckRock. (n.d.). *MuckRock*. https://www.muckrock.com/
 
 NASA Earth Observatory. (n.d.). *Blue Marble and Black Marble* [Image collection]. Visible Earth. https://visibleearth.nasa.gov/collection/1484/blue-marble
 
+NASA Space Science Data Coordinated Archive. (n.d.). *NSSDCA master catalog* [Data set]. National Aeronautics and Space Administration. https://nssdc.gsfc.nasa.gov/nmc/
+
 NASA-AMMOS. (n.d.). *3DTilesRendererJS* [Computer software]. GitHub. https://github.com/NASA-AMMOS/3DTilesRendererJS
 
 National Aeronautics and Space Administration. (n.d.-a). *Earth Observatory Natural Event Tracker (EONET), version 3* [Data set]. Retrieved October 14, 2026, from https://eonet.gsfc.nasa.gov/docs/v3
@@ -303,6 +313,10 @@ National Aeronautics and Space Administration. (n.d.-a). *Earth Observatory Natu
 National Aeronautics and Space Administration. (n.d.-b). *Global Imagery Browse Services (GIBS): VIIRS SNPP corrected reflectance, true color* [Data set]. Earth Science Data and Information System. Retrieved October 14, 2026, from https://nasa-gibs.github.io/gibs-api-docs/
 
 National Aeronautics and Space Administration. (n.d.-c). *Fire Information for Resource Management System (FIRMS): VIIRS NOAA-20 375 m active fire product, near real time* [Data set]. Land, Atmosphere Near real-time Capability for EOS (LANCE). Retrieved October 14, 2026, from https://firms.modaps.eosdis.nasa.gov/active_fire/
+
+National Aeronautics and Space Administration. (n.d.-d). *NASA 3D resources: Images and textures* [Image collection]. GitHub. https://github.com/nasa/NASA-3D-Resources
+
+National Aeronautics and Space Administration. (n.d.-e). *Solar System Treks: Moon, Mars and Mercury Trek map services* [Data set]. Jet Propulsion Laboratory. Retrieved October 14, 2026, from https://trek.nasa.gov
 
 National Archives and Records Administration. (n.d.-a). *National Archives catalog* [Data set]. Retrieved October 14, 2026, from https://catalog.archives.gov/
 
@@ -436,6 +450,8 @@ SkylineWebcams. (n.d.). *SkylineWebcams: Live webcams around the world* [Data se
 
 snapview. (n.d.). *tokio-tungstenite* (Version 0.30) [Computer software]. GitHub. https://github.com/snapview/tokio-tungstenite
 
+Solar System Scope. (n.d.). *Solar textures* [Image collection]. INOVE. https://www.solarsystemscope.com/textures/
+
 The Space Devs. (n.d.). *Launch Library 2* [Data set]. Retrieved October 14, 2026, from https://thespacedevs.com/llapi
 
 Stam, J. (1999). Stable fluids. In *Proceedings of the 26th Annual Conference on Computer Graphics and Interactive Techniques* (pp. 121–128). ACM Press. https://doi.org/10.1145/311535.311548
@@ -451,6 +467,8 @@ TeleGeography. (n.d.). *Submarine cable map* [Data set]. Retrieved October 14, 2
 Telewizja Chopin. (n.d.). *nadmorski24.pl: Kamery na żywo* [Video streams]. Retrieved October 14, 2026, from https://nadmorski24.pl/
 
 Textron Aviation. (n.d.). *Cessna Skyhawk: Specifications* [Manufacturer specifications]. https://cessna.txtav.com
+
+Thomson, W. [Lord Kelvin]. (1887). On ship waves. *Proceedings of the Institution of Mechanical Engineers, 38*(1), 409–434.
 
 three.js authors. (2026). *three.js* (Version 0.186) [Computer software]. https://threejs.org
 
@@ -514,9 +532,17 @@ websockets. (n.d.). *ws: A Node.js WebSocket library* (Version 8) [Computer soft
 
 White, C. A. (1983). *A history of the rectangular survey system*. U.S. Department of the Interior, Bureau of Land Management.
 
-Wikimedia Foundation. (n.d.-a). *Wikidata Query Service* [Data set]. Wikidata. Retrieved October 14, 2026, from https://query.wikidata.org
+Wikimedia Foundation. (n.d.-a). *MediaWiki Action API: English Wikipedia* [Data set]. Wikipedia. Retrieved October 14, 2026, from https://en.wikipedia.org/w/api.php
 
-Wikimedia Foundation. (n.d.-b). *Wikipedia REST API: Page summaries* [Data set]. https://en.wikipedia.org/api/rest_v1/
+Wikimedia Foundation. (n.d.-b). *Wikidata Action API: Entity data* [Data set]. Wikidata. Retrieved October 14, 2026, from https://www.wikidata.org/w/api.php
+
+Wikimedia Foundation. (n.d.-c). *Wikidata Query Service* [Data set]. Wikidata. Retrieved October 14, 2026, from https://query.wikidata.org
+
+Wikimedia Foundation. (n.d.-d). *Wikimedia Commons* [Image collection]. Retrieved October 14, 2026, from https://commons.wikimedia.org
+
+Wikimedia Foundation. (n.d.-e). *Wikipedia REST API: Page summaries* [Data set]. https://en.wikipedia.org/api/rest_v1/
+
+Williams, D. R. (n.d.). *Planetary fact sheets*. NASA Space Science Data Coordinated Archive. https://nssdc.gsfc.nasa.gov/planetary/factsheet/
 
 Williams, E. (n.d.). *Aviation formulary* (Version 1.47). https://edwilliams.org/avform147.htm
 
@@ -635,7 +661,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (World Meteorological Organization, 2019) | What the weather codes from Open-Meteo mean: thunderstorms (95–99), snow (71–77, 85–86) and the rest, for the clouds, rain and storms layer. | Reference (WMO) |
 | (REST Countries, n.d.) | Capital, population, languages, currencies for the country card. | MPL-2.0 |
 | (World Bank, n.d.) | GDP, life expectancy, internet use and renewable share indicators. | CC BY 4.0 |
-| (Wikimedia Foundation, n.d.-b) | Short encyclopaedia summaries in the country and place cards. | CC BY-SA 4.0 |
+| (Wikimedia Foundation, n.d.-e) | Short encyclopaedia summaries in the country and place cards. | CC BY-SA 4.0 |
 | (Nominatim contributors, n.d.) | Worldwide place search. | ODbL 1.0 — © OpenStreetMap contributors |
 | (Esri, n.d.) | Satellite imagery tiles for street-level zoom. | Esri terms of use — Esri, Maxar, Earthstar Geographics, and the GIS User Community |
 | (Ahlenius, 2014) | Tectonic plate boundaries. | ODC-BY 1.0 |
@@ -643,10 +669,13 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (NASA Earth Observatory, n.d.) | Day and night Earth textures. | Public domain (NASA) |
 | (Asturiano, 2026b) | Relief bump map and dark base. | MIT (repo); NASA-derived imagery |
 | (U.S. Naval Observatory, n.d.) | Subsolar point, terminator and sun elevation maths. | Public domain |
-| (Williams, n.d.) | Distance, bearing and destination formulas for Measure and Quiz. | Reference |
+| (E. Williams, n.d.) | Distance, bearing and destination formulas for Measure and Quiz. | Reference |
 | (TeleGeography, n.d.) | Every submarine cable, its landings, owners and year (open data for Undersea cables); further reading. | CC BY-NC-SA 3.0 (attribution, non-commercial, share alike) |
 | (U.S. Energy Information Administration, n.d.) | The eight oil-transit chokepoints (open data for Chokepoints); further reading. | Public domain |
-| (Wikimedia Foundation, n.d.-a) | Nuclear power plants, spaceports, stock exchanges, central banks and critical-mineral mines (open data for those layers). | CC0 1.0 (public domain dedication) |
+| (Wikimedia Foundation, n.d.-a) | The photo, first sentence and Wikidata item for each landmark card. | CC BY-SA 4.0 (text) |
+| (Wikimedia Foundation, n.d.-d) | Landmark photos, credited to their authors under the licence each file carries. | Each file under its own free licence (shown with the photo) |
+| (Wikimedia Foundation, n.d.-b) | Landmark figures: when built, height or elevation, area, visitors a year and World Heritage status. | CC0 1.0 (public domain dedication) |
+| (Wikimedia Foundation, n.d.-c) | Nuclear power plants, spaceports, stock exchanges, central banks and critical-mineral mines (open data for those layers). | CC0 1.0 (public domain dedication) |
 | (National Geospatial-Intelligence Agency, n.d.) | Every large, medium and small harbour with depths and limits (open data for Ports). | Public domain (U.S. Government) |
 | (United Nations Conference on Trade and Development, n.d.) | Further reading on global shipping. | Reference |
 | (International Atomic Energy Agency, n.d.) | Further reading on nuclear power plants. | Reference |
@@ -659,6 +688,16 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (OpenSky Network, n.d.-c) | Weekly aircraft type table (ICAO 24-bit address → type and registration) that picks each plane’s shape and powers search by type. | Non-commercial research/education (OpenSky terms) |
 | (Tilezen, n.d.) | Ground heights for the street-level and 3D surroundings views. | Open data; attribution to the underlying sources (SRTM, GMTED, ETOPO1, national elevation models and others) |
 | (AISStream, n.d.) | Live ships worldwide: the live-data job’s snapshot, the desktop app and the optional proxy. | Free with an API key; terms at aisstream.io |
+| (Cross, 2023) | Positions of the Sun, Moon, planets, Pluto and Jupiter’s four big moons, and which way each one faces, computed in the browser from the atlas clock. | MIT |
+| (Archinal et al., 2018) | The poles and prime meridians that turn the Moon and planets the way they really face (used through Astronomy Engine). | Published formulae |
+| (Solar System Scope, n.d.) | Global maps of the Sun, Mercury, Venus (clouds and radar surface), the Moon, Mars, Jupiter, Saturn and its rings, Uranus, Neptune and Pluto, made from NASA mission imagery. Copied from the PyVista vtk-data mirror (github.com/pyvista/vtk-data). | CC BY 4.0 |
+| (NASA, n.d.-d) | Global maps of Io, Europa, Ganymede and Callisto, and the Tycho star map with the Milky Way behind the globe. | Public domain (NASA media guidelines) |
+| (NASA, n.d.-e) | Full-resolution global mosaics (Lunar Reconnaissance Orbiter Wide Angle Camera, Viking colour, MESSENGER enhanced colour) loaded when you fly close to the Moon, Mars or Mercury. | Public domain (NASA) |
+| (D. R. Williams, n.d.) | Sizes, day and year lengths, gravity, temperatures and moon counts on the space cards. | Public domain (NASA) |
+| (Davies & Colvin, 2000) | Latitude and longitude of the six Apollo lunar modules, pinned on the Moon. | Published paper (facts cited) |
+| (NASA Space Science Data Coordinated Archive, n.d.) | Landing dates and places of the other Moon and Mars landers and rovers. | Public domain (NASA) |
+| (Espenak, n.d.) | The eclipse predictions the atlas’s own eclipse times were checked against. | Public domain (NASA) |
+| (Thomson, 1887) | The 19.47° half-angle of the V-shaped wake drawn behind moving ships. | Public domain (1887) |
 | (International Telecommunication Union, 2014) | AIS message fields, ship-type codes and navigational status codes used to read ship reports. | ITU Recommendation (free to read) |
 | (snapview, n.d.) | The desktop app’s AISStream connection. | MIT |
 | (websockets, n.d.) | The live-data job’s compressed AISStream connection. | MIT |
@@ -774,13 +813,13 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Asturiano, 2026b) | Globe mesh, tile engine and example textures (topology bump map, dark Earth). | MIT |
 | (Tauri Programme, 2024) | Desktop app shell (Rust + system web view). | MIT / Apache-2.0 |
 | (Wallace, n.d.) | Bundles the 3D libraries into one module; runs the World Monitor data extractor. | MIT |
-| (GreenSock, n.d.) | Page animations on the website. | GreenSock standard no-charge licence |
+| (GreenSock, n.d.) | Page animations on the website up to v2.12 (removed in the design refresh). | GreenSock standard no-charge licence |
 | (Remotion, n.d.) | Promo video rendered from code. | Remotion licence |
 | (Dobryakov, 2017) | Fluid lab (with Stam, 1999; Fedkiw et al., 2001; Harris, 2004). | MIT |
-| (Magic UI, n.d.) | Effects re-implemented in plain CSS/JS (border beam, number ticker, marquee). | MIT |
-| (DavidHDev, n.d.) | Effects re-implemented in plain CSS/JS (split text, spotlight). | MIT + Commons Clause |
-| (ibelick, n.d.) | Effects re-implemented in plain CSS/JS (tilt). | MIT |
-| (Animate UI, n.d.) | Effects re-implemented in plain CSS/JS. | MIT |
+| (Magic UI, n.d.) | Effects re-implemented in plain CSS/JS up to v2.12 (border beam, number ticker, marquee). | MIT |
+| (DavidHDev, n.d.) | Effects re-implemented in plain CSS/JS up to v2.12 (split text, spotlight). | MIT + Commons Clause |
+| (ibelick, n.d.) | Effects re-implemented in plain CSS/JS up to v2.12 (tilt). | MIT |
+| (Animate UI, n.d.) | Effects re-implemented in plain CSS/JS up to v2.12. | MIT |
 | (Croft, 2023) | Inspiration for narrated tours. | Reference |
 | (Cho et al., 2024) | Inspiration for “what / how / try” cards. | Reference |
 | (Simon, 2019) | Inspiration for playful 3D. | Reference |

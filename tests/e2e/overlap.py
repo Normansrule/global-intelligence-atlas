@@ -1,7 +1,7 @@
 import sys; sys.path.insert(0, sys.argv[-1]); from mock import handler, ARGS
 from playwright.sync_api import sync_playwright
 CHECK = """() => {
-  const sel = ['.topbar','.rail','#layers','#notes','.statusbar','.stage .ticker','.stage .toast','.stage .timebar','.stage .mapctl','#view-pop','#ride','.topbar .search','.top-status','.statusbar .readout','#clock','.viewpick','#spin','#shot','.statusbar .quality','.statusbar .attribution'];
+  const sel = ['.topbar','.rail','#layers','#notes','.statusbar','.stage .ticker','.stage .toast','.stage .timebar','.stage .mapctl','#view-pop','#ride','.topbar .search','.top-status','.statusbar .readout','#clock','.viewpick','#spin','#shot','.statusbar .quality','.statusbar .attribution','.stage .space-bar'];
   const vis = (el) => { if (!el) return false; const cs = getComputedStyle(el); if (cs.display==='none'||cs.visibility==='hidden'||el.hidden) return false; let p=el.parentElement; while(p){ const c=getComputedStyle(p); if (c.display==='none') return false; p=p.parentElement; } const r=el.getBoundingClientRect(); return r.width>2&&r.height>2; };
   const items = sel.map(s=>[s,document.querySelector(s)]).filter(([s,e])=>vis(e)).map(([s,e])=>[s,e,e.getBoundingClientRect()]);
   const out=[];
@@ -42,6 +42,9 @@ with sync_playwright() as p:
         pg.evaluate("() => document.querySelector('[data-intel-tab=\"tools\"]').click()"); pg.wait_for_timeout(300)
         pg.evaluate("() => document.querySelector('[data-intel-tool=\"redact\"]').click()"); pg.wait_for_timeout(300)
         res['inspector']=pg.evaluate(CHECK)
+        # Space: flying to the Moon swaps the Live strip for the space bar and opens the Moon's card
+        pg.evaluate("() => gia.cosmos.explore('moon', { instant: true })"); pg.wait_for_timeout(1500)
+        res['space']=pg.evaluate(CHECK)
         print(w,h, {k:v for k,v in res.items() if v} or 'no overlaps')
         pg.close()
     b.close()

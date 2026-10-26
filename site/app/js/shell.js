@@ -43,6 +43,9 @@ export function installShell(x) {
         <button class="tool" data-start="live">${g('news', '#ff9ec7')}<b>Live tour</b><small>Sit back while the globe flies from event to event.</small></button>
         <button class="tool" data-start="flights">${g('plane', '#8ecbff')}<b>Live flights</b><small>About 10,000 aircraft, gliding in real time.</small></button>
         <button class="tool" data-start="connected">${g('ix', '#7ed6c4')}<b>Connected planet</b><small>Cables, internet buildings, power, ships.</small></button>
+        <button class="tool" data-space="moon">${g('moon', '#e8e6df')}<b>Fly to the Moon</b><small>Where it is now, lit by the real Sun.</small></button>
+        <button class="tool" data-space="saturn">${g('sun', '#ffd27a')}<b>The planets</b><small>Fly to any of them, where they really are.</small></button>
+        <button class="tool" data-eclipses="1">${g('eclipse', '#ffd27a')}<b>Eclipses</b><small>The next ones, and watch them happen.</small></button>
         <button class="tool" data-start="moon">${g('moon', '#e8eef3')}<b>Moon and tides</b><small>Phase, distance and the two tidal bulges.</small></button>
         <button class="tool" data-start="wind">${g('dust', '#9fe3ff')}<b>Wind now</b><small>Streaks drifting with the real wind.</small></button>
         <button class="tool" data-start="cams">${g('camera', '#7ed6c4')}<b>Live cameras</b><small>Traffic cameras and a camera wall.</small></button>

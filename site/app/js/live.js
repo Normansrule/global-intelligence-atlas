@@ -16,6 +16,20 @@ const SQUAWK = { 7500: 'Hijack code', 7600: 'Radio failure', 7700: 'General emer
 export function installLive(api) {
   const { state, $ } = api;
   let items = []; let tour = null;
+  // "Just in": anything big that appears after the page has loaded (a strong earthquake, a red disaster alert,
+  // an emergency squawk, a launch going live) jumps to the front of the strip with a mark for 15 minutes, and a
+  // slow shockwave rolls out from where it happened. The first collection only learns what is already there.
+  // A kind of item counts only from the second time it is collected, so a layer switched on later (flights,
+  // disaster alerts) does not mark everything it already had as new.
+  const seen = new Set(); const kinds = new Set(); const fresh = new Map(); const FRESH_MS = 15 * 60_000;
+  const big = (i) => i.weight >= 45 && i.kind !== 'In the news' && Date.now() - i.t < 6 * 3600_000;
+  function spot(list) {
+    const now = Date.now(); const neu = []; const had = new Set(kinds);
+    for (const i of list) { kinds.add(i.kind); if (!seen.has(i.id)) { seen.add(i.id); if (had.has(i.kind) && big(i)) neu.push(i); } }
+    for (const i of neu.sort((a, b) => b.weight - a.weight).slice(0, 3)) { fresh.set(i.id, now); api.flash?.(i.lat, i.lng, i.color); }
+    for (const [id, t] of fresh) if (now - t > FRESH_MS) fresh.delete(id);
+    return neu;
+  }
 
   async function collect() {
     const out = [];
@@ -34,13 +48,15 @@ export function installLive(api) {
     for (const l of state.data.launches ?? []) if (l.net > Date.now() - 2 * 3600_000 && l.net < Date.now() + 48 * 3600_000) out.push({ id: `l-${l.id}`, t: l.net, kind: l.live ? 'Launch — live now' : 'Rocket launch', icon: '🚀', glyph: 'rocket', color: '#ff9e5e', title: `${l.name} from ${l.site}`, lat: l.lat, lng: l.lng, weight: l.live ? 120 : 60, ref: { layer: 'launches', d: l } });
     for (const a of state.data.alerts ?? []) if (a.level === 'Red') out.push({ id: `g-${a.id}`, t: a.from ? Date.parse(`${a.from}Z`) : Date.now(), kind: 'Red disaster alert', icon: '⚠', glyph: GDACS_GLYPH[a.type] ?? 'alert', color: '#ff3b30', title: `${a.name}${a.sev ? ` — ${a.sev}` : ''}`, lat: a.lat, lng: a.lng, weight: 110, ref: { layer: 'alerts', d: a } });
     items = out.filter((i) => Number.isFinite(i.lat)).sort((a, b) => b.t - a.t).slice(0, 120);
+    spot(items);
     render();
   }
 
   function render() {
     const tk = $('#ticker-track'); if (!tk) return;
-    const top = [...items].sort((a, b) => b.weight + b.t / 3.6e6 - (a.weight + a.t / 3.6e6)).slice(0, 18);
-    tk.innerHTML = top.length ? top.map((i) => `<button data-live="${esc(i.id)}" style="--c:${i.color}"><i>${sym(i)}</i><b>${esc(i.kind)}</b> ${esc(i.title.slice(0, 90))} <small>${ago(i.t)}</small></button>`).join('') : '<span class="quiet">Waiting for live feeds…</span>';
+    const isNew = (i) => fresh.has(i.id);
+    const top = [...items].sort((a, b) => (isNew(b) - isNew(a)) || b.weight + b.t / 3.6e6 - (a.weight + a.t / 3.6e6)).slice(0, 18);
+    tk.innerHTML = top.length ? top.map((i) => `<button data-live="${esc(i.id)}" style="--c:${i.color}"${isNew(i) ? ' class="new"' : ''}>${isNew(i) ? '<em>Just in</em>' : ''}<i>${sym(i)}</i><b>${esc(i.kind)}</b> ${esc(i.title.slice(0, 90))} <small>${ago(i.t)}</small></button>`).join('') : '<span class="quiet">Waiting for live feeds…</span>';
     $('#live-count').textContent = items.length ? `${items.length} live` : 'Live';
     if (api.isOpen('live')) openFeed();
   }
@@ -60,7 +76,7 @@ export function installLive(api) {
       <p class="sub">What is happening on the planet, newest first. Click any item to fly there.</p>
       <div class="row"><button class="btn" data-livetour="start">${tour ? 'Stop live tour' : 'Start live tour'}</button><button class="btn ghost" data-wall="1">Camera wall for this view</button></div>
       <div class="opts">${kinds.map((k) => `<button class="chip" data-livefilter="${esc(k)}" aria-pressed="${k === filter}">${esc(k === 'all' ? 'Everything' : k)}</button>`).join('')}</div>
-      <ol class="feed">${list.map((i) => `<li><button data-live="${esc(i.id)}" style="--c:${i.color}"><i>${sym(i)}</i><span><b>${esc(i.title)}</b><small>${esc(i.kind)} · ${ago(i.t)} · ${Math.round(haversineKm(state.pov.lat, state.pov.lng, i.lat, i.lng)).toLocaleString()} km from the view</small></span></button></li>`).join('') || '<li class="muted">Nothing yet — the feeds may still be loading.</li>'}</ol>
+      <ol class="feed">${list.map((i) => `<li><button data-live="${esc(i.id)}" style="--c:${i.color}"${fresh.has(i.id) ? ' class="new"' : ''}>${fresh.has(i.id) ? '<em>Just in</em>' : ''}<i>${sym(i)}</i><span><b>${esc(i.title)}</b><small>${esc(i.kind)} · ${ago(i.t)} · ${Math.round(haversineKm(state.pov.lat, state.pov.lng, i.lat, i.lng)).toLocaleString()} km from the view</small></span></button></li>`).join('') || '<li class="muted">Nothing yet — the feeds may still be loading.</li>'}</ol>
       <p class="muted">Sources: USGS, NASA EONET, GDELT news, ADS-B squawk codes and NOAA space weather.</p>`, 'live');
   }
 
@@ -81,5 +97,5 @@ export function installLive(api) {
     if (b.dataset.wall) api.openWall();
   });
   collect(); setInterval(collect, 3 * 60_000);
-  return { collect, openFeed, stopTour: () => { if (tour) toggleTour(); } };
+  return { collect, openFeed, fresh: () => [...fresh.keys()], stopTour: () => { if (tour) toggleTour(); } };
 }

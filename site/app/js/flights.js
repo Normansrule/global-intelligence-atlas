@@ -16,7 +16,7 @@ const R = 100;
 const MAX = 20000;
 const history = new Map(); // icao -> [[lat, lng, altFt, t], ...]
 let group = null; const meshes = {}; let lastList = []; const WRAP = { obj: null }; // one stable datum, so globe.gl never swaps (and removes) the shared meshes
-export const flightState = { selected: null, follow: false, route: {} };
+export const flightState = { selected: null, follow: false, route: {}, trails: true };
 
 // --------------------------------------------------------------- data
 function fromAdsbLol(j) {
@@ -217,8 +217,49 @@ function ensureMesh() {
     m.onBeforeRender = () => { glide.value = Math.min(30, (performance.now() - layoutAt) / 1000); };
     meshes[cls] = m; group.add(m);
   }
+  group.add(ensureTrails());
   return group;
 }
+// --------------------------------------------------------------- contrails
+// Every airborne plane draws a short trail that fades out behind it, so you can see at a glance which way the
+// traffic is flowing. All trails are ONE instanced ribbon (one draw call for 20,000 planes): each instance
+// carries the plane's position, velocity, nose and wing directions, and the vertex shader bends a strip of
+// 2 × (SEG + 1) vertices out behind the tail and glides it with the plane. The trail's length follows the
+// plane's speed and its drawn size, so it reads the same on screen at every zoom.
+const SEG = 6;
+const TRAIL_VERT = `
+attribute vec2 st; // s: 0 at the plane's tail to 1 at the end of the trail; t: −1 or +1 across it
+attribute vec3 iHead; attribute vec3 iVel; attribute vec3 iDir; attribute vec3 iSide; attribute vec3 iCol; attribute vec2 iLen; // iLen: plane half-length, trail length
+uniform float uDt;
+varying float vA; varying vec3 vCol;
+void main() {
+  float s = st.x;
+  vec3 p = iHead + iVel * uDt - iDir * (iLen.x * 0.7 + s * iLen.y) + iSide * (st.y * iLen.x * 0.16 * (1.0 - 0.6 * s));
+  vA = pow(1.0 - s, 1.7); vCol = iCol;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+}`;
+const TRAIL_FRAG = `
+uniform float uAlpha;
+varying float vA; varying vec3 vCol;
+void main() { if (vA < 0.01) discard; gl_FragColor = vec4(mix(vCol, vec3(1.0), 0.45), vA * uAlpha); }`;
+let trailMesh = null;
+function ensureTrails() {
+  if (trailMesh) return trailMesh;
+  const geo = new THREE.InstancedBufferGeometry();
+  const st = []; const idx = [];
+  for (let i = 0; i <= SEG; i++) { st.push(i / SEG, -1, i / SEG, 1); if (i < SEG) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 2, a + 1, a + 3); } }
+  geo.setAttribute('st', new THREE.Float32BufferAttribute(st, 2)); geo.setIndex(idx);
+  // three.js needs a position attribute to count vertices; the shader never reads it
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array((SEG + 1) * 2 * 3), 3));
+  for (const [k, n] of [['iHead', 3], ['iVel', 3], ['iDir', 3], ['iSide', 3], ['iCol', 3], ['iLen', 2]]) geo.setAttribute(k, new THREE.InstancedBufferAttribute(new Float32Array(MAX * n), n).setUsage(THREE.DynamicDrawUsage));
+  geo.instanceCount = 0;
+  const mat = new THREE.ShaderMaterial({ vertexShader: TRAIL_VERT, fragmentShader: TRAIL_FRAG, uniforms: { uDt: glide, uAlpha: { value: 0.5 } }, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+  trailMesh = new THREE.Mesh(geo, mat);
+  trailMesh.frustumCulled = false; trailMesh.raycast = () => {}; trailMesh.renderOrder = 4; trailMesh.visible = false;
+  trailMesh.onBeforeRender = () => { glide.value = Math.min(30, (performance.now() - layoutAt) / 1000); };
+  return trailMesh;
+}
+export const trailCount = () => (trailMesh?.visible ? trailMesh.geometry.instanceCount : 0);
 function setLod(next) {
   if (next === lod) return; lod = next;
   for (const m of Object.values(meshes)) { m.geometry = m.userData.geo[lod]; m.material = lod === '3d' ? mat3d : mat2d; }
@@ -255,6 +296,7 @@ export function layoutPlanes(globe, camAlt, list = lastList) {
   } else view = { x: 0, y: 0, z: 1, cosCut: -2 };
   layoutAt = performance.now(); glide.value = 0;
   const n = {}; for (const c of CLASS_IDS) n[c] = 0;
+  const T = trailMesh.geometry.attributes; let nt = 0; const trails = flightState.trails;
   for (const a of list) {
     const phi = (90 - a.lat) * D2R; const th = (90 - a.lng) * D2R;
     const sp = Math.sin(phi); const cp = Math.cos(phi); const st = Math.sin(th); const ct = Math.cos(th);
@@ -278,8 +320,16 @@ export function layoutPlanes(globe, camAlt, list = lastList) {
     const col = rgbOf(sel ? '#f07a63' : em ? '#ff3b30' : altColor(a.altFt, a.ground));
     const C = m.instanceColor.array; C[i * 3] = col[0]; C[i * 3 + 1] = col[1]; C[i * 3 + 2] = col[2];
     const v = a.ground || !a.kt ? 0 : a.kt * KT_TO_UNITS_PER_S; const V = m.userData.vel.array; V[i * 3] = dx * v; V[i * 3 + 1] = dy * v; V[i * 3 + 2] = dz * v;
+    if (trails && v > 0 && nt < MAX) { // the trail: 3 to 9 half-lengths of the drawn plane, by speed (so it reads the same at every zoom)
+      const len = k * Math.max(3, Math.min(9, a.kt / 70));
+      T.iHead.array.set([ux * rr, uy * rr, uz * rr], nt * 3); T.iVel.array.set([dx * v, dy * v, dz * v], nt * 3);
+      T.iDir.array.set([dx, dy, dz], nt * 3); T.iSide.array.set([rx, ry, rz], nt * 3); T.iCol.array.set(col, nt * 3); T.iLen.array.set([k, len], nt * 2); nt++;
+    }
     a._alt = alt; n[cls] = i + 1;
   }
+  trailMesh.geometry.instanceCount = nt; trailMesh.visible = nt > 0;
+  for (const key of ['iHead', 'iVel', 'iDir', 'iSide', 'iCol', 'iLen']) { const at = T[key]; at.clearUpdateRanges?.(); at.addUpdateRange?.(0, Math.max(at.itemSize, nt * at.itemSize)); at.needsUpdate = true; }
+  trailMesh.material.uniforms.uAlpha.value = lod === '3d' ? 0.35 : 0.5;
   for (const cls of CLASS_IDS) {
     const m = meshes[cls]; const i = n[cls]; m.count = i; m.visible = i > 0; if (!i) continue;
     const im = m.instanceMatrix; im.clearUpdateRanges?.(); im.addUpdateRange?.(0, i * 16); im.needsUpdate = true;
@@ -295,8 +345,12 @@ export function warmPlanes(globe) {
   const m = new THREE.InstancedMesh(meshes.narrow.userData.geo['3d'], mat3d, 1);
   m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(3), 3);
   m.setMatrixAt(0, new THREE.Matrix4().makeScale(1e-6, 1e-6, 1e-6)); m.frustumCulled = false; m.raycast = () => {};
-  scene.add(m);
-  const done = () => { scene.remove(m); m.dispose?.(); };
+  // the trail shader, compiled with the planes: a mesh that shares its buffers but draws nothing, so it costs nothing even if it stays
+  const tg = new THREE.InstancedBufferGeometry(); const src = ensureTrails().geometry;
+  for (const [k, a] of Object.entries(src.attributes)) tg.setAttribute(k, a); tg.setIndex(src.index); tg.instanceCount = 0;
+  const tr = new THREE.Mesh(tg, trailMesh.material); tr.frustumCulled = false; tr.raycast = () => {};
+  scene.add(m); scene.add(tr);
+  const done = () => { scene.remove(m); scene.remove(tr); m.dispose?.(); };
   // globe.gl draws through a post-processing composer, which may draw straight to the screen (sRGB output) or
   // into a render target (linear output); three.js builds a different shader for each, so warm both.
   const composer = globe.postProcessingComposer?.(); const prev = renderer.getRenderTarget(); const jobs = [];
@@ -333,8 +387,8 @@ export function flightsLayer(api) {
   return {
     id: 'aircraft', group: 'live', label: 'Live flights', swatch: '#8ecbff', on: false, refresh: 12_000, pinless: true,
     sources: ['opensky', 'adsblol', 'airplaneslive', 'adsbdb', 'livedata'],
-    options: [{ id: 'scope', label: 'Coverage', choices: [['world', 'Whole world'], ['near', 'Near my view (more detail)']], value: 'world' }],
-    load: (o, ctx) => { onTypes ??= () => api.refreshLayer('aircraft', { soft: true }); return loadFlights(o, ctx); },
+    options: [{ id: 'scope', label: 'Coverage', choices: [['world', 'Whole world'], ['near', 'Near my view (more detail)']], value: 'world' }, { id: 'trails', label: 'Trails', choices: [['on', 'Trails behind planes'], ['off', 'No trails']], value: 'on' }],
+    load: (o, ctx) => { flightState.trails = o.trails !== 'off'; onTypes ??= () => api.refreshLayer('aircraft', { soft: true }); return loadFlights(o, ctx); },
     channels(d, ctx) {
       layoutPlanes(ctx.globe, ctx.pov.altitude, d.ac);
       WRAP.obj = ensureMesh();
@@ -355,7 +409,7 @@ export function flightsLayer(api) {
     },
     open: (a) => openDeck(a, api),
     learn: {
-      what: 'Aircraft broadcasting their position right now. Planes squawking an emergency code (7500, 7600, 7700) are drawn large in red with a pulsing ring and appear in the Live feed. Every plane has the shape of its class (wide-body, narrow-body, regional jet, turboprop, business jet, light aircraft, helicopter or fast jet), turned to its real heading; zoom in and they become 3D models, at their real size close to the ground. White is above 25,000 ft, yellow 10,000–25,000 ft, teal below 10,000 ft, grey on the ground. Click a plane for its seatback-style flight view.',
+      what: 'Aircraft broadcasting their position right now. Planes squawking an emergency code (7500, 7600, 7700) are drawn large in red with a pulsing ring and appear in the Live feed. Every plane has the shape of its class (wide-body, narrow-body, regional jet, turboprop, business jet, light aircraft, helicopter or fast jet), turned to its real heading; zoom in and they become 3D models, at their real size close to the ground. White is above 25,000 ft, yellow 10,000–25,000 ft, teal below 10,000 ft, grey on the ground. Each plane in the air leaves a short fading trail along its heading (longer for faster planes), so you can see which way the traffic flows; switch trails off under Trails. Click a plane for its seatback-style flight view.',
       how: 'Planes work out where they are with satellite navigation and broadcast it about twice a second on 1090 MHz (ADS-B). Thousands of volunteer receivers share what they hear. Flight trackers don’t let web pages read them directly (no CORS headers), so on the website a GitHub Actions job saves a worldwide snapshot every 4 minutes, and your browser moves each plane forward along its heading at its speed until the next one arrives (dead reckoning, as navigators did before satellites). The desktop app, or the optional proxy, reads OpenSky every 90 seconds and airplanes.live / adsb.lol every few seconds for “Near my view”. Heights are exaggerated from far away so you can see them, and true when you are close. The class comes from the ICAO type code when known, else the broadcast size category, else a guess from speed and height.',
       try: 'Pick a long-haul flight over an ocean, open its flight view and choose Follow. Then compare the “outside temperature” with the standard-atmosphere formula in the Learn page.',
       refs: ['opensky', 'airplaneslive', 'adsblol', 'adsbdb', 'livedata'],

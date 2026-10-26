@@ -13,6 +13,7 @@
 import { flightsLayer } from './flights.js';
 import { camerasLayer, alprLayer } from './cameras.js';
 import { citiesLayer, airportsLayer } from './places.js';
+import { landmarksLayer } from './landmarks.js';
 import { newsLayer } from './news.js';
 import { crimeLayer } from './crime.js';
 import { webcamsLayer } from './worldcams.js';
@@ -21,6 +22,7 @@ import { launchesLayer, alertsLayer } from './launches.js';
 import { windLayer } from './wind.js';
 import { skyLayer } from './skyfx.js';
 import { moonLayer } from './moon.js';
+import { planetsLayer } from './cosmos.js';
 import { firesLayer, radarLayer } from './hazards.js';
 import { replayLayer } from './replay.js';
 import { pesticideUseLayer, pesticideEstimatesLayer, toxicReleasesLayer, calEnviroScreenLayer, enforcementLayer, waterQualityLayer } from './chemicals.js';
@@ -39,6 +41,7 @@ export const REGISTRY = [
   { make: (api) => alprLayer(api), after: 'webcams' },
   { make: () => citiesLayer, after: 'grid' },
   { make: () => airportsLayer, after: 'cities' },
+  { make: (api) => landmarksLayer(api), after: 'cities' },
   { make: () => newsLayer, after: 'aircraft' },
   { make: () => crimeLayer, after: 'alpr', group: 'civic' },
   { make: () => shipsLayer, after: 'news' },
@@ -51,6 +54,7 @@ export const REGISTRY = [
   { make: (api) => windLayer(api), after: 'grid' },
   { make: (api) => skyLayer(api), after: 'wind' },
   { make: () => moonLayer, after: 'sun' },
+  { make: () => planetsLayer, after: 'moon' },
   { make: (api) => firesLayer(api), after: 'events' },
   { make: (api) => radarLayer(api), after: 'fires' },
   { make: (api, ctx) => ctx.watch.layer, after: 'alerts' },

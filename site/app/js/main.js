@@ -14,6 +14,7 @@ import { installExtras, waterName } from './extras.js';
 import { installSky } from './sky.js';
 import { buildFatLines, nearestLine } from './fatlines.js';
 import { createPulses } from './pulses.js';
+import { warmWakes } from './wakes.js';
 import { installShell, SECTION_FOR_KEY, SECTION_FOR_TITLE } from './shell.js';
 const pulses = createPulses(100);
 import { Quiz, buildQuestionPool } from './quiz.js';
@@ -48,6 +49,7 @@ const NEW_VERSION = (() => { try { return localStorage.getItem('global-intellige
 
 import { glyphSvg, unitSvg } from './icons.js';
 import { installTheme } from './theme.js';
+import { installCosmos, ECLIPSE_GLSL } from './cosmos.js';
 // The symbol shown next to each layer name (layers with pins use their own; the rest are listed here).
 const LAYER_GLYPH = { quakes: 'quake', events: 'flame', alerts: 'alert', aircraft: 'plane', stations: 'sat', satellites: 'sat', sun: 'sun', moon: 'moon', power: 'bolt', internet: 'server', ships: 'ship', crime: 'badge', cities: 'city', aurora: 'snow', wind: 'dust', skyfx: 'storm', overlay: 'sat', cables: 'ix', pipelines: 'oil', routes: 'ship', plates: 'quake', conflicts: 'swords', grid: 'eye', borders: 'pin', radar: 'storm', fires: 'flame', watch: 'eye', replay: 'clock' };
 const layerGlyph = (l) => LAYER_GLYPH[l.id] ?? (typeof l.pin === 'string' ? l.pin : null);
@@ -100,49 +102,113 @@ const globe = new Globe($('#globe'), { rendererConfig: { antialias: true, powerP
 globe.renderer().debug.checkShaderErrors = new URLSearchParams(location.search).has('debug');
 const defaultMaterial = globe.globeMaterial();
 const loader = new THREE.TextureLoader();
+// The Moon's shadow during an eclipse of the Sun: cosmos.js fills these in from Astronomy Engine (the Moon's place,
+// its radius, the Sun's direction and angular radius) and switches them on only while the Moon is near the Sun.
+const eclipse = { moonPos: { value: new THREE.Vector3(0, 0, 1e4) }, moonR: { value: 27.27 }, sunAt: { value: new THREE.Vector4(1, 0, 0, 0.00465) }, eclOn: { value: 0 } };
+const ECLIPSE_UNIFORMS = 'uniform vec3 moonPos; uniform float moonR; uniform vec4 sunAt; uniform float eclOn;';
+// How much of the Sun the Moon hides from this point on the Earth (0 most of the time, 1 under the umbra).
+const MOON_SHADOW = `${ECLIPSE_GLSL}
+  float moonShadow(vec3 p) { if (eclOn < 0.5) return 0.0; vec3 m = moonPos - p; float d = length(m); return discHidden(sunAt.w, asin(min(moonR / d, 1.0)), angleBetween(m / d, sunAt.xyz)); }`;
 const dayNightMaterial = new THREE.ShaderMaterial({
   uniforms: {
+    ...eclipse,
     dayTexture: { value: loader.load('textures/earth-blue-marble-2k.jpg') },
     nightTexture: { value: loader.load('textures/earth-night-2k.jpg') },
+    // Relief and water: the elevation map three-globe ships (earth-topology.png) shades the mountains from the real
+    // Sun direction, and its water mask (earth-water.png) gives the oceans the Sun's glint.
+    topo: { value: loader.load('textures/earth-topology.png') }, water: { value: loader.load('textures/earth-water.png') },
+    texel: { value: new THREE.Vector2(1 / 2048, 1 / 1024) }, relief: { value: 9 },
     sunDir: { value: new THREE.Vector3(1, 0, 0) },
     mute: { value: 0 },
   },
   vertexShader: `
-    varying vec3 vNormal; varying vec2 vUv;
+    varying vec3 vNormal; varying vec2 vUv; varying vec3 vPos;
     void main() {
       vNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
-      vUv = uv;
+      vUv = uv; vPos = (modelMatrix * vec4(position, 1.0)).xyz;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }`,
+  // The cinematic Earth, every effect from a real quantity: the Sun's direction (subsolar point), NASA's day and
+  // night imagery, elevation and the water mask. Mountains are shaded by the Sun (strongest near the terminator,
+  // where shadows are long), daylight falls off toward the night side, the oceans glint where the Sun reflects
+  // toward you, the air scatters blue toward the edge of the disc and red-orange along the terminator, and city
+  // lights glow only where it is dark.
   fragmentShader: `
-    uniform sampler2D dayTexture; uniform sampler2D nightTexture; uniform vec3 sunDir; uniform float mute;
-    varying vec3 vNormal; varying vec2 vUv;
+    uniform sampler2D dayTexture; uniform sampler2D nightTexture; uniform sampler2D topo; uniform sampler2D water;
+    uniform vec3 sunDir; uniform float mute; uniform vec2 texel; uniform float relief;
+    varying vec3 vNormal; varying vec2 vUv; varying vec3 vPos;
+    ${ECLIPSE_UNIFORMS}
+    ${MOON_SHADOW}
     void main() {
-      float i = dot(normalize(vNormal), normalize(sunDir));
+      vec3 n = normalize(vNormal); vec3 L = normalize(sunDir); vec3 V = normalize(cameraPosition - vPos);
+      float i = dot(n, L);
+      // relief: the elevation gradient tilts the normal (east and north on the sphere)
+      vec3 east = normalize(cross(vec3(0.0, 1.0, 0.0), n) + vec3(1e-5, 0.0, 0.0)); vec3 north = cross(n, east);
+      float h0 = texture2D(topo, vUv).r; float hx = texture2D(topo, vUv + vec2(texel.x, 0.0)).r; float hy = texture2D(topo, vUv + vec2(0.0, texel.y)).r;
+      vec3 bn = normalize(n - relief * ((hx - h0) * east + (hy - h0) * north));
+      float shade = clamp(1.0 + (dot(bn, L) - i) * 2.2, 0.55, 1.45);
       vec4 day = texture2D(dayTexture, vUv);
-      vec4 night = texture2D(nightTexture, vUv) * 1.25;
+      day.rgb *= shade * (0.62 + 0.38 * smoothstep(-0.05, 0.6, i)); // brightest under the Sun
+      float w = texture2D(water, vUv).r;
+      vec3 H = normalize(L + V); float nh = max(dot(n, H), 0.0);
+      day.rgb += vec3(1.0, 0.93, 0.8) * w * (pow(nh, 140.0) * 0.85 + pow(nh, 14.0) * 0.07) * smoothstep(0.0, 0.2, i);
+      vec4 night = texture2D(nightTexture, vUv);
+      night.rgb = night.rgb * night.rgb * vec3(1.9, 1.55, 1.05) * 2.1 + vec3(0.004, 0.009, 0.022); // warm lights on a dark-navy planet
       float k = smoothstep(-0.08, 0.12, i);           // civil-twilight-ish blend
+      // The Moon's shadow: the ground darkens with the share of the Sun hidden, and under the umbra (totality) it
+      // falls to deep twilight with the street lights on.
+      float ecl = moonShadow(vPos);
+      // (The response is eased, as a camera exposed for daylight sees it, so the wide partial shadow reads too.)
+      day.rgb *= 1.0 - 0.93 * pow(ecl, 0.6); k *= 1.0 - 0.75 * smoothstep(0.93, 1.0, ecl);
       vec4 col = mix(night, day, k);
-      col.rgb += vec3(1.0, 0.55, 0.25) * 0.12 * (1.0 - abs(k * 2.0 - 1.0)); // warm dusk band
+      float rim = pow(1.0 - max(dot(n, V), 0.0), 2.6);
+      col.rgb = mix(col.rgb, vec3(0.38, 0.62, 1.0), rim * 0.55 * smoothstep(-0.2, 0.45, i)); // blue air at the edge
+      col.rgb += vec3(1.0, 0.45, 0.18) * (0.10 + 0.35 * rim) * (1.0 - abs(k * 2.0 - 1.0)); // red-orange dusk band
       float g = dot(col.rgb, vec3(0.299, 0.587, 0.114));
       col.rgb = mix(col.rgb, vec3(g * 0.82, g * 0.9, g * 1.04 + 0.03), mute); // weather map: slate, so clouds lead
       gl_FragColor = col;
     }`,
 });
+dayNightMaterial.uniforms.topo.value.wrapS = THREE.RepeatWrapping;
+// The air seen from space, lit by the real Sun: a glow beyond the edge of the Earth that is blue on the day side,
+// red-orange where the Sun is setting and almost nothing on the night side (globe.gl's own atmosphere glows the same
+// colour all the way round, so it is switched off). Behind the Earth (back faces only), one draw call.
+const airMaterial = new THREE.ShaderMaterial({
+  uniforms: { sunDir: dayNightMaterial.uniforms.sunDir, lit: { value: 1 }, strength: { value: 1 } },
+  vertexShader: 'varying vec3 vW; void main() { vW = (modelMatrix * vec4(position, 1.0)).xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `
+    uniform vec3 sunDir; uniform float lit; uniform float strength; varying vec3 vW;
+    void main() {
+      vec3 C = cameraPosition; vec3 D = normalize(vW - C);
+      vec3 T = C + D * max(-dot(C, D), 0.0); // where this line of sight passes closest to the Earth's centre
+      float h = max(length(T) / ${R.toFixed(1)} - 1.0, 0.0); // its height there, in Earth radii
+      float a = exp(-h / 0.035) * smoothstep(0.16, 0.11, h); // the air thins out with height
+      float s = dot(normalize(T), normalize(sunDir));
+      float day = mix(1.0, 0.03 + 0.97 * smoothstep(-0.3, 0.2, s), lit);
+      vec3 c = mix(vec3(1.0, 0.42, 0.16), vec3(0.36, 0.62, 1.0), mix(1.0, smoothstep(-0.14, 0.28, s), lit));
+      gl_FragColor = vec4(c * a * day * strength, 1.0);
+    }`,
+  side: THREE.BackSide, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+});
+const air = new THREE.Mesh(new THREE.SphereGeometry(R * 1.16, 96, 48), airMaterial); air.raycast = () => {};
 // Night shade for every base map except Day/night: a transparent sphere just above the ground,
 // darkened on the side facing away from the Sun, with a soft twilight edge.
 const nightShade = new THREE.Mesh(
   new THREE.SphereGeometry(R * 1.0008, 128, 64),
   new THREE.ShaderMaterial({
     transparent: true, depthWrite: false,
-    uniforms: { sunDir: dayNightMaterial.uniforms.sunDir },
-    vertexShader: 'varying vec3 vNormal; void main() { vNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-    fragmentShader: 'uniform vec3 sunDir; varying vec3 vNormal; void main() { float i = dot(normalize(vNormal), normalize(sunDir)); gl_FragColor = vec4(0.01, 0.03, 0.08, (1.0 - smoothstep(-0.12, 0.08, i)) * 0.5); }',
+    uniforms: { sunDir: dayNightMaterial.uniforms.sunDir, ...eclipse },
+    vertexShader: 'varying vec3 vNormal; varying vec3 vPos; void main() { vNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz); vPos = (modelMatrix * vec4(position, 1.0)).xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: `uniform vec3 sunDir; varying vec3 vNormal; varying vec3 vPos; ${ECLIPSE_UNIFORMS} ${MOON_SHADOW}
+      void main() { float i = dot(normalize(vNormal), normalize(sunDir)); gl_FragColor = vec4(0.01, 0.03, 0.08, max((1.0 - smoothstep(-0.12, 0.08, i)) * 0.5, pow(moonShadow(vPos), 0.6) * 0.8)); }`,
   }),
 );
 nightShade.visible = false; nightShade.raycast = () => {};
 // Night shading also goes over the detail tiles, so the day/night line stays where it is when they switch in.
-function updateShade() { nightShade.visible = state.on.has('sun') && (!SHADED.has(state.base) || !!state.detailTiles); }
+function updateShade() {
+  nightShade.visible = state.on.has('sun') && (!SHADED.has(state.base) || !!state.detailTiles);
+  airMaterial.uniforms.lit.value = SHADED.has(state.base) || state.on.has('sun') ? 1 : 0; // the air follows the Sun whenever day and night are drawn
+}
 const DETAIL_ON = 0.75; const DETAIL_OFF = 1.0;
 function updateSun() {
   const s = astro.subsolarPoint(clock.date());
@@ -172,7 +238,7 @@ const hex2rgb = (h) => { const n = parseInt(h.slice(1), 16); return [(n >> 16) &
 const val = (v, d) => (typeof v === 'function' ? v(d) : v);
 
 globe
-  .showAtmosphere(true).atmosphereColor('#7fb6ff').atmosphereAltitude(0.16)
+  .showAtmosphere(false).atmosphereColor('#7fb6ff').atmosphereAltitude(0.16) // the Sun-lit air (air, above) replaces it
   // points
   .pointLat('lat').pointLng('lng').pointAltitude('alt').pointRadius('r').pointColor('color').pointLabel('tip')
   .pointResolution(10).pointsMerge(false).pointsTransitionDuration(0)
@@ -185,7 +251,7 @@ globe
   .pathColor('color').pathStroke('stroke').pathLabel((d) => d.tip ?? '').pathTransitionDuration(0)
   .pathDashLength((d) => (d.dash ? d.dash[0] : d.animate ? 0.12 : 1))
   .pathDashGap((d) => (d.dash ? d.dash[1] : d.animate ? 0.015 : 0))
-  .pathDashAnimateTime((d) => (d.animate && !reduceMotion ? 40000 : 0))
+  .pathDashAnimateTime((d) => (reduceMotion ? 0 : d.animate ? 40000 : d.animMs ?? 0))
   .onPathClick((d, e, c) => (d.ref && !d.passive ? select(d.ref) : groundClick(e, c)))
   // arcs
   .arcStartLat('sLat').arcStartLng('sLng').arcEndLat('eLat').arcEndLng('eLng').arcColor('color').arcStroke('stroke')
@@ -231,26 +297,24 @@ keeper = installProgramKeeper(globe);
 globe.scene().add(markers.object);
 setTimeout(() => markers.warm(globe.renderer(), globe.scene(), globe.camera()), 1200);
 setTimeout(() => warmPlanes(globe), 2600); // the 3D aircraft shader, compiled in the background
+setTimeout(() => warmWakes(globe), 3200); // and the ship wake shader
 iconsReady.then(() => { compose.last.points = null; scheduleCompose(); });
 const controls = globe.controls();
 controls.autoRotateSpeed = 0.35;
 globe.renderer().setPixelRatio(Math.min(devicePixelRatio, 1.75)); // 4K phones don't need 3× pixels for a globe
 const nav = installNavigation({ globe, R, $, reduceMotion, onLocate: (lat, lng) => { fly(lat, lng, 0.012); state.home = [lat, lng]; setTimeout(() => probeCard(lat, lng), 400); } });
-// Procedural star field (replaces a 900 kB background image). Shown only in the dark theme.
-let stars = null;
-{
-  const n = 4000; const pos = new Float32Array(n * 3); const col = new Float32Array(n * 3);
-  for (let i = 0; i < n; i++) {
-    const u = Math.random() * 2 - 1; const t = Math.random() * Math.PI * 2; const r = 6000 + Math.random() * 3000; const k = Math.sqrt(1 - u * u);
-    pos.set([r * k * Math.cos(t), r * u, r * k * Math.sin(t)], i * 3);
-    const b = 0.55 + Math.random() * 0.45; const warm = Math.random() < 0.25;
-    col.set([b, b * (warm ? 0.9 : 0.97), b * (warm ? 0.78 : 1)], i * 3);
-  }
-  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  stars = new THREE.Points(g, new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.85, depthWrite: false }));
-  globe.scene().add(stars);
-  globe.camera().far = Math.max(globe.camera().far, 12000); globe.camera().updateProjectionMatrix();
-}
+globe.scene().add(air);
+// Space behind the globe: the real star sky with the Milky Way, the Sun, the Moon and the planets where they really are
+// (cosmos.js). Click one to fly there. Shown with the night theme; exploring works in both.
+globe.camera().far = Math.max(globe.camera().far, 12000); globe.camera().updateProjectionMatrix();
+const cosmos = installCosmos({
+  globe, now: () => clock.date(), earthMaterial: dayNightMaterial, eclipse, watchEclipse: (e) => watchEclipse(e), placeName: (a, b) => placeName(a, b), reduceMotion, esc,
+  openNotes: (t, h, k) => openNotes(t, h, k), closeNotes: () => closeNotes(), factsHtml: (r) => factsHtml(r), refsHtml: (r) => refsHtml(r),
+  wake: (ms) => gov?.wake(ms), onChange: (id) => { state.space = id; setTimeout(writeHash, 0); },
+});
+cosmos.setBodies(state.on.has('planets'));
+// The theme switches the night sky (stars, Moon, planets) on and off and dims the air on the day theme's paper.
+const stars = { set visible(v) { cosmos.setDark(v); airMaterial.uniforms.strength.value = v ? 1 : 0.7; }, get visible() { return cosmos.stars.visible; } };
 installTheme({ globe, stars, button: $('#theme-toggle') });
 // Swap the quick 2K day/night textures for 4K ones once the page is idle.
 (window.requestIdleCallback ?? ((f) => setTimeout(f, 2500)))(() => {
@@ -271,8 +335,9 @@ function restylePolygons() {
 let booted = false; // set once the layer panel exists; before that a layer is switched on by adding it to state.on
 function setBase(base) {
   // The Weather style brings the weather layer with it and takes it away again when you leave, unless the layer
-  // was already on before you picked the style.
-  if (base === 'weather' && !state.on.has('skyfx') && !state.excluded?.has('skyfx')) { state.wxStyle = true; if (booted) toggleLayer('skyfx', true); else state.on.add('skyfx'); }
+  // was already on before you picked the style. A page opened in the Weather style (a reload or a shared link, whose
+  // address lists the weather layer too) counts as the style bringing it, so leaving the style still clears it.
+  if (base === 'weather' && !state.excluded?.has('skyfx') && (!booted || !state.on.has('skyfx'))) { state.wxStyle = true; if (booted) toggleLayer('skyfx', true); else state.on.add('skyfx'); }
   if (state.base === 'weather' && base !== 'weather' && state.wxStyle) { state.wxStyle = false; if (state.on.has('skyfx')) toggleLayer('skyfx', false); }
   state.base = base; state.detailTiles = null;
   document.querySelectorAll('[data-base]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.base === base)));
@@ -454,7 +519,8 @@ function markerPass(acc) {
       if (near && !isSel) { near.pin.more = (near.pin.more ?? 0) + 1; (near.pin.members ??= []).push(c.p); if (v.altitude > 0.3 && !far) cols.push(c.p); else state.clustered.push(c.p); continue; } // up close the "+N" badge stands in for the column
       perLayer[c.l.id] = (perLayer[c.l.id] ?? 0) + 1;
       const icon = typeof c.l.pin === 'function' ? c.l.pin(c.p.ref.d) : c.l.pin;
-      const [title, sub] = tipParts(c.p);
+      // From far away a card is just the name (fewer words over the planet); the kind and place come back as you zoom in, and on hover
+      const [title, sub0] = tipParts(c.p); const sub = far && !isSel ? '' : sub0;
       const rect = { x0: sc.x + 14, x1: sc.x + 40 + Math.min(240, 7.2 * Math.max(title.length, sub.length * 0.9)), y0: sc.y - 18, y1: sc.y + 18 };
       const cardFree = isSel || !c.grp && cards.length < (far ? Math.min(6, q.cards) : q.cards) && !cards.some((r) => r.x0 < rect.x1 && rect.x0 < r.x1 && r.y0 < rect.y1 && rect.y0 < r.y1)
         && !placed.some((o) => o.x + 14 > rect.x0 && o.x - 14 < rect.x1 && o.y + 14 > rect.y0 && o.y - 14 < rect.y1);
@@ -575,7 +641,8 @@ setInterval(() => {
 // Time machine: while the clock runs faster than real time (or has been moved), time-driven layers
 // (Sun, stations, satellites, earthquake replay) are recomputed several times a second.
 setInterval(() => {
-  if (clock.isLive()) return;
+  if (clock.isLive()) { state.eclipseEnd = null; return; }
+  if (state.eclipseEnd && clock.now() >= state.eclipseEnd && !clock.paused) { state.eclipseEnd = null; clock.pause(true); tickClock(); toast('The eclipse is over. Press Live to come back to now, or play on.'); }
   updateSun();
   for (const l of LAYERS) if (l.timeDriven && state.on.has(l.id) && state.data[l.id]) state.chan[l.id] = l.channels(state.data[l.id], ctx());
   scheduleCompose();
@@ -707,6 +774,7 @@ $('#layer-list').addEventListener('click', (e) => {
 function toggleLayer(id, on, { quiet = false } = {}) {
   if (on && state.excluded?.has(id)) return; // left out of this edition
   state.pending.delete(id);
+  layerById[id]?.onToggle?.(on);
   if (on) state.on.add(id); else { state.on.delete(id); updateCount(id); layerById[id]?.stop?.(); const lp = document.querySelector(`[data-lpanel="${id}"]`); if (lp) lp.hidden = true; }
   updateShade();
   const cb = document.getElementById(`ly-${id}`); if (cb) cb.checked = on;
@@ -743,6 +811,8 @@ function closeNotes() { detailsHist.length = 0; updateBack(); $('#notes').classL
 const isOpen = (key) => (state.notesKey === key && $('#notes').classList.contains('open')) || !!shell?.isOpen(key);
 const linksHtml = (links) => (links?.length ? `<div class="links">${links.filter((l) => l.url).map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join('')}</div>` : '');
 const rowsHtml = (rows) => (rows?.length ? `<dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : '');
+/** Card figures: short values become tiles (the value large, its label small); long ones keep a full-width row. */
+const factsHtml = (rows) => (rows?.length ? `<dl class="facts">${rows.map(([k, v]) => `<div${String(v).length > 26 ? ' class="wide"' : ''}><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>` : '');
 const refsHtml = (ids) => `<ul class="sources">${ids.map((i) => SOURCES[i]).filter(Boolean).map((s) => `<li><a href="${s.url}" target="_blank" rel="noopener">${esc(s.name)}</a><small>${esc(s.license)}</small></li>`).join('')}</ul>`;
 
 // Every card for something on the ground gets one-click zooms, so nobody has to wheel down from orbit.
@@ -758,8 +828,15 @@ function locOf(d) {
 function zoomRow(at, layer) {
   if (!at || AIRBORNE.has(layer)) return '';
   const [lat, lng] = at; const v = `${(+lat).toFixed(5)},${(+lng).toFixed(5)}`;
-  return `<div class="zoomrow"><button class="btn" data-zoomto="${v},street">Zoom to street level</button><button class="btn ghost" data-zoomto="${v},area">Show the area</button></div>`;
+  return `<button class="btn" data-zoomto="${v},street" title="Zoom to street level">Street</button><button class="btn ghost" data-zoomto="${v},area" title="Show the area">Area</button>`;
 }
+// Landmark cards: the Nearby chips fly to the next landmark and open its card.
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-landmark]'); if (!b) return;
+  const d = layerById.landmarks?.byTitle?.(b.dataset.landmark); if (!d) return;
+  select({ layer: 'landmarks', d });
+  globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: Math.min(Math.max(state.pov.altitude, 0.12), 0.9) }, reduceMotion ? 0 : 1400);
+});
 document.addEventListener('click', (e) => {
   const b = e.target.closest('[data-zoomto]'); if (!b) return;
   const [lat, lng, level] = b.dataset.zoomto.split(',');
@@ -774,19 +851,23 @@ function select(ref) {
   state.selected = ref; compose.forceMarkers = true; scheduleCompose();
   state.reopen = () => select(ref);
   const key = `sel:${ref.layer}:${c.title}`;
+  // Fewest words first: photo, name, the figures, then one row of buttons. Everything else waits under "More".
+  const quick = zoomRow(c.probe ?? locOf(ref.d), ref.layer) + (c.links ?? []).filter((x) => x.url).map((x) => `<a class="btn ghost" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.label)}</a>`).join('') + '<button class="btn ghost" data-share="1" title="Copy a link to this">Share</button>';
   openNotes(l.label, `
     <div id="sel-wiki"></div>
     <h3 class="withglyph">${itemGlyph(ref) ? glyphSvg(itemGlyph(ref), l.swatch, 30) : ''}<span>${esc(c.title)}</span></h3>${c.sub ? `<p class="sub">${esc(c.sub)}</p>` : ''}
-    ${zoomRow(c.probe ?? locOf(ref.d), ref.layer)}
-    ${c.html ?? ''}${rowsHtml(c.rows)}${c.body ? `<p>${esc(c.body)}</p>` : ''}
+    ${c.html ?? ''}${factsHtml(c.rows)}${c.body ? `<p class="fold" tabindex="0" role="button" aria-expanded="false" title="Show the full text">${esc(c.body)}</p>` : ''}
     ${c.actions?.length ? `<div class="row">${c.actions.map(([a, t]) => `<button class="btn ghost" data-action="${a}">${esc(t)}</button>`).join('')}</div><div id="sel-action"></div>` : ''}
-    ${linksHtml(c.links)}
-    ${c.probe ? `<h4>Here, right now</h4>${probeHtml(c.probe[0], c.probe[1])}` : ''}
-    <h4>About this layer</h4><p>${esc(l.learn.what)}</p>
-    <div class="row"><button class="btn ghost" data-learn-more="${l.id}">How it is measured, and something to try</button><button class="btn ghost" data-share="1">Copy a link to this</button></div>`, key);
+    <div class="quick">${quick}</div>
+    <details class="more"><summary>${c.probe ? 'Here now, and about this layer' : 'About this layer'}</summary>
+      ${c.probe ? probeHtml(c.probe[0], c.probe[1]) : ''}
+      <h4>About this layer</h4><p>${esc(l.learn.what)}</p>
+      <div class="row"><button class="btn ghost" data-learn-more="${l.id}">How it is measured, and something to try</button></div>
+    </details>`, key);
   writeHash();
   if (c.probe) fillProbe(c.probe[0], c.probe[1]);
   if (c.wiki) wikiCard(c.wiki, key);
+  if (c.fill) c.fill(() => isOpen(key));
   if (ref.layer === 'airports' && state.data.aircraft) runAction('airport-board');
 }
 // Wikipedia summary + photo for named things (only exact article matches, never disambiguation pages).
@@ -794,7 +875,7 @@ async function wikiCard(title, key) {
   try {
     const w = await getFeed('wikipedia', `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(String(title).replace(/ /g, '_'))}`, { ttl: 86_400_000 });
     if (w.type !== 'standard' || !isOpen(key)) return;
-    $('#sel-wiki').innerHTML = `<figure class="wiki">${w.thumbnail ? `<img src="${esc(w.thumbnail.source)}" alt="" loading="lazy" />` : ''}<figcaption>${esc(w.extract)} <a href="${esc(w.content_urls?.desktop?.page)}" target="_blank" rel="noopener">Wikipedia</a></figcaption></figure>`;
+    $('#sel-wiki').innerHTML = `<figure class="wiki">${w.thumbnail ? `<img src="${esc(w.thumbnail.source)}" alt="" loading="lazy" />` : ''}<figcaption class="fold" tabindex="0" role="button" aria-expanded="false" title="Show the full text">${esc(w.extract)} <a href="${esc(w.content_urls?.desktop?.page)}" target="_blank" rel="noopener">Wikipedia</a></figcaption></figure>`;
   } catch { /* no article, no card */ }
 }
 /** Arrivals and departures right now, worked out from live aircraft around an airport. */
@@ -989,7 +1070,7 @@ const WMO = { 0: 'Clear', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast', 
 
 function probeCard(lat, lng) {
   state.reopen = () => probeCard(lat, lng);
-  openNotes('Point probe', `<h3>This spot on Earth</h3>${zoomRow([lat, lng], 'probe')}${probeHtml(lat, lng)}`);
+  openNotes('Point probe', `<h3>This spot on Earth</h3><div class="quick">${zoomRow([lat, lng], 'probe')}</div>${probeHtml(lat, lng)}`);
   fillProbe(lat, lng);
 }
 
@@ -1031,6 +1112,8 @@ async function countryCard(f, lat, lng) {
 function pinEl(cls) { const d = document.createElement('div'); d.className = `pin ${cls}`; return d; }
 function setPins(pins) { state.tool.html = pins.map((p) => ({ lat: p.lat, lng: p.lng, el: pinEl(p.cls) })); compose(); }
 function clearTool() { state.tool = { points: [], paths: [], arcs: [], html: [], labels: [], rings: [] }; compose(); }
+/** "Just in": a slow shockwave where something big has just happened (live.js), in that event's colour, for 9 s. Its size follows the zoom like the quake rings, so it reads the same at every height. */
+function flash(lat, lng, color = '#f07a63') { if (reduceMotion) return; const r = 8; const ring = { lat, lng, color, maxR: r, speed: r / 2.2, period: 700, flash: true }; state.tool.rings.push(ring); compose(); setTimeout(() => { state.tool.rings = state.tool.rings.filter((x) => x !== ring); compose(); }, 9000); }
 function pulse(lat, lng, rKm) { const ring = { lat, lng, color: '#7ed6c4', maxR: rKm / 111 / Math.max(zk(), 0.001), speed: rKm / 111 / 0.9 / Math.max(zk(), 0.001), period: 900 }; state.tool.rings.push(ring); compose(); setTimeout(() => { state.tool.rings = state.tool.rings.filter((r) => r !== ring); compose(); }, 3200); }
 function setHover(c) {
   if (c === state.hover || state.dragging) return; // never rebuild anything while the globe is being dragged
@@ -1405,12 +1488,13 @@ function readHash() {
   const b = h.match(/[&]b=([a-z]+)/); if (b && (TILE[b[1]] || TEX[b[1]])) state.base = b[1];
   const shared = /[&]s=1/.test(h); // a link someone shared: always honour its layers
   const l = h.match(/[&]l=([\w,]*)/); state.bootLayers = l ? l[1].split(',') : []; if (l && (!NEW_VERSION || shared)) state.on = new Set(l[1].split(',').filter((x) => layerById[x] && !state.excluded?.has(x)));
+  const sp = h.match(/[&]sp=([a-z]+)/); state.pendingSpace = sp ? sp[1] : null; // a link into space: #...&sp=saturn
   const sel = h.match(/[&]sel=([\w-]+)~([^&]+)/);
   if (sel && layerById[sel[1]]) { state.pendingSel = { layer: sel[1], id: sel[2] }; state.on.add(sel[1]); }
 }
 function writeHash() {
   const p = state.pov; const sel = currentSel();
-  history.replaceState(null, '', `#@${p.lat.toFixed(3)},${p.lng.toFixed(3)},${p.altitude.toFixed(3)}&b=${state.base}&l=${[...state.on].join(',')}${sel ? `&sel=${sel.layer}~${encodeURIComponent(sel.id)}` : ''}`);
+  history.replaceState(null, '', `#@${p.lat.toFixed(3)},${p.lng.toFixed(3)},${p.altitude.toFixed(3)}&b=${state.base}&l=${[...state.on].join(',')}${sel ? `&sel=${sel.layer}~${encodeURIComponent(sel.id)}` : ''}${state.space ? `&sp=${state.space}` : ''}`);
 }
 // ---- shareable links to one item: #...&sel=layer~id
 const idOf = (d) => { const v = d?.id ?? d?.icao ?? d?.mmsi ?? d?.iata ?? d?.norad ?? d?.name ?? d?.title; return v == null ? null : String(v).slice(0, 80); };
@@ -1466,6 +1550,21 @@ $('#time-back').addEventListener('click', () => { clock.shift(-3600_000 * 6); ti
 $('#time-fwd').addEventListener('click', () => { clock.shift(3600_000 * 6); tickClock(); });
 $('#time-slider').addEventListener('input', (e) => { clock.set(Date.now() + Number(e.target.value) * 3600_000); tickClock(); });
 $('#time-replay').addEventListener('click', () => replayQuakes());
+// Watch an eclipse: the Day/night map (the only one that draws the Moon's shadow on the ground), the time machine at
+// 10 minutes a second from two hours before the middle to two hours after, then a pause. An eclipse of the Sun is
+// watched on the globe over the place where it is greatest; an eclipse of the Moon out at the Moon.
+function watchEclipse(e) {
+  if (!SHADED.has(state.base)) setBase('daynight');
+  clock.set(e.peak - 2 * 3600_000); clock.setSpeed(600); state.eclipseEnd = e.peak + 2 * 3600_000;
+  $('#timebar').hidden = false; tickClock(); refreshLayer('sun', { soft: true });
+  const kind = e.body === 'sun' ? 'Eclipse of the Sun' : 'Eclipse of the Moon';
+  if (e.body === 'moon') cosmos.explore('moon');
+  else {
+    const go = () => globe.pointOfView({ lat: e.lat, lng: e.lng, altitude: 2.1 }, reduceMotion ? 0 : 2200);
+    if (cosmos.focus()) { cosmos.leave(); setTimeout(go, reduceMotion ? 50 : 4200); } else { closeNotes(); go(); }
+  }
+  toast(`${kind}, ${new Date(e.peak).toISOString().slice(0, 10)}: running at 10 minutes a second. Press Live to come back.`);
+}
 function replayQuakes() {
   state.opts.quakes.feed = '2.5_week'; delete state.data.quakes; if (!state.on.has('quakes')) toggleLayer('quakes', true); else refreshLayer('quakes');
   clock.set(Date.now() - 7 * 86_400_000); clock.setSpeed(3600); $('#timebar').hidden = false; tickClock();
@@ -1522,13 +1621,13 @@ $('#gibs-date-input').value = gibsDate();
 $('#gibs-date-input').addEventListener('change', (e) => { state.gibsDate = e.target.value || null; applyBase(); });
 
 // ------------------------------------------------------------------ plug-in layers (flights, cameras, places)
-const api = { now: () => clock.date(), view: () => viewOf(state.pov), particleBudget: () => ({ High: 6000, Balanced: 3500, Fast: 1500 }[perf.q.label] ?? 4000), clearTool: () => clearTool(), setPins: (p) => setPins(p), compose: () => { compose.forceMarkers = true; compose(); }, closeNotes: () => closeNotes(), LAYERS, pulse: (a, b, c) => pulse(a, b, c), globe, state, esc, $, reduceMotion, openNotes, isOpen, refreshLayer, fly, followTo, setBase, wmo: (c) => WMO[c] ?? '—', select, toast: (m) => toast(m), toggleLayer: (id, on) => toggleLayer(id, on), openWall: () => openWall(api), placeName: (a, b) => placeName(a, b), isDesktop, repoUrl: () => sourceRepoUrl() };
+const api = { now: () => clock.date(), view: () => viewOf(state.pov), particleBudget: () => ({ High: 6000, Balanced: 3500, Fast: 1500 }[perf.q.label] ?? 4000), clearTool: () => clearTool(), setPins: (p) => setPins(p), compose: () => { compose.forceMarkers = true; compose(); }, closeNotes: () => closeNotes(), LAYERS, pulse: (a, b, c) => pulse(a, b, c), flash: (a, b, c) => flash(a, b, c), globe, state, esc, $, reduceMotion, openNotes, isOpen, refreshLayer, fly, followTo, setBase, wmo: (c) => WMO[c] ?? '—', select, toast: (m) => toast(m), toggleLayer: (id, on) => toggleLayer(id, on), openWall: () => openWall(api), placeName: (a, b) => placeName(a, b), isDesktop, repoUrl: () => sourceRepoUrl() };
 const health = installHealth(api); const watch = installWatch(api);
 {
   const add = (layer, afterId) => { const i = LAYERS.findIndex((l) => l.id === afterId); LAYERS.splice(i + 1, 0, layer); layerById[layer.id] = layer; };
   const added = [];
   for (const r of REGISTRY) { const l = r.make(api, { watch }); if (r.group) l.group = r.group; add(l, r.after); added.push(l); }
-  for (const l of LAYERS) l.fresh = [].includes(l.id); // the “new” badge marks what changed in this version
+  for (const l of LAYERS) l.fresh = ['landmarks'].includes(l.id); // the “new” badge marks what changed in this version
   layerById.aircraft.on = true; layerById.cameras.on = true;
   for (const [i, g] of EXTRA_GROUPS) GROUPS.splice(i, 0, g);
   for (const l of added) {
@@ -1710,12 +1809,14 @@ setInterval(() => {
 }, 500);
 // Keep side panels clear of the bottom bar, whose height changes when it wraps on narrower windows.
 gov = installIdleGovernor(globe, {
-  busy: () => controls.autoRotate || !!state.tour || flightState.follow || !!state.ride,
-  animating: () => compose.animating || state.on.has('wind') || state.on.has('skyfx') || state.on.has('aircraft') || !clock.isLive(),
+  busy: () => controls.autoRotate || !!state.tour || flightState.follow || !!state.ride || cosmos.flying(),
+  animating: () => compose.animating || !!cosmos.focus() || state.on.has('wind') || state.on.has('skyfx') || state.on.has('aircraft') || !clock.isLive(),
 });
 hud = installHud(api);
 if (state.look === 'hud') hud.show(true);
-if (NEW_VERSION) { if (!state.pendingSel) setTimeout(whatsNew, 600); try { localStorage.setItem('global-intelligence-atlas-version', VERSION); } catch { /* private mode */ } }
+if (state.pendingSpace) setTimeout(() => cosmos.explore(state.pendingSpace, { instant: true }), 1800); // opened from a link into space
+addEventListener('keydown', (e) => { if (e.key === 'Escape' && cosmos.focus() && !e.target.closest?.('input, textarea')) cosmos.leave(); });
+if (NEW_VERSION) { if (!state.pendingSel && !state.pendingSpace) setTimeout(whatsNew, 600); try { localStorage.setItem('global-intelligence-atlas-version', VERSION); } catch { /* private mode */ } }
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
@@ -1922,7 +2023,7 @@ if (window.__TAURI_INTERNALS__) {
     if (a && new URL(a.href).origin !== location.origin) { e.preventDefault(); window.__TAURI_INTERNALS__.invoke('plugin:opener|open_url', { url: a.href }); }
   });
 }
-window.gia = { layerManifest, loadPlugins, applyEdition, health, watch, planeCounts, gov: () => gov, extras: () => extras, tracer: () => tracer, markers, pickAt: (x, y) => pickAt(x, y), live, applyPending, preset, VERSION, globe, state, setBase, toggleLayer, startTour, setMode, select, showLearn, surfaceClick, countryAt, setLook, refreshLayer, flightState }; // for tinkering in the console
+window.gia = { cosmos, layerManifest, loadPlugins, applyEdition, health, watch, planeCounts, gov: () => gov, extras: () => extras, tracer: () => tracer, markers, pickAt: (x, y) => pickAt(x, y), live, applyPending, preset, VERSION, globe, state, setBase, toggleLayer, startTour, setMode, select, showLearn, surfaceClick, countryAt, setLook, refreshLayer, flightState, clock }; // for tinkering in the console
 
 // Fewer words on screen: long explanatory lines in the section drawer fold to one line ending in "…"; click or
 // press Enter on one to read it all. Short notes and status lines are left as they are.
@@ -1933,11 +2034,12 @@ window.gia = { layerManifest, loadPlugins, applyEdition, health, watch, planeCou
     p.classList.add('fold'); p.tabIndex = 0; p.setAttribute('role', 'button'); p.setAttribute('aria-expanded', 'false'); p.title = 'Show the full text';
   });
   const toggle = (e) => {
-    const p = e.target.closest('p.fold'); if (!p || e.target.closest('a')) return;
+    const p = e.target.closest('.fold'); if (!p || e.target.closest('a')) return;
     if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
     e.preventDefault(); const open = p.getAttribute('aria-expanded') !== 'true'; p.setAttribute('aria-expanded', String(open)); p.title = open ? '' : 'Show the full text';
   };
   const drawer = $('#layers');
   drawer.addEventListener('click', toggle); drawer.addEventListener('keydown', toggle);
+  $('#notes').addEventListener('click', toggle); $('#notes').addEventListener('keydown', toggle); // item cards fold their long text too
   fold(drawer); new MutationObserver(() => fold(drawer)).observe(drawer, { childList: true, subtree: true });
 }

@@ -22,7 +22,7 @@ const ALLOWED_HOSTS: &[&str] = &[
     "earthquake.usgs.gov", "eonet.gsfc.nasa.gov", "www.gdacs.org", "services.swpc.noaa.gov", "api.open-meteo.com",
     "firms.modaps.eosdis.nasa.gov", "api.rainviewer.com",
     // news, places, reference
-    "api.gdeltproject.org", "en.wikipedia.org", "restcountries.com", "api.worldbank.org", "nominatim.openstreetmap.org",
+    "api.gdeltproject.org", "en.wikipedia.org", "www.wikidata.org", "restcountries.com", "api.worldbank.org", "nominatim.openstreetmap.org",
     "overpass-api.de", "api.panoramax.xyz",
     // ships, cameras, crime
     "meri.digitraffic.fi", "api.tfl.gov.uk", "data.gov.hk", "cwwp2.dot.ca.gov", "data.police.uk",

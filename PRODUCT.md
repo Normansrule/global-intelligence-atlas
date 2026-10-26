@@ -26,7 +26,7 @@ Visitors arrive on the website (GitHub Pages), then open the globe app at /app/.
 
 ## Capabilities and Constraints
 
-- 65 layers in 11 groups, 210 data sources, 264 references (README, October 2026).
+- 67 layers in 11 groups, 210 data sources, 264 references (README, October 2026).
 - Plain HTML, CSS and native ES modules; no build step for the app.
 - Draw calls stay batched; no overlapping panels (tests/e2e/overlap.py at six window sizes); performance is noticed by the owner.
 - Acronyms written out in full on first use.

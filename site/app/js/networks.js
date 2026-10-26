@@ -5,6 +5,7 @@ import { THREE } from '../vendor/vendor.min.mjs';
 import { getFeed, getLocal, getSnapshot, isDesktop, liveProxy } from './feeds.js';
 import { createAisStore, parseFrame, viewBoxes } from './ais.js';
 import { haversineKm, fmtLat, fmtLng } from './astro.js';
+import { shipWakes } from './wakes.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const tip = (t, s = '') => `<div class="tip"><b>${esc(t)}</b>${s ? `<span>${esc(s)}</span>` : ''}</div>`;
@@ -178,8 +179,9 @@ export const shipsLayer = {
     return balticShips();
   },
   channels(ss, ctx) {
-    const v = ctx.view;
+    const v = ctx.view; const wakes = shipWakes(); wakes.set(ss); // moving ships trail a Kelvin wake (wakes.js): one draw call for all of them
     return {
+      custom: [wakes.wrap],
       particles: (ss._particles ??= [{ color: '#4aa3ff', size: 1.8, pts: ss.map((s) => ({ lat: s.lat, lng: s.lng, alt: 0.0015 })) }]),
       points: (v.altitude < 0.6 ? ss.filter((s) => inView(v, s.lat, s.lng)) : []).slice(0, 1200).map((s) => ({ lat: s.lat, lng: s.lng, alt: 0.003, r: 0.05, color: s.sog > 0.5 ? '#5cc8ff' : '#c9dcec', label: s.meta?.name ?? String(s.mmsi), tip: tip(s.meta?.name ?? `MMSI ${s.mmsi}`, `${s.sog ?? 0} kn · ${NAV[s.nav] ?? '—'}`), ref: { layer: 'ships', d: s } })),
       pick: (ss._pick ??= ss.map((s) => ({ lat: s.lat, lng: s.lng, alt: 0.0015, ref: { layer: 'ships', d: s } }))),
@@ -199,7 +201,7 @@ export const shipsLayer = {
     const src = ss?.src === 'world' ? `Worldwide: ${ss.length.toLocaleString()} vessels from AISStream.` : `Baltic only (Fintraffic). ${isDesktop ? 'Add a free AISStream key below for ships in view anywhere.' : 'Worldwide ships appear when the site’s live-data job has an AISSTREAM_KEY secret.'}`;
     return `<p class="shipnote">${esc(src)}</p>${isDesktop ? `<form class="aiskey" data-ais-form><input type="password" autocomplete="off" placeholder="AISStream key (free at aisstream.io)" aria-label="AISStream key" value="${esc(aisKey())}"><button class="btn" type="submit">Save</button></form>` : ''}`;
   },
-  learn: { what: 'Ships broadcasting AIS around the world: worldwide from AISStream when the site’s live-data job has a key (or on the desktop app with your own), otherwise every ship in the Baltic Sea and nearby Nordic waters from Fintraffic. Blue ships are moving; grey ones are moored or anchored.', how: 'AISStream relays AIS heard by volunteer receivers as a WebSocket stream. It needs a free key and does not allow web pages to connect, so the live-data job listens for a minute every few minutes and keeps every vessel heard in the last 30 minutes; the desktop app (or your proxy) adds ships in view. Fintraffic’s Digitraffic service publishes Baltic AIS openly (CC BY 4.0) and needs no key, so it remains the fallback.', try: 'Zoom into the Strait of Singapore or the English Channel, then compare with the Gulf of Finland at night.', refs: ['aisstream', 'digitraffic', 'itu1371'] },
+  learn: { what: 'Ships broadcasting AIS around the world: worldwide from AISStream when the site’s live-data job has a key (or on the desktop app with your own), otherwise every ship in the Baltic Sea and nearby Nordic waters from Fintraffic. Blue ships are moving; grey ones are moored or anchored. Each moving ship trails a wake that ripples back from its stern: two arms at 19.5° either side of its course and churned water behind it, longer the faster it goes.', how: 'AISStream relays AIS heard by volunteer receivers as a WebSocket stream. It needs a free key and does not allow web pages to connect, so the live-data job listens for a minute every few minutes and keeps every vessel heard in the last 30 minutes; the desktop app (or your proxy) adds ships in view. Fintraffic’s Digitraffic service publishes Baltic AIS openly (CC BY 4.0) and needs no key, so it remains the fallback.', try: 'Zoom into the Strait of Singapore or the English Channel, then compare with the Gulf of Finland at night. Every wake opens at the same angle, about 19.5°, whatever the ship’s speed: Lord Kelvin showed in 1887 that this follows from how waves spread on deep water.', refs: ['aisstream', 'digitraffic', 'itu1371', 'kelvin1887'] },
 };
 
 if (typeof document !== 'undefined') {

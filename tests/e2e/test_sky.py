@@ -69,6 +69,12 @@ with sync_playwright() as p:
     pg, errs = page(b, 'http://localhost:8765/app/#@20,40,2.4&b=weather&l=sun')
     check('a link with the Weather style opens with the weather on', pg.evaluate("() => gia.state.on.has('skyfx') && document.getElementById('ly-skyfx')?.checked === true"))
     check('no page errors (weather link)', not errs, errs[:3])
+    # a reload in the Weather style: the address lists the weather layer too, and leaving the style must still clear it
+    pg.context.close(); pg, errs = page(b, 'http://localhost:8765/app/#@20,40,2.4&b=weather&l=sun,skyfx')
+    pg.evaluate("() => document.querySelector('[data-base=\"daynight\"]').click()"); pg.wait_for_timeout(1500)
+    r=pg.evaluate("() => ({ on: gia.state.on.has('skyfx'), box: document.getElementById('ly-skyfx')?.checked, mute: gia.globe.globeMaterial().uniforms?.mute?.value ?? 0, hash: location.hash })")
+    check('after a reload in the Weather style, picking another style switches the weather off', not r['on'] and not r['box'] and r['mute']==0 and 'skyfx' not in r['hash'], r)
+    check('no page errors (weather reload)', not errs, errs[:3])
     b.close()
 fails=[n for n,ok in res if not ok]
 print(f"\n{len(res)-len(fails)}/{len(res)} passed"); sys.exit(1 if fails else 0)
