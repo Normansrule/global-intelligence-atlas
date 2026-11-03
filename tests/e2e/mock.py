@@ -39,6 +39,14 @@ def wb_series(ind, cc):
     rows.append({"indicator":{"id":ind},"country":{"id":cc},"countryiso3code":"FRA","date":"2024","value":None})
     return json.dumps([{"page":1,"pages":1,"per_page":200,"total":len(rows)},rows[::-1]])
 WIKI_FR=json.dumps({"title":"France","description":"Country in Western Europe","extract":"France, officially the French Republic, is a country located primarily in Western Europe.","content_urls":{"desktop":{"page":"https://en.wikipedia.org/wiki/France"}}})
+# Open-Meteo for the city page and the point probe (citydetail.js, main.js)
+def _wx():
+    h0=time.gmtime(now/1000+3600)
+    times=[time.strftime('%Y-%m-%dT%H:00', time.gmtime(now/1000+3600+i*3600)) for i in range(24)]
+    return json.dumps({"latitude":48.87,"longitude":2.33,"utc_offset_seconds":3600,"timezone":"Europe/Paris","timezone_abbreviation":"GMT+1","elevation":42,
+      "current":{"time":times[0],"temperature_2m":11.4,"apparent_temperature":8.9,"relative_humidity_2m":81,"precipitation":0.2,"weather_code":61,"wind_speed_10m":19.4,"wind_gusts_10m":38.2,"wind_direction_10m":240,"cloud_cover":96,"is_day":1},
+      "hourly":{"time":times,"temperature_2m":[11.4+3*__import__('math').sin(i/24*6.283) for i in range(24)],"precipitation_probability":[60 if 3<i<9 else 10 for i in range(24)]},
+      "daily":{"time":["2026-11-03","2026-11-04"],"sunrise":["2026-11-03T07:58","2026-11-04T08:00"],"sunset":["2026-11-03T17:21","2026-11-04T17:19"],"uv_index_max":[1.2,1.4],"temperature_2m_max":[13.1,12.0],"temperature_2m_min":[7.2,6.5]}})
 EONET=json.dumps({"events":[{"id":"E1","title":"Wildfire - Butte County, California","categories":[{"id":"wildfires","title":"Wildfires"}],"geometry":[{"type":"Point","date":"2026-09-26T10:00:00Z","coordinates":[-121.6,39.7]}],"sources":[]}]})
 GDELT=json.dumps({"type":"FeatureCollection","features":[{"type":"Feature","properties":{"name":"London, United Kingdom","count":25,"html":'<a href="https://example.com/1" title="Headline about London">x</a>'},"geometry":{"type":"Point","coordinates":[-0.12,51.5]}}]})
 def iso(ms): return time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(ms/1000))
@@ -192,6 +200,8 @@ def handler(route):
         k='frames/'+u.split('/history/frames/')[1].split('?')[0]
         if k in HISTORY_FRAMES: return route.fulfill(status=200, body=json.dumps(history_frame(HISTORY_FRAMES[k])), headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
         return route.fulfill(status=404, body='404: Not Found', headers={'Access-Control-Allow-Origin':'*'})
+    if 'api.open-meteo.com/v1/forecast' in u: return route.fulfill(status=200, body=_wx(), headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
+    if 'api.open-meteo.com/v1/elevation' in u: return route.fulfill(status=200, body='{"elevation":[42]}', headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
     if 'restcountries.com/v3.1/' in u:
         if '/all?' in u: b=RC_ALL
         elif 'alpha?codes=' in u: b=RC_NB

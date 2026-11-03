@@ -7,6 +7,7 @@ import { ui } from './uicons.js';
 import { Globe, THREE } from '../vendor/vendor.min.mjs';
 import { LAYERS, GROUPS, layerById, worldMonitorData, plateLabel } from './layers.js';
 import { quakeClose } from './quakedetail.js';
+import { cityClose } from './citydetail.js';
 import { countryHtml, countryFill, countryClose, cd as openCountry } from './countrydetail.js';
 import { getFeed, getLocal } from './feeds.js';
 import * as astro from './astro.js';
@@ -812,6 +813,7 @@ function updateBack() { const b = $('#notes-back'); if (!b) return; b.hidden = d
 function detailsBack() { if (detailsHist.length < 2) return; detailsHist.pop(); const prev = detailsHist.at(-1); state.histNav = true; prev.fn(); updateBack(); }
 // An open earthquake draws its shaking, waves and aftershocks; take them away when another card replaces it.
 function leaveQuake(prev, next) {
+  if (prev?.layer === 'cities' && next?.d !== prev.d) { cityClose(); setTimeout(() => refreshLayer('cities', { soft: true }), 0); } // the city page's circle (citydetail.js)
   if (prev?.layer !== 'quakes' || (next?.layer === 'quakes' && next.d?.id === prev.d?.id)) return;
   quakeClose(); if (next?.layer !== 'quakes') setTimeout(() => refreshLayer('quakes', { soft: true }), 0);
 }

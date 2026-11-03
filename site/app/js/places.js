@@ -2,6 +2,7 @@
 // Global Intelligence Atlas — place names and airports, so the globe reads like a map.
 import { getLocal } from './feeds.js';
 import { routesFrom } from './flightdb.js';
+import { cityHtml, cityFill, cityOverlay } from './citydetail.js';
 import { haversineKm, greatCirclePoints, fmtLat, fmtLng, localSolarTime } from './astro.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -9,7 +10,7 @@ const tip = (t, s = '') => `<div class="tip"><b>${esc(t)}</b>${s ? `<span>${esc(
 
 export const citiesLayer = {
   id: 'cities', group: 'places', label: 'City names', swatch: '#eef3f6', on: true, viewDependent: true,
-  sources: ['natearth'],
+  sources: ['natearth', 'openmeteo', 'ourairports', 'vrsstanding'],
   async load() {
     const d = await getLocal('data/cities.json');
     return d.rows.map(([name, lat, lng, pop, capital, cc, region]) => ({ name, lat, lng, pop, capital: !!capital, cc, region }));
@@ -20,7 +21,9 @@ export const citiesLayer = {
     const max = a > 1.6 ? 45 : a > 0.8 ? 80 : a > 0.3 ? 110 : 140;
     const shown = cs.filter((c) => Math.abs(c.lat - v.lat) * 111 < v.radiusKm * 1.05 && haversineKm(v.lat, v.lng, c.lat, c.lng) < v.radiusKm * 1.05).slice(0, max);
     const base = Math.max(0.012, Math.min(1.3, a * 0.34));
+    const sel = window.gia?.state?.selected; const open = sel?.layer === 'cities' ? cityOverlay(ctx, sel) : null; // the open city page (citydetail.js)
     return {
+      ...(open?.custom?.length ? { custom: open.custom } : {}),
       labels: shown.map((c) => ({
         lat: c.lat, lng: c.lng, alt: 0.006, text: c.name,
         size: (c.pop > 5e6 ? 15 : c.pop > 1e6 ? 13 : 11.5) + (c.capital ? 1 : 0), px: true,
@@ -31,16 +34,19 @@ export const citiesLayer = {
   describe(c) {
     return {
       title: c.name, sub: [c.region, c.cc].filter(Boolean).join(' · ') + (c.capital ? ' · national capital' : ''),
-      rows: [['Population (metro, Natural Earth)', c.pop ? c.pop.toLocaleString() : '—'], ['Position', `${fmtLat(c.lat)}, ${fmtLng(c.lng)}`], ['Local solar time', localSolarTime(c.lng)]],
+      html: cityHtml(c),
+      rows: [['Position', `${fmtLat(c.lat)}, ${fmtLng(c.lng)}`], ['Local solar time', localSolarTime(c.lng)]],
       wiki: c.name, probe: [c.lat, c.lng],
+      /** The city page: weather, daylight, people, airports, what is around it and its antipode (citydetail.js). */
+      async fill(stillOpen) { const g = window.gia; await cityFill(c, { stillOpen, data: g.state.data, countryAt: (a, b) => g.countryAt(a, b), refresh: () => g.refreshLayer('cities', { soft: true }) }); },
       links: [{ label: 'Street View', url: `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${c.lat},${c.lng}` }, { label: 'OpenStreetMap', url: `https://www.openstreetmap.org/#map=12/${c.lat}/${c.lng}` }],
     };
   },
   learn: {
-    what: '2,500 cities and every national capital, shown more densely as you zoom in — the way a web map reveals smaller places at closer zoom. Gold names are capitals.',
+    what: '2,500 cities and every national capital, shown more densely as you zoom in — the way a web map reveals smaller places at closer zoom. Gold names are capitals. Click a name for its city page: the weather now and for the next 24 hours, today’s daylight against its longest and shortest days, its people and rank, the nearest airports and where they fly, what is within 100 km, and what lies on the other side of the Earth.',
     how: 'From Natural Earth’s populated places, a public-domain dataset made for cartography; population is the metro-area estimate it records.',
     try: 'Zoom slowly into a region and watch smaller cities appear. Click a name for its encyclopaedia summary, weather and a street-level view.',
-    refs: ['natearth'],
+    refs: ['natearth', 'openmeteo', 'wmocodes', 'ourairports', 'vrsstanding'],
   },
 };
 

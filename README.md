@@ -98,6 +98,12 @@ Click a plane and its flight view reads like an airline's own tracker: the fligh
 </details>
 
 <details open>
+<summary><b>◉ Every city, in depth</b></summary>
+
+Click a city and its page gives the weather there now (temperature, what it feels like, today's range, wind and gusts, humidity, the Ultraviolet (UV) index) with the next 24 hours as a temperature line and the hours rain is likely. A daylight ribbon marks sunrise, sunset and now, says how much longer or shorter tomorrow is and gives the city's longest and shortest days of the year. Its people are drawn as Isotype figures with its rank in the world and in its country, and the top line names its country as a button and the local time. **Getting there** lists the nearest airports and how many places the main one flies to nonstop, with its farthest flight; **Within 100 km** counts the earthquakes, planes and cameras your layers show and gives the landmarks nearby as buttons; and **The other side of the Earth** finds the spot exactly opposite, the country or ocean there and the nearest city, with a button to fly to it. On the globe a gold circle marks 100 km round the city. Weather live from Open-Meteo; day length from the Sun's position; airports and routes from OurAirports and Virtual Radar Server's standing data.
+</details>
+
+<details open>
 <summary><b>⚑ Every country, in depth</b></summary>
 
 Click a country and its page draws its people as rows of Isotype figures (one figure is always the same round number of people; blue figures live in towns and cities, ochre in the countryside), gives its population, area and density with its rank among all countries, and sets it against the world on income per person, life expectancy, life in towns and cities, internet use, electricity, renewable energy and forest, each with its trend since 1990. It says the time and whether it is day or night in the capital, lists languages, money, driving side, phone code and web suffix, counts what the layers you have on show inside its borders right now (earthquakes this week, planes in its sky, open natural events, live cameras, its landmarks), and gives its neighbours as buttons that fly you there. On the globe the country is outlined in gold, its neighbours are traced and its capital is pinned. Live from REST Countries, the World Bank and Wikipedia.

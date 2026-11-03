@@ -684,7 +684,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (0xB10C, 2021) | Bitcoin and Ethereum addresses on the SDN list, checked in the wallet tool. | MIT (code); OFAC data public domain |
 | (Blockstream, n.d.) | Bitcoin address balances and transaction counts. | Free public API |
 | (Blockscout, n.d.) | Ethereum address balances and transaction counts. | Free public API |
-| (Zippenfenig, 2023) | Weather and ground elevation for any clicked point. | CC BY 4.0 |
+| (Zippenfenig, 2023) | Weather and ground elevation for any clicked point, and the city page: the weather now, the next 24 hours, sunrise, sunset and the Ultraviolet (UV) index. | CC BY 4.0 |
 | (World Meteorological Organization, 2019) | What the weather codes from Open-Meteo mean: thunderstorms (95–99), snow (71–77, 85–86) and the rest, for the clouds, rain and storms layer. | Reference (WMO) |
 | (REST Countries, n.d.) | The country page: official name, capital and its position, population and area (and their rank among all countries), languages, money, time zones, neighbours, driving side, phone code and web suffix. | MPL-2.0 |
 | (World Bank, n.d.) | The country page: income per person, life expectancy, life in towns and cities, internet use, electricity, renewable energy and forest, each against the world with its trend since 1990. | CC BY 4.0 |
