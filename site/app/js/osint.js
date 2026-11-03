@@ -8,6 +8,7 @@
 // Deliberately left out: port and vulnerability scanning (that probes other people's machines), and searches
 // for private people (usernames, phone numbers, leaked passwords). Everything here reads public registries
 // about domains, networks, software flaws, sanctioned parties and public blockchains.
+import { ui } from './uicons.js';
 import { getFeed, getLocal } from './feeds.js';
 import { classify, searchSanctions, walletsIn, CONFLICT_ZONES, zoneCounts, cvssWord } from './osint-core.js';
 import { TOPICS } from './news.js';
@@ -52,7 +53,7 @@ export function installOsint({ show, back }) {
   let seq = 0; // ignore answers to earlier lookups
   const page = (t, q, body) => {
     show('tools', t.title, `
-      <p><button class="btn ghost" data-osint-back="1">← All tools</button></p>
+      <p><button class="btn ghost" data-osint-back="1">${ui('back')}All tools</button></p>
       <p class="muted">${esc(t.blurb)}</p>
       ${t.placeholder ? `<form class="osint-ask" data-osint-form="${t.id}"><input type="search" name="q" value="${esc(q)}" autocomplete="off" spellcheck="false" placeholder="${esc(t.placeholder)}" aria-label="${esc(t.title)}" /><button class="btn" type="submit">Look up</button></form>` : ''}
       <div class="osint-out" aria-live="polite">${body}</div>

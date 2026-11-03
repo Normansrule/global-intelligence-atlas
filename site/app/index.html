@@ -57,7 +57,7 @@
   </nav>
 
   <aside class="drawer" id="layers" aria-label="Section">
-    <div class="drawer-head"><h2 id="drawer-title">Layers</h2><button class="icon" id="drawer-close" aria-label="Close this section" title="Close (Esc)">×</button></div>
+    <div class="drawer-head"><h2 id="drawer-title">Layers</h2><button class="icon" id="drawer-close" aria-label="Close this section" title="Close (Esc)"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
     <section class="sect" id="sect-layers">
       <div class="layer-filter"><input id="layer-filter" type="search" placeholder="Filter layers…" aria-label="Filter layers" autocomplete="off" /></div>
       <div id="layer-list"></div>
@@ -108,9 +108,9 @@
     <div class="timebar" id="timebar" hidden role="group" aria-label="Time machine">
       <b>Time machine</b>
       <button id="time-back" title="Back 6 hours">−6 h</button>
-      <button id="time-slower" title="Slower / reverse ([)">◀◀</button>
-      <button id="time-play" title="Pause / play">❚❚</button>
-      <button id="time-faster" title="Faster (])">▶▶</button>
+      <button id="time-slower" title="Slower / reverse ([)" aria-label="Slower or reverse"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6 4 12l7 6zM20 6l-7 6 7 6z" fill="currentColor"/></svg></button>
+      <button id="time-play" title="Pause / play" aria-label="Pause"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke-width="3"/></svg></button>
+      <button id="time-faster" title="Faster (])" aria-label="Faster"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m13 6 7 6-7 6zM4 6l7 6-7 6z" fill="currentColor"/></svg></button>
       <span id="time-speed">Real time</span>
       <button id="time-fwd" title="Forward 6 hours">+6 h</button>
       <label class="tslider"><span>−7 d</span><input type="range" id="time-slider" min="-168" max="48" step="0.25" value="0" aria-label="Hours from now" /><span>+2 d</span></label>
@@ -120,27 +120,27 @@
     <div class="mapctl" aria-label="Map controls">
       <button id="locate" title="Go to my location" aria-label="Go to my location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
       <button id="space-open" data-space="moon" title="Fly into space: the Moon and the planets, where they are now" aria-label="Fly into space"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><ellipse cx="12" cy="12" rx="10" ry="3.6" transform="rotate(-24 12 12)"/></svg></button>
-      <button id="zin" title="Zoom in (+)" aria-label="Zoom in">+</button>
-      <button id="zout" title="Zoom out (−)" aria-label="Zoom out">−</button>
+      <button id="zin" title="Zoom in (+)" aria-label="Zoom in"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button id="zout" title="Zoom out (−)" aria-label="Zoom out"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
       <div class="scalebar" id="scalebar" aria-hidden="true"><i></i><span></span></div>
     </div>
     <div class="loading" id="loading"><div class="ring"></div><p>Loading the Earth…</p></div>
   </main>
 
   <aside class="panel notes" id="notes" aria-live="polite" aria-label="Details">
-    <div class="panel-head"><button class="icon" id="notes-back" hidden aria-label="Back" title="Back">←</button><h2 id="notes-title">Details</h2><button class="icon" data-close="notes" aria-label="Close details" title="Close (Esc)">×</button></div>
+    <div class="panel-head"><button class="icon" id="notes-back" hidden aria-label="Back" title="Back"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button><h2 id="notes-title">Details</h2><button class="icon" data-close="notes" aria-label="Close details" title="Close (Esc)"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
     <div id="notes-body"></div>
   </aside>
 
   <footer class="statusbar">
     <div class="readout" id="readout" aria-live="off"><span id="ro-lat">—</span><span id="ro-lng">—</span><span id="ro-alt">—</span></div>
     <button class="clock" id="clock" title="Click for the time machine"></button>
-    <button class="sbtn" id="view-btn" title="Base map, sensor look and detail"><span id="view-label">Map</span> ▸</button>
-    <button class="icon" id="spin" title="Auto-rotate (R)" aria-pressed="false">⟳</button>
-    <button class="icon" id="shot" title="Save a picture of the globe">⤓</button>
+    <button class="sbtn" id="view-btn" title="Base map, sensor look and detail"><span id="view-label">Map</span><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+    <button class="icon" id="spin" title="Auto-rotate (R)" aria-label="Auto-rotate" aria-pressed="false"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></button>
+    <button class="icon" id="shot" title="Save a picture of the globe" aria-label="Save a picture of the globe"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button>
     <label class="quality" title="Rendering quality — Auto steps down if the frame rate drops"><span id="fps">— fps</span>
       <select id="quality" aria-label="Rendering quality"><option value="auto">Auto</option><option value="high">High</option><option value="balanced">Balanced</option><option value="fast">Fast</option></select></label>
-    <button class="icon mobile-only" id="open-layers" title="Layers">≡</button>
+    <button class="icon mobile-only" id="open-layers" title="Layers" aria-label="Layers"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <div class="attribution" id="attribution"></div>
   </footer>
   <noscript><p class="noscript">Global Intelligence Atlas needs JavaScript and WebGL to draw the globe.</p></noscript>

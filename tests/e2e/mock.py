@@ -10,7 +10,35 @@ def quakes(n, days):
     for i in range(n):
         lat,lng = random.choice([(24,122),(-30,-178),(45,148),(-33,-72),(-20,-175),(37,142),(52,-170),(0,97)])
         feats.append({"id":f"q{i}","properties":{"mag":round(random.uniform(2.5,6.8),1),"place":random.choice(places),"time":now-random.randint(0,days*86400000),"url":"https://earthquake.usgs.gov","magType":"mww","felt":3,"tsunami":0},"geometry":{"coordinates":[lng+random.uniform(-4,4),lat+random.uniform(-4,4),random.uniform(5,400)]}})
+    # q0 is a fixed, fully described event so tests can open its USGS detail (quakedetail.js)
+    feats[0]={"id":"q0","properties":{"mag":6.8,"place":"Off the east coast of Honshu, Japan","time":now-6*3600000,"url":"https://earthquake.usgs.gov/earthquakes/eventpage/q0","detail":"https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/q0.geojson","magType":"mww","felt":1234,"cdi":6.1,"mmi":7.2,"alert":"yellow","tsunami":1,"status":"reviewed","nst":120,"gap":35},"geometry":{"coordinates":[142.5,37.5,25.0]}}
     return json.dumps({"features":feats})
+def _circle(lat,lng,km,n=72):
+    import math
+    return [[round(lng+km/111.2*math.cos(2*math.pi*i/n)/math.cos(math.radians(lat)),4),round(lat+km/111.2*math.sin(2*math.pi*i/n),4)] for i in range(n)]+[[round(lng+km/111.2/math.cos(math.radians(lat)),4),round(lat,4)]]
+CONT_MMI=json.dumps({"type":"FeatureCollection","features":[{"type":"Feature","properties":{"value":v,"units":"mmi","color":""},"geometry":{"type":"MultiLineString","coordinates":[_circle(37.5,142.5,km)]}} for v,km in [(4,420),(5,250),(6,130),(7,60)]]})
+QDETAIL=json.dumps({"id":"q0","properties":{"mag":6.8,"products":{
+  "moment-tensor":[{"properties":{"nodal-plane-1-strike":"195","nodal-plane-1-dip":"20","nodal-plane-1-rake":"90","nodal-plane-2-strike":"15","nodal-plane-2-dip":"70","nodal-plane-2-rake":"90","scalar-moment":"1.9e19","derived-magnitude":"6.8","percent-double-couple":"0.96"}}],
+  "shakemap":[{"properties":{"maxmmi":"7.2"},"contents":{"download/cont_mmi.json":{"url":"https://earthquake.usgs.gov/product/shakemap/q0/us/1/download/cont_mmi.json"}}}],
+  "dyfi":[{"properties":{"maxmmi":"6.1","num-responses":"1234"}}],
+  "losspager":[{"properties":{"alertlevel":"yellow","maxmmi":"7.2"}}],
+  "origin":[{"properties":{"num-stations-used":"120","azimuthal-gap":"35","horizontal-error":"6.2","review-status":"reviewed"}}]}},"geometry":{"coordinates":[142.5,37.5,25.0]}})
+# A country page for France (countrydetail.js): REST Countries, the World Bank and Wikipedia
+RC_A=json.dumps([{"name":{"common":"France","official":"French Republic"},"capital":["Paris"],"capitalInfo":{"latlng":[48.87,2.33]},"population":68042591,"area":551695,"region":"Europe","subregion":"Western Europe","languages":{"fra":"French"},"currencies":{"EUR":{"name":"Euro","symbol":"€"}},
+  "timezones":["UTC-10:00","UTC-09:30","UTC-09:00","UTC-08:00","UTC-04:00","UTC-03:00","UTC+01:00","UTC+02:00","UTC+03:00","UTC+04:00","UTC+05:00","UTC+10:00","UTC+11:00","UTC+12:00"]}])
+RC_B=json.dumps({"cca3":"FRA","borders":["AND","BEL","DEU","ITA","LUX","MCO","ESP","CHE"],"car":{"side":"right"},"idd":{"root":"+3","suffixes":["3"]},"tld":[".fr"],"unMember":True,"landlocked":False,"startOfWeek":"monday","demonyms":{"eng":{"f":"French","m":"French"}},"independent":True})
+RC_NB=json.dumps([{"name":{"common":n},"cca2":c,"population":p} for n,c,p in [("Andorra","AD",77000),("Belgium","BE",11555997),("Germany","DE",83240525),("Italy","IT",59554023),("Luxembourg","LU",632275),("Monaco","MC",39244),("Spain","ES",47351567),("Switzerland","CH",8654622)]])
+RC_ALL=json.dumps([{"cca2":f"X{i}","population":68042591+(22-i)*1e6 if i<22 else 1000*i,"area":551695+(49-i)*1000 if i<49 else 100*i} for i in range(1,250)]+[{"cca2":"FR","population":68042591,"area":551695}])
+def wb_series(ind, cc):
+    base={"NY.GDP.PCAP.CD":(21000,44400,12000),"SP.DYN.LE00.IN":(76.9,82.3,71.0),"SP.URB.TOTL.IN.ZS":(74.1,81.5,57.0),"IT.NET.USER.ZS":(0.1,86.0,67.0),"EG.ELC.ACCS.ZS":(100,100,91.0),"EG.FEC.RNEW.ZS":(9.0,17.0,18.0),"AG.LND.FRST.ZS":(25.0,31.6,31.1),"SP.POP.TOTL":(58e6,68e6,8.0e9)}.get(ind,(1,2,1.5))
+    rows=[]
+    for y in range(1990,2024):
+        t=(y-1990)/33
+        rows.append({"indicator":{"id":ind},"country":{"id":cc,"value":"France"},"countryiso3code":"FRA","date":str(y),"value":base[0]+(base[1]-base[0])*t})
+        rows.append({"indicator":{"id":ind},"country":{"id":"1W","value":"World"},"countryiso3code":"WLD","date":str(y),"value":base[2]*(0.8+0.2*t)})
+    rows.append({"indicator":{"id":ind},"country":{"id":cc},"countryiso3code":"FRA","date":"2024","value":None})
+    return json.dumps([{"page":1,"pages":1,"per_page":200,"total":len(rows)},rows[::-1]])
+WIKI_FR=json.dumps({"title":"France","description":"Country in Western Europe","extract":"France, officially the French Republic, is a country located primarily in Western Europe.","content_urls":{"desktop":{"page":"https://en.wikipedia.org/wiki/France"}}})
 EONET=json.dumps({"events":[{"id":"E1","title":"Wildfire - Butte County, California","categories":[{"id":"wildfires","title":"Wildfires"}],"geometry":[{"type":"Point","date":"2026-09-26T10:00:00Z","coordinates":[-121.6,39.7]}],"sources":[]}]})
 GDELT=json.dumps({"type":"FeatureCollection","features":[{"type":"Feature","properties":{"name":"London, United Kingdom","count":25,"html":'<a href="https://example.com/1" title="Headline about London">x</a>'},"geometry":{"type":"Point","coordinates":[-0.12,51.5]}}]})
 def iso(ms): return time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(ms/1000))
@@ -164,6 +192,17 @@ def handler(route):
         k='frames/'+u.split('/history/frames/')[1].split('?')[0]
         if k in HISTORY_FRAMES: return route.fulfill(status=200, body=json.dumps(history_frame(HISTORY_FRAMES[k])), headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
         return route.fulfill(status=404, body='404: Not Found', headers={'Access-Control-Allow-Origin':'*'})
+    if 'restcountries.com/v3.1/' in u:
+        if '/all?' in u: b=RC_ALL
+        elif 'alpha?codes=' in u: b=RC_NB
+        elif '/alpha/FR' in u: b=RC_A if 'capital' in u else RC_B
+        else: return route.fulfill(status=404, body='{"status":404}', headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
+        return route.fulfill(status=200, body=b, headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
+    if 'api.worldbank.org/v2/country/FR;WLD/indicator/' in u:
+        return route.fulfill(status=200, body=wb_series(u.split('/indicator/')[1].split('?')[0], 'FR'), headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
+    if 'en.wikipedia.org/api/rest_v1/page/summary/France' in u: return route.fulfill(status=200, body=WIKI_FR, headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
+    if 'earthquake.usgs.gov/earthquakes/feed/v1.0/detail/' in u: return route.fulfill(status=200, body=QDETAIL, headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
+    if 'earthquake.usgs.gov/product/' in u and 'cont_mmi' in u: return route.fulfill(status=200, body=CONT_MMI, headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
     if 'earthquake.usgs.gov/fdsnws/' in u: return route.fulfill(status=200, body=FDSN, headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
     if 'raw.githubusercontent.com' in u and '/live-data/fires.json' in u: return route.fulfill(status=200, body=FIRES, headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
     if 'raw.githubusercontent.com' in u and '/live-data/ships.json' in u: return route.fulfill(status=200, body=SHIPS, headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})

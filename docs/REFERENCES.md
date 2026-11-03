@@ -32,6 +32,8 @@ airplanes.live. (n.d.). *airplanes.live REST API* [Data set]. Retrieved October 
 
 AISStream. (n.d.). *AISStream: Global AIS data over WebSocket* [Data set]. Retrieved October 14, 2026, from https://aisstream.io/documentation.html
 
+Aki, K., & Richards, P. G. (2002). *Quantitative seismology* (2nd ed.). University Science Books.
+
 Al Jazeera English. (n.d.). *Al Jazeera English live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCNye-wNBqNL5ZzHSJj3l8Bg/live
 
 Al Jazeera. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.aljazeera.com/xml/rss/all.xml
@@ -93,6 +95,8 @@ Bostock, M., Ogievetsky, V., & Heer, J. (2011). D³: Data-driven documents. *IEE
 British Columbia Ministry of Transportation and Transit. (n.d.). *DriveBC HighwayCams* [Data set]. Government of Canada Open Government Portal. https://open.canada.ca/data/dataset/6b39a910-6c77-476f-ac96-7b4f18849b1c
 
 Bundesarchiv. (n.d.). *Stasi records archive*. Retrieved October 14, 2026, from https://www.stasi-unterlagen-archiv.de/
+
+Båth, M. (1965). Lateral inhomogeneities of the upper mantle. *Tectonophysics, 2*(6), 483–514. https://doi.org/10.1016/0040-1951(65)90003-X
 
 California Department of Pesticide Regulation. (n.d.). *Pesticide Use Reporting (PUR)* [Data set]. Retrieved October 14, 2026, from https://www.cdpr.ca.gov/docs/pur/purmain.htm
 
@@ -190,6 +194,8 @@ France 24. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, fr
 
 Freeway Bureau, Ministry of Transportation and Communications. (n.d.). *Road surveillance cameras (CCTV): Static locations and video stream addresses* [Data set]. Government Open Data Platform (Taiwan). https://data.gov.tw/dataset/173813
 
+Gardner, J. K., & Knopoff, L. (1974). Is the sequence of earthquakes in Southern California, with aftershocks removed, Poissonian? *Bulletin of the Seismological Society of America, 64*(5), 1363–1367. https://doi.org/10.1785/BSSA0640051363
+
 Gaulier, G., & Zignago, S. (2010). *BACI: International trade database at the product-level. The 1994–2007 version* (CEPII Working Paper No. 2010-23). CEPII. https://www.cepii.fr/CEPII/en/publications/wp/abstract.asp?NoDoc=2726
 
 The GDELT Project. (n.d.). *GDELT GEO 2.0 API and GDELT 2.0 event database* [Data set]. Retrieved October 14, 2026, from https://www.gdeltproject.org
@@ -207,6 +213,8 @@ Graser, A. (2019). MovingPandas: Efficient structures for movement data in Pytho
 GreenSock. (n.d.). *GSAP* [Computer software]. https://gsap.com
 
 The Guardian. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.theguardian.com/world/rss
+
+Gutenberg, B., & Richter, C. F. (1956). Magnitude and energy of earthquakes. *Annali di Geofisica, 9*(1), 1–15. https://doi.org/10.4401/ag-5590
 
 Habib, E. (2026). *World Monitor* [Computer software]. GitHub. https://github.com/koala73/worldmonitor
 
@@ -240,6 +248,8 @@ International Organization for Standardization. (2020). *Document management —
 
 International Telecommunication Union. (2014). *Technical characteristics for an automatic identification system using time division multiple access in the VHF maritime mobile frequency band* (Recommendation ITU-R M.1371-5). https://www.itu.int/rec/R-REC-M.1371
 
+International Telecommunication Union. (2019). *Assignment and use of identities in the maritime mobile service* (Recommendation ITU-R M.585-8). https://www.itu.int/rec/R-REC-M.585
+
 Internet Archive. (n.d.-a). *Advanced search* [Application programming interface]. Retrieved October 14, 2026, from https://archive.org/advancedsearch.php
 
 Internet Archive. (n.d.-b). *Wayback Machine* [Data set]. Retrieved October 14, 2026, from https://web.archive.org/
@@ -253,6 +263,8 @@ Kalman, R. E. (1960). A new approach to linear filtering and prediction problems
 Kandadai, S. (n.d.). *satellite.js* [Computer software]. GitHub. https://github.com/shashwatak/satellite-js
 
 Kelso, T. S. (n.d.). *CelesTrak: Current GP element sets* [Data set]. CelesTrak. Retrieved October 14, 2026, from https://celestrak.org/NORAD/elements/
+
+Kennett, B. L. N., & Engdahl, E. R. (1991). Traveltimes for global earthquake location and phase identification. *Geophysical Journal International, 105*(2), 429–465. https://doi.org/10.1111/j.1365-246X.1991.tb06724.x
 
 kepler.gl contributors. (n.d.). *kepler.gl* [Computer software]. GitHub. https://github.com/keplergl/kepler.gl
 
@@ -342,6 +354,8 @@ Natural Earth. (n.d.). *Natural Earth: Free vector and raster map data* [Data se
 
 NBC News. (n.d.). *NBC News NOW live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCeY0bbntWzzVIaj2z3QigXg/live
 
+Neurath, O. (1936). *International picture language: The first rules of Isotype*. Kegan Paul, Trench, Trubner.
+
 Nevada Department of Transportation. (n.d.). *NVRoads: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://www.nvroads.com/
 
 New York City Department of Transportation. (n.d.). *NYC real-time traffic cameras* [Data set]. Retrieved October 14, 2026, from https://webcams.nyctmc.org
@@ -406,6 +420,8 @@ Organisation for Economic Co-operation and Development. (n.d.). *Analytical hous
 
 OurAirports. (n.d.). *OurAirports open data* [Data set]. https://ourairports.com/data/
 
+Panama Canal Authority. (n.d.). *Vessel requirements: Maximum dimensions for the Panamax and Neopanamax locks*. Retrieved October 14, 2026, from https://pancanal.com/en/maritime-services/
+
 Panoramax. (n.d.). *Panoramax* [Data set]. https://panoramax.fr
 
 PeeringDB. (n.d.). *PeeringDB* [Data set]. https://www.peeringdb.com
@@ -419,6 +435,8 @@ Remotion. (n.d.). *Remotion* [Computer software]. GitHub. https://github.com/rem
 REST Countries. (n.d.). *REST Countries API* [Data set]. https://restcountries.com
 
 Rhodes, B. (2019). *Skyfield: High precision research-grade positions for planets and Earth satellites generator* [Computer software]. Astrophysics Source Code Library (ascl:1907.024). https://github.com/skyfielders/python-skyfield
+
+Richter, L. M. (2025). *pyais: AIS message decoding and encoding in Python* (Version 3.3.1) [Computer software]. GitHub. https://github.com/M0r13n/pyais
 
 Riebeek, H. (2009). *Catalog of Earth satellite orbits*. NASA Earth Observatory. https://earthobservatory.nasa.gov/features/OrbitsCatalog
 
@@ -500,9 +518,11 @@ U.S. Environmental Protection Agency. (n.d.-c). *TRI basic data files: Calendar 
 
 U.S. Federal Housing Finance Agency. (n.d.). *House Price Index datasets* [Data set]. Retrieved October 14, 2026, from https://www.fhfa.gov/data/hpi
 
-U.S. Geological Survey. (n.d.-a). *Earthquake Hazards Program: GeoJSON summary feeds* [Data set]. Retrieved October 14, 2026, from https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
+U.S. Geological Survey. (n.d.-a). *Earthquake Hazards Program: ComCat event detail feed and FDSN event web service* [Data set]. Retrieved October 14, 2026, from https://earthquake.usgs.gov/fdsnws/event/1/
 
-U.S. Geological Survey. (n.d.-b). *Pesticide National Synthesis Project: Estimated annual agricultural pesticide use* [Data set]. Retrieved October 14, 2026, from https://water.usgs.gov/nawqa/pnsp/usage/maps/
+U.S. Geological Survey. (n.d.-b). *Earthquake Hazards Program: GeoJSON summary feeds* [Data set]. Retrieved October 14, 2026, from https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
+
+U.S. Geological Survey. (n.d.-c). *Pesticide National Synthesis Project: Estimated annual agricultural pesticide use* [Data set]. Retrieved October 14, 2026, from https://water.usgs.gov/nawqa/pnsp/usage/maps/
 
 U.S. Naval Observatory. (n.d.). *Approximate solar coordinates*. https://aa.usno.navy.mil/faq/sun_approx
 
@@ -522,7 +542,11 @@ Vegagerðin. (n.d.). *Road cameras* [Data set]. Icelandic Road and Coastal Admin
 
 video-dev. (n.d.). *hls.js* [Computer software]. GitHub. https://github.com/video-dev/hls.js
 
+Virtual Radar Server. (2026). *Standing data: Airlines, aircraft types, ICAO address blocks, airports and routes* [Data set]. GitHub. https://github.com/vradarserver/standing-data
+
 vis.gl contributors. (n.d.). *deck.gl* [Computer software]. GitHub. https://github.com/visgl/deck.gl
+
+Wald, D. J., Jaiswal, K. S., Marano, K. D., Bausch, D. B., & Hearne, M. G. (2010). *PAGER: Rapid assessment of an earthquake’s impact* (Fact Sheet 2010–3036). U.S. Geological Survey. https://doi.org/10.3133/fs20103036
 
 Wallace, E. (n.d.). *esbuild* [Computer software]. GitHub. https://github.com/evanw/esbuild
 
@@ -552,6 +576,8 @@ Windyty, SE. (n.d.). *Windy webcams* [Data set]. Retrieved October 14, 2026, fro
 
 WION. (n.d.). *WION (World Is One News) live* [Video live stream]. YouTube. https://www.youtube.com/channel/UC_gUM8rL-Lrg6O3adPW9K1g/live
 
+Worden, C. B., Thompson, E. M., Hearne, M., & Wald, D. J. (2020). *ShakeMap manual online: Technical manual, user’s guide, and software guide* (Version 4) [Computer software manual]. U.S. Geological Survey. https://doi.org/10.5066/F7D21VPQ
+
 World Bank. (n.d.). *World Bank Open Data API* [Data set]. https://datahelpdesk.worldbank.org/knowledgebase/articles/889392
 
 World Meteorological Organization. (2019). *Manual on codes: International codes, Volume I.1, Part A: Alphanumeric codes* (WMO-No. 306; 2011 ed., updated 2019). https://library.wmo.int/idurl/4/35713
@@ -570,7 +596,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Asturiano, 2026a) | 3D globe rendering, slippy-map tile engine for deep zoom. | MIT |
 | (three.js authors, 2026) | WebGL engine underneath globe.gl; day/night shader. | MIT |
 | (Kandadai, n.d.) | Propagating satellite orbits from TLEs in the browser. | MIT |
-| (U.S. Geological Survey, n.d.-a) | Live earthquakes. | Public domain (U.S. Government) |
+| (U.S. Geological Survey, n.d.-b) | Live earthquakes. | Public domain (U.S. Government) |
 | (National Aeronautics and Space Administration [NASA], n.d.-a) | Wildfires, storms, volcanoes, sea and lake ice, floods. | Public domain (NASA) |
 | (NOAA Space Weather Prediction Center, n.d.-a) | Aurora forecast and geomagnetic activity. | Public domain (NOAA) |
 | (Kelso, n.d.) | Current two-line element sets for satellite groups. | Free for use with attribution |
@@ -584,6 +610,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Sidhu, n.d.) | Inspiration for sensor looks and keyless browser data sources. | MIT |
 | (airplanes.live, n.d.) | Regional aircraft fallback feed. | Free non-commercial API |
 | (adsbdb, n.d.) | Aircraft type, registration, photo and route for a selected flight (looked up live, never stored). | Courtesy API; route data © David Taylor & Jim Mason, not stored |
+| (Virtual Radar Server, 2026) | Airline names and codes, aircraft models, the country each aircraft address block belongs to, airports and 620,000 scheduled flight routes, built into the site by tools/build-flightdb.py. | CC0 1.0 (public domain) |
 | (California Department of Transportation, n.d.) | California highway cameras, stills and live streams. | Public data (State of California) |
 | (New York City Department of Transportation, n.d.) | New York City traffic cameras. | Public data (City of New York) |
 | (Transport for London, n.d.) | London traffic cameras with short video clips. | Powered by TfL Open Data (OGL v2.0) |
@@ -659,12 +686,21 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Blockscout, n.d.) | Ethereum address balances and transaction counts. | Free public API |
 | (Zippenfenig, 2023) | Weather and ground elevation for any clicked point. | CC BY 4.0 |
 | (World Meteorological Organization, 2019) | What the weather codes from Open-Meteo mean: thunderstorms (95–99), snow (71–77, 85–86) and the rest, for the clouds, rain and storms layer. | Reference (WMO) |
-| (REST Countries, n.d.) | Capital, population, languages, currencies for the country card. | MPL-2.0 |
-| (World Bank, n.d.) | GDP, life expectancy, internet use and renewable share indicators. | CC BY 4.0 |
+| (REST Countries, n.d.) | The country page: official name, capital and its position, population and area (and their rank among all countries), languages, money, time zones, neighbours, driving side, phone code and web suffix. | MPL-2.0 |
+| (World Bank, n.d.) | The country page: income per person, life expectancy, life in towns and cities, internet use, electricity, renewable energy and forest, each against the world with its trend since 1990. | CC BY 4.0 |
 | (Wikimedia Foundation, n.d.-e) | Short encyclopaedia summaries in the country and place cards. | CC BY-SA 4.0 |
 | (Nominatim contributors, n.d.) | Worldwide place search. | ODbL 1.0 — © OpenStreetMap contributors |
 | (Esri, n.d.) | Satellite imagery tiles for street-level zoom. | Esri terms of use — Esri, Maxar, Earthstar Geographics, and the GIS User Community |
 | (Ahlenius, 2014) | Tectonic plate boundaries. | ODC-BY 1.0 |
+| (U.S. Geological Survey, n.d.-a) | The earthquake event page: fault solution, shaking contours, felt reports, alert level, location quality and the aftershock sequence. | Public domain (U.S. Government) |
+| (Worden et al., 2020) | Modified Mercalli Intensity words and the ShakeMap colour scale for the shaking contours. | Public domain (U.S. Government) |
+| (Wald et al., 2010) | What each PAGER alert colour means for estimated deaths. | Public domain (U.S. Government) |
+| (Kennett & Engdahl, 1991) | P and S travel times, and the core shadow zones, for the wave arrival table and the sweeping wavefronts. | Journal article |
+| (Gardner & Knopoff, 1974) | The distance and time window used to count foreshocks and aftershocks. | Journal article |
+| (Gutenberg & Richter, 1956) | Energy released from magnitude (log E = 1.5 M + 4.8). | Journal article |
+| (Aki & Richards, 2002) | Fault normal and slip vectors from strike, dip and rake, used to draw the focal mechanism beachball. | Book |
+| (Båth, 1965) | Båth’s law: the largest aftershock is on average about 1.2 magnitude units smaller than the main shock. | Journal article |
+| (Neurath, 1936) | The Isotype rule behind the counted rows and the country page: one figure always stands for the same number, and more means more figures, never bigger ones. | Book |
 | (Bird, 2003) | Scientific basis for the plate boundary model. | Journal article |
 | (NASA Earth Observatory, n.d.) | Day and night Earth textures. | Public domain (NASA) |
 | (Asturiano, 2026b) | Relief bump map and dark base. | MIT (repo); NASA-derived imagery |
@@ -699,6 +735,9 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Espenak, n.d.) | The eclipse predictions the atlas’s own eclipse times were checked against. | Public domain (NASA) |
 | (Thomson, 1887) | The 19.47° half-angle of the V-shaped wake drawn behind moving ships. | Public domain (1887) |
 | (International Telecommunication Union, 2014) | AIS message fields, ship-type codes and navigational status codes used to read ship reports. | ITU Recommendation (free to read) |
+| (International Telecommunication Union, 2019) | How a ship’s Maritime Mobile Service Identity (MMSI) is built, and its first digits naming the flag state. | ITU Recommendation (free to read) |
+| (Richter, 2025) | The Maritime Identification Digits to country table used for ship flags. | MIT |
+| (Panama Canal Authority, n.d.) | The largest ship that fits the original (Panamax) and the 2016 (Neopanamax) locks. | Published limits |
 | (snapview, n.d.) | The desktop app’s AISStream connection. | MIT |
 | (websockets, n.d.) | The live-data job’s compressed AISStream connection. | MIT |
 | (Tauri Programme, n.d.) | Native desktop notifications for watch-area alerts. | MIT or Apache-2.0 |
@@ -733,7 +772,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Norman, 2026d) | Wikidata, World Port Index and TeleGeography records in the shape the infrastructure layers draw. | AGPL-3.0-only (the records carry the terms of their sources) |
 | (California Department of Pesticide Regulation, n.d.) | Every reported farm pesticide application in California by one-mile section, chemical, crop and method (aerial or ground). | Public records (State of California) |
 | (White, 1983) | Township, range and section grid used to place California’s pesticide records. | Public domain (U.S. Government) |
-| (U.S. Geological Survey, n.d.-b) | Estimated farm use of each pesticide in every county of the lower 48 states. | Public domain (U.S. Government) |
+| (U.S. Geological Survey, n.d.-c) | Estimated farm use of each pesticide in every county of the lower 48 states. | Public domain (U.S. Government) |
 | (Baker & Stone, 2015) | How the county estimates are made (EPest-low and EPest-high). | Public domain (U.S. Government) |
 | (U.S. Census Bureau, n.d.-a) | County centres and land area for the county estimates. | Public domain (U.S. Government) |
 | (U.S. Environmental Protection Agency, n.d.-c) | Toxic chemical releases reported by each industrial facility. | Public domain (U.S. Government) |

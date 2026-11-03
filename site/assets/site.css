@@ -58,8 +58,8 @@ h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; 
 
 /* hero: the counted chart on the left, the globe on the right */
 .hero { min-height: calc(100svh - 61px); padding: var(--s7) 0; display: flex; flex-direction: column; justify-content: center; }
-.eyebrow { display: inline-block; font: 600 14px/1 var(--display); color: var(--ink-2); margin: 0 0 var(--s4); }
-.eyebrow a { color: inherit; }
+.hero-meta { font: 600 14px/1.4 var(--display); color: var(--ink-2); margin: var(--s4) 0 0; }
+.hero-meta a { color: inherit; }
 .hero h1 { font-size: clamp(40px, 4.6vw, 64px); line-height: 1; letter-spacing: -0.02em; margin: 0 0 var(--s4); max-width: 13ch; }
 .hero .lede { font-size: clamp(17px, 1.5vw, 19px); color: var(--ink-2); max-width: 46ch; margin: 0 0 var(--s5); }
 .row { display: flex; gap: var(--s3); flex-wrap: wrap; }
@@ -77,7 +77,6 @@ h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; 
 .chapter { min-height: 92svh; display: flex; flex-direction: column; justify-content: center; padding: var(--s7) 0; max-width: 34rem; }
 .chapter h2 { font-size: clamp(34px, 4vw, 56px); line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 var(--s4); }
 .chapter p { color: var(--ink-2); font-size: 19px; margin: 0 0 var(--s4); max-width: 40ch; }
-.chapter .ch-n { font: 700 clamp(72px, 9vw, 132px)/0.85 var(--display); margin: 0 0 var(--s3) !important; color: transparent !important; -webkit-text-stroke: 1.5px var(--tone, var(--ink-2)); letter-spacing: -0.04em; }
 .ch-big { display: flex; align-items: baseline; gap: var(--s3); flex-wrap: wrap; }
 .ch-big b { font: 700 clamp(48px, 6vw, 84px)/1 var(--display); color: var(--tone); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
 .ch-big span { color: var(--ink); font-size: 19px; }
@@ -86,9 +85,11 @@ h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; 
 .ch-link:hover::after { transform: translateX(5px); }
 .chapter-end h2 { font-size: clamp(40px, 5vw, 72px); }
 .ch-dots { position: sticky; top: calc(100svh - 60px); display: flex; justify-content: center; gap: 10px; list-style: none; margin: 0; padding: 0 0 var(--s4); }
-.ch-dots a { display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: transform 300ms var(--settle), background-color 200ms var(--ease-out); }
-.ch-dots a:hover { transform: scale(1.5); }
-.ch-dots a[aria-current='step'] { background: var(--accent); transform: scale(1.4); }
+.ch-dots { gap: 0; }
+.ch-dots a { display: grid; place-items: center; width: 24px; height: 24px; } /* a 24 px target around an 8 px dot */
+.ch-dots a::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: transform 300ms var(--settle), background-color 200ms var(--ease-out); }
+.ch-dots a:hover::before { transform: scale(1.5); }
+.ch-dots a[aria-current='step']::before { background: var(--accent); transform: scale(1.4); }
 #hero-globe { position: absolute; inset: 0; -webkit-mask-image: radial-gradient(circle closest-side, #000 86%, transparent); mask-image: radial-gradient(circle closest-side, #000 86%, transparent); }
 #hero-globe canvas { outline: none; }
 .stage .fallback { position: absolute; inset: 12%; border-radius: 50%; background: var(--sunk); }
@@ -223,7 +224,7 @@ details[open] > .more { animation: rise 420ms var(--settle) both; }
 @keyframes nav-lift { to { box-shadow: 0 6px 18px -12px rgba(0,0,0,.35); } }
 
 /* Hero arrival: the words settle in one after another, the globe opens up behind them. */
-.js .hero .eyebrow, .js .hero h1:not(.split), .js .hero .lede, .js .hero .row, .js .hero .tally, .js .hero .tally-note, .js .page-head > .wrap > * {
+.js .hero .hero-meta, .js .hero h1:not(.split), .js .hero .lede, .js .hero .row, .js .hero .tally, .js .hero .tally-note, .js .page-head > .wrap > * {
   animation: rise 760ms var(--settle) both; }
 .js .hero h1, .js .page-head > .wrap > :nth-child(2) { animation-delay: 70ms; }
 .js .hero .lede, .js .page-head > .wrap > :nth-child(3) { animation-delay: 140ms; }
@@ -303,7 +304,7 @@ details > summary, .tally button { background-image: radial-gradient(260px circl
   .ch-dots { display: none; }
   .hero { min-height: 0; padding: var(--s5) 0 var(--s7); }
   .chapter { min-height: 62svh; }
-  .ch-n { font-size: 64px; }
+
   .inventory { grid-template-columns: 1fr; }
   .index .more { flex-direction: column; align-items: flex-start; gap: var(--s2); }
   .lesson { grid-template-columns: 1fr; gap: var(--s2); }

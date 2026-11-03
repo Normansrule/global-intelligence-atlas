@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Global Intelligence Atlas — the connected planet: power plants, internet buildings, radio receivers you can listen to,
 // live ships, and NASA satellite overlays wrapped around the globe.
+import { mmsiInfo, shipTypeName, shipKind, KIND_LABEL, canalFit, niceDestination } from './shipdb.js';
 import { THREE } from '../vendor/vendor.min.mjs';
 import { getFeed, getLocal, getSnapshot, isDesktop, liveProxy } from './feeds.js';
 import { createAisStore, parseFrame, viewBoxes } from './ais.js';
@@ -163,14 +164,18 @@ function shipMeta(s) {
   const r = worldStatic?.get(s.mmsi); const l = live.store.staticOf(s.mmsi);
   const pick = (k, i) => l?.[k] ?? r?.[i] ?? null;
   const draught = pick('draught', 6);
-  return { name: s.meta.name ?? pick('name', 1), shipType: s.meta.shipType ?? pick('type', 2), callSign: pick('call', 3), imo: pick('imo', 4), destination: pick('dest', 5), draught: draught ? draught * 10 : null, length: pick('len', 7) };
+  return { name: s.meta.name ?? pick('name', 1), shipType: s.meta.shipType ?? pick('type', 2), callSign: pick('call', 3), imo: pick('imo', 4), destination: pick('dest', 5), draught: draught ? draught * 10 : null, length: pick('len', 7), width: pick('beam', 8) };
 }
+/** The ships filter (card button or search): one broad kind (shipdb.js shipKind) or null for every ship. */
+export const shipState = { kind: null, all: [] };
+const shipTip = (s) => { const f = mmsiInfo(s.mmsi); const t = shipTypeName(s.meta?.shipType);
+  return tip(s.meta?.name ?? `MMSI ${s.mmsi}`, [t, f?.flag ? `${f.flag} flag` : '', `${s.sog ?? 0} kn`, NAV[s.nav]].filter(Boolean).join(' · ')); };
 export const shipsLayer = {
   id: 'ships', group: 'live', label: 'Live ships', swatch: '#4aa3ff', on: false, refresh: 60_000, viewDependent: true,
   get reloadOnView() { return !!liveMode(); }, // ships in view follow the camera on the desktop app or with a proxy
   pin: (s) => shipGlyph(s.meta?.shipType),
   legend: [['ship', 'Cargo'], ['tanker', 'Tanker'], ['ferry', 'Passenger and ferry'], ['sailboat', 'Sailing and pleasure'], ['fishing', 'Fishing'], ['tug', 'Tug and towing']],
-  sources: ['aisstream', 'digitraffic'],
+  sources: ['aisstream', 'digitraffic', 'itu585', 'pyais'],
   options: [{ id: 'src', label: 'Source', choices: [['auto', 'Worldwide when available'], ['world', 'Worldwide only (AISStream)'], ['baltic', 'Baltic only (Fintraffic)']], value: 'auto' }],
   async load(o, ctx) {
     if (o.src !== 'baltic') {
@@ -178,20 +183,33 @@ export const shipsLayer = {
     }
     return balticShips();
   },
-  channels(ss, ctx) {
+  channels(all, ctx) {
+    shipState.all = all;
+    const ss = shipState.kind ? (all._only?.k === shipState.kind ? all._only.ss : (all._only = { k: shipState.kind, ss: Object.assign(all.filter((s) => shipKind(s.meta?.shipType ?? shipMeta(s).shipType) === shipState.kind), { src: all.src }) }).ss) : all;
     const v = ctx.view; const wakes = shipWakes(); wakes.set(ss); // moving ships trail a Kelvin wake (wakes.js): one draw call for all of them
     return {
       custom: [wakes.wrap],
       particles: (ss._particles ??= [{ color: '#4aa3ff', size: 1.8, pts: ss.map((s) => ({ lat: s.lat, lng: s.lng, alt: 0.0015 })) }]),
-      points: (v.altitude < 0.6 ? ss.filter((s) => inView(v, s.lat, s.lng)) : []).slice(0, 1200).map((s) => ({ lat: s.lat, lng: s.lng, alt: 0.003, r: 0.05, color: s.sog > 0.5 ? '#5cc8ff' : '#c9dcec', label: s.meta?.name ?? String(s.mmsi), tip: tip(s.meta?.name ?? `MMSI ${s.mmsi}`, `${s.sog ?? 0} kn · ${NAV[s.nav] ?? '—'}`), ref: { layer: 'ships', d: s } })),
+      points: (v.altitude < 0.6 ? ss.filter((s) => inView(v, s.lat, s.lng)) : []).slice(0, 1200).map((s) => ({ lat: s.lat, lng: s.lng, alt: 0.003, r: 0.05, color: s.sog > 0.5 ? '#5cc8ff' : '#c9dcec', label: s.meta?.name ?? String(s.mmsi), tip: shipTip(s), ref: { layer: 'ships', d: s } })),
       pick: (ss._pick ??= ss.map((s) => ({ lat: s.lat, lng: s.lng, alt: 0.0015, ref: { layer: 'ships', d: s } }))),
     };
   },
   describe(s) {
     const m = shipMeta(s); const ago = s.t ? Math.max(0, Math.round((Date.now() - s.t) / 60_000)) : null;
+    const f = mmsiInfo(s.mmsi); const type = shipTypeName(m.shipType); const kind = shipKind(m.shipType);
+    const dest = niceDestination(m.destination); const draught = m.draught ? m.draught / 10 : null;
+    const sameFlag = f?.cc ? shipState.all.filter((x) => x.mmsi !== s.mmsi && mmsiInfo(x.mmsi)?.cc === f.cc).length : 0;
+    const on = !!shipState.kind && shipState.kind === kind;
     return {
-      title: m.name || `Vessel ${s.mmsi}`, sub: [m.destination ? `bound for ${m.destination}` : '', NAV[s.nav]].filter(Boolean).join(' · '),
-      rows: [['Speed', `${s.sog ?? 0} knots (${Math.round((s.sog ?? 0) * 1.852)} km/h)`], ['Course', s.cog != null ? `${Math.round(s.cog)}°` : '—'], ['MMSI (Maritime Mobile Service Identity)', s.mmsi], ['Call sign', m.callSign || '—'], ['IMO (International Maritime Organization) number', m.imo || '—'], ['Draught', m.draught ? `${m.draught / 10} m` : '—'], ...(m.length ? [['Length', `${m.length} m`]] : []), ['Position', `${fmtLat(s.lat)}, ${fmtLng(s.lng)}`], ...(ago != null ? [['Last report', ago < 1 ? 'just now' : `${ago} min ago`]] : []), ['Source', s.via === 'live' ? (liveMode() === 'desktop' ? 'AISStream, live in view' : 'AISStream through your proxy') : s.via === 'snapshot' ? 'AISStream (live-data snapshot)' : 'Fintraffic Digitraffic']],
+      title: m.name || `Vessel ${s.mmsi}`, sub: [type, dest ? `bound for ${dest}` : '', NAV[s.nav]].filter(Boolean).join(' · '),
+      rows: [['Type', type ?? '—'], ['Flag', f?.flag ? `${f.flag}${f.kind !== 'Ship' ? ` (${f.kind.toLowerCase()})` : ''}` : f?.kind ?? '—'], ...(dest ? [['Destination', dest !== m.destination ? `${dest} (${m.destination})` : dest]] : []),
+        ['Speed', `${s.sog ?? 0} knots (${Math.round((s.sog ?? 0) * 1.852)} km/h)`], ['Course', s.cog != null ? `${Math.round(s.cog)}°` : '—'],
+        ...(m.length ? [['Size', `${m.length} m long${m.width ? ` × ${m.width} m wide` : ''}`]] : []), ['Draught', draught ? `${draught} m` : '—'],
+        ...(canalFit(m.length, m.width, draught) ? [['Panama Canal', canalFit(m.length, m.width, draught)]] : []),
+        ['MMSI (Maritime Mobile Service Identity)', s.mmsi], ['Call sign', m.callSign || '—'], ['IMO (International Maritime Organization) number', m.imo || '—'],
+        ...(sameFlag ? [[`Other ships under this flag`, `${sameFlag.toLocaleString()} on the map now`]] : []),
+        ['Position', `${fmtLat(s.lat)}, ${fmtLng(s.lng)}`], ...(ago != null ? [['Last report', ago < 1 ? 'just now' : `${ago} min ago`]] : []), ['Source', s.via === 'live' ? (liveMode() === 'desktop' ? 'AISStream, live in view' : 'AISStream through your proxy') : s.via === 'snapshot' ? 'AISStream (live-data snapshot)' : 'Fintraffic Digitraffic']],
+      html: kind ? `<div class="row"><button class="btn ghost" data-shipkind="${on ? '' : kind}" data-kind="${kind}" data-label="Show only ${KIND_LABEL[kind]}" aria-pressed="${on}">${on ? 'Show every ship again' : `Show only ${KIND_LABEL[kind]}`}</button></div>` : '',
       body: 'Ships broadcast the Automatic Identification System (AIS) every few seconds on marine VHF (very high frequency) radio so they can see each other in fog and darkness. Coastal and volunteer receivers pick the signals up; AISStream relays them worldwide and Finland’s Fintraffic publishes the Baltic openly.',
       links: [{ label: 'VesselFinder', url: `https://www.vesselfinder.com/?mmsi=${s.mmsi}` }, { label: 'MarineTraffic', url: `https://www.marinetraffic.com/en/ais/details/ships/mmsi:${s.mmsi}` }],
     };
@@ -201,7 +219,7 @@ export const shipsLayer = {
     const src = ss?.src === 'world' ? `Worldwide: ${ss.length.toLocaleString()} vessels from AISStream.` : `Baltic only (Fintraffic). ${isDesktop ? 'Add a free AISStream key below for ships in view anywhere.' : 'Worldwide ships appear when the site’s live-data job has an AISSTREAM_KEY secret.'}`;
     return `<p class="shipnote">${esc(src)}</p>${isDesktop ? `<form class="aiskey" data-ais-form><input type="password" autocomplete="off" placeholder="AISStream key (free at aisstream.io)" aria-label="AISStream key" value="${esc(aisKey())}"><button class="btn" type="submit">Save</button></form>` : ''}`;
   },
-  learn: { what: 'Ships broadcasting AIS around the world: worldwide from AISStream when the site’s live-data job has a key (or on the desktop app with your own), otherwise every ship in the Baltic Sea and nearby Nordic waters from Fintraffic. Blue ships are moving; grey ones are moored or anchored. Each moving ship trails a wake that ripples back from its stern: two arms at 19.5° either side of its course and churned water behind it, longer the faster it goes.', how: 'AISStream relays AIS heard by volunteer receivers as a WebSocket stream. It needs a free key and does not allow web pages to connect, so the live-data job listens for a minute every few minutes and keeps every vessel heard in the last 30 minutes; the desktop app (or your proxy) adds ships in view. Fintraffic’s Digitraffic service publishes Baltic AIS openly (CC BY 4.0) and needs no key, so it remains the fallback.', try: 'Zoom into the Strait of Singapore or the English Channel, then compare with the Gulf of Finland at night. Every wake opens at the same angle, about 19.5°, whatever the ship’s speed: Lord Kelvin showed in 1887 that this follows from how waves spread on deep water.', refs: ['aisstream', 'digitraffic', 'itu1371', 'kelvin1887'] },
+  learn: { what: 'Ships broadcasting AIS around the world: worldwide from AISStream when the site’s live-data job has a key (or on the desktop app with your own), otherwise every ship in the Baltic Sea and nearby Nordic waters from Fintraffic. Blue ships are moving; grey ones are moored or anchored. Click one for its flag (from the first three digits of its radio identity), its type, size, destination and whether it fits the Panama Canal, and show only cargo ships, tankers or any other kind. Each moving ship trails a wake that ripples back from its stern: two arms at 19.5° either side of its course and churned water behind it, longer the faster it goes.', how: 'AISStream relays AIS heard by volunteer receivers as a WebSocket stream. It needs a free key and does not allow web pages to connect, so the live-data job listens for a minute every few minutes and keeps every vessel heard in the last 30 minutes; the desktop app (or your proxy) adds ships in view. Fintraffic’s Digitraffic service publishes Baltic AIS openly (CC BY 4.0) and needs no key, so it remains the fallback.', try: 'Zoom into the Strait of Singapore or the English Channel, then compare with the Gulf of Finland at night. Every wake opens at the same angle, about 19.5°, whatever the ship’s speed: Lord Kelvin showed in 1887 that this follows from how waves spread on deep water.', refs: ['aisstream', 'digitraffic', 'itu1371', 'itu585', 'pyais', 'panamacanal', 'kelvin1887'] },
 };
 
 if (typeof document !== 'undefined') {

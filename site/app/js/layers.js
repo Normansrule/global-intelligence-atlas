@@ -8,6 +8,8 @@
 import { getFeed, getLocal } from './feeds.js';
 import { infraData } from './opendata.js';
 import { terminator, subsolarPoint, smallCircle, fmtLat, fmtLng } from './astro.js';
+import { quakeHead, quakeFill, quakeChannels } from './quakedetail.js';
+import { countryOverlay } from './countrydetail.js';
 import { SAT_GROUPS, loadGroup, positions, groundTrack, periodMinutes, orbitalElements, orbitPath } from './satellites.js';
 
 export const GROUPS = [
@@ -50,6 +52,7 @@ export const PLATE_NAMES = {
 };
 
 // ---------------------------------------------------------------- helpers
+const appendAll = (dst, src) => { for (let i = 0; i < src.length; i++) dst.push(src[i]); };
 const point = (layer, d, lat, lng, color, r = 0.22, alt = 0.012, t = '') => ({ lat, lng, color, r, alt, tip: t, ref: { layer, d } });
 
 // ================================================================ LAYERS
@@ -57,7 +60,7 @@ export const LAYERS = [
   // ------------------------------------------------------------ LIVE EARTH
   {
     id: 'quakes', pin: 'quake', group: 'live', label: 'Earthquakes', swatch: '#f79d5c', on: true, refresh: 5 * 60_000, timeDriven: true,
-    sources: ['usgs'],
+    sources: ['usgs', 'usgsdetail'],
     options: [{ id: 'feed', label: 'Window', choices: [['2.5_day', 'M2.5+ · 24 h'], ['2.5_week', 'M2.5+ · 7 days'], ['4.5_month', 'M4.5+ · 30 days'], ['significant_month', 'Significant · 30 days']], value: '2.5_week' }],
     async load(o) {
       const j = await getFeed('usgs', `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${o.feed}.geojson`);
@@ -76,23 +79,27 @@ export const LAYERS = [
           tip(`M${m.toFixed(1)} · ${f.properties.place ?? ''}`, `${Math.round(depth)} km deep · ${new Date(f.properties.time).toUTCString().slice(5, 22)} UTC`)));
         if ((m >= 4.5 || !live) && now - f.properties.time < ringWindow && now >= f.properties.time) rings.push({ lat, lng, color: depthColor(depth), maxR: m * 0.9, speed: m * 0.6, period: 1400 });
       }
+      // The open quake adds its shaking contours, sweeping P and S wavefronts and its foreshocks and aftershocks (quakedetail.js)
+      const sel = window.gia?.state?.selected;
+      if (ctx && sel?.layer === 'quakes') { const x = quakeChannels(ctx, sel); appendAll(points, x.points); return { points, rings, custom: x.custom, labels: x.labels }; }
       return { points, rings };
     },
     describe(f) {
-      const p = f.properties; const [lng, lat, depth] = f.geometry.coordinates;
+      const p = f.properties; const [lng, lat] = f.geometry.coordinates;
       return {
         title: `M${p.mag?.toFixed(1)} earthquake`, sub: p.place,
-        rows: [['When', new Date(p.time).toUTCString()], ['Depth', `${depth.toFixed(1)} km (${depth < 70 ? 'shallow' : depth < 300 ? 'intermediate' : 'deep'})`],
-          ['Where', `${fmtLat(lat)}, ${fmtLng(lng)}`], ['Magnitude type', p.magType ?? '—'], ['Felt reports', p.felt ?? 0], ['Tsunami flag', p.tsunami ? 'yes' : 'no']],
-        body: 'Each whole step in magnitude releases about 32 times more energy. Deep events (purple) trace slabs of ocean floor sinking back into the mantle at subduction zones.',
+        html: quakeHead(f),
+        rows: [['When', `${new Date(p.time).toUTCString().slice(0, 25)} UTC`], ['Where', `${fmtLat(lat)}, ${fmtLng(lng)}`]],
+        probe: [lat, lng],
+        async fill(stillOpen) { await quakeFill(f, { stillOpen, plateLabel, globe: window.gia.globe, refresh: () => window.gia?.refreshLayer?.('quakes', { soft: true }) }); },
         links: [{ label: 'USGS event page', url: p.url }],
       };
     },
     learn: {
-      what: 'Every earthquake the USGS catalogued in the chosen window. Bar height grows with magnitude; colour shows depth — yellow shallow, orange crustal, pink intermediate, purple deep. Rings pulse for M4.5+ events in the last 36 hours.',
+      what: 'Every earthquake the USGS catalogued in the chosen window. Bar height grows with magnitude; colour shows depth — yellow shallow, orange crustal, pink intermediate, purple deep. Rings pulse for M4.5+ events in the last 36 hours. Click one for its event page: the shaking and who felt it, the PAGER alert, the energy, a cut-away to its depth, how the fault moved, when its waves reached cities near and far (and sweeping across the globe), and its aftershocks.',
       how: 'Seismometers worldwide time the arrival of P and S waves; the gap between them gives distance, and several stations triangulate the hypocentre. Moment magnitude (Mw) comes from fault area × slip × rock rigidity.',
       try: 'Turn on Plate boundaries and look at South America or Japan from the side: shallow quakes sit at the trench and get deeper inland — the Wadati–Benioff zone of a subducting plate.',
-      refs: ['usgs', 'usgsplates'],
+      refs: ['usgs', 'usgsdetail', 'shakemap', 'pager', 'iasp91', 'akirichards', 'gardnerknopoff', 'bath', 'gutenbergrichter', 'usgsplates'],
     },
   },
   {
@@ -323,23 +330,26 @@ export const LAYERS = [
   },
   {
     id: 'borders', group: 'science', label: 'Countries', swatch: '#eef3f6', on: true,
+    // the capital pin on an open country page reopens that page (it never falls through to the layer notes)
+    open(f) { const c = f.properties; window.gia?.surfaceClick?.(c.capLat ?? 0, c.capLng ?? 0, f); },
     sources: ['natearth', 'restcountries', 'worldbank', 'wikipedia'],
     async load() { return (await getLocal('data/countries.geojson')).features.filter((f) => f.geometry); },
     // One merged line mesh for all outlines (hundreds of polygons would cost hundreds of draw calls);
     // hover and click use a point-in-polygon lookup instead of ray-casting every country.
     channels(fs, ctx) {
-      const h = ctx.hover;
+      const h = ctx.hover; const sel = countryOverlay(ctx); // the open country page: gold outline, neighbours, capital (countrydetail.js)
       return {
         // The hovered country gets a bright outline (cached per country). Filling it with a polygon meant
         // re-triangulating thousands of vertices on every hover change, and up close the fill covered the screen.
-        custom: [ctx.outlineMesh('borders', fs), ...(h ? [ctx.outlineMesh(`hover:${h.properties.name}`, [h], 0xffe08a, 0.95, 0.0046)] : [])],
+        custom: [ctx.outlineMesh('borders', fs), ...(h ? [ctx.outlineMesh(`hover:${h.properties.name}`, [h], 0xffe08a, 0.95, 0.0046)] : []), ...sel.custom],
+        points: sel.points,
       };
     },
     learn: {
-      what: 'Country outlines (the same Natural Earth-derived set World Monitor uses). Hover to highlight; click for a country card with live facts.',
-      how: 'The card pulls REST Countries (capital, languages, currencies), World Bank indicators (the latest year each one reports) and a Wikipedia summary — all live from your browser.',
-      try: 'Click a country and compare its internet-use share with a neighbour’s.',
-      refs: ['natearth', 'restcountries', 'worldbank', 'wikipedia'],
+      what: 'Country outlines (the same Natural Earth-derived set World Monitor uses). Hover to highlight; click a country for its page: its people as Isotype figures, its rank among all countries, how it compares with the world since 1990, its neighbours, the time in its capital and what is happening inside it now. The globe outlines it in gold with its neighbours and capital.',
+      how: 'The page pulls REST Countries (capital, population, area, languages, money, neighbours), World Bank indicators (each year since 1990, for the country and the world) and a Wikipedia summary, all live from your browser. One figure always stands for the same number of people, as Otto Neurath’s Isotype rules ask.',
+      try: 'Click a country, then click through its neighbours and watch income per person and life expectancy change across the border.',
+      refs: ['natearth', 'restcountries', 'worldbank', 'wikipedia', 'neurath'],
     },
   },
 

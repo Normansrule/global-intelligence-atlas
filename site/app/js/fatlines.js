@@ -45,7 +45,7 @@ function densify(a, b, maxDeg = 1.5) {
       const s = Math.sin(ang); const w1 = Math.sin((1 - t) * ang) / s; const w2 = Math.sin(t * ang) / s;
       x = w1 * p1[0] + w2 * p2[0]; y = w1 * p1[1] + w2 * p2[1]; z = w1 * p1[2] + w2 * p2[2];
     }
-    out.push([Math.asin(z) / D2R, Math.atan2(y, x) / D2R]);
+    out.push(a.length > 2 ? [Math.asin(z) / D2R, Math.atan2(y, x) / D2R, a[2] + (b[2] - a[2]) * t] : [Math.asin(z) / D2R, Math.atan2(y, x) / D2R]); // a third value is a height, eased along
   }
   return out;
 }
@@ -53,7 +53,7 @@ function densify(a, b, maxDeg = 1.5) {
 /**
  * Build one object holding every line.
  * @param {(lat:number, lng:number, alt:number) => {x,y,z}} toXYZ   globe.getCoords
- * @param {{pts:[number,number][], color:string, width?:number, alt?:number}[]} lines
+ * @param {{pts:([number,number]|[number,number,number])[], color:string, width?:number, alt?:number}[]} lines  (a point's third value overrides alt)
  * @returns {{ obj: THREE.Mesh, segs: {line:number, a:[number,number], b:[number,number]}[] }}
  */
 export function buildFatLines(toXYZ, lines, { opacity = 0.9 } = {}) {
@@ -64,7 +64,7 @@ export function buildFatLines(toXYZ, lines, { opacity = 0.9 } = {}) {
     for (let i = 0; i + 1 < ln.pts.length; i++) {
       let prev = ln.pts[i];
       for (const q of densify(ln.pts[i], ln.pts[i + 1])) {
-        const A = toXYZ(prev[0], prev[1], alt); const B = toXYZ(q[0], q[1], alt);
+        const A = toXYZ(prev[0], prev[1], prev[2] ?? alt); const B = toXYZ(q[0], q[1], q[2] ?? alt);
         starts.push(A.x, A.y, A.z); ends.push(B.x, B.y, B.z); cols.push(c.r, c.g, c.b); widths.push(w);
         segs.push(li, prev[0], prev[1], q[0], q[1]);
         prev = q;

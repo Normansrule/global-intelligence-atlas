@@ -6,6 +6,7 @@
 //  • Licence-plate readers (ALPR, e.g. Flock Safety): positions mapped in OpenStreetMap, largely by
 //    the DeFlock project. Bundled as a daily grid snapshot (data/alpr/) and refreshable live from
 //    the Overpass API for the area you are looking at.
+import { ui } from './uicons.js';
 import './surroundings.js'; // the “3D surroundings” button
 import { getFeed, getLocal } from './feeds.js';
 import { haversineKm, fmtLat, fmtLng } from './astro.js';
@@ -181,7 +182,7 @@ export function openWall(api) {
   let el = document.getElementById('wall');
   if (!el) { el = document.createElement('div'); el.id = 'wall'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Camera wall'); document.body.appendChild(el); }
   const bust = (u) => (/mjpg|mjpeg/i.test(u) ? u : `${u}${u.includes('?') ? '&' : '?'}t=${Date.now()}`); // live MJPEG streams are never reloaded
-  el.innerHTML = `<div class="wall-head"><b>Camera wall</b><span>${near.length} cameras nearest the centre of your view · refreshing every 20 s</span><button class="icon" id="wall-close" aria-label="Close camera wall">×</button></div>
+  el.innerHTML = `<div class="wall-head"><b>Camera wall</b><span>${near.length} cameras nearest the centre of your view · refreshing every 20 s</span><button class="icon" id="wall-close" aria-label="Close camera wall">${ui('close')}</button></div>
     <div class="wall-grid">${near.map(({ c, km }) => `<button class="wall-tile" data-walltile="${esc(c.id)}"><img src="${esc(bust(c.img))}" alt="" onerror="this.style.visibility='hidden'"/><span><b>${esc(c.name)}</b><small>${esc(c.source)} · ${km < 10 ? km.toFixed(1) : Math.round(km)} km</small></span><i class="live-dot"></i></button>`).join('')}</div>`;
   el.hidden = false;
   clearInterval(wallTimer);

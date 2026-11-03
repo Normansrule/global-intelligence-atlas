@@ -19,6 +19,7 @@
 //
 // Draw calls: stars 1, one per body on screen (bodies under 1.5 pixels are not drawn as spheres), far bodies as
 // dots 1, Saturn's rings 1, the Sun's glow 1, orbits 1–3.
+import { ui } from './uicons.js';
 import { THREE } from '../vendor/vendor.min.mjs';
 import { BODIES, BODY } from './bodies.js';
 import { LANDINGS } from './landings.js';
@@ -672,7 +673,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
   function bar() {
     barEl.hidden = !st.focus;
     if (!st.focus) return;
-    barEl.innerHTML = `<button class="sb-home" data-space="earth" title="Back to the globe">← Earth</button><div class="sb-list">${BAR.filter((id) => id !== 'earth').map((id) => `<button data-space="${id}" aria-pressed="${st.focus === id || (id === 'jupiter' && GALILEAN.includes(st.focus))}" title="${esc(BODY[id].name)}"><i style="--c:${BODY[id].dot}"></i>${esc(BODY[id].name)}</button>`).join('')}</div><button class="sb-orbits" aria-pressed="${st.orbits}" title="Show the orbits">Orbits</button>${LANDINGS[st.focus] ? `<button class="sb-sites" aria-pressed="${st.sites}" title="Show where spacecraft landed">Landings</button>` : ''}<button class="sb-info" data-space-card="1" title="About ${esc(BODY[st.focus].name)}" aria-label="About ${esc(BODY[st.focus].name)}">ⓘ</button>`;
+    barEl.innerHTML = `<button class="sb-home" data-space="earth" title="Back to the globe">${ui('back')}Earth</button><div class="sb-list">${BAR.filter((id) => id !== 'earth').map((id) => `<button data-space="${id}" aria-pressed="${st.focus === id || (id === 'jupiter' && GALILEAN.includes(st.focus))}" title="${esc(BODY[id].name)}"><i style="--c:${BODY[id].dot}"></i>${esc(BODY[id].name)}</button>`).join('')}</div><button class="sb-orbits" aria-pressed="${st.orbits}" title="Show the orbits">Orbits</button>${LANDINGS[st.focus] ? `<button class="sb-sites" aria-pressed="${st.sites}" title="Show where spacecraft landed">Landings</button>` : ''}<button class="sb-info" data-space-card="1" title="About ${esc(BODY[st.focus].name)}" aria-label="About ${esc(BODY[st.focus].name)}">ⓘ</button>`;
   }
   barEl.addEventListener('click', (e) => {
     if (e.target.closest('.sb-orbits')) { st.orbits = !st.orbits; if (st.orbits && !orbitsBuilt && st.t) buildOrbits(st.t); bar(); wake?.(); }

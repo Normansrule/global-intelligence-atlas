@@ -5,18 +5,21 @@
 // "seatback" moving-map panel like the ones on airline screens: altitude, speed, outside air
 // temperature, route progress, time to go, weather at the destination and a photo of the aircraft.
 
+import { ui } from './uicons.js';
 import { THREE } from '../vendor/vendor.min.mjs';
 import { getFeed, getSnapshot, isDesktop, liveProxy, viaOf, feedsReady } from './feeds.js';
 import { haversineKm, greatCirclePoints, fmtLat, fmtLng, localSolarTime } from './astro.js';
 import { classOf, planeGeometry as modelGeometry, CLASS_IDS, CLASSES, trueHalfLength } from './planes3d.js';
 import { mountPlaneView } from './planeview.js';
+import { loadFlightDb, decodeCall, model, registeredIn, scheduledRoute, parseFlightQuery, findAirlines } from './flightdb.js';
 let planeView = null;
 
 const R = 100;
 const MAX = 20000;
 const history = new Map(); // icao -> [[lat, lng, altFt, t], ...]
 let group = null; const meshes = {}; let lastList = []; const WRAP = { obj: null }; // one stable datum, so globe.gl never swaps (and removes) the shared meshes
-export const flightState = { selected: null, follow: false, route: {}, trails: true };
+export const flightState = { selected: null, follow: false, route: {}, trails: true, airline: null };
+let allFlights = []; // every plane in the last load, before the airline filter
 
 // --------------------------------------------------------------- data
 function fromAdsbLol(j) {
@@ -373,12 +376,40 @@ export const planeCounts = () => Object.fromEntries(CLASS_IDS.map((c) => [c, mes
 async function aircraftInfo(hex) {
   try { return (await getFeed('adsbdb', `https://api.adsbdb.com/v0/aircraft/${hex}`, { ttl: 86_400_000 })).response?.aircraft ?? null; } catch { return null; }
 }
-async function routeInfo(call) {
+// Routes: the scheduled route from the offline tables first (instant, works on the website), adsbdb's otherwise.
+// Both come back in adsbdb's shape. A flight with stops (A–B–C) is cut to the leg the plane is flying now: the one
+// whose two airports it sits most nearly between.
+const asApt = (a) => ({ iata_code: a.iata, icao_code: a.icao, name: a.name, municipality: a.city, country_name: a.country, country_iso_name: a.cc, latitude: a.lat, longitude: a.lng });
+async function routeInfo(call, at) {
   if (!call) return null;
   if (flightState.route[call] !== undefined) return flightState.route[call];
-  try { flightState.route[call] = (await getFeed('adsbdb', `https://api.adsbdb.com/v0/callsign/${call}`, { ttl: 86_400_000 })).response?.flightroute ?? null; } catch { flightState.route[call] = null; }
+  await loadFlightDb();
+  const chain = await scheduledRoute(call).catch(() => null);
+  if (chain?.length >= 2) {
+    let best = 0; let bestX = Infinity;
+    for (let i = 0; i < chain.length - 1; i++) {
+      const [a, b] = [chain[i], chain[i + 1]];
+      const x = at ? haversineKm(a.lat, a.lng, at.lat, at.lng) + haversineKm(at.lat, at.lng, b.lat, b.lng) - haversineKm(a.lat, a.lng, b.lat, b.lng) : i;
+      if (x < bestX) { bestX = x; best = i; }
+    }
+    const d = decodeCall(call);
+    flightState.route[call] = { origin: asApt(chain[best]), destination: asApt(chain[best + 1]), stops: chain.length > 2 ? chain.map((a) => a.iata || a.icao) : null, airline: d ? { name: d.airline, iata: d.iata, icao: d.code } : null, source: 'schedule' };
+    return flightState.route[call];
+  }
+  try { const r = (await getFeed('adsbdb', `https://api.adsbdb.com/v0/callsign/${call}`, { ttl: 86_400_000 })).response?.flightroute ?? null; flightState.route[call] = r && { ...r, source: 'adsbdb' }; } catch { flightState.route[call] = null; }
   return flightState.route[call];
 }
+/** Live flights matching a search: flight number (BA117 or BA 117), callsign (BAW117) or registration (G-STBA). */
+export function findFlights(q, max = 4) {
+  const f = parseFlightQuery(q); if (!f) return [];
+  return allFlights.filter((a) => (f.call && (a.call === f.call || a.call === f.alt)) || (f.reg && a.reg?.replace('-', '').toUpperCase() === f.reg)).slice(0, max);
+}
+/** Airlines matching a search, with how many of their planes are in the air now. */
+export function findAirlinesLive(q) {
+  return findAirlines(q).map((x) => ({ ...x, n: allFlights.reduce((k, a) => k + (a.call?.startsWith(x.icao) ? 1 : 0), 0) })).filter((x) => x.n > 0);
+}
+export function setAirlineFilter(code, api) { flightState.airline = code || null; api.refreshLayer('aircraft', { soft: true }); }
+export const describeFlight = (a) => { const d = decodeCall(a.call); const m = model(a.type); return { flight: d?.flight ?? (a.call || null), airline: d?.airline ?? null, model: m?.name ?? a.desc ?? a.type ?? null }; };
 /** Standard-atmosphere outside air temperature — what the seatback screen is estimating too. */
 const isaTempC = (ft) => { const km = ft / 3281; return km <= 11 ? 15 - 6.5 * km : -56.5; };
 
@@ -386,22 +417,34 @@ const isaTempC = (ft) => { const km = ft / 3281; return km <= 11 ? 15 - 6.5 * km
 export function flightsLayer(api) {
   return {
     id: 'aircraft', group: 'live', label: 'Live flights', swatch: '#8ecbff', on: false, refresh: 12_000, pinless: true,
-    sources: ['opensky', 'adsblol', 'airplaneslive', 'adsbdb', 'livedata'],
+    sources: ['opensky', 'adsblol', 'airplaneslive', 'adsbdb', 'vrsstanding', 'livedata'],
     options: [{ id: 'scope', label: 'Coverage', choices: [['world', 'Whole world'], ['near', 'Near my view (more detail)']], value: 'world' }, { id: 'trails', label: 'Trails', choices: [['on', 'Trails behind planes'], ['off', 'No trails']], value: 'on' }],
     load: (o, ctx) => { flightState.trails = o.trails !== 'off'; onTypes ??= () => api.refreshLayer('aircraft', { soft: true }); return loadFlights(o, ctx); },
     channels(d, ctx) {
-      layoutPlanes(ctx.globe, ctx.pov.altitude, d.ac);
+      allFlights = d.ac; loadFlightDb();
+      const ac = flightState.airline ? d.ac.filter((a) => a.call?.startsWith(flightState.airline) || a.id === flightState.selected) : d.ac;
+      layoutPlanes(ctx.globe, ctx.pov.altitude, ac);
       WRAP.obj = ensureMesh();
-      lastPick = d.ac.map((a) => ({ lat: a.lat, lng: a.lng, alt: a._alt ?? 0, ref: { layer: 'aircraft', d: a } }));
+      lastPick = ac.map((a) => ({ lat: a.lat, lng: a.lng, alt: a._alt ?? 0, ref: { layer: 'aircraft', d: a } }));
       const out = { custom: [WRAP], pick: lastPick };
-      const em = d.ac.filter((a) => EMERGENCY.has(a.squawk));
+      const em = ac.filter((a) => EMERGENCY.has(a.squawk));
       if (em.length) out.rings = em.map((a) => ({ lat: a.lat, lng: a.lng, color: '#ff3b30', maxR: 1.6, speed: 2, period: 900 }));
       const sel = d.ac.find((a) => a.id === flightState.selected);
       if (sel) {
+        // The whole flight: the way it came (great circle from the departure airport, then the track it really flew),
+        // the way still to go (dashed, flowing toward the destination) and both airports, labelled.
+        out.paths = [];
         const h = history.get(sel.id) ?? [];
-        if (h.length > 1) out.paths = [{ pts: h.map(([la, lo, ft]) => [la, lo, planeAlt({ altFt: ft }, ctx.pov.altitude)]), color: ['rgba(240,122,99,0.1)', 'rgba(240,122,99,0.95)'], stroke: 0.6, passive: true }];
         const r = flightState.route[sel.call];
-        if (r?.destination) out.arcs = [{ sLat: sel.lat, sLng: sel.lng, eLat: r.destination.latitude, eLng: r.destination.longitude, color: ['rgba(227,181,91,0.9)', 'rgba(227,181,91,0.2)'], stroke: 0.5, alt: 0.02, dashLen: 0.03, dashGap: 0.015, animMs: 3000 }];
+        const lift = planeAlt(sel, ctx.pov.altitude) * 0.5;
+        if (r?.origin) out.paths.push({ pts: greatCirclePoints(r.origin.latitude, r.origin.longitude, (h[0] ?? [sel.lat, sel.lng])[0], (h[0] ?? [sel.lat, sel.lng])[1], 96).map(([la, lo]) => [la, lo, 0.0015]), color: ['rgba(227,181,91,0.55)', 'rgba(227,181,91,1)'], stroke: 1.6, passive: true });
+        if (h.length > 1) out.paths.push({ pts: h.map(([la, lo, ft]) => [la, lo, planeAlt({ altFt: ft }, ctx.pov.altitude)]), color: ['rgba(240,122,99,0.55)', 'rgba(240,122,99,1)'], stroke: 1.6, passive: true });
+        if (r?.destination) {
+          out.paths.push({ pts: greatCirclePoints(sel.lat, sel.lng, r.destination.latitude, r.destination.longitude, 128).map(([la, lo], i, all) => [la, lo, 0.0015 + lift * (1 - i / (all.length - 1))]), color: 'rgba(255,236,190,0.95)', stroke: 1.1, dash: [0.012, 0.008], animMs: 9000, passive: true });
+          const end = (ap, tag) => ({ lat: ap.latitude, lng: ap.longitude, text: `${ap.iata_code || ap.icao_code} · ${tag}`, size: 0.9, color: '#e3b55b', dot: 0.45, ref: { layer: 'airports', d: { iata: ap.iata_code, icao: ap.icao_code, name: ap.name, lat: ap.latitude, lng: ap.longitude, city: ap.municipality, cc: ap.country_iso_name } } });
+          out.labels = [end(r.origin, 'from'), end(r.destination, 'to')];
+          out.rings = [...(out.rings ?? []), { lat: r.destination.latitude, lng: r.destination.longitude, color: '#e3b55b', maxR: 0.6, speed: 0.6, period: 2400 }];
+        }
         if (flightState.follow) api.followTo(sel.lat, sel.lng);
         if (api.isOpen(`flight:${sel.id}`)) updateDeck(sel);
       }
@@ -409,10 +452,10 @@ export function flightsLayer(api) {
     },
     open: (a) => openDeck(a, api),
     learn: {
-      what: 'Aircraft broadcasting their position right now. Planes squawking an emergency code (7500, 7600, 7700) are drawn large in red with a pulsing ring and appear in the Live feed. Every plane has the shape of its class (wide-body, narrow-body, regional jet, turboprop, business jet, light aircraft, helicopter or fast jet), turned to its real heading; zoom in and they become 3D models, at their real size close to the ground. White is above 25,000 ft, yellow 10,000–25,000 ft, teal below 10,000 ft, grey on the ground. Each plane in the air leaves a short fading trail along its heading (longer for faster planes), so you can see which way the traffic flows; switch trails off under Trails. Click a plane for its seatback-style flight view.',
-      how: 'Planes work out where they are with satellite navigation and broadcast it about twice a second on 1090 MHz (ADS-B). Thousands of volunteer receivers share what they hear. Flight trackers don’t let web pages read them directly (no CORS headers), so on the website a GitHub Actions job saves a worldwide snapshot every 4 minutes, and your browser moves each plane forward along its heading at its speed until the next one arrives (dead reckoning, as navigators did before satellites). The desktop app, or the optional proxy, reads OpenSky every 90 seconds and airplanes.live / adsb.lol every few seconds for “Near my view”. Heights are exaggerated from far away so you can see them, and true when you are close. The class comes from the ICAO type code when known, else the broadcast size category, else a guess from speed and height.',
+      what: 'Aircraft broadcasting their position right now. Planes squawking an emergency code (7500, 7600, 7700) are drawn large in red with a pulsing ring and appear in the Live feed. Every plane has the shape of its class (wide-body, narrow-body, regional jet, turboprop, business jet, light aircraft, helicopter or fast jet), turned to its real heading; zoom in and they become 3D models, at their real size close to the ground. White is above 25,000 ft, yellow 10,000–25,000 ft, teal below 10,000 ft, grey on the ground. Each plane in the air leaves a short fading trail along its heading (longer for faster planes), so you can see which way the traffic flows; switch trails off under Trails. Click a plane for its seatback-style flight view: a turning 3D model of that exact aircraft type, the flight number and airline, the aircraft model with its seats, range and size, where it is registered, what it is doing (climbing, cruising, descending), its scheduled route from airport to airport with the local time at each end, and its path on the globe: flown in coral, the rest of the route dashed ahead. Search a flight number (BA117) or an airline to find it in the air, and show only one airline’s planes.',
+      how: 'Planes work out where they are with satellite navigation and broadcast it about twice a second on 1090 MHz (ADS-B). Thousands of volunteer receivers share what they hear. Flight trackers don’t let web pages read them directly (no CORS headers), so on the website a GitHub Actions job saves a worldwide snapshot every 4 minutes, and your browser moves each plane forward along its heading at its speed until the next one arrives (dead reckoning, as navigators did before satellites). The desktop app, or the optional proxy, reads OpenSky every 90 seconds and airplanes.live / adsb.lol every few seconds for “Near my view”. Heights are exaggerated from far away so you can see them, and true when you are close. The class comes from the ICAO type code when known, else the broadcast size category, else a guess from speed and height. A plane broadcasts only its callsign and address, so the airline, flight number, model and registration country come from Virtual Radar Server’s public-domain tables, kept in the site; the route is the one scheduled for that flight number, not a filed flight plan.',
       try: 'Pick a long-haul flight over an ocean, open its flight view and choose Follow. Then compare the “outside temperature” with the standard-atmosphere formula in the Learn page.',
-      refs: ['opensky', 'airplaneslive', 'adsblol', 'adsbdb', 'livedata'],
+      refs: ['opensky', 'airplaneslive', 'adsblol', 'adsbdb', 'vrsstanding', 'livedata'],
     },
   };
 }
@@ -446,66 +489,121 @@ function statsHtml(a) {
 }
 const compass = (d) => ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west'][Math.round(((d % 360) + 360) % 360 / 45) % 8];
 
+// Where the flight is in its journey, in words: from the broadcast height, climb rate, speed and the distances to
+// both airports (the scheduled route, when there is one).
+function phaseOf(a) {
+  const { r, prog } = deckNumbers(a); const city = (ap) => ap?.municipality || ap?.name || '';
+  const fl = a.altFt >= 18000 ? `FL${Math.round(a.altFt / 1000) * 10}` : `${(Math.round(a.altFt / 100) * 100).toLocaleString()} ft`;
+  if (a.ground) return (a.kt ?? 0) > 40 ? 'Taking off or landing' : (a.kt ?? 0) > 3 ? 'Taxiing' : 'On the ground';
+  const near = (km) => prog && km < 250;
+  if (a.vs > 400 && near(prog?.done)) return `Climbing out of ${city(r.origin)} · ${fl}`;
+  if (a.vs < -400 && prog && prog.togo < 60 && a.altFt < 6000) return `On final approach to ${city(r.destination)}`;
+  if (a.vs < -400 && prog && prog.togo < 350) return `Descending into ${city(r.destination)} · ${fl}`;
+  if (a.vs > 400) return `Climbing · ${fl}`;
+  if (a.vs < -400) return `Descending · ${fl}`;
+  return `Cruising at ${a.altFt >= 18000 ? `flight level ${Math.round(a.altFt / 1000) * 10} (${(Math.round(a.altFt / 100) * 100).toLocaleString()} ft)` : fl}`;
+}
 function progressHtml(a) {
   const { r, prog } = deckNumbers(a);
   if (!r?.origin) return '<p class="muted">Route not published for this callsign — many private, cargo and military flights do not share one.</p>';
-  const pct = Math.round((prog?.frac ?? 0) * 100);
+  const pct = Math.round((prog?.frac ?? 0) * 100); const code = (ap) => ap.iata_code || ap.icao_code;
+  const total = prog ? prog.done + prog.togo : 0;
   return `<div class="route">
-    <div class="ends"><div><b>${r.origin.iata_code ?? r.origin.icao_code}</b><small>${r.origin.municipality ?? r.origin.name}</small></div>
-    <div class="right"><b>${r.destination.iata_code ?? r.destination.icao_code}</b><small>${r.destination.municipality ?? r.destination.name}</small></div></div>
-    <div class="track"><i style="width:${pct}%"></i><span class="plane" style="left:${pct}%">✈</span></div>
-    <small class="muted">${pct}% of the great-circle distance flown</small></div>`;
+    <div class="ends"><div><b>${code(r.origin)}</b><small>${esc(r.origin.municipality ?? r.origin.name)}</small><small class="lt" data-lt="o"></small></div>
+    <div class="right"><b>${code(r.destination)}</b><small>${esc(r.destination.municipality ?? r.destination.name)}</small><small class="lt" data-lt="d"></small></div></div>
+    <div class="track"><i style="width:${pct}%"></i><span class="plane" style="left:${pct}%">${ui('plane')}</span></div>
+    <small class="muted">${pct}% of ${Math.round(total).toLocaleString()} km flown${r.stops ? ` · this flight number stops at ${r.stops.join(' → ')}` : ''} · ${r.source === 'schedule' ? 'scheduled route' : 'route from adsbdb'}</small></div>`;
 }
+const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 function updateDeck(a) {
   const s = document.getElementById('deck-stats'); if (s) s.innerHTML = statsHtml(a);
-  const p = document.getElementById('deck-route'); if (p) p.innerHTML = progressHtml(a);
+  const p = document.getElementById('deck-route'); if (p) { const lt = [...p.querySelectorAll('[data-lt]')].map((e) => e.textContent); p.innerHTML = progressHtml(a); p.querySelectorAll('[data-lt]').forEach((e, i) => { e.textContent = lt[i] ?? ''; }); }
+  const ph = document.getElementById('deck-phase'); if (ph) ph.textContent = phaseOf(a);
   const pos = document.getElementById('deck-pos'); if (pos) pos.textContent = `${fmtLat(a.lat)}, ${fmtLng(a.lng)}`;
   if (document.getElementById('deck-3d')?.isConnected) planeView?.update(); else planeView = null;
+}
+// The aircraft and the airline, as rows. Filled from the offline tables at once, then from adsbdb when it answers.
+function aircraftRows(a, info) {
+  const m = model(a.type ?? info?.icao_type); const reg = registeredIn(a.id);
+  const rows = [
+    ['Model', m?.name ?? info?.type ?? a.desc ?? a.type ?? '—'],
+    ['Type code', a.type ?? info?.icao_type ?? '—'],
+    ['Registration', info?.registration ?? a.reg ?? '—'],
+    ['Registered in', reg ? `${reg.country}${reg.military ? ' · military' : ''}` : '—'],
+  ];
+  if (info?.registered_owner) rows.push(['Owner', info.registered_owner]);
+  if (m?.engines) rows.push(['Engines', m.engines]);
+  if (m?.seats) rows.push(['Typical seats', m.seats]);
+  if (m?.range) rows.push(['Range', `${m.range.toLocaleString()} km`]);
+  if (m?.length) rows.push(['Length · wingspan', `${m.length} m · ${m.span} m`]);
+  if (m?.first) rows.push(['First flew', String(m.first)]);
+  if (m?.wake && !m.seats) rows.push(['Size class', m.wake]);
+  return rows;
+}
+function airlineHtml(a, api) {
+  const d = decodeCall(a.call); if (!d) return '';
+  const n = allFlights.reduce((k, x) => k + (x.call?.startsWith(d.code) ? 1 : 0), 0);
+  const on = flightState.airline === d.code;
+  return `<h4>Airline</h4>${api.factsHtml([['Airline', d.airline], ['Codes', `${d.iata ? `${d.iata} · ` : ''}${d.code}`], ['In the air now', `${n.toLocaleString()} plane${n === 1 ? '' : 's'}`], ['Callsign', a.call]])}
+    <div class="row"><button class="btn ghost" data-airline="${on ? '' : d.code}" aria-pressed="${on}">${on ? 'Show every airline again' : `Show only ${esc(d.airline)}`}</button></div>`;
 }
 
 async function openDeck(a, api) {
   flightState.selected = a.id; flightState.follow = false;
+  await loadFlightDb();
+  const d = decodeCall(a.call); const m = model(a.type);
+  routeInfo(a.call, a).then(() => { if (api.isOpen(`flight:${a.id}`)) { updateDeck(a); api.refreshLayer('aircraft', { soft: true }); } });
   api.openNotes('Flight view', `
     <div class="deck" data-key="flight:${a.id}">
       <p class="kicker">${a.src ?? ''}</p>
-      <h3>${api.esc(a.call || a.id.toUpperCase())}</h3>
-      <p class="sub" id="deck-airline">${api.esc([a.desc ?? a.type, a.reg].filter(Boolean).join(' · ') || 'Looking up aircraft…')}</p>
+      <div class="fl-head"><h3>${esc(d?.flight ?? (a.call || a.id.toUpperCase()))}</h3>${d?.flight ? `<span class="fl-call">${esc(a.call)}</span>` : ''}</div>
+      <p class="sub" id="deck-airline">${esc([d?.airline, m?.name ?? a.desc ?? a.type].filter(Boolean).join(' · ') || 'Looking up aircraft…')}</p>
+      <p class="fl-phase" id="deck-phase">${esc(phaseOf(a))}</p>
       <div id="deck-route">${progressHtml(a)}</div>
       <div class="stats" id="deck-stats">${statsHtml(a)}</div>
-      <h4>What it looks like</h4><div id="deck-3d"></div>
-      <p class="muted" id="deck-pos">${fmtLat(a.lat)}, ${fmtLng(a.lng)}</p>
       <div class="row">
         <button class="btn" data-deck="follow">Follow this flight</button>
         <button class="btn ghost" data-deck="window">Window view</button>
         <button class="btn ghost" data-deck="stop">Stop following</button>
         <button class="btn ghost" data-share="1">Copy link</button>
       </div>
-      <div id="deck-photo"></div><div id="deck-dest"></div>
-      <h4>How the seatback map works</h4>
-      <p>Airline moving maps take the same numbers from the aircraft’s own navigation system. Here they come from the plane’s ADS-B broadcast; the outside temperature is estimated from the standard atmosphere (−6.5 °C per km up to 11 km, then −56.5 °C), which is how cruise temperatures of about −50 °C arise.</p>
-      <p class="muted">Squawk ${api.esc(a.squawk ?? '—')} · ICAO address ${api.esc(a.id)} · <a href="https://globe.adsb.lol/?icao=${encodeURIComponent(a.id)}" target="_blank" rel="noopener">Track on adsb.lol</a></p>
+      <h4>3D model of this aircraft</h4><div id="deck-3d"></div>
+      <h4>Aircraft</h4><div id="deck-aircraft">${api.factsHtml(aircraftRows(a))}</div>
+      <div id="deck-photo"></div>
+      <div id="deck-airline-box">${airlineHtml(a, api)}</div>
+      <p class="muted" id="deck-pos">${fmtLat(a.lat)}, ${fmtLng(a.lng)}</p>
+      <div id="deck-dest"></div>
+      <details class="more"><summary>How the flight view works</summary>
+      <p>The plane broadcasts only its position, height, speed, a 24-bit address and a callsign (ADS-B). The flight number, airline, scheduled route and full model name are looked up from the callsign and the ICAO type code in Virtual Radar Server’s public-domain tables, kept in the atlas; the country of registration comes from the block of addresses the plane’s address belongs to. The outside temperature is estimated from the standard atmosphere (−6.5 °C per km up to 11 km, then −56.5 °C), which is how cruise temperatures of about −50 °C arise. Seats and range are typical figures from the manufacturer; each airline fits its own cabins.</p>
+      <p class="muted">Squawk ${esc(a.squawk ?? '—')} · ICAO address ${esc(a.id)} · <a href="https://globe.adsb.lol/?icao=${encodeURIComponent(a.id)}" target="_blank" rel="noopener">Track on adsb.lol</a></p></details>
     </div>`, `flight:${a.id}`);
   planeView?.dispose(); planeView = mountPlaneView(document.getElementById('deck-3d'), a);
   api.refreshLayer('aircraft', { soft: true });
-  if (!a.type && await fillTypes([a])) { planeView?.update(); const el = document.getElementById('deck-airline'); if (el && api.isOpen(`flight:${a.id}`)) el.textContent = [a.type, a.reg].filter(Boolean).join(' · '); api.refreshLayer('aircraft', { soft: true }); }
-  const [info, route] = await Promise.all([aircraftInfo(a.id), routeInfo(a.call)]);
+  if (!a.type && await fillTypes([a])) { planeView?.update(); if (api.isOpen(`flight:${a.id}`)) { document.getElementById('deck-aircraft').innerHTML = api.factsHtml(aircraftRows(a)); document.getElementById('deck-airline').textContent = [d?.airline, model(a.type)?.name ?? a.type].filter(Boolean).join(' · '); } api.refreshLayer('aircraft', { soft: true }); }
+  const [info, route] = await Promise.all([aircraftInfo(a.id), routeInfo(a.call, a)]);
   if (!api.isOpen(`flight:${a.id}`)) return;
   if (info?.icao_type && !a.type) { a.type = info.icao_type; planeView?.update(); api.refreshLayer('aircraft', { soft: true }); }
   if (info) {
-    document.getElementById('deck-airline').textContent = [info.manufacturer, info.type, info.registration, info.registered_owner].filter(Boolean).join(' · ');
-    if (info.url_photo_thumbnail) document.getElementById('deck-photo').innerHTML = `<figure class="photo"><img src="${info.url_photo_thumbnail}" alt="Photo of ${api.esc(info.registration ?? 'the aircraft')}" loading="lazy" /><figcaption>Photo via <a href="${info.url_photo ?? '#'}" target="_blank" rel="noopener">airport-data / adsbdb</a></figcaption></figure>`;
+    document.getElementById('deck-aircraft').innerHTML = api.factsHtml(aircraftRows(a, info));
+    if (!d) document.getElementById('deck-airline').textContent = [info.registered_owner, model(a.type)?.name ?? info.type].filter(Boolean).join(' · ');
+    if (info.url_photo_thumbnail) document.getElementById('deck-photo').innerHTML = `<figure class="photo"><img src="${info.url_photo_thumbnail}" alt="Photo of ${esc(info.registration ?? 'the aircraft')}" loading="lazy" /><figcaption>Photo via <a href="${info.url_photo ?? '#'}" target="_blank" rel="noopener">airport-data / adsbdb</a></figcaption></figure>`;
   }
   if (route) {
-    const air = route.airline ? `${route.airline.name}${route.airline.country ? ` (${route.airline.country})` : ''}` : '';
-    if (air) document.getElementById('deck-airline').textContent = `${air} · ${document.getElementById('deck-airline').textContent}`;
+    if (!d && route.airline?.name) document.getElementById('deck-airline').textContent = [route.airline.name, model(a.type)?.name ?? a.type].filter(Boolean).join(' · ');
     updateDeck(a);
-    const d = route.destination;
-    try {
-      const w = await getFeed('openmeteo', `https://api.open-meteo.com/v1/forecast?latitude=${d.latitude}&longitude=${d.longitude}&current=temperature_2m,weather_code,wind_speed_10m&timezone=auto`);
-      const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: w.timezone });
-      document.getElementById('deck-dest').innerHTML = `<h4>At ${api.esc(d.municipality ?? d.name)}</h4><dl><dt>Local time</dt><dd>${t} (${api.esc(w.timezone)})</dd><dt>Weather</dt><dd>${api.wmo(w.current.weather_code)}, ${w.current.temperature_2m} °C, wind ${w.current.wind_speed_10m} km/h</dd><dt>Airport</dt><dd>${api.esc(d.name)} · ${api.esc(d.country_name ?? '')}</dd></dl>`;
-    } catch { /* optional */ }
+    // Local time and weather at both ends (Open-Meteo works out each airport's time zone).
+    const clock = async (ap, k) => {
+      try {
+        const w = await getFeed('openmeteo', `https://api.open-meteo.com/v1/forecast?latitude=${ap.latitude}&longitude=${ap.longitude}&current=temperature_2m,weather_code,wind_speed_10m&timezone=auto`);
+        const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: w.timezone });
+        const el = document.querySelector(`#deck-route [data-lt="${k}"]`); if (el) el.textContent = `${t} local`;
+        return { w, t };
+      } catch { return null; }
+    };
+    const [, dst] = await Promise.all([clock(route.origin, 'o'), clock(route.destination, 'd')]);
+    const ds = route.destination;
+    if (dst && api.isOpen(`flight:${a.id}`)) document.getElementById('deck-dest').innerHTML = `<h4>At ${esc(ds.municipality ?? ds.name)}</h4>${api.factsHtml([['Local time', `${dst.t} (${dst.w.timezone})`], ['Weather', `${api.wmo(dst.w.current.weather_code)}, ${dst.w.current.temperature_2m} °C`], ['Wind', `${dst.w.current.wind_speed_10m} km/h`], ['Airport', `${ds.name}${ds.country_name ? `, ${ds.country_name}` : ''}`]])}`;
     api.refreshLayer('aircraft', { soft: true });
   }
 }

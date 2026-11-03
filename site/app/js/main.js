@@ -3,8 +3,11 @@
 // Copyright (C) 2026 Aleksander Norman. Builds on World Monitor, Copyright (C) 2024-2026 Elie Habib
 // (https://github.com/koala73/worldmonitor). Licensed under the GNU AGPL v3.0 only; see LICENSE.
 
+import { ui } from './uicons.js';
 import { Globe, THREE } from '../vendor/vendor.min.mjs';
 import { LAYERS, GROUPS, layerById, worldMonitorData, plateLabel } from './layers.js';
+import { quakeClose } from './quakedetail.js';
+import { countryHtml, countryFill, countryClose, cd as openCountry } from './countrydetail.js';
 import { getFeed, getLocal } from './feeds.js';
 import * as astro from './astro.js';
 import { SOURCES } from './sources.js';
@@ -18,7 +21,7 @@ import { warmWakes } from './wakes.js';
 import { installShell, SECTION_FOR_KEY, SECTION_FOR_TITLE } from './shell.js';
 const pulses = createPulses(100);
 import { Quiz, buildQuestionPool } from './quiz.js';
-import { flightsLayer, flightState, layoutPlanes, deckAction, glidePlanes, flightsNow, planesStale, planeCounts, warmPlanes } from './flights.js';
+import { flightsLayer, flightState, layoutPlanes, deckAction, glidePlanes, flightsNow, planesStale, planeCounts, warmPlanes, findFlights, findAirlinesLive, setAirlineFilter, describeFlight } from './flights.js';
 import { camerasLayer, alprLayer, stopCameraMedia, alprRow } from './cameras.js';
 import { citiesLayer, airportsLayer } from './places.js';
 import { installNavigation } from './nav.js';
@@ -27,7 +30,7 @@ import { crimeLayer } from './crime.js';
 import { installLive } from './live.js';
 import { openWall } from './cameras.js';
 import { webcamsLayer } from './worldcams.js';
-import { powerLayer, internetLayer, radioLayer, shipsLayer, overlayLayer } from './networks.js';
+import { powerLayer, internetLayer, radioLayer, shipsLayer, shipState, overlayLayer } from './networks.js';
 import { installHud } from './hud.js';
 import { MarkerRenderer, GeoIndex, MultiIndex, iconsReady } from './markers.js';
 import { installPerformance, installProgramKeeper, installIdleGovernor } from './perf.js';
@@ -451,7 +454,7 @@ function compose() {
   }
   for (const k of Object.keys(state.tool)) appendAll(acc[k], state.tool[k]);
   if (acc.rings.length) acc.custom.push(pulses.wrap); // all pulsing rings: one GPU-animated object (pulses.js)
-  compose.animating = acc.rings.length > 0 || acc.particles.length > 0 || acc.arcs.some((a) => a.animMs) || acc.paths.some((p) => p.animMs);
+  compose.animating = acc.rings.length > 0 || acc.custom.some((c) => c.animating) || acc.particles.length > 0 || acc.arcs.some((a) => a.animMs) || acc.paths.some((p) => p.animMs);
   gov?.wake(500);
   document.body.classList.toggle('close', state.pov.altitude < 0.025);
   // Only hand globe.gl the channels whose contents actually changed — re-digesting
@@ -687,12 +690,12 @@ function renderLayerPanel() {
   const active = LAYERS.filter((l) => state.on.has(l.id));
   // "On the map": every active layer as a chip you can switch off in one click
   const activeHtml = `<div class="active-layers"><div class="al-head"><b>On the map</b><small>${active.length} layer${active.length === 1 ? '' : 's'}</small></div>
-    <div class="al-list">${active.map((l) => `<button class="al" data-off="${l.id}" title="Hide ${esc(l.label)}" style="--sw:${l.swatch}">${layerGlyph(l) ? glyphSvg(layerGlyph(l), l.swatch, 14) : '<i class="dot"></i>'}<span>${esc(l.label.replace(/ \(.*\)$/, ''))}</span><b aria-hidden="true">×</b></button>`).join('') || '<span class="muted">Nothing yet: tick a layer below or pick a preset.</span>'}</div></div>`;
+    <div class="al-list">${active.map((l) => `<button class="al" data-off="${l.id}" title="Hide ${esc(l.label)}" style="--sw:${l.swatch}">${layerGlyph(l) ? glyphSvg(layerGlyph(l), l.swatch, 14) : '<i class="dot"></i>'}<span>${esc(l.label.replace(/ \(.*\)$/, ''))}</span>${ui('close', 'x')}</button>`).join('') || '<span class="muted">Nothing yet: tick a layer below or pick a preset.</span>'}</div></div>`;
   const html = activeHtml + presets + GROUPS.map((g) => {
     const ls = LAYERS.filter((l) => l.group === g.id); const nOn = ls.filter((l) => state.on.has(l.id)).length;
     const collapsed = state.collapsed.has(g.id);
     return `
-    <section class="group${collapsed ? ' collapsed' : ''}" data-group="${g.id}"><h3><button class="gtoggle" data-gtoggle="${g.id}" aria-expanded="${!collapsed}"><i aria-hidden="true">▾</i>${esc(g.label)}</button><small>${nOn ? `${nOn} on · ` : ''}${ls.length}${g.note ? ` · ${esc(g.note)}` : ''}</small></h3>
+    <section class="group${collapsed ? ' collapsed' : ''}" data-group="${g.id}"><h3><button class="gtoggle" data-gtoggle="${g.id}" aria-expanded="${!collapsed}">${ui('chevron')}${esc(g.label)}</button><small>${nOn ? `${nOn} on · ` : ''}${ls.length}${g.note ? ` · ${esc(g.note)}` : ''}</small></h3>
       ${ls.map((l) => `
         <div class="layer${wantOn(l) ? ' is-on' : ''}" style="--sw:${l.swatch}" data-name="${esc(`${l.label} ${g.label}`.toLowerCase())}">
           <input type="checkbox" id="ly-${l.id}" data-layer="${l.id}" ${(state.pending.has(l.id) ? state.pending.get(l.id) : state.on.has(l.id)) ? 'checked' : ''}/>
@@ -807,7 +810,12 @@ function openNotes(title, html, key = null) {
 const detailsHist = [];
 function updateBack() { const b = $('#notes-back'); if (!b) return; b.hidden = detailsHist.length < 2; if (!b.hidden) b.title = `Back to ${detailsHist.at(-2).title}`; }
 function detailsBack() { if (detailsHist.length < 2) return; detailsHist.pop(); const prev = detailsHist.at(-1); state.histNav = true; prev.fn(); updateBack(); }
-function closeNotes() { detailsHist.length = 0; updateBack(); $('#notes').classList.remove('open'); document.body.classList.remove('right-open'); if (state.leftAuto) { state.leftAuto = false; shell?.open(shell.current()); } stopCameraMedia(); state.notesKey = null; setTimeout(writeHash, 0); if (state.selected) { state.selected = null; compose.forceMarkers = true; scheduleCompose(); } if (flightState.selected) { flightState.selected = null; flightState.follow = false; refreshLayer('aircraft', { soft: true }); } }
+// An open earthquake draws its shaking, waves and aftershocks; take them away when another card replaces it.
+function leaveQuake(prev, next) {
+  if (prev?.layer !== 'quakes' || (next?.layer === 'quakes' && next.d?.id === prev.d?.id)) return;
+  quakeClose(); if (next?.layer !== 'quakes') setTimeout(() => refreshLayer('quakes', { soft: true }), 0);
+}
+function closeNotes() { detailsHist.length = 0; updateBack(); $('#notes').classList.remove('open'); document.body.classList.remove('right-open'); if (state.leftAuto) { state.leftAuto = false; shell?.open(shell.current()); } stopCameraMedia(); state.notesKey = null; setTimeout(writeHash, 0); if (state.selected) { leaveQuake(state.selected, null); state.selected = null; compose.forceMarkers = true; scheduleCompose(); } if (openCountry.f) { countryClose(); refreshBorders(); } if (flightState.selected) { flightState.selected = null; flightState.follow = false; refreshLayer('aircraft', { soft: true }); } }
 const isOpen = (key) => (state.notesKey === key && $('#notes').classList.contains('open')) || !!shell?.isOpen(key);
 const linksHtml = (links) => (links?.length ? `<div class="links">${links.filter((l) => l.url).map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join('')}</div>` : '');
 const rowsHtml = (rows) => (rows?.length ? `<dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : '');
@@ -848,6 +856,8 @@ function select(ref) {
   if (l?.open) return l.open(ref.d);
   if (!l?.describe) return showLearn(ref.layer);
   const c = l.describe(ref.d);
+  leaveQuake(state.selected, ref);
+  if (openCountry.f) { countryClose(); refreshBorders(); }
   state.selected = ref; compose.forceMarkers = true; scheduleCompose();
   state.reopen = () => select(ref);
   const key = `sel:${ref.layer}:${c.title}`;
@@ -977,6 +987,8 @@ document.addEventListener('click', (e) => {
   if (t.dataset.sky) { const [a, b] = t.dataset.sky.split(',').map(Number); sky.open(a, b); }
   if (t.dataset.enableFlights) { toggleLayer('aircraft', true); renderLayerPanel(); setTimeout(() => { if (state.selected?.layer === 'airports') runAction('airport-board'); }, 5000); }
   if (t.dataset.deck) deckAction(t.dataset.deck, api);
+  if (t.dataset.shipkind != null) { shipState.kind = t.dataset.shipkind || null; refreshLayer('ships', { soft: true }); toast(shipState.kind ? 'Showing only this kind of ship. Press the button again to see every ship.' : 'Showing every ship again'); t.dataset.shipkind = shipState.kind ? '' : t.dataset.kind; t.setAttribute('aria-pressed', String(!!shipState.kind)); t.textContent = shipState.kind ? 'Show every ship again' : t.dataset.label; return; }
+  if (t.dataset.airline != null) { setAirlineFilter(t.dataset.airline, api); toast(t.dataset.airline ? 'Showing only this airline’s planes. Press the button again to see every airline.' : 'Showing every airline again'); const a = state.data.aircraft?.ac?.find((x) => x.id === flightState.selected); if (a) layerById.aircraft.open(a); }
   if (t.dataset.cam) { const w = t.dataset.cam.startsWith('w-'); const c = w ? layerById.webcams.find(t.dataset.cam) : state.data.cameras?.cams.find((x) => x.id === t.dataset.cam); if (c) { select({ layer: w ? 'webcams' : 'cameras', d: c }); fly(c.lat, c.lng, Math.min(state.pov.altitude, 0.02)); } }
   if (t.dataset.alprLive) layerById.alpr.fetchLive(viewOf(state.pov)).then((n) => { t.textContent = `Loaded ${n} from OpenStreetMap`; refreshLayer('alpr'); }).catch(() => { t.textContent = 'Overpass did not respond — try again shortly'; });
 });
@@ -1075,37 +1087,33 @@ function probeCard(lat, lng) {
 }
 
 const flagOf = (cc) => (cc && cc.length === 2 ? String.fromCodePoint(...[...cc.toUpperCase()].map((c) => 0x1f1a5 + c.charCodeAt(0))) : '');
-const WB = [['NY.GDP.MKTP.CD', 'GDP (current US$)', (v) => `$${(v / 1e9).toLocaleString(undefined, { maximumFractionDigits: 0 })} bn`],
-  ['SP.DYN.LE00.IN', 'Life expectancy', (v) => `${v.toFixed(1)} years`],
-  ['IT.NET.USER.ZS', 'Internet users', (v) => `${v.toFixed(0)} % of people`],
-  ['EG.FEC.RNEW.ZS', 'Renewable energy', (v) => `${v.toFixed(0)} % of final energy use`]];
 
 async function countryCard(f, lat, lng) {
   const p = f.properties; const cc = p['ISO3166-1-Alpha-2']; const name = p.name;
   state.reopen = () => countryCard(f, lat, lng);
-  openNotes('Country', `<h3><span class="flag">${flagOf(cc)}</span>${esc(name)}</h3>
-    <div id="cc-facts" class="muted">Loading facts…</div><div id="cc-wb"></div><div id="cc-wiki"></div>
-    <h4>The point you clicked</h4>${probeHtml(lat, lng)}`);
+  const key = `country:${cc ?? name}`;
+  if (state.selected) { leaveQuake(state.selected, null); state.selected = null; }
+  openNotes('Country', `<h3><span class="flag">${flagOf(cc)}</span>${esc(name)}</h3>${countryHtml(f)}
+    <details class="more"><summary>The point you clicked</summary>${probeHtml(lat, lng)}</details>`, key);
   fillProbe(lat, lng);
-  const valid = cc && /^[A-Z]{2}$/.test(cc);
-  if (valid) getFeed('restcountries', `https://restcountries.com/v3.1/alpha/${cc}?fields=name,capital,population,area,region,subregion,languages,currencies,timezones,latlng`).then((r) => {
-    const el = $('#cc-facts'); if (!el) return;
-    el.className = '';
-    el.innerHTML = rowsHtml([['Official name', r.name?.official], ['Capital', r.capital?.join(', ')], ['Region', [r.region, r.subregion].filter(Boolean).join(' · ')],
-      ['Population', r.population?.toLocaleString()], ['Area', r.area ? `${Math.round(r.area).toLocaleString()} km²` : '—'],
-      ['Density', r.area ? `${(r.population / r.area).toFixed(0)} people/km²` : '—'],
-      ['Languages', Object.values(r.languages ?? {}).join(', ')], ['Currencies', Object.values(r.currencies ?? {}).map((c) => `${c.name} (${c.symbol ?? ''})`).join(', ')],
-      ['Time zones', r.timezones?.length > 3 ? `${r.timezones.length} zones` : r.timezones?.join(', ')]]);
-  }).catch(() => { const el = $('#cc-facts'); if (el) el.innerHTML = '<span class="err">REST Countries did not respond.</span>'; });
-  else $('#cc-facts').textContent = '';
-  if (valid) Promise.allSettled(WB.map(([ind]) => getFeed('worldbank', `https://api.worldbank.org/v2/country/${cc}/indicator/${ind}?format=json&mrnev=1`))).then((rs) => {
-    const rows = rs.map((r, i) => { const d = r.value?.[1]?.[0]; return d?.value != null ? [`${WB[i][1]} (${d.date})`, WB[i][2](d.value)] : null; }).filter(Boolean);
-    const el = $('#cc-wb'); if (el && rows.length) el.innerHTML = `<h4>World Bank indicators</h4>${rowsHtml(rows)}`;
-  });
-  getFeed('wikipedia', `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name.replace(/ /g, '_'))}`).then((w) => {
-    const el = $('#cc-wiki'); if (!el || !w.extract) return;
-    el.innerHTML = `<h4>From Wikipedia</h4><p>${esc(w.extract)}</p>${linksHtml([{ label: 'Read on Wikipedia', url: w.content_urls?.desktop?.page }])}`;
-  }).catch(() => {});
+  // the country page (countrydetail.js): Isotype people, the country against the world, neighbours, what is inside it now
+  countryFill(f, { stillOpen: () => isOpen(key), data: state.data, refresh: refreshBorders, featureByCc: (c) => state.data.borders?.find((x) => x.properties['ISO3166-1-Alpha-2'] === c) });
+}
+function refreshBorders() { if (state.data.borders && state.on.has('borders')) { state.chan.borders = layerById.borders.channels(state.data.borders, ctx()); compose.forceMarkers = true; scheduleCompose(); } }
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-country-cc]'); if (b) {
+    const f = state.data.borders?.find((x) => x.properties['ISO3166-1-Alpha-2'] === b.dataset.countryCc); if (!f) return;
+    const ll = countryCentre(f); globe.pointOfView({ lat: ll[0], lng: ll[1], altitude: Math.max(0.6, state.pov.altitude ?? 1.6) }, reduceMotion ? 0 : 1200); countryCard(f, ll[0], ll[1]); return;
+  }
+  const l = e.target.closest('[data-cd-layer]'); if (!l) return;
+  const id = l.dataset.cdLayer; if (!state.on.has(id)) { toggleLayer(id, true); renderLayerPanel(); }
+  if (l.dataset.cdQuake) { const q = state.data.quakes?.find((x) => x.id === l.dataset.cdQuake); if (q) { const [lng2, lat2] = q.geometry.coordinates; globe.pointOfView({ lat: lat2, lng: lng2, altitude: 0.9 }, reduceMotion ? 0 : 1200); select({ layer: 'quakes', d: q }); } }
+});
+/** The middle of a country's largest piece of land (the centroid of its biggest ring, by area). */
+function countryCentre(f) {
+  const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates; let best = null;
+  for (const p of polys) { const r = p[0]; let A = 0, cx = 0, cy = 0; for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const k = r[j][0] * r[i][1] - r[i][0] * r[j][1]; A += k; cx += (r[j][0] + r[i][0]) * k; cy += (r[j][1] + r[i][1]) * k; } if (A && (!best || Math.abs(A) > best[0])) best = [Math.abs(A), cy / (3 * A), cx / (3 * A)]; }
+  return best ? [best[1], best[2]] : [0, 0];
 }
 
 // ------------------------------------------------------------------ pins / tool overlays
@@ -1312,6 +1320,12 @@ q.addEventListener('input', async () => {
   const s = q.value.trim().toLowerCase();
   if (s.length < 2) { list.hidden = true; return; }
   hits = index.filter((x) => x.key.includes(s)).sort((a, b) => a.key.indexOf(s) - b.key.indexOf(s) || (b.kind.includes('City') - a.kind.includes('City')) || a.name.length - b.name.length).slice(0, 9);
+  // Planes in the air now, by flight number, callsign or registration, and airlines, with how many are flying.
+  if (state.on.has('aircraft')) {
+    const fl = findFlights(q.value).map((a) => { const f = describeFlight(a); return { name: `${f.flight ?? a.call}${f.model ? ` · ${f.model}` : ''}`, kind: `In the air now${f.airline ? ` · ${f.airline}` : ''}`, lat: a.lat, lng: a.lng, alt: 0.5, flight: a }; });
+    const al = findAirlinesLive(q.value).map((x) => ({ name: x.name, kind: `Airline · ${x.n.toLocaleString()} in the air now`, airline: x.icao }));
+    hits = [...fl, ...al, ...hits].slice(0, 9);
+  }
   hits.push({ name: `Search “${q.value.trim()}” worldwide`, kind: 'OpenStreetMap', osm: true });
   sel = -1; renderHits();
 });
@@ -1332,6 +1346,8 @@ async function choose(h) {
   if (!h) return;
   list.hidden = true; q.blur();
   if (h.tour) { setMode('tours'); return startTour(h.tour); }
+  if (h.flight) { fly(h.lat, h.lng, h.alt, false); return select({ layer: 'aircraft', d: h.flight }); }
+  if (h.airline) { setAirlineFilter(h.airline, api); return toast(`Showing only ${h.name}. Clear it from any of its planes’ flight view.`); }
   if (h.layer) { toggleLayer(h.layer, true); return showLearn(h.layer); }
   if (h.osm) return geocode(q.value.trim());
   if (h.ref) { toggleLayer(h.ref.layer, true); select(h.ref); }
@@ -1457,7 +1473,7 @@ function pickAt(x, y, { elevated = true } = {}) {
   }
   return best;
 }
-const planeTip = (a) => `<div class="tip"><b>${esc(a.call || a.id.toUpperCase())}${a.type ? ` · ${esc(a.type)}` : ''}</b><span>${a.ground ? 'on the ground' : `${Math.round(a.altFt).toLocaleString()} ft`}${a.kt ? ` · ${Math.round(a.kt * 1.852)} km/h` : ''} · click for the flight view</span></div>`;
+const planeTip = (a) => { const f = describeFlight(a); const r = flightState.route[a.call]; return `<div class="tip"><b>${esc(f.flight || a.id.toUpperCase())}${f.model ? ` · ${esc(f.model)}` : ''}</b>${f.airline || r?.origin ? `<span>${esc([f.airline, r?.origin && r?.destination ? `${r.origin.iata_code || r.origin.icao_code} → ${r.destination.iata_code || r.destination.icao_code}` : ''].filter(Boolean).join(' · '))}</span>` : ''}<span>${a.ground ? 'on the ground' : `${Math.round(a.altFt).toLocaleString()} ft`}${a.kt ? ` · ${Math.round(a.kt * 1.852)} km/h` : ''} · click for the flight view</span></div>`; };
 // Hover tooltips from the same index (throttled).
 let hoverAt = 0; const tipEl = document.createElement('div'); tipEl.className = 'hovertip'; tipEl.hidden = true; document.body.appendChild(tipEl);
 $('#globe').addEventListener('pointermove', (e) => {
@@ -1526,7 +1542,7 @@ function tickClock() {
   const off = (clock.now() - Date.now()) / 3600_000;
   $('#clock').innerHTML = `<b>${d.toISOString().slice(0, 10)} ${d.toISOString().slice(11, 19)}</b> UTC ${live ? '<i class="livepill">LIVE</i>' : `<i class="timepill">${off >= 0 ? '+' : '−'}${Math.abs(off) < 48 ? `${Math.abs(off).toFixed(1)} h` : `${Math.abs(off / 24).toFixed(1)} d`} · ${clock.paused ? 'paused' : speedLabel(clock.speed)}</i>`} · Sun over ${astro.fmtLat(s.lat).replace(/\.\d+/, '')}, ${astro.fmtLng(s.lng).replace(/\.\d+/, '')}`;
   const sl = $('#time-slider'); if (sl && document.activeElement !== sl) sl.value = String(Math.max(-168, Math.min(48, off)));
-  $('#time-play') && ($('#time-play').textContent = clock.paused ? '▶' : '❚❚');
+  $('#time-play') && ($('#time-play').innerHTML = ui(clock.paused ? 'play' : 'pause'), $('#time-play').setAttribute('aria-label', clock.paused ? 'Play' : 'Pause'));
   $('#time-speed') && ($('#time-speed').textContent = speedLabel(clock.speed));
   document.body.classList.toggle('timetravel', !live);
 }
@@ -1621,7 +1637,7 @@ $('#gibs-date-input').value = gibsDate();
 $('#gibs-date-input').addEventListener('change', (e) => { state.gibsDate = e.target.value || null; applyBase(); });
 
 // ------------------------------------------------------------------ plug-in layers (flights, cameras, places)
-const api = { now: () => clock.date(), view: () => viewOf(state.pov), particleBudget: () => ({ High: 6000, Balanced: 3500, Fast: 1500 }[perf.q.label] ?? 4000), clearTool: () => clearTool(), setPins: (p) => setPins(p), compose: () => { compose.forceMarkers = true; compose(); }, closeNotes: () => closeNotes(), LAYERS, pulse: (a, b, c) => pulse(a, b, c), flash: (a, b, c) => flash(a, b, c), globe, state, esc, $, reduceMotion, openNotes, isOpen, refreshLayer, fly, followTo, setBase, wmo: (c) => WMO[c] ?? '—', select, toast: (m) => toast(m), toggleLayer: (id, on) => toggleLayer(id, on), openWall: () => openWall(api), placeName: (a, b) => placeName(a, b), isDesktop, repoUrl: () => sourceRepoUrl() };
+const api = { factsHtml: (r) => factsHtml(r), now: () => clock.date(), view: () => viewOf(state.pov), particleBudget: () => ({ High: 6000, Balanced: 3500, Fast: 1500 }[perf.q.label] ?? 4000), clearTool: () => clearTool(), setPins: (p) => setPins(p), compose: () => { compose.forceMarkers = true; compose(); }, closeNotes: () => closeNotes(), LAYERS, pulse: (a, b, c) => pulse(a, b, c), flash: (a, b, c) => flash(a, b, c), globe, state, esc, $, reduceMotion, openNotes, isOpen, refreshLayer, fly, followTo, setBase, wmo: (c) => WMO[c] ?? '—', select, toast: (m) => toast(m), toggleLayer: (id, on) => toggleLayer(id, on), openWall: () => openWall(api), placeName: (a, b) => placeName(a, b), isDesktop, repoUrl: () => sourceRepoUrl() };
 const health = installHealth(api); const watch = installWatch(api);
 {
   const add = (layer, afterId) => { const i = LAYERS.findIndex((l) => l.id === afterId); LAYERS.splice(i + 1, 0, layer); layerById[layer.id] = layer; };
@@ -1972,9 +1988,9 @@ function whatsNew() {
     <div class="starts">
       <button class="tour-card" data-start="flights"><b>✈ Every flight in the sky</b><span>Live plane pointers on their real headings. Click one for the seatback flight view.</span></button>
       <button class="tour-card" data-start="cams"><b>📹 Live cameras, Los Angeles</b><span>Thousands of traffic cameras worldwide, with a camera wall.</span></button>
-      <button class="tour-card" data-start="news"><b>✦ News pins</b><span>Places in the news in the last 24 hours, with headlines.</span></button>
+      <button class="tour-card" data-start="news"><b>News pins</b><span>Places in the news in the last 24 hours, with headlines.</span></button>
       <button class="tour-card" data-start="crime"><b>▣ Crime map, Chicago</b><span>Official incident reports as 3D hexagon columns and pins.</span></button>
-      <button class="tour-card" data-start="live"><b>● Live tour</b><span>Sit back while the globe flies from event to event.</span></button>
+      <button class="tour-card" data-start="live"><b>Live tour</b><span>Sit back while the globe flies from event to event.</span></button>
     </div>
     <h4>Also new</h4><p>An <b>Apply</b> button for layer changes, quick presets, live counts next to every layer, flight emergency alerts, licence-plate readers, city names, airports, and navigation that slows down as you zoom in.</p>`, 'whatsnew');
 }

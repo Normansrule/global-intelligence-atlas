@@ -5,6 +5,7 @@
 //    live-data job saves every 30 minutes; the desktop app reads NASA's public file directly.
 //  • Weather radar: RainViewer's global radar mosaic for the past two hours in 10-minute frames, wrapped on a
 //    transparent shell just above the ground, with a time slider and a play button in the Layers panel.
+import { ui } from './uicons.js';
 import { THREE } from '../vendor/vendor.min.mjs';
 import { getFeed, getSnapshot, isDesktop } from './feeds.js';
 import { fmtLat, fmtLng, haversineKm } from './astro.js';
@@ -158,7 +159,7 @@ export function radarLayer(api) {
   }
   function play(on, { redraw = true } = {}) {
     const was = !!rs.playing; clearInterval(rs.playing); rs.playing = null;
-    const b = document.getElementById('radar-play'); if (b) b.textContent = on ? '❚❚ Pause' : '▶ Play';
+    const b = document.getElementById('radar-play'); if (b) b.innerHTML = `${ui(on ? 'pause' : 'play')}${on ? 'Pause' : 'Play'}`;
     if (!on) { if (was && redraw) show(rs.idx); return; } // paused: swap in the sharper frame
     let busy = false;
     rs.playing = setInterval(async () => {
@@ -192,7 +193,7 @@ export function radarLayer(api) {
     },
     count: (d) => `${d.frames.length} frames`,
     // Time slider and play button, shown under the layer in the Layers panel while it is on.
-    panel: (d) => (d ? `<div class="radarctl"><button class="btn ghost" id="radar-play" type="button">${rs.playing ? '❚❚ Pause' : '▶ Play'}</button>
+    panel: (d) => (d ? `<div class="radarctl"><button class="btn ghost" id="radar-play" type="button">${ui(rs.playing ? 'pause' : 'play')}${rs.playing ? 'Pause' : 'Play'}</button>
       <input type="range" id="radar-slider" min="0" max="${d.frames.length - 1}" step="1" value="${rs.idx}" aria-label="Radar time" />
       <small id="radar-time">${esc(label(d.frames[rs.idx]))}${rs.idx === d.frames.length - 1 ? ' · latest' : ''}</small></div>` : ''),
     stop: () => play(false),

@@ -7,7 +7,8 @@
 // at cruise height is smaller in the sky than the Moon. "Street level" stands you in the real landscape (terrain and
 // OpenStreetMap buildings, landscape.js) at the spot from which the plane is 30° above the horizon.
 import { THREE } from '../vendor/vendor.min.mjs';
-import { CLASSES, classOf, planeGeometry } from './planes3d.js';
+import { CLASSES, classOf, planeGeometry, typeModel } from './planes3d.js';
+import { model as typeInfo, decodeCall } from './flightdb.js';
 import { solarElevation } from './astro.js';
 import { buildLandscape, disposeLandscape, landscapeMaterial, toLatLng } from './landscape.js';
 
@@ -26,6 +27,16 @@ export function groundView(a) {
   const size = Math.max(c.L, c.S); const deg = (2 * Math.atan(size / 2 / slant)) / D2R;
   const overhead = onGround ? deg : (2 * Math.atan(size / 2 / hM)) / D2R;
   return { cls: c, onGround, hM, el, slant, deg, overhead, armMm: 650 * Math.tan(deg * D2R) };
+}
+
+const WORDS = ['', 'one', 'two', 'three', 'four', 'five', 'six'];
+/** "Boeing 777-300ER, drawn to scale: 73.9 m long, 64.8 m wingspan, two jet engines under the wings." */
+function typeNote(info, tm, airline) {
+  const where = tm.prop && tm.n === 1 ? 'in the nose' : tm.triFin ? '(two under the wings, one in the tail fin)' : tm.aft ? (tm.n === 3 ? 'at the tail, one on top' : 'on the tail') : tm.high ? 'under a high wing' : 'under the wings';
+  const kind = { J: 'jet', T: 'turboprop', P: 'piston' }[info.engineKind] ?? '';
+  const eng = tm.n ? `${WORDS[tm.n] ?? tm.n} ${kind} engine${tm.n === 1 ? '' : 's'} ${where}` : '';
+  const fit = info.length ? `${info.length} m long, ${info.span} m wingspan` : `about ${Math.round(tm.L)} m long (typical of its class)`;
+  return `${info.name}, drawn to scale: ${fit}${eng ? `, ${eng}` : ''}${tm.tTail ? ', T-tail' : ''}.${tm.livery ? ' Tail in the airline’s colours.' : ''} The orange figure is a 1.8 m person.`;
 }
 
 export function mountPlaneView(host, a) {
@@ -47,9 +58,10 @@ export function mountPlaneView(host, a) {
   const cam = new THREE.PerspectiveCamera(40, 2, 0.1, 30000); cam.up.set(0, 0, 1);
   scene.add(new THREE.HemisphereLight(0xdfefff, 0x4a4136, 2.2));
   const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(0.4, -0.6, 1); scene.add(sun);
-  let mode = 'close'; let raf = 0; let t0 = performance.now(); let cls = null;
+  let mode = 'close'; let raf = 0; let t0 = performance.now(); let cls = null; let shapeKey = null; let dims = null; let tm = null;
   const mat = new THREE.MeshLambertMaterial({ color: 0xe9eef3, flatShading: true, side: THREE.DoubleSide });
-  const plane = new THREE.Mesh(new THREE.BufferGeometry(), mat); scene.add(plane);
+  const matType = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }); // the exact type, with its airline's tail
+  const plane = new THREE.Mesh(new THREE.BufferGeometry(), mat); scene.add(plane); matType.fog = false;
   // a 1.8 m person, and the ground, for "Close up"
   const person = new THREE.Group();
   { const m = new THREE.MeshLambertMaterial({ color: 0xffb36b });
@@ -75,8 +87,16 @@ export function mountPlaneView(host, a) {
   }
   function setup() {
     const c = classOf(a);
-    if (c !== cls) { cls = c; plane.geometry = planeGeometry(c, '3d'); const k = CLASSES[c].L / 2; plane.scale.setScalar(k); plane.geometry.computeBoundingBox(); }
-    const C = CLASSES[c]; const k = C.L / 2; const bb = plane.geometry.boundingBox;
+    // the exact type when the registry knows it (Boeing 777-300ER, in the airline's tail colour), else the class model
+    const info = a.type ? typeInfo(a.type) : null; const al = decodeCall(a.call)?.code ?? null;
+    const key = info ? `${a.type}|${al}` : c;
+    if (key !== shapeKey) {
+      shapeKey = key; cls = c; tm = info ? typeModel(a.type, info, al) : null;
+      plane.geometry = tm ? tm.geometry : planeGeometry(c, '3d'); plane.material = tm && !tm.generic ? matType : mat;
+      dims = tm ? { ...CLASSES[c], L: tm.L, S: tm.S } : CLASSES[c];
+      plane.scale.setScalar(dims.L / 2); plane.geometry.computeBoundingBox();
+    }
+    const C = dims; const k = C.L / 2; const bb = plane.geometry.boundingBox;
     host.querySelectorAll('[data-pv]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.pv === mode)));
     const close = mode === 'close';
     person.visible = close; ground.visible = close; grid.visible = close; moon.visible = !close; trail.visible = false; ring.visible = false;
@@ -90,7 +110,7 @@ export function mountPlaneView(host, a) {
       person.position.set(C.S * 0.25 + 3, C.L * 0.2, 0);
       ground.position.z = 0; grid.position.z = 0.01;
       cam.fov = 40; cam.near = 0.1; cam.far = 3000;
-      note.textContent = `${C.label}${a._clsHow === 'type' ? '' : ' (best guess from ' + (a._clsHow === 'category' ? 'its broadcast size category' : 'its speed and height') + ')'} · drawn as a typical ${C.eg}: ${C.L} m long, ${C.S} m ${c === 'heli' ? 'rotor' : 'wingspan'}. The orange figure is a 1.8 m person.`;
+      note.textContent = tm ? typeNote(info, tm, al) : `${C.label}${a._clsHow === 'type' ? '' : ' (best guess from ' + (a._clsHow === 'category' ? 'its broadcast size category' : 'its speed and height') + ')'} · drawn as a typical ${C.eg}: ${C.L} m long, ${C.S} m ${c === 'heli' ? 'rotor' : 'wingspan'}. The orange figure is a 1.8 m person.`;
     } else {
       scene.background = new THREE.Color(skyColor());
       // observer at the origin; the plane due north at the chosen elevation, flying its real heading
@@ -156,7 +176,7 @@ export function mountPlaneView(host, a) {
     if (!host.isConnected || !canvas.isConnected) { dispose(); return; }
     size();
     if (mode === 'close') {
-      const C = CLASSES[cls]; const r = Math.max(C.L, C.S) * 1.15; const ang = reduceMotion ? 0.8 : 0.8 + ((now - t0) / 1000) * 0.25;
+      const C = dims ?? CLASSES[cls]; const r = Math.max(C.L, C.S) * (tm ? 0.95 : 1.15); const ang = reduceMotion ? 0.8 : 0.8 + ((now - t0) / 1000) * 0.25;
       cam.position.set(Math.cos(ang) * r, Math.sin(ang) * r, r * 0.42); cam.lookAt(0, 0, plane.position.z * 0.7);
     }
     renderer.render(scene, cam);

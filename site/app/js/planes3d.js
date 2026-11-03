@@ -4,7 +4,8 @@
 // jet, light aircraft, helicopter, fast jet) from its ICAO type code, its broadcast emitter category or, when
 // neither is known, its speed and height. Every class has two procedural models built from the same
 // measurements: a flat top-view silhouette for the zoomed-out map (a few dozen triangles) and a low-poly 3D
-// model for close views and the "from the ground" viewer (about 300 triangles). Both are built in model
+// model for close views and the "from the ground" viewer (about 300 triangles). typeModel() at the bottom rebuilds
+// the 3D parts for one exact type (Boeing 777-300ER) for the flight view. Both are built in model
 // units: the nose is at +Y = 1, the tail at −1, the right wing towards +X and up is +Z.
 import { THREE } from '../vendor/vendor.min.mjs';
 
@@ -92,14 +93,19 @@ function finShape(f, zb) {
 }
 const extrude = (pts, depth) => new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth, bevelEnabled: false, curveSegments: 1 });
 
-/** Concatenate geometries into one non-indexed position+normal geometry. */
-function merge(geos) {
+/** Concatenate geometries into one non-indexed position+normal geometry (with a colour per part when given). */
+function merge(geos, colors) {
   const parts = geos.map((g) => { const ng = g.index ? g.toNonIndexed() : g; if (!ng.attributes.normal) ng.computeVertexNormals(); return ng; });
   const n = parts.reduce((s, g) => s + g.attributes.position.count, 0);
-  const pos = new Float32Array(n * 3); const nor = new Float32Array(n * 3); let o = 0;
-  for (const g of parts) { pos.set(g.attributes.position.array, o); nor.set(g.attributes.normal.array, o); o += g.attributes.position.count * 3; }
+  const pos = new Float32Array(n * 3); const nor = new Float32Array(n * 3); const col = colors ? new Float32Array(n * 3) : null; let o = 0;
+  parts.forEach((g, i) => {
+    pos.set(g.attributes.position.array, o); nor.set(g.attributes.normal.array, o);
+    if (col) { const c = new THREE.Color(colors[i]); for (let k = o; k < o + g.attributes.position.count * 3; k += 3) { col[k] = c.r; col[k + 1] = c.g; col[k + 2] = c.b; } }
+    o += g.attributes.position.count * 3;
+  });
   const out = new THREE.BufferGeometry();
   out.setAttribute('position', new THREE.BufferAttribute(pos, 3)); out.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+  if (col) out.setAttribute('color', new THREE.BufferAttribute(col, 3));
   out.computeBoundingSphere();
   return out;
 }
@@ -165,3 +171,83 @@ export function planeGeometry(cls, kind = '3d') {
 }
 /** Half the real length in globe units (R = 100 ↔ 6,371 km), for true-scale drawing up close. */
 export const trueHalfLength = (cls) => (CLASSES[cls].L / 2) / 63710;
+
+// ---------------------------------------------------------------- one model per aircraft type
+// The class models above are a typical member of each class. For the flight view the same parts are rebuilt for the
+// exact type: its real length and wingspan, how many engines it has and where (under the wings, on the tail, or two
+// under the wings and one in the fin like the MD-11), high or low wing, T-tail, the 747's upper deck, the A380's
+// double deck, winglets, and the airline's tail colour. Model units as above: nose at +Y = 1, so 1 unit = half the length.
+const TAILS = { // fin colour, engine colour: the airline's livery, roughly
+  BAW: ['#1b2a5c', '#c8ccd4'], VIR: ['#c8102e', '#c8102e'], DLH: ['#05164d', '#05164d'], AFR: ['#ffffff', '#c9ced6'], KLM: ['#00a1de', '#00a1de'],
+  UAE: ['#d71a21', '#d8dbe0'], QTR: ['#5c0632', '#5c0632'], ETD: ['#bd8b13', '#c9ced6'], THY: ['#c8102e', '#c8102e'], SIA: ['#1d3c78', '#c9ced6'],
+  CPA: ['#006564', '#c9ced6'], QFA: ['#e40000', '#c9ced6'], ANA: ['#13448f', '#c9ced6'], JAL: ['#ffffff', '#c9ced6'], UAL: ['#0b2c64', '#0b2c64'],
+  DAL: ['#0b1f4a', '#0b1f4a'], AAL: ['#3c4b5c', '#9aa4b0'], SWA: ['#304cb2', '#c9ced6'], ACA: ['#1c1c1c', '#1c1c1c'], RYR: ['#073590', '#c9ced6'],
+  EZY: ['#ff6600', '#ff6600'], WZZ: ['#c6007e', '#c6007e'], IBE: ['#d7192d', '#c9ced6'], AZA: ['#00843d', '#c9ced6'], SAS: ['#000a60', '#c9ced6'],
+  FIN: ['#0b1560', '#c9ced6'], SWR: ['#e3001b', '#c9ced6'], AUA: ['#e3001b', '#c9ced6'], TAP: ['#e3001b', '#00843d'], EIN: ['#00826a', '#c9ced6'],
+  KAL: ['#3b84c4', '#c9ced6'], CCA: ['#ffffff', '#c9ced6'], CES: ['#1a2e6c', '#c9ced6'], CSN: ['#1b4f9c', '#c9ced6'], AIC: ['#e31837', '#c9ced6'],
+  IGO: ['#1a2d78', '#1a2d78'], SVA: ['#00553d', '#c9ced6'], ETH: ['#078930', '#c9ced6'], LAN: ['#1b0088', '#c9ced6'], AVA: ['#d71920', '#c9ced6'],
+  JBU: ['#003876', '#003876'], ASA: ['#01426a', '#c9ced6'], NKS: ['#ffe600', '#ffe600'], FDX: ['#4d148c', '#c9ced6'], UPS: ['#351c15', '#c9ced6'],
+  VLG: ['#ffcc00', '#ffcc00'], EWG: ['#a3195b', '#c9ced6'], NAX: ['#d81939', '#c9ced6'], LOT: ['#11397f', '#c9ced6'], GIA: ['#00a3b2', '#c9ced6'],
+};
+const AFT = /^(CRJ\w|E13\d|E14\d|E45X|MD8\w|MD9\w|DC9\w|B71\w|F70|F100|F28|GLF\d|GL\w\w|G[1-9]\d0|C25\w|C5\d\w|C56X|C650|C68A|C700|C750|CL\d\d|FA\d\w|F2TH|F900|LJ\d\d|E5[05]P|E545|E550|PRM1|H25\w|BE40|PC24|IL62|VC10|T154|B72\w|YK42|SU95|ASTR|G280)$/;
+const TRI_FIN = /^(MD11|DC10|L101)$/; // two engines under the wings, the third in the fin
+const HIGH = /^(AT4\w|AT7\w|DH8\w|DHC\d|C130|C30J|A400|C17|B46\w|RJ\w\w|A124|A225|AN\d+|IL76|F50|F27|D328|C212|CN35|C295|L410|C208|C172|C182|C152|DA42|DA40|PC6T|Y12|MA60|BN2P)$/;
+const TTAIL = /^(AT4\w|AT7\w|DH8D|A400|C17|B46\w|RJ\w\w|IL76|F50|F27|D328|PC12)$/;
+
+/** Everything the flight view needs to draw one type. info: flightdb model() (may be null), airline: ICAO code. */
+export function typeModel(type, info, airline) {
+  const t = String(type ?? '').toUpperCase(); const cls = classify({ type: t, ...(info?.engineKind === 'P' ? { icaoClass: 'L1P' } : {}) }).cls;
+  const C = CLASSES[cls]; const L = info?.length ?? C.L; const S = info?.span ?? C.S;
+  const key = `${t}|${cls}|${airline ?? ''}`;
+  if (cache.has(key)) return cache.get(key);
+  if (cls === 'heli' || cls === 'fighter') { const m = { geometry: planeGeometry(cls, '3d'), L, S, H: C.H, cls, generic: true }; cache.set(key, m); return m; }
+  const sp = JSON.parse(JSON.stringify(SPEC[cls]));
+  const n = info?.engineCount ?? (cls === 'light' ? 1 : 2); const prop = info?.engineKind === 'T' || info?.engineKind === 'P' || cls === 'turboprop' || cls === 'light';
+  const aft = !prop && (info?.aft || AFT.test(t)); const triFin = TRI_FIN.test(t); const high = HIGH.test(t); const tTail = TTAIL.test(t) || aft;
+  const halfSpan = S / L; const f = halfSpan / sp.wing.s;
+  sp.wing.s = halfSpan; sp.wing.ct *= Math.sqrt(f); sp.wing.cr *= Math.min(1.4, Math.sqrt(f)); sp.stab.s *= Math.min(1.5, Math.sqrt(f));
+  if (/^A38/.test(t)) sp.r *= 1.18; if (/^(B77|A35|B78)/.test(t)) sp.r *= 0.95; if (/^(B73|B3\dM)/.test(t)) sp.r *= 1.05;
+  if (high) sp.wing.z = sp.r * 0.88; if (tTail) sp.stab.top = true;
+  const [tail, eng] = TAILS[airline] ?? ['#d9dee5', '#b8c0ca'];
+  const W = '#f1f3f6'; const WING = '#c3cad3'; const g = []; const col = [];
+  const add = (geo, c) => { g.push(geo); col.push(c); };
+  const body = new THREE.LatheGeometry(bodyProfile(sp).map(([r, y]) => new THREE.Vector2(r, y)), 14);
+  if (/^A38/.test(t)) body.scale(1, 1, 1.25); // two full decks
+  add(body, W);
+  { const ws = new THREE.SphereGeometry(1, 12, 6, -Math.PI * 0.32, Math.PI * 0.64, Math.PI * 0.3, Math.PI * 0.16); ws.scale(sp.r * 1.01, 0.12, sp.r * 1.01); ws.rotateZ(Math.PI / 2); ws.translate(0, 1 - sp.nose * 0.62, 0); add(ws, '#1d2733'); } // cockpit windows
+  if (/^B74/.test(t)) { const hump = new THREE.SphereGeometry(1, 14, 8); hump.scale(sp.r * 0.8, 0.36, sp.r * 0.85); hump.translate(0, 0.6, sp.r * 0.55); add(hump, W); }
+  const w = extrude(wingShape(sp.wing), T); w.translate(0, 0, sp.wing.z - T / 2); add(w, WING);
+  const tan = Math.tan((sp.wing.sw * Math.PI) / 180); const leAt = (x) => sp.wing.y + sp.wing.cr / 2 - x * tan;
+  if (!prop && cls !== 'light' && !/^(B74[^4]|B76[^34]|B77|B78|A30|A31|A34|MD|DC|B71|B72|F\d|K35)/.test(t)) { // winglets or sharklets (the 777, 787 and A340 have raked tips instead)
+    const h = 0.09 * Math.min(1.4, halfSpan); for (const sx of [-1, 1]) { const wl = extrude(finShape({ y: leAt(halfSpan) - sp.wing.ct * 0.4, cr: sp.wing.ct * 0.8, ct: sp.wing.ct * 0.35, h, sw: 40 }, sp.wing.z), 0.008); wl.applyMatrix4(new THREE.Matrix4().set(0, 0, 1, sx * halfSpan - 0.004, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1)); add(wl, tail); }
+  }
+  const finBase = sp.r * 0.55; const fin = extrude(finShape(sp.fin, finBase), 0.02);
+  fin.applyMatrix4(new THREE.Matrix4().set(0, 0, 1, -0.01, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1)); add(fin, tail);
+  const stabZ = sp.stab.top ? finBase + sp.fin.h - 0.01 : sp.r * 0.3;
+  const stabY = sp.stab.top ? sp.fin.y - sp.fin.h * Math.tan((sp.fin.sw * Math.PI) / 180) - 0.02 : sp.stab.y;
+  const st = extrude(wingShape({ ...sp.stab, y: stabY }), 0.014); st.translate(0, 0, stabZ - 0.007); add(st, sp.stab.top ? tail : WING);
+  // engines: radius from the class model, scaled for very large twins
+  const re = (sp.eng?.[0]?.[3] ?? 0.05) * (n === 2 && cls === 'heavy' ? 1.25 : n >= 4 ? 0.85 : 1); const len = sp.eng?.[0]?.[4] ?? 0.2;
+  const nacelle = (x, y, z, r = re, l = len) => { const e = new THREE.CylinderGeometry(r * 0.9, r, l, 12, 1, false); e.translate(x, y, z); add(e, eng); };
+  const propDisc = (x, y, z, r) => { const p = new THREE.CylinderGeometry(r, r, 0.004, 24); p.translate(x, y, z); add(p, '#9aa3ad'); }; // the blur of the turning blades
+  if (cls === 'light' && n === 1) propDisc(0, 1.005, 0, sp.prop ?? 0.23);
+  else if (aft) {
+    const rear = Math.min(n, triFin ? 2 : n); const x = sp.r + re * 1.15;
+    for (const sx of rear === 1 ? [0] : [-1, 1]) nacelle(sx * x, -0.5, sp.r * 0.35);
+    if (n === 3) nacelle(0, -0.62, sp.r + re * 0.6); // the 727's and Falcon's third engine on top of the tail
+  } else {
+    const wingEng = triFin ? 2 : n; const per = Math.max(1, Math.round(wingEng / 2));
+    const xs = per === 1 ? [0.34 * halfSpan] : [0.27 * halfSpan, 0.55 * halfSpan];
+    for (const x0 of xs) for (const sx of [-1, 1]) {
+      const x = sx * (prop ? x0 * 0.85 : x0); const y = leAt(Math.abs(x)) + (prop ? 0.02 : len * 0.32);
+      const z = high ? sp.wing.z - re * (prop ? 0.2 : 0.9) : sp.wing.z - re * (prop ? 0.3 : 1.15);
+      nacelle(x, y, z, prop ? re * 0.75 : re, prop ? len * 1.2 : len);
+      if (!prop && !high) { const py = new THREE.BoxGeometry(0.012, len * 0.75, Math.max(0.01, sp.wing.z - z)); py.translate(x, y - len * 0.1, (sp.wing.z + z) / 2 + re * 0.4); add(py, WING); } // the pylon holding it under the wing
+      if (prop) propDisc(x, y + len * 0.6 + 0.01, z, Math.min(0.14, halfSpan * 0.13));
+    }
+    if (triFin) nacelle(0, sp.fin.y + 0.02, finBase + re * 0.9, re * 0.9, len * 1.1);
+  }
+  const m = { geometry: merge(g, col), L, S, H: C.H * (L / C.L), cls, generic: false, livery: !!TAILS[airline], n, aft, high, tTail, prop, triFin };
+  m.geometry.computeBoundingBox();
+  cache.set(key, m); return m;
+}
