@@ -8,6 +8,8 @@ import { Globe, THREE } from '../vendor/vendor.min.mjs';
 import { LAYERS, GROUPS, layerById, worldMonitorData, plateLabel } from './layers.js';
 import { quakeClose } from './quakedetail.js';
 import { cityClose } from './citydetail.js';
+import { eventClose } from './eventdetail.js';
+import { satClose } from './satdetail.js';
 import { countryHtml, countryFill, countryClose, cd as openCountry } from './countrydetail.js';
 import { getFeed, getLocal } from './feeds.js';
 import * as astro from './astro.js';
@@ -814,6 +816,8 @@ function detailsBack() { if (detailsHist.length < 2) return; detailsHist.pop(); 
 // An open earthquake draws its shaking, waves and aftershocks; take them away when another card replaces it.
 function leaveQuake(prev, next) {
   if (prev?.layer === 'cities' && next?.d !== prev.d) { cityClose(); setTimeout(() => refreshLayer('cities', { soft: true }), 0); } // the city page's circle (citydetail.js)
+  if ((prev?.layer === 'stations' || prev?.layer === 'satellites') && next?.d?.norad !== prev.d?.norad) { satClose(); setTimeout(() => refreshLayer(prev.layer, { soft: true }), 0); } // the satellite page's footprint and next orbit (satdetail.js)
+  if (prev?.layer === 'events' && next?.d !== prev.d) { eventClose(); setTimeout(() => refreshLayer('events', { soft: true }), 0); } // the event page's rings, track and arrow (eventdetail.js)
   if (prev?.layer !== 'quakes' || (next?.layer === 'quakes' && next.d?.id === prev.d?.id)) return;
   quakeClose(); if (next?.layer !== 'quakes') setTimeout(() => refreshLayer('quakes', { soft: true }), 0);
 }

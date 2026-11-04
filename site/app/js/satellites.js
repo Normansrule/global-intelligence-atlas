@@ -81,6 +81,8 @@ export function propagate(sat, date) {
 }
 
 const T0 = Date.now();
+/** The moment to propagate a satellite to for the wall-clock time `now` (snapshot elements run from their own epoch). */
+export const satTime = (sat, now, snapshot) => timeFor(sat, now, snapshot, T0);
 /** Propagate a whole group to a date → particle list. */
 export function positions(groupData, now = new Date()) {
   const out = [];

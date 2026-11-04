@@ -194,6 +194,8 @@ France 24. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, fr
 
 Freeway Bureau, Ministry of Transportation and Communications. (n.d.). *Road surveillance cameras (CCTV): Static locations and video stream addresses* [Data set]. Government Open Data Platform (Taiwan). https://data.gov.tw/dataset/173813
 
+Freire, S., Florczyk, A. J., Pesaresi, M., & Sliuzas, R. (2019). An improved global analysis of population distribution in proximity to active volcanoes, 1975–2015. *ISPRS International Journal of Geo-Information, 8*(8), 341. https://doi.org/10.3390/ijgi8080341
+
 Gardner, J. K., & Knopoff, L. (1974). Is the sequence of earthquakes in Southern California, with aftershocks removed, Poissonian? *Bulletin of the Seismological Society of America, 64*(5), 1363–1367. https://doi.org/10.1785/BSSA0640051363
 
 Gaulier, G., & Zignago, S. (2010). *BACI: International trade database at the product-level. The 1994–2007 version* (CEPII Working Paper No. 2010-23). CEPII. https://www.cepii.fr/CEPII/en/publications/wp/abstract.asp?NoDoc=2726
@@ -262,7 +264,9 @@ Kalman, R. E. (1960). A new approach to linear filtering and prediction problems
 
 Kandadai, S. (n.d.). *satellite.js* [Computer software]. GitHub. https://github.com/shashwatak/satellite-js
 
-Kelso, T. S. (n.d.). *CelesTrak: Current GP element sets* [Data set]. CelesTrak. Retrieved October 14, 2026, from https://celestrak.org/NORAD/elements/
+Kelso, T. S. (n.d.-a). *CelesTrak: Current GP element sets* [Data set]. CelesTrak. Retrieved October 14, 2026, from https://celestrak.org/NORAD/elements/
+
+Kelso, T. S. (n.d.-b). *CelesTrak: Satellite catalog (SATCAT)* [Data set]. CelesTrak. Retrieved October 14, 2026, from https://celestrak.org/satcat/
 
 Kennett, B. L. N., & Engdahl, E. R. (1991). Traveltimes for global earthquake location and phase identification. *Geophysical Journal International, 105*(2), 429–465. https://doi.org/10.1111/j.1365-246X.1991.tb06724.x
 
@@ -309,6 +313,8 @@ Ministry of Land, Infrastructure, Transport and Tourism. (n.d.). *River disaster
 Ministère des Transports et de la Mobilité durable du Québec. (n.d.). *Québec 511: Road cameras* [Data set]. Données Québec. https://www.donneesquebec.ca/
 
 MITRE Corporation. (n.d.). *CVE Program: CVE Services API* [Data set]. Retrieved October 14, 2026, from https://www.cve.org
+
+Montenbruck, O., & Gill, E. (2000). *Satellite orbits: Models, methods and applications*. Springer. https://doi.org/10.1007/978-3-642-58351-3
 
 Mozilla. (2025). *PDF.js* (Version 4.10.38) [Computer software]. GitHub. https://github.com/mozilla/pdf.js
 
@@ -445,6 +451,8 @@ RIPE Network Coordination Centre. (n.d.). *RIPEstat Data API* [Data set]. Retrie
 RNZ. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.rnz.co.nz/rss/pacific.xml
 
 RTVE. (n.d.). *Canal 24 Horas (RTVE) live* [Video live stream]. Retrieved October 18, 2026, from https://rtvelivestream.rtve.es/rtvesec/24h/24h_main_dvr.m3u8
+
+Schott, T., Landsea, C., Hafele, G., Lorens, J., Taylor, A., Thurm, H., Ward, B., Willis, M., & Zaleski, W. (2019). *The Saffir-Simpson Hurricane Wind Scale*. National Hurricane Center, National Oceanic and Atmospheric Administration. https://www.nhc.noaa.gov/pdf/sshws.pdf
 
 Schrodt, P. A. (2012). *CAMEO: Conflict and Mediation Event Observations event and actor codebook* (Version 1.1b3). Pennsylvania State University.
 
@@ -597,9 +605,9 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (three.js authors, 2026) | WebGL engine underneath globe.gl; day/night shader. | MIT |
 | (Kandadai, n.d.) | Propagating satellite orbits from TLEs in the browser. | MIT |
 | (U.S. Geological Survey, n.d.-b) | Live earthquakes. | Public domain (U.S. Government) |
-| (National Aeronautics and Space Administration [NASA], n.d.-a) | Wildfires, storms, volcanoes, sea and lake ice, floods. | Public domain (NASA) |
+| (National Aeronautics and Space Administration [NASA], n.d.-a) | Wildfires, storms, volcanoes, sea and lake ice, floods, and the event page: each report's position, time and size or wind. | Public domain (NASA) |
 | (NOAA Space Weather Prediction Center, n.d.-a) | Aurora forecast and geomagnetic activity. | Public domain (NOAA) |
-| (Kelso, n.d.) | Current two-line element sets for satellite groups. | Free for use with attribution |
+| (Kelso, n.d.-a) | Current two-line element sets for satellite groups. | Free for use with attribution |
 | (Asturiano, 2022) | Offline fallback for LEO satellites. | MIT (repo); data from Space-Track.org |
 | (adsb.lol, n.d.) | Live aircraft near the view. | ODbL 1.0 |
 | (OpenSky Network, n.d.-a) | Worldwide aircraft positions (live in the desktop app, every 10 minutes on the website). | Non-commercial research/education |
@@ -684,7 +692,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (0xB10C, 2021) | Bitcoin and Ethereum addresses on the SDN list, checked in the wallet tool. | MIT (code); OFAC data public domain |
 | (Blockstream, n.d.) | Bitcoin address balances and transaction counts. | Free public API |
 | (Blockscout, n.d.) | Ethereum address balances and transaction counts. | Free public API |
-| (Zippenfenig, 2023) | Weather and ground elevation for any clicked point, and the city page: the weather now, the next 24 hours, sunrise, sunset and the Ultraviolet (UV) index. | CC BY 4.0 |
+| (Zippenfenig, 2023) | Weather and ground elevation for any clicked point, and the city and event pages: the weather now, the next 24 hours, sunrise, sunset, the Ultraviolet (UV) index and the wind 5.5 km up that carries volcanic ash. | CC BY 4.0 |
 | (World Meteorological Organization, 2019) | What the weather codes from Open-Meteo mean: thunderstorms (95–99), snow (71–77, 85–86) and the rest, for the clouds, rain and storms layer. | Reference (WMO) |
 | (REST Countries, n.d.) | The country page: official name, capital and its position, population and area (and their rank among all countries), languages, money, time zones, neighbours, driving side, phone code and web suffix. | MPL-2.0 |
 | (World Bank, n.d.) | The country page: income per person, life expectancy, life in towns and cities, internet use, electricity, renewable energy and forest, each against the world with its trend since 1990. | CC BY 4.0 |
@@ -700,6 +708,10 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Gutenberg & Richter, 1956) | Energy released from magnitude (log E = 1.5 M + 4.8). | Journal article |
 | (Aki & Richards, 2002) | Fault normal and slip vectors from strike, dip and rake, used to draw the focal mechanism beachball. | Book |
 | (Båth, 1965) | Båth’s law: the largest aftershock is on average about 1.2 magnitude units smaller than the main shock. | Journal article |
+| (Kelso, n.d.-b) | The satellite page: owner, launch date and site, kind, status and radar size of each object. | Free for use with attribution |
+| (Montenbruck & Gill, 2000) | The satellite page: horizon footprint, sunlight and shadow along the orbit, and position on the orbital ellipse. | Book (cited for method) |
+| (Schott et al., 2019) | The storm page: the steps from tropical depression to category 5 on sustained wind in knots. | Public domain (NOAA) |
+| (Freire et al., 2019) | The volcano page: counting the people within 10, 30 and 100 km of a volcano. | CC BY 4.0 |
 | (Neurath, 1936) | The Isotype rule behind the counted rows and the country page: one figure always stands for the same number, and more means more figures, never bigger ones. | Book |
 | (Bird, 2003) | Scientific basis for the plate boundary model. | Journal article |
 | (NASA Earth Observatory, n.d.) | Day and night Earth textures. | Public domain (NASA) |

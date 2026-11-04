@@ -1069,3 +1069,52 @@ body.in-space #globe { cursor: grab; }
 .cy-aps span { display: grid; } .cy-aps small { color: var(--ink-2); font-size: var(--fs-caption); }
 .notes .cd-line .linkish { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; min-height: 24px; }
 @media (prefers-reduced-motion: reduce) { .cy-day, .cy-wx { animation: none; } }
+/* one natural event in depth (eventdetail.js) */
+.ev-head { display: grid; grid-template-columns: 40px 1fr; gap: 10px; align-items: center; padding: 10px; background: var(--sunk); border-radius: var(--r-ctl); margin: 0 0 8px; animation: unit-in 320ms var(--settle) both; }
+.ev-g { color: var(--tone); line-height: 0; }
+.ev-head > div { display: grid; } .ev-head > div span { font-size: var(--fs-small); color: var(--ink-2); }
+.ev-big { font: 600 26px/1.05 var(--display); font-variant-numeric: tabular-nums; }
+.ev-wx { grid-template-columns: 1fr; }
+.ev-scale { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin: 0 0 8px; }
+.ev-scale span { display: grid; place-items: center; min-height: 24px; font: 600 11px var(--display); color: var(--ink); background: color-mix(in srgb, var(--c) 28%, transparent); border-radius: 2px; }
+.ev-scale span.on { background: var(--c); color: #1d2433; outline: 2px solid var(--ink); outline-offset: 1px; }
+.ev-wind { display: block; width: 100%; height: auto; margin: 0 0 6px; }
+.ev-line { fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linejoin: round; }
+.ev-dot { stroke: var(--ink); stroke-width: .8; }
+.ev-band { font: 600 9px var(--display); fill: var(--ink-2); }
+.ev-tick { font: 400 9.5px var(--body); fill: var(--ink-2); }
+.ev-drift { font-size: var(--fs-small); line-height: 1.5; margin: 0 0 8px; }
+.ev-ring { display: grid; grid-template-columns: 108px 1fr; gap: 2px 8px; align-items: center; margin: 0 0 6px; }
+.ev-ring .cd-people { grid-area: auto; grid-column: 2; grid-row: 1; min-height: 18px; margin: 0; }
+.ev-ring .ev-rl { grid-row: 1 / span 2; align-self: start; padding-top: 2px; }
+.ev-ring small { grid-column: 2; grid-row: 2; color: var(--ink-2); font-size: var(--fs-caption); }
+.ev-rl { font-size: var(--fs-small); }
+.ev .crow { width: 100%; margin: 0 0 8px; }
+@media (prefers-reduced-motion: reduce) { .ev-head { animation: none; } }
+
+/* The satellite page (satdetail.js) */
+.sd-word { font-size: 21px; }
+.sd-live { grid-template-columns: 1fr; }
+.sd-live > div > span { display: block; }
+.sd-live .cy-temp, .sd-pos { font-variant-numeric: tabular-nums; }
+.sd-sun, .sd-shade { display: inline-flex; align-items: center; gap: 4px; }
+.sd-sun { color: var(--warn, #d9a520); } .sd-shade { color: var(--ink-2); }
+.sd-orbit, .sd-ladder { display: block; width: 100%; height: auto; margin: 0 0 6px; }
+.sd-earth { fill: color-mix(in srgb, var(--accent) 35%, var(--sunk)); stroke: var(--accent); stroke-width: 1; }
+.sd-path { fill: none; stroke: #b7a3ff; stroke-width: 1.8; }
+.sd-geo { fill: none; stroke: var(--ink-2); stroke-width: .8; stroke-dasharray: 3 3; opacity: .7; }
+.sd-apse { fill: var(--ink-2); }
+.sd-now { fill: #9fe3ff; stroke: var(--ink); stroke-width: 1.2; animation: sd-blink 2.4s ease-in-out infinite; }
+.sd-axis { stroke: var(--line); stroke-width: 2; stroke-linecap: round; }
+.sd-tick { stroke: var(--ink-2); stroke-width: 1; }
+.sd-me circle { fill: #9fe3ff; stroke: var(--ink); stroke-width: 1.2; }
+.sd-me text { font: 600 11px var(--display); fill: var(--ink); }
+.sd-next { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 2px; }
+.sd-next li { display: grid; grid-template-columns: 74px 1fr; align-items: center; min-height: 26px; font-size: var(--fs-small); border-left: 2px solid #c9b8ff; padding-left: 8px; animation: unit-in 320ms var(--settle) both; }
+.sd-next li:first-child { border-left-color: #9fe3ff; font-weight: 600; }
+.sd-t { color: var(--ink-2); font-size: var(--fs-caption); font-variant-numeric: tabular-nums; }
+.sd-sea { color: var(--ink-2); }
+.sd-rec { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0 0 8px; font-size: var(--fs-small); }
+.sd-rec dt { color: var(--ink-2); } .sd-rec dd { margin: 0; }
+@keyframes sd-blink { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .sd-now, .sd-next li { animation: none; } }

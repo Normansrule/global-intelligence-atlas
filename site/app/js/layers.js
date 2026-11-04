@@ -10,6 +10,8 @@ import { infraData } from './opendata.js';
 import { terminator, subsolarPoint, smallCircle, fmtLat, fmtLng } from './astro.js';
 import { quakeHead, quakeFill, quakeChannels } from './quakedetail.js';
 import { countryOverlay } from './countrydetail.js';
+import { eventHtml, eventFill, eventOverlay } from './eventdetail.js';
+import { satHtml, satFill, satOverlay, purposeOf } from './satdetail.js';
 import { SAT_GROUPS, loadGroup, positions, groundTrack, periodMinutes, orbitalElements, orbitPath } from './satellites.js';
 
 export const GROUPS = [
@@ -109,7 +111,7 @@ export const LAYERS = [
       const j = await getFeed('eonet', 'https://eonet.gsfc.nasa.gov/api/v3/events?status=open&days=45&limit=500');
       return j.events;
     },
-    channels(evs) {
+    channels(evs, ctx) {
       const points = []; const paths = []; const rings = [];
       for (const e of evs) {
         const cat = e.categories?.[0]?.id ?? 'manmade'; const color = EONET_COLORS[cat] ?? '#ddd';
@@ -125,23 +127,28 @@ export const LAYERS = [
           rings.push({ lat: last[0], lng: last[1], color, maxR: 2.2, speed: 1.1, period: 2600 });
         }
       }
-      return { points, paths, rings };
+      const sel = window.gia?.state?.selected; const open = sel?.layer === 'events' ? eventOverlay(ctx, sel) : null; // the open event page (eventdetail.js)
+      return { points, paths, rings, ...(open?.custom?.length ? { custom: open.custom } : {}) };
     },
     describe(e) {
-      const g = e.geometry.at(-1);
+      const g = e.geometry.at(-1); const k = e.categories?.[0]?.id;
       return {
         title: e.title, sub: e.categories?.map((c) => c.title).join(', '),
-        rows: [['Last update', g?.date ? new Date(g.date).toUTCString() : '—'], ['Observations', e.geometry.length],
-          ...(g?.magnitudeValue ? [['Magnitude', `${g.magnitudeValue} ${g.magnitudeUnit ?? ''}`]] : [])],
-        body: e.description || 'Curated by NASA from satellite detections and agency reports.',
+        html: eventHtml(e),
+        rows: [['Last update', g?.date ? new Date(g.date).toUTCString() : '—'], ['Position', g?.type === 'Point' ? `${g.coordinates[1].toFixed(2)}°, ${g.coordinates[0].toFixed(2)}°` : 'an area']],
+        // a volcano's own Wikipedia article gives its photo and story ("Sheveluch Volcano, Russia" → Sheveluch)
+        ...(k === 'volcanoes' ? { wiki: e.title.replace(/\s*volcano\b/i, '').split(',')[0].trim() } : {}),
+        probe: g?.type === 'Point' ? [g.coordinates[1], g.coordinates[0]] : undefined,
+        /** The event page: where and how long, the weather, people near it and what each kind adds (eventdetail.js). */
+        async fill(stillOpen) { const gi = window.gia; await eventFill(e, { stillOpen, data: gi.state.data, countryAt: (a, b) => gi.countryAt(a, b), refresh: () => gi.refreshLayer('events', { soft: true }) }); },
         links: (e.sources ?? []).map((s) => ({ label: `Source: ${s.id}`, url: s.url })),
       };
     },
     learn: {
-      what: 'Open natural events from NASA’s Earth Observatory Natural Event Tracker: wildfires, tropical storms, volcanoes, icebergs, floods and more. An event that moves, such as a storm or an iceberg, draws its track with dashes flowing from its first sighting to its latest, which pulses.',
+      what: 'Open natural events from NASA’s Earth Observatory Natural Event Tracker: wildfires, tropical storms, volcanoes, icebergs, floods and more. An event that moves, such as a storm or an iceberg, draws its track with dashes flowing from its first sighting to its latest, which pulses. Click one for its page: a storm\'s category and wind over its life, a volcano\'s people within 10, 30 and 100 km and where its ash would drift, a wildfire\'s size and fire weather.',
       how: 'EONET links each event to the agencies that report it (InciWeb, GDACS, JTWC, Smithsonian GVP, the U.S. National Ice Center…) and to satellite imagery of the same place and day.',
       try: 'Find a storm track and follow it: most tropical cyclones drift west in the trade winds, then curve poleward and east — the “recurve”.',
-      refs: ['eonet'],
+      refs: ['eonet', 'openmeteo', 'sshws', 'freire2019', 'neurath'],
     },
   },
   {
@@ -218,13 +225,14 @@ export const LAYERS = [
       for (const p of pos) {
         const iss = /ISS \(ZARYA\)|^ISS$/.test(p.name); const css = /TIANHE/.test(p.name);
         if (!iss && pos.length > 12 && !/TIANGONG|CSS/.test(p.name)) continue;
-        const d = { ...p, snapshot: g.snapshot, snapshotEpoch: g.snapshotEpoch };
+        const d = { ...p, group: 'Space stations', snapshot: g.snapshot, snapshotEpoch: g.snapshotEpoch };
         const nm = iss ? 'ISS' : css ? 'Tiangong' : p.name;
         if (iss || css) points.push({ lat: p.lat, lng: p.lng, alt: 0.02, r: iss ? 0.5 : 0.42, color: '#ffd37a', label: nm, tip: tip(nm, `${Math.round(p.altKm)} km up · ${Math.round(p.speedKms * 3600).toLocaleString()} km/h`), ref: { layer: 'stations', d } });
         else labels.push({ lat: p.lat, lng: p.lng, alt: p.alt, text: '', size: 1.1, color: '#ffd37a', dot: 0.35, ref: { layer: 'stations', d } });
         if (iss) paths.push({ pts: groundTrack(p.sat, g.snapshot, 92, 40, ctx.now).map(([a, b]) => [a, b, 0.003]), color: ['rgba(255,211,122,0.05)', 'rgba(255,211,122,0.8)'], stroke: 0.45, tip: tip('ISS ground track', '±92 minutes ≈ one orbit each way'), ref: { layer: 'stations', d } });
       }
-      return { labels, paths, points };
+      const sel = window.gia?.state?.selected; const open = sel?.layer === 'stations' ? satOverlay(ctx, sel) : null; // the open satellite page (satdetail.js)
+      return { labels, paths, points, ...(open?.custom?.length ? { custom: open.custom } : {}) };
     },
     describe(p) {
       const per = periodMinutes(p.sat);
@@ -232,16 +240,19 @@ export const LAYERS = [
         title: p.name, sub: p.snapshot ? `Offline snapshot — positions as if it were ${p.snapshotEpoch?.toISOString().slice(0, 10)}` : 'Live from CelesTrak elements',
         rows: [['Altitude', `${Math.round(p.altKm)} km`], ['Speed', `${p.speedKms?.toFixed(2)} km/s (${Math.round(p.speedKms * 3600).toLocaleString()} km/h)`],
           ['Orbital period', `${per.toFixed(1)} min — ${(1440 / per).toFixed(1)} orbits a day`], ['NORAD id', p.norad], ['Position', `${fmtLat(p.lat)}, ${fmtLng(p.lng)}`]],
+        html: satHtml(p), wiki: purposeOf(p.name, p.group).wiki,
+        /** The satellite page: what it is, live speed and light, its orbit to scale, where next, what it sees, its record (satdetail.js). */
+        async fill(stillOpen) { const gi = window.gia; await satFill(p, { stillOpen, countryAt: (a, b) => gi.countryAt(a, b), refresh: () => gi.refreshLayer('stations', { soft: true }) }); },
         body: 'At this height the station is still inside a thin trace of atmosphere, so drag slowly lowers its orbit and it needs periodic re-boosts. The yellow line is its ground track: the orbit stays fixed in space while Earth turns underneath, so each pass shifts about 23° west.',
         links: [{ label: 'NASA — Spot the Station', url: 'https://spotthestation.nasa.gov' }, wiki(p.name)],
-        actions: [['passes', 'When can I see it from here?'], ['orbit', 'Show its full orbit'], ['footprint', 'What can it see right now?'], ...(/ISS/.test(p.name) ? [['ride', 'Ride along with the ISS']] : [])],
+        actions: [['passes', 'When can I see it from here?'], ['orbit', 'Show its full orbit'], ...(/ISS/.test(p.name) ? [['ride', 'Ride along with the ISS']] : [])],
       };
     },
     learn: {
-      what: 'Crewed stations, propagated live every two seconds, with the ISS ground track for one orbit before and after now.',
+      what: 'Crewed stations, propagated live every two seconds, with the ISS ground track for one orbit before and after now. Click one for its page: live speed and light, its orbit to scale, where it flies next and what it can see.',
       how: 'CelesTrak publishes two-line element sets (TLEs) from U.S. Space Force tracking. The SGP4 model turns them into a position at any moment, entirely in your browser.',
       try: 'Watch the ISS for a minute: it covers roughly 460 km — about the length of California’s Central Valley.',
-      refs: ['celestrak', 'satellitejs', 'nasaorbits'],
+      refs: ['celestrak', 'satcat', 'satellitejs', 'nasaorbits', 'montenbruck2000'],
     },
   },
   {
@@ -262,14 +273,15 @@ export const LAYERS = [
         for (const p of pos) pick.push({ lat: p.lat, lng: p.lng, alt: p.alt, ref: { layer: 'satellites', d: { ...p, group: def.label, snapshot: g.snapshot, snapshotEpoch: g.snapshotEpoch } } });
       }
       if (orbitOf.sat) paths.push({ pts: orbitPath(orbitOf.sat, orbitOf.snapshot, ctx.now), color: 'rgba(183,163,255,0.9)', stroke: 0.5, passive: true });
-      return { particles, pick, paths };
+      const sel = window.gia?.state?.selected; const open = sel?.layer === 'satellites' ? satOverlay(ctx, sel) : null; // the open satellite page (satdetail.js)
+      return { particles, pick, paths, ...(open?.custom?.length ? { custom: open.custom } : {}) };
     },
     describe: (p) => describeSat(p),
     learn: {
-      what: 'Each dot is one satellite, grouped by job. Click a dot for its orbit. Low Earth orbit hugs the planet; GPS sits in a medium-orbit shell about 20,200 km up; geostationary satellites form a ring 35,786 km above the equator.',
+      what: 'Each dot is one satellite, grouped by job. Click a dot for its page: what it does and who owns it, its speed and whether it is in sunlight right now, its orbit drawn to scale, the countries it will fly over next and the people inside its horizon. Low Earth orbit hugs the planet; GPS sits in a medium-orbit shell about 20,200 km up; geostationary satellites form a ring 35,786 km above the equator.',
       how: 'Same pipeline as the stations: CelesTrak TLEs + SGP4, recomputed every three seconds. Zoom out a long way to see the GPS and geostationary shells.',
       try: 'Enable Geostationary and look straight down at the North Pole: the ring is perfectly circular and does not move relative to the ground — the orbital period equals one sidereal day.',
-      refs: ['celestrak', 'satellitejs', 'nasaorbits'],
+      refs: ['celestrak', 'satcat', 'satellitejs', 'nasaorbits', 'montenbruck2000'],
     },
   },
 
@@ -520,13 +532,12 @@ function describeSat(p) {
   const el = orbitalElements(p.sat);
   return {
     title: p.name, sub: `${p.group} · NORAD ${p.norad}${p.snapshot ? ' · offline snapshot' : ''}`,
-    rows: [['Orbit', el.cls], ['Altitude now', `${Math.round(p.altKm).toLocaleString()} km`], ['Speed', `${p.speedKms?.toFixed(2)} km/s`],
-      ['Period', `${el.periodMin.toFixed(1)} min`], ['Perigee · apogee', `${Math.round(el.perigeeKm).toLocaleString()} km · ${Math.round(el.apogeeKm).toLocaleString()} km`],
-      ['Inclination', `${el.incDeg.toFixed(1)}° — ${el.incDeg > 90 ? 'retrograde (sun-synchronous orbits sit near 98°)' : el.incDeg < 5 ? 'equatorial' : 'covers latitudes up to ' + Math.round(Math.min(el.incDeg, 180 - el.incDeg)) + '°'}`],
-      ['Eccentricity', el.ecc.toFixed(4)], ['Now over', `${fmtLat(p.lat)}, ${fmtLng(p.lng)}`]],
-    body: el.cls.startsWith('Geostationary') ? 'It circles once per sidereal day above the equator, so from the ground it seems to hang still — which is why satellite dishes never move.' : el.cls.startsWith('Medium') ? 'Navigation constellations like GPS, Galileo and GLONASS live in medium Earth orbit, high enough that each satellite sees a third of the planet.' : 'In low Earth orbit a satellite laps the planet every hour and a half and sees only a small patch of ground at a time — good for imaging, bad for coverage.',
+    html: satHtml(p), wiki: purposeOf(p.name, p.group).wiki,
+    rows: [['Orbit', el.cls], ['Period', `${el.periodMin.toFixed(1)} min`], ['Inclination', `${el.incDeg.toFixed(1)}°`], ['Eccentricity', el.ecc.toFixed(4)]],
+    /** The satellite page (satdetail.js). */
+    async fill(stillOpen) { const gi = window.gia; await satFill(p, { stillOpen, countryAt: (a, b) => gi.countryAt(a, b), refresh: () => gi.refreshLayer('satellites', { soft: true }) }); },
     links: [{ label: 'CelesTrak record', url: `https://celestrak.org/satcat/table-satcat.php?CATNR=${p.norad}` }, { label: 'N2YO live tracker', url: `https://www.n2yo.com/satellite/?s=${p.norad}` }],
-    actions: [['orbit', 'Show its full orbit'], ['footprint', 'What can it see right now?'], ['passes', 'When can I see it from here?']],
+    actions: [['passes', 'When can I see it from here?'], ['orbit', 'Show its full orbit']],
   };
 }
 function title(s) { return String(s).toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()); }
