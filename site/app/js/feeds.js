@@ -9,6 +9,9 @@
 //   3. Optional proxy (config.json "proxy"): a tiny Cloudflare Worker in proxy/ that adds CORS headers.
 //   4. The live-data snapshot, a branch rebuilt every ~10 minutes by GitHub Actions
 //      (tools/fetch-live.mjs) and served by raw.githubusercontent.com.
+//   5. Offline mode: the last good copy saved on this device (lastknown.js), shown with its age. While the
+//      internet is down this comes first, so nothing waits on timeouts.
+import { remember, recall, noteFailure, noteSuccess, isOffline, setProbe, noteServed, ago, onNet } from './lastknown.js';
 
 const cache = new Map();
 const inflight = new Map();
@@ -24,7 +27,8 @@ function setStatus(id, state, note = '', via = '') {
 // ------------------------------------------------------------------ environment
 export const isDesktop = typeof window !== 'undefined' && !!window.__TAURI_INTERNALS__;
 let config = { proxy: '', liveData: 'auto' };
-const configReady = fetch(new URL('../config.json', import.meta.url)).then((r) => (r.ok ? r.json() : {})).then((c) => { config = { ...config, ...c }; }).catch(() => {});
+const configReady = fetch(new URL('../config.json', import.meta.url)).then((r) => (r.ok ? r.json() : {})).then((c) => { config = { ...config, ...c }; }).catch(() => {})
+  .then(() => { try { const b = liveDataBase(); if (b) setProbe(`${b}status.json`); } catch { /* no page address (Node tests): keep the default probe */ } });
 
 export const feedsReady = configReady;
 export const liveProxy = () => config.proxy;
@@ -60,15 +64,28 @@ async function timed(promise, ms, ctl) {
   let timer; const to = new Promise((_, rej) => { timer = setTimeout(() => { ctl?.abort(); rej(Object.assign(new Error('timed out'), { name: 'AbortError' })); }, ms); });
   try { return await Promise.race([promise, to]); } finally { clearTimeout(timer); }
 }
+// Both routes answer with the raw text and parse it here, so offline mode can keep that same text for free.
+const parsed = (raw, type) => ({ raw, v: type === 'text' ? raw : JSON.parse(raw) });
 async function viaBrowser(url, type, timeout) {
   const ctl = new AbortController();
   const res = await timed(fetch(url, { signal: ctl.signal }), timeout, ctl);
   if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { http: res.status });
-  return type === 'text' ? res.text() : res.json();
+  return parsed(await timed(res.text(), timeout, ctl), type);
 }
 async function viaDesktop(url, type, timeout) {
   const txt = await timed(window.__TAURI_INTERNALS__.invoke('fetch_text', { url, timeoutMs: timeout }), timeout + 2000);
-  return type === 'text' ? txt : JSON.parse(txt);
+  return parsed(txt, type);
+}
+const netError = (err) => err?.name === 'TypeError' || err?.name === 'AbortError' || /fetch_text|network|dns|connect|timed out/i.test(String(err?.message ?? err));
+/** The saved copy for this URL, marked and reported, or null. */
+async function fromSaved(id, url, offline) {
+  const s = await recall(url, id);
+  if (!s) return null;
+  const v = s.v; noteServed(s.t);
+  cache.set(url, { t: Date.now(), v, via: 'saved', savedAt: s.t });
+  setStatus(id, 'ok', `${offline ? 'offline: ' : 'source not answering: '}the copy saved on this device ${ago(s.t)}`, 'saved');
+  if (v && typeof v === 'object') try { Object.defineProperty(v, '__via', { value: 'saved', enumerable: false, configurable: true }); Object.defineProperty(v, '__savedAt', { value: s.t, enumerable: false, configurable: true }); } catch { /* frozen */ }
+  return v;
 }
 
 /**
@@ -81,11 +98,12 @@ async function viaDesktop(url, type, timeout) {
  */
 export async function getFeed(id, url, { type = 'json', ttl = 5 * 60_000, timeout = 15_000, snapshot = '', proxy = true } = {}) {
   const hit = cache.get(url);
-  if (hit && Date.now() - hit.t < ttl) return hit.v;
+  if (hit && Date.now() - hit.t < ttl) { if (hit.savedAt) noteServed(hit.savedAt); return hit.v; }
   if (inflight.has(url)) return inflight.get(url);
   const job = (async () => {
     await configReady;
     setStatus(id, 'loading');
+    if (isOffline()) { const v = await fromSaved(id, url, true); if (v != null) return v; }
     const routes = [];
     if (isDesktop) routes.push(['desktop', () => viaDesktop(url, type, timeout)]);
     routes.push(['direct', () => viaBrowser(url, type, timeout)]);
@@ -97,7 +115,8 @@ export async function getFeed(id, url, { type = 'json', ttl = 5 * 60_000, timeou
       const key = via === 'proxy' ? config.proxy : via === 'snapshot' ? base : via === 'desktop' ? `https://desktop.invalid/${hostOf(url)}` : url;
       if (via !== 'snapshot' && isBlocked(key) && routes.length > 1) continue;
       try {
-        const v = await run();
+        const { v, raw } = await run();
+        noteSuccess(); remember(url, id, raw, type);
         cache.set(url, { t: Date.now(), v, via });
         setStatus(id, 'ok', via === 'snapshot' ? 'from the live-data snapshot (refreshed every few minutes)' : via === 'proxy' ? 'through your proxy' : '', via);
         if (v && typeof v === 'object') try { Object.defineProperty(v, '__via', { value: via, enumerable: false, configurable: true }); } catch { /* frozen */ }
@@ -107,8 +126,11 @@ export async function getFeed(id, url, { type = 'json', ttl = 5 * 60_000, timeou
         // A TypeError from fetch means the browser refused (CORS) or the network failed. Rate limits (429)
         // and server errors also mean "skip this host for a while".
         if (err.name === 'TypeError' || err.http === 429 || err.http >= 500 || err.http === 403) blocked.set(hostOf(key), Date.now());
+        if (netError(err)) noteFailure(hostOf(key)); else noteSuccess(); // an HTTP error still proves the internet is there
       }
     }
+    const saved = await fromSaved(id, url, isOffline());
+    if (saved != null) return saved;
     const note = !lastErr ? 'no route available' : lastErr.name === 'AbortError' ? 'timed out' : lastErr.name === 'TypeError' ? 'blocked by the browser (no CORS) or offline' : lastErr.message;
     setStatus(id, 'error', note);
     throw new Error(`${id}: ${note}`);
@@ -118,6 +140,9 @@ export async function getFeed(id, url, { type = 'json', ttl = 5 * 60_000, timeou
 }
 
 /** How the last successful request for this URL was made ('desktop' | 'direct' | 'proxy' | 'snapshot'). */
+// Back online: forget the answers that came from saved copies, so the next refresh asks the live sources again.
+onNet((down) => { if (!down) { for (const [k, e] of cache) if (e.via === 'saved') cache.delete(k); blocked.clear(); } });
+
 export const viaOf = (url) => cache.get(url)?.via ?? '';
 
 /** Read a file from the live-data branch (no live equivalent), or from another bot branch with `branch`. */
@@ -127,16 +152,20 @@ export async function getSnapshot(id, name, { type = 'json', ttl = 60_000, branc
   if (!base) throw new Error('no live-data snapshot is configured for this address');
   const url = base + name;
   const hit = cache.get(url);
-  if (hit && Date.now() - hit.t < ttl) return hit.v;
+  if (hit && Date.now() - hit.t < ttl) { if (hit.savedAt) noteServed(hit.savedAt); return hit.v; }
   if (inflight.has(url)) return inflight.get(url);
   const job = (async () => {
     try {
       // Desktop: fetch natively too (raw.githubusercontent.com is on the allowlist) so nothing depends on the webview cache.
-      const v = isDesktop ? await viaDesktop(url, type, 25_000) : await viaBrowser(url, type, 25_000) /* the CDN caches 5 minutes and sends ETags, so the browser revalidates cheaply instead of re-downloading */;
+      if (isOffline()) { const s = await fromSaved(id, url, true); if (s != null) return s; }
+      const { v, raw } = isDesktop ? await viaDesktop(url, type, 25_000) : await viaBrowser(url, type, 25_000) /* the CDN caches 5 minutes and sends ETags, so the browser revalidates cheaply instead of re-downloading */;
+      noteSuccess(); remember(url, id, raw, type);
       cache.set(url, { t: Date.now(), v, via: 'snapshot' });
       setStatus(id, 'ok', 'from the live-data snapshot (refreshed every few minutes)', 'snapshot');
       return v;
     } catch (err) {
+      if (netError(err)) noteFailure(hostOf(url)); else if (err.http) noteSuccess();
+      if (err.http !== 404) { const s = await fromSaved(id, url, isOffline()); if (s != null) return s; }
       const note = err.http === 404 ? (branch ? `${name} is not on the ${branch} branch yet (run its workflow once)` : `${name} is not in the live-data branch yet (run the “Live data snapshot” workflow once)`) : err.message;
       setStatus(id, 'error', note);
       throw Object.assign(new Error(note), { http: err.http });

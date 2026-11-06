@@ -1,0 +1,27 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+   Global Intelligence Atlas: offline mode (js/offline.js). Its own file so the main stylesheet stays untouched. */
+.offb { border-color: var(--warn); color: var(--ink); }
+.offb svg { width: 16px; height: 16px; fill: none; stroke: var(--warn); stroke-width: 2; stroke-linecap: round; }
+.offb circle { fill: var(--warn); stroke: none; }
+body.is-offline .live-dot { background: var(--ink-2); box-shadow: none; animation: none; }
+
+.ok h4 { margin-top: 18px; }
+.ok .row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.ok-state { padding: 10px 12px; border-radius: var(--r-panel); border: 1px solid var(--line); background: var(--hover); }
+.ok-state b { display: block; font-family: var(--display, inherit); font-size: var(--fs-lead, 1.05rem); }
+.ok-state[data-down='true'] { border-color: var(--warn); }
+.ok-state[data-down='false'] b { color: var(--ok); }
+.ok-works { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 6px; }
+.ok-works li { padding-left: 18px; position: relative; line-height: 1.35; }
+.ok-works li::before { content: ''; position: absolute; left: 2px; top: 0.45em; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+.ok-works span { color: var(--ink-2); font-size: var(--fs-caption); }
+.ok progress { width: 100%; height: 8px; accent-color: var(--accent); }
+.ok-saved summary { cursor: pointer; padding: 6px 0; }
+.ok-list { list-style: none; padding: 0; margin: 4px 0 8px; max-height: 260px; overflow: auto; }
+.ok-list li { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: var(--fs-small); }
+.ok-list em { font-style: normal; color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ok-here { display: grid; grid-template-columns: minmax(92px, auto) 1fr; gap: 6px 12px; margin: 10px 0; font-size: var(--fs-small); }
+.ok-here dt { color: var(--ink-2); }
+.ok-here dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.ok .linkbtn { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; font: inherit; text-decoration: underline; text-underline-offset: 2px; min-height: 24px; }
+@media (max-width: 420px) { .ok-here { grid-template-columns: 1fr; } .ok-here dt { margin-top: 6px; } }

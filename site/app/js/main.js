@@ -53,6 +53,8 @@ import { smallCircle } from './astro.js';
 import { firesLayer, radarLayer } from './hazards.js';
 import { installHealth } from './health.js';
 import { installWatch } from './watch.js';
+import { installOffline } from './offline.js'; // offline mode
+import { isOffline, servedSince } from './lastknown.js'; // offline mode
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
@@ -386,25 +388,28 @@ function flightsChip(d) {
   const age = d.snapshotAge != null ? ` <small>${d.snapshotAge < 1.5 ? 'just now' : `${Math.round(d.snapshotAge)} min old`}</small>` : ' <small>live</small>';
   el.innerHTML = `${glyphSvg('plane', '#8ecbff', 16)} ${d.ac.length.toLocaleString()}${age}`;
 }
+const agoShort = (t) => { const m = (Date.now() - t) / 60_000; return m < 1.5 ? 'just now' : m < 90 ? `${Math.round(m)} min ago` : m < 2880 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} days ago`; }; // offline mode
 async function refreshLayer(id, { soft = false } = {}) {
   const l = layerById[id];
   if (!l || !state.on.has(id)) return;
   if (soft && state.data[id]) { state.chan[id] = l.channels(state.data[id], ctx()); return scheduleCompose(); }
   const first = !state.data[id];
   if (first) setLStatus(id, 'loading');
+  const t0 = Date.now(); // offline mode: did this load come from copies saved on the device?
   try {
     const data = await l.load(state.opts[id], ctx());
     state.data[id] = data;
     state.chan[id] = l.channels(data, ctx());
     state.loadedAt[id] = Date.now();
     const snap = data && (data.snapshot || Object.values(data).some?.((g) => g?.snapshot));
-    setLStatus(id, 'ok', data?.statusNote ?? (snap ? 'Live source unreachable — showing the bundled snapshot' : ''));
+    const savedAt = isOffline() ? servedSince(t0) : 0; // offline mode
+    setLStatus(id, 'ok', savedAt ? `Offline: showing what this device saved ${agoShort(savedAt)}.` : data?.statusNote ?? (snap ? 'Live source unreachable — showing the bundled snapshot' : ''));
     if (id === 'aircraft') flightsChip(data);
     if (state.pendingSel) setTimeout(() => trySharedSel(id), 0);
   } catch (err) {
     console.warn(err);
     state.loadedAt[id] = Date.now(); // back off until the layer's next refresh
-    setLStatus(id, 'error', err.help ?? `Could not load: ${err.message}. The source may be down or blocked by your network; try again later.`);
+    setLStatus(id, 'error', isOffline() ? 'Offline, and this device has no saved copy of this layer yet (or it is too old to be right). It fills in when the internet is back.' /* offline mode */ : err.help ?? `Could not load: ${err.message}. The source may be down or blocked by your network; try again later.`);
   }
   compose();
 }
@@ -1398,7 +1403,7 @@ async function geocode(text) {
     }).join('')}`);
     const p = r[0]; const bb = p.boundingbox.map(Number);
     fly(Number(p.lat), Number(p.lon), Math.max(0.002, Math.min(2.5, Math.max(bb[1] - bb[0], bb[3] - bb[2]) / 40)));
-  } catch { openNotes('Search', '<p class="err">OpenStreetMap search did not respond. Try again in a moment.</p>'); }
+  } catch { openNotes('Search', isOffline() ? '<p>Offline: searching the whole map needs the internet. Places, airports, ports and layers bundled with the atlas are still found as you type.</p>' /* offline mode */ : '<p class="err">OpenStreetMap search did not respond. Try again in a moment.</p>'); }
 }
 function fly(lat, lng, altitude, pin = true) {
   globe.pointOfView({ lat, lng, altitude }, reduceMotion ? 0 : 2200);
@@ -1672,6 +1677,7 @@ $('#gibs-date-input').addEventListener('change', (e) => { state.gibsDate = e.tar
 // ------------------------------------------------------------------ plug-in layers (flights, cameras, places)
 const api = { factsHtml: (r) => factsHtml(r), now: () => clock.date(), view: () => viewOf(state.pov), particleBudget: () => ({ High: 6000, Balanced: 3500, Fast: 1500 }[perf.q.label] ?? 4000), clearTool: () => clearTool(), setPins: (p) => setPins(p), compose: () => { compose.forceMarkers = true; compose(); }, closeNotes: () => closeNotes(), LAYERS, pulse: (a, b, c) => pulse(a, b, c), flash: (a, b, c) => flash(a, b, c), globe, state, esc, $, reduceMotion, openNotes, isOpen, refreshLayer, fly, followTo, setBase, wmo: (c) => WMO[c] ?? '—', select, toast: (m) => toast(m), toggleLayer: (id, on) => toggleLayer(id, on), openWall: () => openWall(api), placeName: (a, b) => placeName(a, b), isDesktop, repoUrl: () => sourceRepoUrl() };
 const health = installHealth(api); const watch = installWatch(api);
+const offline = installOffline(api); // offline mode: the chip, the Offline kit, refresh when the internet is back
 {
   const add = (layer, afterId) => { const i = LAYERS.findIndex((l) => l.id === afterId); LAYERS.splice(i + 1, 0, layer); layerById[layer.id] = layer; };
   const added = [];

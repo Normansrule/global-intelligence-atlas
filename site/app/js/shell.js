@@ -72,6 +72,7 @@ export function installShell(x) {
       <div class="toolgrid">
         <button class="tool" data-watch="open">${g('alert', '#e3b55b')}<b>Watch areas</b><small>Get notified about quakes, alerts, emergencies and fires in places you choose.</small></button>
         <button class="tool" data-health="open">${g('server', '#7ed6c4')}<b>Data health</b><small>Is every source working? Last update, counts and errors.</small></button>
+        <button class="tool" data-offline="open">${g('server', '#e3b55b')}<b>Offline kit</b><small>What works with no internet, save it all, where am I.</small></button>
       </div>
       <h4>Flights and space</h4>
       <div class="toolgrid">

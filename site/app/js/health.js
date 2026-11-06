@@ -17,7 +17,7 @@ const ago = (t) => {
 const LIVE_FEEDS = { flights: 'Flights (OpenSky Network or ADS-B exchanges)', gdacs: 'Disaster alerts (GDACS)', launches: 'Rocket launches (The Space Devs)', tle: 'Satellite orbits (CelesTrak)', news: 'Places in the news (GDELT)', fires: 'Fire hotspots (NASA FIRMS)', ships: 'Ships worldwide (AISStream)' };
 // How old each live-data feed may be before it counts as stale (minutes). Slow feeds are refreshed less often.
 const MAX_AGE = { flights: 15, gdacs: 30, launches: 180, tle: 360, news: 90, fires: 120, ships: 20 };
-const VIA = { desktop: 'desktop app', direct: 'direct', proxy: 'your proxy', snapshot: 'live-data snapshot' };
+const VIA = { desktop: 'desktop app', direct: 'direct', proxy: 'your proxy', snapshot: 'live-data snapshot', saved: 'the copy saved on this device (offline mode)' };
 
 export function installHealth(api) {
   let open = false; let timer = null; let last = { snap: null, adb: null, cams: null, err: {} };
