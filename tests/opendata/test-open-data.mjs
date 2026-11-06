@@ -7,7 +7,7 @@ import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { wktPoint, nuclearRows, wpiPort, wpiRecords, portRows, cableRows } from '../../tools/fetch-open-data.mjs';
+import { wktPoint, nuclearRows, wpiPort, wpiRecords, portRows, cableRows, WPI_FLAGS } from '../../tools/fetch-open-data.mjs';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 let pass = 0; let n = 0;
 const check = (name, ok, info = '') => { n++; if (ok) pass++; console.log(`${ok ? 'PASS' : 'FAIL'} ${name}`, ok ? '' : JSON.stringify(info).slice(0, 600)); };
@@ -39,6 +39,18 @@ const wpiCsv = '"World Port Index Number","Region Name","Main Port Name","Countr
 const pj = portRows(wpiRecords(wpiJson)); const pc = portRows(wpiRecords(wpiCsv));
 check('World Port Index JSON: codes expanded, very small harbours and 0,0 left out', pj.length === 1 && pj[0].name === 'Shanghai' && pj[0].size === 'Large' && pj[0].harbourType === 'River natural' && pj[0].channelDepthM === 12.5 && pj[0].locode === 'CN SHA' && pj[0].id === 'wpi-57010', pj);
 check('World Port Index CSV: same records from the download, quoted commas kept, large first', pc.length === 2 && pc[0].name === 'Rotterdam' && pc[0].lon === 4.483 && pc[0].type === 'large harbour' && pc[1].name === 'Small, Port' && pc[1].channelDepthM === null, pc);
+const unl = nuclearRows([{ item: { value: 'http://www.wikidata.org/entity/Q9' }, itemLabel: { value: 'Chooz' }, coord: { value: 'Point(4.79 50.09)' }, countryLabel: { value: 'France' }, operatorLabel: { value: 'Q274591' } }]);
+check('an operator with no English label is left out, not shown as its Wikidata id', unl[0].operator === 'France' && !JSON.stringify(unl).includes('Q274591'), unl);
+// v2.13: the rest of the record for the port page, from a real World Port Index record (Jurong Island, Singapore)
+const jurong = { portNumber: 50017, portName: 'Jurong Island', regionName: 'SINGAPORE', countryCode: 'SG', countryName: 'Singapore', publicationNumber: 'Sailing Directions Pub. 174 (Enroute) - Strait of Malacca and Sumatera', chartNumber: '71253', navArea: 'XI', harborSize: 'L', harborType: 'CN', shelter: 'G', erTide: 'U', erSwell: 'U', erIce: 'U', erOther: 'Y', overheadLimits: 'U', chDepth: '14', anDepth: '9', cpDepth: '17', otDepth: '17', tide: 1, maxVesselLength: null, maxVesselBeam: null, maxVesselDraft: null, turningArea: 'Y', firstPortOfEntry: 'Y', ptCompulsory: 'Y', tugsAssist: 'Y', loWharves: 'Y', crFloating: 'Y', lifts100: 'Y', lifts50: 'Y', lifts0: 'Y', suFuel: 'Y', repairCode: 'A', drydock: 'L', railway: 'S', harborUse: 'UNK', ukcMgmtSystem: 'U', unloCode: 'SG JUR', dodWaterBody: 'Strait of Malacca; Indian Ocean', alternateName: null, entranceWidth: null, ycoord: 1.283333, xcoord: 103.733333 };
+const jp = wpiPort(jurong);
+check('the port page record: depths, shelter, repairs, dry dock and charts decoded; unknowns left null', jp.anchorageDepthM === 9 && jp.oilTerminalDepthM === 17 && jp.tideM === 1 && jp.shelter === 'Good' && jp.repairs === 'Major' && jp.drydock === 'Large' && jp.railway === 'Small' && jp.use === null && jp.ukc === null && jp.alt === null && jp.navArea === 'XI' && jp.chart === '71253' && jp.cc === 'SG' && jp.region === 'SINGAPORE', jp);
+check('the yes / no answers packed one letter each, in WPI_FLAGS order', jp.yn.length === WPI_FLAGS.length && jp.yn[WPI_FLAGS.findIndex(([k]) => k === 'erOther')] === 'Y' && jp.yn[WPI_FLAGS.findIndex(([k]) => k === 'ptCompulsory')] === 'Y' && jp.yn[WPI_FLAGS.findIndex(([k]) => k === 'erIce')] === 'U' && jp.yn[WPI_FLAGS.findIndex(([k]) => k === 'loContainer')] === 'U', jp.yn);
+const pdSrc = readFileSync(join(ROOT, 'site', 'app', 'js', 'portdetail.js'), 'utf8');
+const pdKeys = [...pdSrc.slice(pdSrc.indexOf('export const PORT_FLAGS'), pdSrc.indexOf('];', pdSrc.indexOf('export const PORT_FLAGS'))).matchAll(/\['(\w+)', '/g)].map((m) => m[1]);
+check('the port page reads the answers in the same order (portdetail.js PORT_FLAGS)', pdKeys.join() === WPI_FLAGS.map(([k]) => k).join(), [pdKeys.length, WPI_FLAGS.length]);
+const csvRow = wpiPort({ 'Main Port Name': 'X', 'Latitude': '1', 'Longitude': '2', 'Harbor Size': 'Large', 'Shelter Afforded': 'Excellent', 'Pilotage - Compulsory': 'Yes', 'Repairs': 'Limited', 'Tidal Range (m)': '3.2' });
+check('the CSV download gives the same answers from its column names', csvRow.shelter === 'Excellent' && csvRow.repairs === 'Limited' && csvRow.tideM === 3.2 && csvRow.yn[WPI_FLAGS.findIndex(([k]) => k === 'ptCompulsory')] === 'Y', csvRow);
 check('a port record without a name or position is refused', wpiPort({ portName: '', ycoord: 1, xcoord: 1 }) === null && wpiPort({ portName: 'X', ycoord: 'n/a', xcoord: 1 }) === null);
 
 const geo = { type: 'FeatureCollection', features: [

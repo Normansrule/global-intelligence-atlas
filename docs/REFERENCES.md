@@ -24,6 +24,8 @@ africanews. (n.d.). *Africanews live* [Video live stream]. YouTube. https://www.
 
 Africanews. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.africanews.com/feed/rss
 
+Agrawal, G. P. (2010). *Fiber-optic communication systems* (4th ed.). Wiley. https://doi.org/10.1002/9780470918524
+
 Ahlenius, H. (2014). *Tectonic plates: PB2002 plate boundaries in GeoJSON* [Data set]. GitHub. https://github.com/fraxen/tectonicplates
 
 Airbus. (n.d.). *A320 family and Airbus helicopters: Aircraft dimensions* [Manufacturer specifications]. https://www.airbus.com
@@ -144,6 +146,8 @@ Croft, B. (2023). *LLM visualization* [Computer software]. GitHub. https://githu
 
 Cross, D. (2023). *Astronomy Engine* (Version 2.1.19) [Computer software]. GitHub. https://github.com/cosinekitty/astronomy
 
+Curtis, H. D. (2020). *Orbital mechanics for engineering students* (4th ed.). Butterworth-Heinemann.
+
 Cybersecurity and Infrastructure Security Agency. (n.d.). *Known exploited vulnerabilities catalog* [Data set]. Retrieved October 14, 2026, from https://www.cisa.gov/known-exploited-vulnerabilities-catalog
 
 DavidHDev. (n.d.). *React Bits* [Computer software]. GitHub. https://github.com/DavidHDev/react-bits
@@ -165,6 +169,8 @@ DW News. (n.d.). *DW News live* [Video live stream]. YouTube. https://www.youtub
 El Hattab, H. (n.d.). *reveal.js* [Computer software]. GitHub. https://github.com/hakimel/reveal.js
 
 Electronic Frontier Foundation. (n.d.). *Automated license plate readers (ALPRs)*. Street-Level Surveillance. https://sls.eff.org/technologies/automated-license-plate-readers-alprs
+
+Ember. (2024). *Global electricity review 2024*. https://ember-energy.org/latest-insights/global-electricity-review-2024/
 
 Embraer. (n.d.). *E175: Specifications* [Manufacturer specifications]. https://www.embraercommercialaviation.com
 
@@ -408,6 +414,8 @@ Olive, X. (2019). traffic, a toolbox for processing and analysing air traffic da
 
 Ontario Ministry of Transportation. (n.d.). *511 Ontario: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511on.ca/
 
+Open-Meteo. (n.d.). *Marine weather API* [Computer software]. Retrieved November 4, 2026, from https://open-meteo.com/en/docs/marine-weather-api
+
 OpenLayers contributors. (n.d.). *OpenLayers* [Computer software]. GitHub. https://github.com/openlayers/openlayers
 
 OpenSky Network. (n.d.-a). *OpenSky Network: Live state vectors* [Data set]. Retrieved October 14, 2026, from https://opensky-network.org
@@ -451,6 +459,8 @@ RIPE Network Coordination Centre. (n.d.). *RIPEstat Data API* [Data set]. Retrie
 RNZ. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.rnz.co.nz/rss/pacific.xml
 
 RTVE. (n.d.). *Canal 24 Horas (RTVE) live* [Video live stream]. Retrieved October 18, 2026, from https://rtvelivestream.rtve.es/rtvesec/24h/24h_main_dvr.m3u8
+
+Schlömer, S., Bruckner, T., Fulton, L., Hertwich, E., McKinnon, A., Perczyk, D., Roy, J., Schaeffer, R., Sims, R., Smith, P., & Wiser, R. (2014). Annex III: Technology-specific cost and performance parameters. In O. Edenhofer et al. (Eds.), *Climate change 2014: Mitigation of climate change. Contribution of Working Group III to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change* (pp. 1329–1356). Cambridge University Press. https://www.ipcc.ch/report/ar5/wg3/
 
 Schott, T., Landsea, C., Hafele, G., Lorens, J., Taylor, A., Thurm, H., Ward, B., Willis, M., & Zaleski, W. (2019). *The Saffir-Simpson Hurricane Wind Scale*. National Hurricane Center, National Oceanic and Atmospheric Administration. https://www.nhc.noaa.gov/pdf/sshws.pdf
 
@@ -516,7 +526,11 @@ U.S. Census Bureau. (n.d.-a). *Gazetteer files* [Data set]. https://www.census.g
 
 U.S. Census Bureau. (n.d.-b). *American Community Survey 5-year estimates: Median value (B25077) and median gross rent (B25064)* [Data set]. Retrieved October 14, 2026, from https://www.census.gov/programs-surveys/acs
 
+U.S. Energy Information Administration. (2024). *Electric power monthly: Tables 6.07.A and 6.07.B, capacity factors for utility scale generators* [Data set]. https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_6_07_a
+
 U.S. Energy Information Administration. (n.d.). *World oil transit chokepoints*. https://www.eia.gov/international/analysis/special-topics/World_Oil_Transit_Chokepoints
+
+U.S. Environmental Protection Agency. (2023). *Greenhouse gas emissions from a typical passenger vehicle*. https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical-passenger-vehicle
 
 U.S. Environmental Protection Agency. (n.d.-a). *ECHO Exporter* [Data set]. Enforcement and Compliance History Online. Retrieved October 14, 2026, from https://echo.epa.gov/tools/data-downloads
 
@@ -533,6 +547,8 @@ U.S. Geological Survey. (n.d.-b). *Earthquake Hazards Program: GeoJSON summary f
 U.S. Geological Survey. (n.d.-c). *Pesticide National Synthesis Project: Estimated annual agricultural pesticide use* [Data set]. Retrieved October 14, 2026, from https://water.usgs.gov/nawqa/pnsp/usage/maps/
 
 U.S. Naval Observatory. (n.d.). *Approximate solar coordinates*. https://aa.usno.navy.mil/faq/sun_approx
+
+U.S. Nuclear Regulatory Commission. (n.d.). *Planning zones*. Retrieved November 4, 2026, from https://www.nrc.gov/about-nrc/emerg-preparedness/about-emerg-preparedness/planning-zones.html
 
 Uber Technologies. (n.d.). *H3: A hexagonal hierarchical geospatial indexing system* [Computer software]. GitHub. https://github.com/uber/h3
 
@@ -678,7 +694,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (PeeringDB, n.d.) | Colocation facilities and internet exchanges. | PeeringDB Acceptable Use Policy (public data) |
 | (linkfanel, n.d.) | Live shortwave receivers you can listen to. | Community directory; receivers run by volunteers |
 | (Fintraffic, n.d.) | Live ships in the Baltic and Finnish road cameras. | CC BY 4.0 — Fintraffic / digitraffic.fi |
-| (The Space Devs, n.d.) | Upcoming and recent rocket launches, pads and webcasts. | Free API (15 requests/hour anonymous); community data |
+| (The Space Devs, n.d.) | Upcoming and recent rocket launches, pads and webcasts, and the launch page: flight timeline, rocket, booster, crew and pad records. | Free API (15 requests/hour anonymous); community data |
 | (Global Disaster Alert and Coordination System, n.d.) | Orange and red disaster alerts. | Free public alerts; cite GDACS |
 | (simplifaisoul, 2026) | Design of the Intelligence toolkit (domain, network, vulnerability, sanctions and wallet lookups), the conflict-zone list in the conflict monitor, and the camera source list (tools/cameras/, v2.11). | MIT |
 | (Google, n.d.) | Domain Name System (DNS) records in the Intelligence toolkit. | Google Public DNS terms of service |
@@ -692,8 +708,15 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (0xB10C, 2021) | Bitcoin and Ethereum addresses on the SDN list, checked in the wallet tool. | MIT (code); OFAC data public domain |
 | (Blockstream, n.d.) | Bitcoin address balances and transaction counts. | Free public API |
 | (Blockscout, n.d.) | Ethereum address balances and transaction counts. | Free public API |
-| (Zippenfenig, 2023) | Weather and ground elevation for any clicked point, and the city and event pages: the weather now, the next 24 hours, sunrise, sunset, the Ultraviolet (UV) index and the wind 5.5 km up that carries volcanic ash. | CC BY 4.0 |
-| (World Meteorological Organization, 2019) | What the weather codes from Open-Meteo mean: thunderstorms (95–99), snow (71–77, 85–86) and the rest, for the clouds, rain and storms layer. | Reference (WMO) |
+| (Zippenfenig, 2023) | Weather and ground elevation for any clicked point, and the city, event and launch pages: the weather now, the next 24 hours, sunrise, sunset, the Ultraviolet (UV) index, the wind 5.5 km up that carries volcanic ash the forecast at a launch pad for the launch hour, and the wind at turbine height and the sunshine at wind and solar farms. | CC BY 4.0 |
+| (Agrawal, 2010) | The cable page: light in silica fibre travels at the speed of light divided by a group index of about 1.468, some 204,000 km/s. | Reference (book) |
+| (U.S. Nuclear Regulatory Commission, n.d.) | The nuclear plant page: the 10-mile (16 km) plume exposure and 50-mile (80 km) ingestion planning zones it counts people within. | Public domain (U.S. Government) |
+| (U.S. Energy Information Administration, 2024) | The power plant page: how hard plants of each kind typically run (their capacity factor), 2023 averages. | Public domain (U.S. Government) |
+| (Schlömer et al., 2014) | The power plant page: life-cycle greenhouse gas of each kind of power, grams of carbon dioxide equivalent per kWh (medians). | IPCC (free to use with attribution) |
+| (U.S. Environmental Protection Agency, 2023) | The power plant page: about 4.6 tonnes of carbon dioxide a year from a typical car, to put a plant’s carbon in cars. | Public domain (U.S. Government) |
+| (Ember, 2024) | The nuclear and power plant pages: world electricity use per person (about 30,000 TWh in 2023 for 8 billion people), to say how many people a plant supplies. | CC BY 4.0 |
+| (Open-Meteo, n.d.) | The port page: waves, swell, sea temperature and ocean current at the harbour now, and the sea level (tide) over yesterday, today and tomorrow, from global wave and ocean models. | CC BY 4.0 |
+| (World Meteorological Organization, 2019) | What the weather codes from Open-Meteo mean: thunderstorms (95–99), snow (71–77, 85–86) and the rest, for the clouds, rain and storms layer; and the words for the sea on the port page, from calm to phenomenal by wave height. | Reference (WMO) |
 | (REST Countries, n.d.) | The country page: official name, capital and its position, population and area (and their rank among all countries), languages, money, time zones, neighbours, driving side, phone code and web suffix. | MPL-2.0 |
 | (World Bank, n.d.) | The country page: income per person, life expectancy, life in towns and cities, internet use, electricity, renewable energy and forest, each against the world with its trend since 1990. | CC BY 4.0 |
 | (Wikimedia Foundation, n.d.-e) | Short encyclopaedia summaries in the country and place cards. | CC BY-SA 4.0 |
@@ -710,6 +733,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Båth, 1965) | Båth’s law: the largest aftershock is on average about 1.2 magnitude units smaller than the main shock. | Journal article |
 | (Kelso, n.d.-b) | The satellite page: owner, launch date and site, kind, status and radar size of each object. | Free for use with attribution |
 | (Montenbruck & Gill, 2000) | The satellite page: horizon footprint, sunlight and shadow along the orbit, and position on the orbital ellipse. | Book (cited for method) |
+| (Curtis, 2020) | The launch page: the heading a rocket leaves on for an orbit tilt (sin of the heading = cos of the tilt ÷ cos of the latitude) and the speed Earth’s spin gives it. | Book (cited for method) |
 | (Schott et al., 2019) | The storm page: the steps from tropical depression to category 5 on sustained wind in knots. | Public domain (NOAA) |
 | (Freire et al., 2019) | The volcano page: counting the people within 10, 30 and 100 km of a volcano. | CC BY 4.0 |
 | (Neurath, 1936) | The Isotype rule behind the counted rows and the country page: one figure always stands for the same number, and more means more figures, never bigger ones. | Book |
@@ -724,7 +748,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Wikimedia Foundation, n.d.-d) | Landmark photos, credited to their authors under the licence each file carries. | Each file under its own free licence (shown with the photo) |
 | (Wikimedia Foundation, n.d.-b) | Landmark figures: when built, height or elevation, area, visitors a year and World Heritage status. | CC0 1.0 (public domain dedication) |
 | (Wikimedia Foundation, n.d.-c) | Nuclear power plants, spaceports, stock exchanges, central banks and critical-mineral mines (open data for those layers). | CC0 1.0 (public domain dedication) |
-| (National Geospatial-Intelligence Agency, n.d.) | Every large, medium and small harbour with depths and limits (open data for Ports). | Public domain (U.S. Government) |
+| (National Geospatial-Intelligence Agency, n.d.) | Every large, medium and small harbour with depths and limits (open data for Ports), and the port page: tide range, shelter, entry limits, pilots and tugs, cargo facilities, cranes and lifts, repairs, supplies, services and charts. | Public domain (U.S. Government) |
 | (United Nations Conference on Trade and Development, n.d.) | Further reading on global shipping. | Reference |
 | (International Atomic Energy Agency, n.d.) | Further reading on nuclear power plants. | Reference |
 | (Kious & Tilling, 1996) | Plate tectonics primer. | Public domain |

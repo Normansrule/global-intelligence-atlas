@@ -18,7 +18,7 @@ with sync_playwright() as p:
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     shader=[]; pg.on('console', lambda m: ('Shader Error' in m.text or 'shader' in m.text.lower() and m.type == 'error') and shader.append(m.text[:300]))
     pg.route('**/*', handler); pg.route('https://trek.nasa.gov/**', trek)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.12');localStorage.setItem('gia-theme','dark')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14');localStorage.setItem('gia-theme','dark')}catch(e){}")
     pg.goto('http://localhost:8765/app/?debug#@20,10,2.4&b=daynight&l=sun,borders,planets', wait_until='commit'); pg.wait_for_timeout(14000)
     pg.wait_for_function('() => gia.cosmos.ready()', timeout=20000)
     m=pg.evaluate("() => gia.cosmos.info('moon')")
@@ -71,7 +71,7 @@ with sync_playwright() as p:
     # A link into space opens there; the day theme keeps the paper background but space is still black
     pg=b.new_page(viewport={'width':1280,'height':800}); errs2=[]; pg.on('pageerror', lambda e: errs2.append(str(e)))
     pg.route('**/*', handler); pg.route('https://trek.nasa.gov/**', trek)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.12');localStorage.setItem('gia-theme','light')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14');localStorage.setItem('gia-theme','light')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@20,10,2.4&b=daynight&l=sun,planets&sp=jupiter', wait_until='commit'); pg.wait_for_timeout(16000)
     j=pg.evaluate("() => ({ focus: gia.cosmos.focus(), stars: gia.cosmos.stars.visible })")
     check('a link with &sp=jupiter opens at Jupiter; the day theme hides the night sky on the globe', j['focus'] == 'jupiter' and j['stars'] is False, j)

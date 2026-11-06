@@ -10,6 +10,12 @@ import { quakeClose } from './quakedetail.js';
 import { cityClose } from './citydetail.js';
 import { eventClose } from './eventdetail.js';
 import { satClose } from './satdetail.js';
+import { launchClose } from './launchdetail.js';
+import { portClose } from './portdetail.js';
+import { cableClose } from './cabledetail.js';
+import { nuclearClose } from './nucleardetail.js';
+import { alertClose } from './alertdetail.js';
+import { powerClose } from './powerdetail.js';
 import { countryHtml, countryFill, countryClose, cd as openCountry } from './countrydetail.js';
 import { getFeed, getLocal } from './feeds.js';
 import * as astro from './astro.js';
@@ -50,7 +56,7 @@ import { installWatch } from './watch.js';
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.12';
+export const VERSION = '2.14';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg, unitSvg } from './icons.js';
@@ -817,6 +823,12 @@ function detailsBack() { if (detailsHist.length < 2) return; detailsHist.pop(); 
 function leaveQuake(prev, next) {
   if (prev?.layer === 'cities' && next?.d !== prev.d) { cityClose(); setTimeout(() => refreshLayer('cities', { soft: true }), 0); } // the city page's circle (citydetail.js)
   if ((prev?.layer === 'stations' || prev?.layer === 'satellites') && next?.d?.norad !== prev.d?.norad) { satClose(); setTimeout(() => refreshLayer(prev.layer, { soft: true }), 0); } // the satellite page's footprint and next orbit (satdetail.js)
+  if (prev?.layer === 'launches' && next?.d?.id !== prev.d?.id) { launchClose(); setTimeout(() => refreshLayer('launches', { soft: true }), 0); } // the launch page's climb, orbit and landing spot (launchdetail.js)
+  if (prev?.layer === 'nuclear' && next?.d !== prev.d) { nuclearClose(); setTimeout(() => refreshLayer('nuclear', { soft: true }), 0); } // the plant page's rings and wind arrow (nucleardetail.js)
+  if (prev?.layer === 'cables' && next?.d !== prev.d) { cableClose(); setTimeout(() => refreshLayer('cables', { soft: true }), 0); } // the cable page's flowing light and landing rings (cabledetail.js)
+  if (prev?.layer === 'ports' && next?.d !== prev.d) { portClose(); setTimeout(() => refreshLayer('ports', { soft: true }), 0); } // the port page's circles (portdetail.js)
+  if (prev?.layer === 'power' && next?.d !== prev.d) { powerClose(); setTimeout(() => refreshLayer('power', { soft: true }), 0); } // the plant page's ring and lines (powerdetail.js)
+  if (prev?.layer === 'alerts' && next?.d !== prev.d) { alertClose(); setTimeout(() => refreshLayer('alerts', { soft: true }), 0); } // the alert page's rings (alertdetail.js)
   if (prev?.layer === 'events' && next?.d !== prev.d) { eventClose(); setTimeout(() => refreshLayer('events', { soft: true }), 0); } // the event page's rings, track and arrow (eventdetail.js)
   if (prev?.layer !== 'quakes' || (next?.layer === 'quakes' && next.d?.id === prev.d?.id)) return;
   quakeClose(); if (next?.layer !== 'quakes') setTimeout(() => refreshLayer('quakes', { soft: true }), 0);
@@ -844,6 +856,18 @@ function zoomRow(at, layer) {
   const [lat, lng] = at; const v = `${(+lat).toFixed(5)},${(+lng).toFixed(5)}`;
   return `<button class="btn" data-zoomto="${v},street" title="Zoom to street level">Street</button><button class="btn ghost" data-zoomto="${v},area" title="Show the area">Area</button>`;
 }
+// Cable pages: a cable that shares a landing opens its own page (cabledetail.js).
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-cable-id]'); if (!b) return;
+  const d = state.data.cables?.find((c) => String(c.id ?? c.name) === b.dataset.cableId); if (d) select({ layer: 'cables', d });
+});
+// Port pages: a ship in port opens its own card (portdetail.js, Ships here now).
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-mmsi]'); if (!b) return;
+  const d = state.data.ships?.find((s) => String(s.mmsi) === b.dataset.mmsi); if (!d) return;
+  select({ layer: 'ships', d });
+  globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: Math.min(Math.max(state.pov.altitude, 0.03), 0.2) }, reduceMotion ? 0 : 1400);
+});
 // Landmark cards: the Nearby chips fly to the next landmark and open its card.
 document.addEventListener('click', (e) => {
   const b = e.target.closest('[data-landmark]'); if (!b) return;
@@ -1113,6 +1137,9 @@ document.addEventListener('click', (e) => {
   }
   const l = e.target.closest('[data-cd-layer]'); if (!l) return;
   const id = l.dataset.cdLayer; if (!state.on.has(id)) { toggleLayer(id, true); renderLayerPanel(); }
+  if (l.dataset.cdEvent) { const ev2 = state.data.events?.find((x) => String(x.id) === l.dataset.cdEvent); const g = ev2?.geometry?.filter((x) => x.type === 'Point').at(-1)?.coordinates; if (ev2) { if (g) globe.pointOfView({ lat: g[1], lng: g[0], altitude: 1.2 }, reduceMotion ? 0 : 1200); select({ layer: 'events', d: ev2 }); } }
+  if (l.dataset.cdPower) { const [la, ln] = l.dataset.cdPower.split(',').map(Number); const p2 = state.data.power?.find((x) => x.lat === la && x.lng === ln); if (p2) { globe.pointOfView({ lat: la, lng: ln, altitude: Math.min(state.pov.altitude ?? 0.4, 0.4) }, reduceMotion ? 0 : 1200); select({ layer: 'power', d: p2 }); } }
+  if (l.dataset.cdAlert) { const a2 = state.data.alerts?.find((x) => x.id === l.dataset.cdAlert); if (a2) { globe.pointOfView({ lat: a2.lat, lng: a2.lng, altitude: 1.2 }, reduceMotion ? 0 : 1200); select({ layer: 'alerts', d: a2 }); } }
   if (l.dataset.cdQuake) { const q = state.data.quakes?.find((x) => x.id === l.dataset.cdQuake); if (q) { const [lng2, lat2] = q.geometry.coordinates; globe.pointOfView({ lat: lat2, lng: lng2, altitude: 0.9 }, reduceMotion ? 0 : 1200); select({ layer: 'quakes', d: q }); } }
 });
 /** The middle of a country's largest piece of land (the centroid of its biggest ring, by area). */
@@ -1649,16 +1676,19 @@ const health = installHealth(api); const watch = installWatch(api);
   const add = (layer, afterId) => { const i = LAYERS.findIndex((l) => l.id === afterId); LAYERS.splice(i + 1, 0, layer); layerById[layer.id] = layer; };
   const added = [];
   for (const r of REGISTRY) { const l = r.make(api, { watch }); if (r.group) l.group = r.group; add(l, r.after); added.push(l); }
-  for (const l of LAYERS) l.fresh = ['landmarks'].includes(l.id); // the “new” badge marks what changed in this version
+  for (const l of LAYERS) l.fresh = ['ports', 'cables'].includes(l.id); // the “new” badge marks what changed in this version
   layerById.aircraft.on = true; layerById.cameras.on = true;
   for (const [i, g] of EXTRA_GROUPS) GROUPS.splice(i, 0, g);
+  // A shared link (&s=1) keeps exactly its layers, even on a visitor's first look at a new version; before v2.13
+  // the layers added here (live flights, ships, cameras…) were dropped from such a link and the defaults put in.
+  const hash = decodeURIComponent(location.hash); const sharedLink = /[&]s=1/.test(hash);
   for (const l of added) {
     state.opts[l.id] = Object.fromEntries((l.options ?? []).map((o) => [o.id, structuredClone(o.value)]));
-    if (l.on && (NEW_VERSION || !location.hash.includes('&l='))) state.on.add(l.id);
+    if (l.on && ((NEW_VERSION && !sharedLink) || !hash.includes('&l='))) state.on.add(l.id);
   }
   // hash may list layers that only exist now
-  const hl = decodeURIComponent(location.hash).match(/[&]l=([\w,]*)/);
-  if (hl && !NEW_VERSION) for (const id of hl[1].split(',')) if (layerById[id]) state.on.add(id);
+  const hl = hash.match(/[&]l=([\w,]*)/);
+  if (hl && (!NEW_VERSION || sharedLink)) for (const id of hl[1].split(',')) if (layerById[id] && !state.excluded?.has(id)) state.on.add(id);
   const q = new URLSearchParams(location.search);
   applyEdition(q.get('edition'));
   feedsReady.then(() => {
@@ -1842,7 +1872,24 @@ if (NEW_VERSION) { if (!state.pendingSel && !state.pendingSpace) setTimeout(what
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>News from around the world, and free live news channels</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>Ships you can see, alerts and power plants in depth</h3>
+    <div class="newlist">
+      <span>${g('ship', '#4aa3ff')}<b>Every ship in 3D:</b> click a ship to see its kind (container ship, tanker, bulk carrier, gas carrier, car carrier, cruise ship and more) built at its real size with its cargo, and what it carries when full. Port pages show each of their ships too.</span>
+      <span>${g('alert', '#ff3b30')}<b>Every disaster alert:</b> what green, orange and red mean, the people within reach, the earthquake or storm's own page, the weather there and other alerts nearby.</span>
+      <span>${g('bolt', '#ffe066')}<b>Every power plant:</b> how hard it runs against plants of its kind, how many people it supplies, its carbon against every other kind of power, its country's mix, and how hard a wind or solar farm is running right now.</span>
+    </div>
+    <h3>Click anything for the whole story</h3>
+    <div class="newlist">
+      <span>${g('anchor', '#9fc3e6')}<b>Every port:</b> the waves, wind and water temperature now, the tide over three days, a cut-away of its depths with which of nine ships can get in, what limits entry, the cargo it handles and the live ships in port.</span>
+      <span>${g('ix', '#7ed6c4')}<b>Every undersea cable:</b> how long light takes to cross it, where it lands, which countries have little else to fall back on, and ships stopped over its route now.</span>
+      <span>${g('plane', '#4aa3ff')}<b>Every plane and ship:</b> flight number, airline, a 3D model of the exact aircraft and its route; a ship's flag, type, size and which canal locks it fits.</span>
+      <span>${g('quake', '#f79d5c')}<b>Every earthquake, storm, volcano and wildfire:</b> shaking, how the fault moved and its waves crossing the globe; a storm's category and track; who lives near a volcano.</span>
+      <span>${g('city', '#e9f2f7')}<b>Every country and city:</b> its people as figures, against the world, the weather and daylight there, how to fly there.</span>
+      <span>${g('rocket', '#ffd37a')}<b>Every satellite and launch:</b> what it is for and where it flies next; a live countdown, the weather at the pad and the flight plan.</span>
+      <span>${g('pin', '#d6a243')}<b>Landmarks, the Moon and planets, eclipses</b>, plane trails, ship wakes, a new look by day and by night, and a home page that tells the story.</span>
+    </div>
+    <p class="sub">Fixed: links someone shared now keep their live flights, ships and cameras on a first visit, and ports now show their cargo-pier and oil-terminal depths, which the World Port Index import had been missing.</p>
+    <h4>From v2.12 — news from around the world, and free live news channels</h4>
     <div class="newlist">
       <span>${g('news', '#ff9ec7')}<b>A News tab in the rail:</b> the latest headlines from 16 news organisations’ own feeds, from every region, with a filter by region or word. Each story opens on the publisher’s site.</span>
       <span>${g('camera', '#7ed6c4')}<b>Live TV:</b> 22 free news channels, from Al Jazeera, DW and NHK World to CBS News, Africanews and ABC Australia, played from each broadcaster’s own official stream. Sound starts muted.</span>

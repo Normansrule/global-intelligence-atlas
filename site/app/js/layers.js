@@ -10,6 +10,10 @@ import { infraData } from './opendata.js';
 import { terminator, subsolarPoint, smallCircle, fmtLat, fmtLng } from './astro.js';
 import { quakeHead, quakeFill, quakeChannels } from './quakedetail.js';
 import { countryOverlay } from './countrydetail.js';
+import { portHtml, portFill, portOverlay } from './portdetail.js';
+import { cableHtml, cableFill, cableOverlay } from './cabledetail.js';
+import { nuclearHtml, nuclearFill, nuclearOverlay } from './nucleardetail.js';
+import { shipMeta } from './networks.js';
 import { eventHtml, eventFill, eventOverlay } from './eventdetail.js';
 import { satHtml, satFill, satOverlay, purposeOf } from './satdetail.js';
 import { SAT_GROUPS, loadGroup, positions, groundTrack, periodMinutes, orbitalElements, orbitPath } from './satellites.js';
@@ -24,6 +28,13 @@ export const GROUPS = [
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const tip = (title, sub = '') => `<div class="tip"><b>${esc(title)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}</div>`;
+/** A country's two-letter code from its name as cable and port lists write it ("Congo, Dem. Rep.", "Côte d'Ivoire"…). */
+const NAME_FIX = { 'congo, dem. rep.': 'democratic republic of the congo', 'congo, rep.': 'republic of the congo', "côte d'ivoire": 'ivory coast', 'korea, rep.': 'south korea', 'egypt, arab rep.': 'egypt', 'iran, islamic rep.': 'iran', 'yemen, rep.': 'yemen', 'russian federation': 'russia', 'viet nam': 'vietnam', 'turkiye': 'turkey', 'türkiye': 'turkey', 'bahamas, the': 'the bahamas', 'gambia, the': 'gambia', 'micronesia, fed. sts.': 'federated states of micronesia', 'united states': 'united states of america', 'tanzania': 'united republic of tanzania', 'czechia': 'czech republic', 'cabo verde': 'cape verde', 'timor-leste': 'east timor', 'brunei darussalam': 'brunei', 'lao pdr': 'laos', 'syrian arab republic': 'syria', 'serbia': 'republic of serbia' };
+function countryCcByName(name) {
+  const k = String(name ?? '').toLowerCase().trim(); const want = NAME_FIX[k] ?? k;
+  const f = window.gia?.state?.data?.borders?.find((x) => String(x.properties.name ?? '').toLowerCase() === want);
+  const cc = f?.properties?.['ISO3166-1-Alpha-2']; return cc && cc !== '-99' ? cc : null;
+}
 const lonLatToLatLng = (pts) => pts.map(([lng, lat]) => [lat, lng]);
 const wiki = (q) => ({ label: 'Wikipedia', url: `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(q)}` });
 
@@ -377,21 +388,25 @@ export const LAYERS = [
         cs._fat = ctx.fatLines(lines.map(([c, pts]) => ({ pts: lonLatToLatLng(pts), color: c.major ? '#6fcab9' : '#3f8a7e', width: c.major ? 1.6 : 1.1, alt: 0.0025 })));
         cs._set = { segs: cs._fat.segs, items: lines.map(([c]) => ({ ref: { layer: 'cables', d: c }, tip: tip(c.name, c.rfsYear ? `in service ${c.rfsYear}` : c.planned ? 'planned' : 'submarine cable') })) };
       }
-      return { custom: [cs._fat], lines: [cs._set] };
+      const sel = window.gia?.state?.selected; const open = sel?.layer === 'cables' ? cableOverlay(ctx, sel) : null; // the open cable page (cabledetail.js)
+      return { custom: [cs._fat, ...(open?.custom ?? [])], lines: [cs._set], ...(open?.paths?.length ? { paths: open.paths } : {}) };
     },
     describe(c) {
+      const gi = window.gia;
       return {
         title: c.name, sub: 'Submarine fibre-optic cable',
+        /** The cable page: its length in light-time, where it lands, which countries hang on it, ships stopped over it (cabledetail.js). */
+        html: cableHtml(c), async fill() { cableFill(c, { data: gi.state.data, countryAt: (a, b) => gi.countryAt(a, b), refresh: () => gi.refreshLayer('cables', { soft: true }), shipMeta, byName: countryCcByName }); },
         rows: [['Ready for service', c.rfsYear ?? (c.planned ? 'planned' : '—')], ...(c.lengthKm ? [['Length', `${c.lengthKm.toLocaleString()} km`]] : []), ['Owners', c.owners?.join(', ') || '—'], ['Landings', (c.landingPoints ?? []).map((l) => `${l.city}, ${l.countryName}`).join(' · ') || '—']],
         body: 'Light in glass fibre travels at about two-thirds of its vacuum speed, roughly 204,000 km/s. Amplifiers every 50–100 km along the seabed keep the signal alive; the cable itself is often no thicker than a garden hose.',
         links: [{ label: 'TeleGeography cable map', url: c.parts ? `https://www.submarinecablemap.com/submarine-cable/${encodeURIComponent(c.id)}` : 'https://www.submarinecablemap.com' }, wiki(`${c.name} cable`)],
       };
     },
     learn: {
-      what: 'Submarine communication cables and their landing points: every cable on TeleGeography’s Submarine Cable Map when open data is on (About → Datasets), or World Monitor’s curated major cables. The moving dashes show the direction the line was drawn, not traffic.',
+      what: 'Submarine communication cables and their landing points: every cable on TeleGeography’s Submarine Cable Map when open data is on (About → Datasets), or World Monitor’s curated major cables. Click a cable for its page: its length in the time light takes to cross it, where it lands, how many other cables each of its countries has to fall back on, the ships stopped over its route now and the cables that share its landings. Light flows along the open cable on the globe.',
       how: 'TeleGeography, a telecommunications research firm, maps every cable system from operators and public filings and shares the map under a non-commercial licence (CC BY-NC-SA 3.0); World Monitor’s routes are simplified to key waypoints. Over 95 % of intercontinental internet traffic crosses cables like these — not satellites.',
       try: 'Use Measure between New York and London, then read the “light in fibre” line: that is the physical floor on transatlantic latency.',
-      refs: ['worldmonitor', 'telegeography'],
+      refs: ['worldmonitor', 'telegeography', 'agrawal2010'],
     },
   },
   {
@@ -456,21 +471,23 @@ export const LAYERS = [
   {
     id: 'ports', pin: 'anchor', group: 'infra', label: 'Ports', swatch: '#9fc3e6', on: false, sources: ['worldmonitor', 'ngawpi', 'opendata'],
     async load() { return infraData('ports', async () => (await worldMonitorData()).ports); },
-    channels(ps) {
+    channels(ps, ctx) {
       const r = { Large: 0.28, Medium: 0.19, Small: 0.12 };
-      return { points: ps.map((p) => point('ports', p, p.lat, p.lon, p.size === 'Small' ? 'rgba(159,195,230,0.6)' : '#9fc3e6', r[p.size] ?? 0.28, p.size ? (p.size === 'Large' ? 0.012 : 0.006) : 0.015, tip(p.name, p.wpi ? `${p.size ?? ''} harbour · ${p.country}` : `${p.type} port${p.rank ? ` · #${p.rank}` : ''}`))) };
+      const sel = window.gia?.state?.selected; const open = ctx && sel?.layer === 'ports' ? portOverlay(ctx, sel) : null; // the open port page (portdetail.js)
+      return { points: ps.map((p) => point('ports', p, p.lat, p.lon, p.size === 'Small' ? 'rgba(159,195,230,0.6)' : '#9fc3e6', r[p.size] ?? 0.28, p.size ? (p.size === 'Large' ? 0.012 : 0.006) : 0.015, tip(p.name, p.wpi ? `${p.size ?? ''} harbour · ${p.country}` : `${p.type} port${p.rank ? ` · #${p.rank}` : ''}`))), ...(open?.custom?.length ? { custom: open.custom } : {}) };
     },
     describe(p) {
+      const m = (x) => (x ? `${x} m` : '—'); const gi = window.gia;
+      /** The port page: the sea and tide now, which ships fit, getting in, cargo, ships in port, getting there (portdetail.js). */
+      const page = { html: portHtml(p), async fill(stillOpen) { await portFill(p, { stillOpen, data: gi.state.data, countryAt: (a, b) => gi.countryAt(a, b), refresh: () => gi.refreshLayer('ports', { soft: true }), shipMeta }); } };
       if (p.wpi) {
-        const m = (x) => (x ? `${x} m` : '—');
-        return { wiki: p.name, probe: [p.lat, p.lon], title: p.name, sub: `${p.country} · ${p.type}`,
+        return { wiki: p.name, probe: [p.lat, p.lon], title: p.name, sub: `${p.country} · ${p.type}`, ...page,
           rows: [['Harbour type', p.harbourType ?? '—'], ['UN/LOCODE', p.locode ?? '—'], ['Channel depth', m(p.channelDepthM)], ['Cargo pier depth', m(p.cargoPierDepthM)], ['Oil terminal depth', m(p.oilTerminalDepthM)], ['Liquefied natural gas terminal depth', m(p.lngTerminalDepthM)], ['Longest ship', m(p.maxVesselLengthM)], ['Water body', p.water ?? '—'], ['World Port Index number', p.wpi]],
-          body: 'Depths are the controlling depths published in the World Port Index; the deepest ships (large crude carriers draw over 20 m) can use only a few hundred ports.',
           links: [{ label: 'NGA World Port Index', url: 'https://msi.nga.mil/Publications/WPI' }, wiki(p.name)] };
       }
-      return { wiki: p.name, probe: [p.lat, p.lon], title: p.name, sub: `${p.country} · ${p.type} port`, rows: [['Rank', p.rank ?? '—']], body: p.note, links: [wiki(p.name)] };
+      return { wiki: p.name, probe: [p.lat, p.lon], title: p.name, sub: `${p.country} · ${p.type} port`, ...page, rows: [['Rank', p.rank ?? '—']], links: [wiki(p.name)] };
     },
-    learn: { what: 'Ports of the world: with open data on, every large, medium and small harbour in the U.S. National Geospatial-Intelligence Agency’s World Port Index, sized by harbour size, with depths and the longest ship each can take; otherwise World Monitor’s list of the biggest container, oil, LNG and bulk ports.', how: 'The World Port Index (Pub. 150) is a U.S. Government publication for mariners, in the public domain. World Monitor’s list was curated from port-authority statistics.', try: 'Notice how many large harbours sit on one stretch of coast between Shanghai and Singapore, then click one to compare its channel depth with a supertanker’s draught.', refs: ['ngawpi', 'worldmonitor'] },
+    learn: { what: 'Ports of the world: with open data on, every large, medium and small harbour in the U.S. National Geospatial-Intelligence Agency’s World Port Index, sized by harbour size; otherwise World Monitor’s list of the biggest container, oil, LNG and bulk ports. Click one for its port page: the waves, wind and water temperature now, the tide over three days with the next high and low water, a cut-away of its depths showing which of nine typical ships can get in, what limits entry, the cargo it handles and its heaviest lift, the live ships in port now and the nearest airports.', how: 'The World Port Index (Pub. 150) is a U.S. Government publication for mariners, in the public domain. World Monitor’s list was curated from port-authority statistics.', try: 'Notice how many large harbours sit on one stretch of coast between Shanghai and Singapore, then click one and pick the very large crude carrier: only a few hundred ports in the world are deep enough for it.', refs: ['ngawpi', 'openmeteomarine', 'wmocodes', 'worldmonitor'] },
   },
   {
     id: 'datacenters', pin: 'chip', group: 'infra', label: 'AI data centres', swatch: '#b7a3ff', on: false, sources: ['worldmonitor'],
@@ -482,9 +499,15 @@ export const LAYERS = [
   {
     id: 'nuclear', pin: 'nuclear', group: 'infra', label: 'Nuclear sites', swatch: '#9ff0c9', on: false, sources: ['worldmonitor', 'wikidata', 'iaea', 'opendata'],
     async load() { return infraData('nuclear', async () => (await worldMonitorData()).nuclear); },
-    channels(ns) { return { points: ns.map((n) => point('nuclear', n, n.lat, n.lon, n.status === 'active' ? '#9ff0c9' : 'rgba(159,240,201,0.4)', 0.16, 0.008, tip(n.name, `${n.type} · ${n.status}`))) }; },
-    describe(n) { return { wiki: n.name, title: n.name, sub: `${n.type} · ${n.status}`, rows: [['Operator / country', n.operator ?? '—'], ...(n.wikidata ? [['Country', n.country ?? '—'], ['Capacity', n.capacityMW ? `${n.capacityMW.toLocaleString()} MW` : '—'], ['In service', n.opened ? `${n.opened}${n.closed ? `–${n.closed}` : ''}` : '—']] : [])], links: [{ label: 'IAEA PRIS', url: 'https://pris.iaea.org' }, ...(n.wikidata ? [{ label: 'Wikidata', url: n.wikidata }] : []), wiki(n.name)] }; },
-    learn: { what: 'Nuclear power plants: from Wikidata when open data is on (with capacity and years in service), otherwise World Monitor’s catalogue of plants and other nuclear facilities.', how: 'Wikidata is the free, openly licensed (CC0) knowledge base behind Wikipedia; a monthly job asks it for every nuclear power plant with coordinates. World Monitor’s list was curated from public registries such as the IAEA’s Power Reactor Information System.', try: 'Compare France, Japan and South Korea — dense fleets on coasts, because reactors need lots of cooling water.', refs: ['worldmonitor', 'iaea'] },
+    channels(ns, ctx) {
+      const sel = window.gia?.state?.selected; const open = ctx && sel?.layer === 'nuclear' ? nuclearOverlay(ctx, sel) : null; // the open plant page (nucleardetail.js)
+      return { points: ns.map((n) => point('nuclear', n, n.lat, n.lon, n.status === 'active' ? '#9ff0c9' : 'rgba(159,240,201,0.4)', 0.16, 0.008, tip(n.name, `${n.type} · ${n.status}`))), ...(open?.custom?.length ? { custom: open.custom } : {}) };
+    },
+    describe(n) { const gi = window.gia; return { wiki: n.name, title: n.name, sub: `${n.type} · ${n.status}`,
+      /** The plant page: its output, the people in its planning zones, the wind now and its neighbours (nucleardetail.js). */
+      html: nuclearHtml(n), async fill(stillOpen) { await nuclearFill(n, { stillOpen, data: gi.state.data, refresh: () => gi.refreshLayer('nuclear', { soft: true }) }); },
+      rows: [['Operator / country', n.operator ?? '—'], ...(n.wikidata ? [['Country', n.country ?? '—'], ['Capacity', n.capacityMW ? `${n.capacityMW.toLocaleString()} MW` : '—'], ['In service', n.opened ? `${n.opened}${n.closed ? `–${n.closed}` : ''}` : '—']] : [])], links: [{ label: 'IAEA PRIS', url: 'https://pris.iaea.org' }, ...(n.wikidata ? [{ label: 'Wikidata', url: n.wikidata }] : []), wiki(n.name)] }; },
+    learn: { what: 'Nuclear power plants: from Wikidata when open data is on (with capacity and years in service), otherwise World Monitor’s catalogue of plants and other nuclear facilities. Click one for its page: what it makes in a year and how many people that supplies, the people living within its 16, 30 and 80 km planning zones, which way the wind would carry anything released now, and the other plants near it.', how: 'Wikidata is the free, openly licensed (CC0) knowledge base behind Wikipedia; a monthly job asks it for every nuclear power plant with coordinates. World Monitor’s list was curated from public registries such as the IAEA’s Power Reactor Information System.', try: 'Compare France, Japan and South Korea — dense fleets on coasts, because reactors need lots of cooling water.', refs: ['worldmonitor', 'iaea', 'nrcepz', 'ember2024'] },
   },
   {
     id: 'spaceports', pin: 'rocket', group: 'infra', label: 'Spaceports', swatch: '#ffd37a', on: false, sources: ['worldmonitor', 'wikidata', 'opendata'],

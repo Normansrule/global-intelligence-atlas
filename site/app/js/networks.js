@@ -13,6 +13,8 @@ const tip = (t, s = '') => `<div class="tip"><b>${esc(t)}</b>${s ? `<span>${esc(
 const inView = (v, lat, lng) => Math.abs(lat - v.lat) * 111 < v.radiusKm && haversineKm(v.lat, v.lng, lat, lng) < v.radiusKm; // cheap latitude test first
 
 // --------------------------------------------------------------- power plants (WRI)
+import { powerHtml, powerFill, powerOverlay } from './powerdetail.js';
+import { mountShipView } from './shipview.js';
 export const FUEL = { Coal: '#8a8f98', Gas: '#ffb15e', Oil: '#b0703c', Nuclear: '#9ff0c9', Hydro: '#4aa3ff', Wind: '#d9f2ff', Solar: '#ffe066', Geothermal: '#ff6f61', Biomass: '#7fc97f', Waste: '#b39ddb', Cogeneration: '#e0a05a', Other: '#cccccc', Storage: '#80deea', Petcoke: '#6d6d6d', 'Wave and Tidal': '#26c6da' };
 export const FUEL_GLYPH = { Coal: 'coal', Gas: 'gas', Oil: 'oil', Nuclear: 'nuclear', Hydro: 'hydro', Wind: 'wind', Solar: 'solar', Geothermal: 'geothermal', Biomass: 'leaf', Waste: 'recycle', Storage: 'battery', Cogeneration: 'factory', Petcoke: 'coal' };
 export const powerLayer = {
@@ -24,18 +26,23 @@ export const powerLayer = {
   async load(o) { const d = await getLocal('data/power-plants.json'); return d.rows.map(([name, lat, lng, mw, fuel, country, owner, year, gwh]) => ({ name, lat, lng, mw, fuel, country, owner, year, gwh })).filter((p) => o.fuel.includes(p.fuel) || !FUEL[p.fuel]); },
   channels(ps, ctx) {
     const v = ctx.view; const list = v.altitude > 1 ? ps.filter((p) => p.mw >= 600) : ps.filter((p) => inView(v, p.lat, p.lng));
-    return { points: list.slice(0, 4000).map((p) => ({ lat: p.lat, lng: p.lng, alt: 0.004 + Math.min(0.09, p.mw / 60000), r: 0.08 + Math.min(0.4, Math.sqrt(p.mw) / 120), color: FUEL[p.fuel] ?? '#ccc', label: p.name, tip: tip(p.name, `${p.fuel} · ${p.mw.toLocaleString()} MW · ${p.country}`), ref: { layer: 'power', d: p } })) };
+    const sel = window.gia?.state?.selected; const open = sel?.layer === 'power' ? powerOverlay(ctx, sel) : null; // the open plant page (powerdetail.js)
+    if (sel?.layer === 'power' && sel.d && !list.includes(sel.d)) list.push(sel.d);
+    return { ...(open?.custom?.length ? { custom: open.custom } : {}), points: list.slice(0, 4000).map((p) => ({ lat: p.lat, lng: p.lng, alt: 0.004 + Math.min(0.09, p.mw / 60000), r: 0.08 + Math.min(0.4, Math.sqrt(p.mw) / 120), color: FUEL[p.fuel] ?? '#ccc', label: p.name, tip: tip(p.name, `${p.fuel} · ${p.mw.toLocaleString()} MW · ${p.country}`), ref: { layer: 'power', d: p } })) };
   },
   describe(p) {
     const homes = Math.round((p.mw * 1000 * 0.45) / 1.2); // rough: average capacity factor 45 %, 1.2 kW average household load
+    const gi = window.gia;
     return {
+      /** The plant page: how hard it runs, live wind or sun, its carbon, its country's mix, its neighbours (powerdetail.js). */
+      html: powerHtml(p), async fill(stillOpen) { await powerFill(p, { stillOpen, data: gi.state.data, refresh: () => gi.refreshLayer('power', { soft: true }), FUEL, FUEL_GLYPH }); },
       title: p.name, sub: `${p.fuel} power station · ${p.country}`, wiki: p.name,
       rows: [['Capacity', `${p.mw.toLocaleString()} MW`], ['Generation (latest year)', p.gwh ? `${p.gwh.toLocaleString()} GWh` : '—'], ['Owner', p.owner || '—'], ['Commissioned', p.year || '—'], ['Roughly powers', p.gwh ? `${Math.round(p.gwh * 1e6 / 10500).toLocaleString()} U.S.-sized homes` : `~${homes.toLocaleString()} homes (rule of thumb)`]],
       body: 'Megawatts are the most a plant can deliver at once; gigawatt-hours are what it actually produced over a year. A nuclear plant runs near full power ~90 % of the time; solar and wind far less, because the sun sets and the wind drops.',
       probe: [p.lat, p.lng],
     };
   },
-  learn: { what: 'Every power station of 50 MW or more in the Global Power Plant Database — about 10,700 plants, coloured by fuel and sized by capacity. Zoomed out, only plants of 600 MW or more are shown.', how: 'Compiled by the World Resources Institute from national registries, company reports and satellite checks (version 1.3, data up to about 2019–2021).', try: 'Filter to Coal only, then Solar and Wind only, and compare China, India, Germany and the U.S.', refs: ['wri'] },
+  learn: { what: 'Every power station of 50 MW or more in the Global Power Plant Database — about 10,700 plants, coloured by fuel and sized by capacity. Zoomed out, only plants of 600 MW or more are shown. Click one for its plant page: how hard it runs against plants of its kind, how many people its output supplies, how hard a wind or solar farm is likely running right now, its carbon over the whole life cycle against every other kind of power, its country’s plants by fuel, and its neighbours.', how: 'Compiled by the World Resources Institute from national registries, company reports and satellite checks (version 1.3, data up to about 2019–2021).', try: 'Filter to Coal only, then Solar and Wind only, and compare China, India, Germany and the U.S.', refs: ['wri', 'eiacf2024', 'schlomer2014', 'epacar2023', 'openmeteo'] },
 };
 
 // --------------------------------------------------------------- internet buildings (PeeringDB)
@@ -159,7 +166,7 @@ async function balticShips() {
   return ships;
 }
 /** Static details (call sign, IMO number, destination, size) for a vessel, from whichever source has them. */
-function shipMeta(s) {
+export function shipMeta(s) {
   if (s.via == null) return s.meta ?? {}; // Fintraffic: already complete (draught in decimetres)
   const r = worldStatic?.get(s.mmsi); const l = live.store.staticOf(s.mmsi);
   const pick = (k, i) => l?.[k] ?? r?.[i] ?? null;
@@ -168,6 +175,7 @@ function shipMeta(s) {
 }
 /** The ships filter (card button or search): one broad kind (shipdb.js shipKind) or null for every ship. */
 export const shipState = { kind: null, all: [] };
+let shipViewNow = null; // the open ship card's 3D view
 const shipTip = (s) => { const f = mmsiInfo(s.mmsi); const t = shipTypeName(s.meta?.shipType);
   return tip(s.meta?.name ?? `MMSI ${s.mmsi}`, [t, f?.flag ? `${f.flag} flag` : '', `${s.sog ?? 0} kn`, NAV[s.nav]].filter(Boolean).join(' · ')); };
 export const shipsLayer = {
@@ -209,7 +217,9 @@ export const shipsLayer = {
         ['MMSI (Maritime Mobile Service Identity)', s.mmsi], ['Call sign', m.callSign || '—'], ['IMO (International Maritime Organization) number', m.imo || '—'],
         ...(sameFlag ? [[`Other ships under this flag`, `${sameFlag.toLocaleString()} on the map now`]] : []),
         ['Position', `${fmtLat(s.lat)}, ${fmtLng(s.lng)}`], ...(ago != null ? [['Last report', ago < 1 ? 'just now' : `${ago} min ago`]] : []), ['Source', s.via === 'live' ? (liveMode() === 'desktop' ? 'AISStream, live in view' : 'AISStream through your proxy') : s.via === 'snapshot' ? 'AISStream (live-data snapshot)' : 'Fintraffic Digitraffic']],
-      html: kind ? `<div class="row"><button class="btn ghost" data-shipkind="${on ? '' : kind}" data-kind="${kind}" data-label="Show only ${KIND_LABEL[kind]}" aria-pressed="${on}">${on ? 'Show every ship again' : `Show only ${KIND_LABEL[kind]}`}</button></div>` : '',
+      /** What it looks like: its kind of ship in 3D at its real size, with its cargo (shipview.js). */
+      async fill(stillOpen) { if (!stillOpen()) return; shipViewNow?.dispose(); shipViewNow = mountShipView(document.getElementById('ship-3d'), m, { seed: s.mmsi }); },
+      html: `<div id="ship-3d" class="ship-3d"></div>` + (kind ? `<div class="row"><button class="btn ghost" data-shipkind="${on ? '' : kind}" data-kind="${kind}" data-label="Show only ${KIND_LABEL[kind]}" aria-pressed="${on}">${on ? 'Show every ship again' : `Show only ${KIND_LABEL[kind]}`}</button></div>` : ''),
       body: 'Ships broadcast the Automatic Identification System (AIS) every few seconds on marine VHF (very high frequency) radio so they can see each other in fog and darkness. Coastal and volunteer receivers pick the signals up; AISStream relays them worldwide and Finland’s Fintraffic publishes the Baltic openly.',
       links: [{ label: 'VesselFinder', url: `https://www.vesselfinder.com/?mmsi=${s.mmsi}` }, { label: 'MarineTraffic', url: `https://www.marinetraffic.com/en/ais/details/ships/mmsi:${s.mmsi}` }],
     };
@@ -219,7 +229,7 @@ export const shipsLayer = {
     const src = ss?.src === 'world' ? `Worldwide: ${ss.length.toLocaleString()} vessels from AISStream.` : `Baltic only (Fintraffic). ${isDesktop ? 'Add a free AISStream key below for ships in view anywhere.' : 'Worldwide ships appear when the site’s live-data job has an AISSTREAM_KEY secret.'}`;
     return `<p class="shipnote">${esc(src)}</p>${isDesktop ? `<form class="aiskey" data-ais-form><input type="password" autocomplete="off" placeholder="AISStream key (free at aisstream.io)" aria-label="AISStream key" value="${esc(aisKey())}"><button class="btn" type="submit">Save</button></form>` : ''}`;
   },
-  learn: { what: 'Ships broadcasting AIS around the world: worldwide from AISStream when the site’s live-data job has a key (or on the desktop app with your own), otherwise every ship in the Baltic Sea and nearby Nordic waters from Fintraffic. Blue ships are moving; grey ones are moored or anchored. Click one for its flag (from the first three digits of its radio identity), its type, size, destination and whether it fits the Panama Canal, and show only cargo ships, tankers or any other kind. Each moving ship trails a wake that ripples back from its stern: two arms at 19.5° either side of its course and churned water behind it, longer the faster it goes.', how: 'AISStream relays AIS heard by volunteer receivers as a WebSocket stream. It needs a free key and does not allow web pages to connect, so the live-data job listens for a minute every few minutes and keeps every vessel heard in the last 30 minutes; the desktop app (or your proxy) adds ships in view. Fintraffic’s Digitraffic service publishes Baltic AIS openly (CC BY 4.0) and needs no key, so it remains the fallback.', try: 'Zoom into the Strait of Singapore or the English Channel, then compare with the Gulf of Finland at night. Every wake opens at the same angle, about 19.5°, whatever the ship’s speed: Lord Kelvin showed in 1887 that this follows from how waves spread on deep water.', refs: ['aisstream', 'digitraffic', 'itu1371', 'itu585', 'pyais', 'panamacanal', 'kelvin1887'] },
+  learn: { what: 'Ships broadcasting AIS around the world: worldwide from AISStream when the site’s live-data job has a key (or on the desktop app with your own), otherwise every ship in the Baltic Sea and nearby Nordic waters from Fintraffic. Blue ships are moving; grey ones are moored or anchored. Click one for its flag (from the first three digits of its radio identity), its type, size, destination and whether it fits the Panama Canal, and show only cargo ships, tankers or any other kind. The card also shows the ship in 3D at its real size with its cargo: its kind (container ship, bulk carrier, tanker, gas carrier, car carrier, cruise ship and more) is read from its type, size and name, because ships do not broadcast what they carry. Each moving ship trails a wake that ripples back from its stern: two arms at 19.5° either side of its course and churned water behind it, longer the faster it goes.', how: 'AISStream relays AIS heard by volunteer receivers as a WebSocket stream. It needs a free key and does not allow web pages to connect, so the live-data job listens for a minute every few minutes and keeps every vessel heard in the last 30 minutes; the desktop app (or your proxy) adds ships in view. Fintraffic’s Digitraffic service publishes Baltic AIS openly (CC BY 4.0) and needs no key, so it remains the fallback.', try: 'Zoom into the Strait of Singapore or the English Channel, then compare with the Gulf of Finland at night. Every wake opens at the same angle, about 19.5°, whatever the ship’s speed: Lord Kelvin showed in 1887 that this follows from how waves spread on deep water.', refs: ['aisstream', 'digitraffic', 'itu1371', 'itu585', 'pyais', 'panamacanal', 'kelvin1887'] },
 };
 
 if (typeof document !== 'undefined') {

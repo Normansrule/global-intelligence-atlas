@@ -84,6 +84,7 @@ export function byItem(bindings, many = []) {
     for (const [k, v] of Object.entries(b)) {
       const key = k.replace(/Label$|Description$/, (s) => (s === 'Description' ? 'Description' : ''));
       if (['item', 'itemLabel', 'coord'].includes(k)) continue;
+      if (k.endsWith('Label') && /^Q\d+$/.test(v.value)) continue; // no English label: Wikidata returns the bare id ("Q274591" for EDF)
       if (many.includes(key)) x[key].add(v.value); else x[key] ??= v.value;
     }
   }
@@ -133,9 +134,51 @@ const WPI_KEYS = {
   num: ['portNumber', 'World Port Index Number', 'indexNo'], name: ['portName', 'Main Port Name'], alt: ['alternateName', 'Alternate Port Name'],
   country: ['countryName', 'Country Code', 'country'], locode: ['unloCode', 'UN/LOCODE'], lat: ['ycoord', 'Latitude', 'latitude'], lon: ['xcoord', 'Longitude', 'longitude'],
   size: ['harborSize', 'Harbor Size'], type: ['harborType', 'Harbor Type'], use: ['harborUse', 'Harbor Use'], channel: ['chDepth', 'channelDepth', 'Channel Depth (m)'],
-  cargo: ['cargoPierDepth', 'Cargo Pier Depth (m)'], oil: ['oilTerminalDepth', 'Oil Terminal Depth (m)'], lng: ['lngTerminalDepth', 'Liquified Natural Gas Terminal Depth (m)'], maxLen: ['maxVesselLength', 'Maximum Vessel Length (m)'],
+  cargo: ['cpDepth', 'cargoPierDepth', 'Cargo Pier Depth (m)'], oil: ['otDepth', 'oilTerminalDepth', 'Oil Terminal Depth (m)'], lng: ['lngTerminalDepth', 'Liquified Natural Gas Terminal Depth (m)'], maxLen: ['maxVesselLength', 'Maximum Vessel Length (m)'],
   region: ['regionName', 'Region Name'], water: ['dodWaterBody', 'World Water Body'],
+  // v2.13, the port page (site/app/js/portdetail.js): the rest of the index, so a port can be read in full
+  use: ['harborUse', 'Harbor Use'], shelter: ['shelter', 'Shelter Afforded'], tide: ['tide', 'Tidal Range (m)'], entrance: ['entranceWidth', 'Entrance Width (m)'],
+  anchorage: ['anDepth', 'Anchorage Depth (m)'], maxBeam: ['maxVesselBeam', 'Maximum Vessel Beam (m)'], maxDraft: ['maxVesselDraft', 'Maximum Vessel Draft (m)'],
+  offLen: ['offMaxVesselLength', 'Offshore Maximum Vessel Length (m)'], offBeam: ['offMaxVesselBeam', 'Offshore Maximum Vessel Beam (m)'], offDraft: ['offMaxVesselDraft', 'Offshore Maximum Vessel Draft (m)'],
+  repair: ['repairCode', 'Repairs'], drydock: ['drydock', 'Dry Dock'], railway: ['railway', 'Railway'], ukc: ['ukcMgmtSystem', 'Underkeel Clearance Management System'],
+  pub: ['publicationNumber', 'Sailing Direction or Publication'], chart: ['chartNumber', 'Standard Nautical Chart'], navArea: ['navArea', 'NAVAREA'], ccode: ['countryCode'],
 };
+/**
+ * The World Port Index's yes / no / unknown answers, in the order they are packed into each port's `yn` string
+ * (one letter each: Y, N or U). site/app/js/portdetail.js reads them in this same order (PORT_FLAGS there;
+ * tests/opendata/test-open-data.mjs checks the two lists match). New keys go at the end only.
+ */
+export const WPI_FLAGS = [
+  ['erTide', 'Entrance Restriction - Tide'], ['erSwell', 'Entrance Restriction - Heavy Swell'], ['erIce', 'Entrance Restriction - Ice'], ['erOther', 'Entrance Restriction - Other'],
+  ['overheadLimits', 'Overhead Limits'], ['goodHoldingGround', 'Good Holding Ground'], ['turningArea', 'Turning Area'], ['portSecurity', 'Port Security'],
+  ['etaMessage', 'Estimated Time of Arrival Message'], ['qtPratique', 'Quarantine - Pratique'], ['qtSanitation', 'Quarantine - Sanitation'], ['qtOther', 'Quarantine - Other'],
+  ['tss', 'Traffic Separation Scheme'], ['vts', 'Vessel Traffic Service'], ['firstPortOfEntry', 'First Port of Entry'], ['usRep', 'US Representative'],
+  ['ptCompulsory', 'Pilotage - Compulsory'], ['ptAvailable', 'Pilotage - Available'], ['ptLocalAssist', 'Pilotage - Local Assistance'], ['ptAdvisable', 'Pilotage - Advisable'],
+  ['tugsSalvage', 'Tugs - Salvage'], ['tugsAssist', 'Tugs - Assistance'],
+  ['cmTelephone', 'Communications - Telephone'], ['cmTelegraph', 'Communications - Telefax'], ['cmRadio', 'Communications - Radio'], ['cmRadioTel', 'Communications - Radiotelephone'], ['cmAir', 'Communications - Airport'], ['cmRail', 'Communications - Rail'],
+  ['searchAndRescue', 'Search and Rescue'],
+  ['loWharves', 'Facilities - Wharves'], ['loAnchor', 'Facilities - Anchorage'], ['loDangCargo', 'Facilities - Dangerous Cargo Anchorage'], ['loMedMoor', 'Facilities - Med Mooring'],
+  ['loBeachMoor', 'Facilities - Beach Mooring'], ['loIceMoor', 'Facilities - Ice Mooring'], ['loRoro', 'Facilities - Ro-Ro'], ['loSolidBulk', 'Facilities - Solid Bulk'],
+  ['loLiquidBulk', 'Facilities - Liquid Bulk'], ['loContainer', 'Facilities - Container'], ['loBreakBulk', 'Facilities - Breakbulk'], ['loOilTerm', 'Facilities - Oil Terminal'],
+  ['loLongTerm', 'Facilities - LNG Terminal'], ['loOther', 'Facilities - Other'],
+  ['medFacilities', 'Medical Facilities'], ['garbageDisposal', 'Garbage Disposal'], ['cht', 'Chemical Holding Tank Disposal'], ['degauss', 'Degaussing'], ['dirtyBallast', 'Dirty Ballast Disposal'],
+  ['crFixed', 'Cranes - Fixed'], ['crMobile', 'Cranes - Mobile'], ['crFloating', 'Cranes - Floating'], ['cranesContainer', 'Cranes - Container'],
+  ['lifts100', 'Lifts - 100+ Tons'], ['lifts50', 'Lifts - 50-100 Tons'], ['lifts25', 'Lifts - 25-49 Tons'], ['lifts0', 'Lifts - 0-24 Tons'],
+  ['srLongshore', 'Services - Longshoremen'], ['srElectrical', 'Services - Electricity'], ['srSteam', 'Services - Steam'], ['srNavigEquip', 'Services - Navigational Equipment'],
+  ['srElectRepair', 'Services - Electrical Repair'], ['srIceBreaking', 'Services - Ice Breaking'], ['srDiving', 'Services - Diving'],
+  ['suProvisions', 'Supplies - Provisions'], ['suWater', 'Supplies - Potable Water'], ['suFuel', 'Supplies - Fuel Oil'], ['suDiesel', 'Supplies - Diesel Oil'],
+  ['suAviationFuel', 'Supplies - Aviation Fuel'], ['suDeck', 'Supplies - Deck'], ['suEngine', 'Supplies - Engine'],
+];
+const yn = (v) => { const s = String(v ?? '').trim().toUpperCase(); return s === 'Y' || s === 'YES' ? 'Y' : s === 'N' || s === 'NO' ? 'N' : 'U'; };
+const SHELTER = { E: 'Excellent', G: 'Good', F: 'Fair', P: 'Poor', N: 'None' };
+const REPAIRS = { A: 'Major', B: 'Moderate', C: 'Limited', D: 'Emergency only', N: 'None' };
+const DOCK = { S: 'Small', M: 'Medium', L: 'Large', N: 'None' };
+const USES = { CARGO: 'Cargo', FISH: 'Fishing', FISHING: 'Fishing', FERRY: 'Ferry', MIL: 'Military', MILITARY: 'Military' };
+const UKC = { S: 'Static', D: 'Dynamic', N: 'None' };
+/** A coded answer as its word ('G' → 'Good'); full words pass through; blank or unknown → null. */
+const word = (table, v) => { const s = String(v ?? '').trim(); if (!s || /^(u|unk|unknown)$/i.test(s)) return null; return table[s.toUpperCase()] ?? (s.length > 1 ? s[0].toUpperCase() + s.slice(1).toLowerCase() : null); };
+/** Text with "null"-like values dropped. */
+const txt = (v) => (v == null || /^(null|n\/a)?$/i.test(String(v).trim()) ? null : String(v).trim());
 const SIZES = { L: 'Large', M: 'Medium', S: 'Small', V: 'Very small', LARGE: 'Large', MEDIUM: 'Medium', SMALL: 'Small', 'VERY SMALL': 'Very small' };
 const HTYPES = { CN: 'Coastal natural', CB: 'Coastal breakwater', CT: 'Coastal tide gate', RN: 'River natural', RB: 'River basin', RT: 'River tide gate', LC: 'Lake or canal', OR: 'Open roadstead', TH: 'Typhoon harbour' };
 export function wpiPort(rec) {
@@ -146,7 +189,13 @@ export function wpiPort(rec) {
   const size = SIZES[String(g('size') ?? '').toUpperCase()] ?? g('size'); const t = g('type'); const m = (k) => { const v = Number(g(k)); return Number.isFinite(v) && v > 0 ? v : null; };
   const title = name.toLowerCase().replace(/(^|[\s(/-])([a-z])/g, (s, a, b) => a + b.toUpperCase());
   return { id: `wpi-${g('num') ?? title}`, name: title, lat: r3(lat), lon: r3(lon), country: g('country') ?? '—', type: size ? `${size.toLowerCase()} harbour` : 'harbour', size: size ?? null,
-    harbourType: HTYPES[String(t ?? '').toUpperCase()] ?? t, locode: g('locode'), channelDepthM: m('channel'), cargoPierDepthM: m('cargo'), oilTerminalDepthM: m('oil'), lngTerminalDepthM: m('lng'), maxVesselLengthM: m('maxLen'), water: g('water'), wpi: g('num') };
+    harbourType: HTYPES[String(t ?? '').toUpperCase()] ?? t, locode: g('locode'), channelDepthM: m('channel'), cargoPierDepthM: m('cargo'), oilTerminalDepthM: m('oil'), lngTerminalDepthM: m('lng'), maxVesselLengthM: m('maxLen'), water: g('water'), wpi: g('num'),
+    // the rest of the record, for the port page (null when the index does not say)
+    alt: txt(g('alt')), region: txt(g('region'))?.replace(/\s+/g, ' '), cc: txt(g('ccode')), use: word(USES, g('use')), shelter: word(SHELTER, g('shelter')), tideM: m('tide'), entranceWidthM: m('entrance'),
+    anchorageDepthM: m('anchorage'), maxBeamM: m('maxBeam'), maxDraftM: m('maxDraft'), offshoreMax: m('offLen') || m('offDraft') ? [m('offLen'), m('offBeam'), m('offDraft')] : null,
+    repairs: word(REPAIRS, g('repair')), drydock: word(DOCK, g('drydock')), railway: word(DOCK, g('railway')), ukc: word(UKC, g('ukc')),
+    pub: txt(g('pub')), chart: txt(g('chart')), navArea: txt(g('navArea')),
+    yn: WPI_FLAGS.map(([k, csv]) => yn(n[norm(k)] ?? n[norm(csv)])).join('') };
 }
 /** Splits one CSV line (quotes allowed). */
 export function splitCsv(line) {

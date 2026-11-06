@@ -13,7 +13,7 @@ Built on the basis of [World Monitor](https://github.com/koala73/worldmonitor) b
 [![Download the desktop app](https://img.shields.io/badge/Download-Windows_·_macOS_·_Linux-f3f4f0?style=for-the-badge&logo=tauri&logoColor=1b1c1a)](https://github.com/Normansrule/global-intelligence-atlas/releases/latest)
 [![Website](https://img.shields.io/badge/Website-home-2e6a3c?style=for-the-badge&logo=githubpages&logoColor=ffffff)](https://normansrule.github.io/global-intelligence-atlas/)
 
-[![Version](https://img.shields.io/badge/version-2.12.0-1f4e9c)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.14.0-1f4e9c)](CHANGELOG.md)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Deploy to Pages](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml)
 [![Tests](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml)
@@ -95,6 +95,12 @@ Earthquakes (U.S. Geological Survey (USGS)), natural events and storm tracks (NA
 <summary><b>✈ Every plane and ship, in detail</b></summary>
 
 Click a plane and its flight view reads like an airline's own tracker: the flight number and airline (BAW117 is British Airways BA 117), the aircraft model with its typical seats, range, length and wingspan, the country it is registered in (and whether it is military), what it is doing (climbing out of London, cruising at flight level 380, descending into New York), its scheduled route from airport to airport with the local time at each end, and how much of it is flown, with a 3D model of that exact aircraft type (real length, wingspan and engines, in the airline's tail colours). The globe draws the flight's path: the track flown in coral and the rest of the route dashed ahead to a ringed destination. Search a flight number (BA117) or an airline to find it in the air, and show only one airline's planes. Ships give their flag (from the first three digits of their radio identity), their type, size, destination and whether they fit the Panama Canal, and can be filtered to cargo ships, tankers or any other kind. Airports show every scheduled nonstop route out of them as gold arcs, with their busiest routes and main airlines. The airline, model, route and registration tables come from Virtual Radar Server's public-domain standing data and are kept in the site, so none of this needs a paid flight-tracking service.
+</details>
+
+<details open>
+<summary><b>🚀 Every rocket launch, in depth</b></summary>
+
+Click a launch pad and its card becomes a launch page. A live countdown leads, with the status, how sure the time is, the launch window and the chance of good weather. It says when that is for you and at the pad, and whether it flies in daylight, at twilight (when the climbing plume can glow like a jellyfish over a dark coast) or at night. **Weather at lift-off** is the Open-Meteo forecast at the pad for the launch hour (wind and gusts, cloud, rain chance and the jet stream 10 km up) with what in it usually holds a launch. **Flight plan** lists every published step, from propellant loading to satellite deployment, with T− and T+ times, the abbreviations written out (Main engine cut-off (MECO)), ticked off live as the flight goes. **Where it goes** gives the target orbit, the heading it leaves on, worked out from the pad latitude and the orbit tilt, the seas and countries under its climb (and a warning when an inland pad drops spent stages on land), the free speed Earth's spin gives it, and where the booster lands. **Crew** shows who is aboard with their role, agency, age and days already spent in space. **The rocket** is drawn to scale beside the Statue of Liberty and the Saturn V, with its payload in cars, its weight in jumbo jets, its thrust against its weight and every launch it has flown as a square (red for failures). **Booster**, **Mission** and **The pad** give the serial and flight count, the customer and latest note, and how many launches the pad, the site, the provider and the world have seen. On the globe it draws the climb in orange, the first orbit in lilac, the booster landing spot and a 300 km circle; during the flight a red ring marks where the rocket should be by now. From The Space Devs' Launch Library 2.
 </details>
 
 <details open>
@@ -211,7 +217,9 @@ Fifteen lessons on the [Learn page](https://normansrule.github.io/global-intelli
 | v2.9 | Open data for seven infrastructure layers |
 | v2.10 | The Global Intelligence Atlas (GIA) repository launch: this README, browser tuning, release branding |
 | v2.11 | Cameras from 22 more agencies and Osiris's worldwide webcam list, the rest of World Monitor's map datasets, markers that share a spot, economy, property and industry |
-| **v2.12** | **A News tab: headlines from 16 publishers' own feeds around the world and free live news channels from broadcasters' official streams** |
+| v2.12 | A News tab: headlines from 16 publishers' own feeds around the world and free live news channels from broadcasters' official streams |
+| **v2.14** | **Ships in 3D with their cargo, and in-depth pages for every disaster alert and power plant** |
+| **v2.13** | **Click anything for the whole story: in-depth pages for every plane, ship, airport, port, undersea cable, nuclear plant, earthquake, natural event, country, city, satellite and launch; the Counted world redesign** |
 
 Full release notes: [`CHANGELOG.md`](CHANGELOG.md).
 
@@ -302,7 +310,7 @@ cd site && python3 -m http.server 8080          # open http://localhost:8080/app
 **Desktop release:** push a version tag and [`desktop.yml`](.github/workflows/desktop.yml) builds every platform and attaches the files to a GitHub Release:
 
 ```bash
-git tag v2.12.0 && git push origin v2.12.0
+git tag v2.14.0 && git push origin v2.14.0
 ```
 
 The builds are not code-signed, so Windows SmartScreen and macOS Gatekeeper ask you to confirm the first launch (the Download page explains how).

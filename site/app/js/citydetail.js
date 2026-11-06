@@ -71,7 +71,7 @@ function hourly(h, W = 300, H = 64) {
 export const cy = { key: null, c: null, ring: null };
 let CITIES = null; let AIRPORTS = null;
 export async function cities() { CITIES ??= getLocal('data/cities.json').then((d) => d.rows.map(([name, lat, lng, pop, capital, cc]) => ({ name, lat, lng, pop, capital: !!capital, cc }))); return CITIES; }
-async function airports() { AIRPORTS ??= getLocal('data/airports.json').then((d) => d.rows.map(([iata, icao, name, lat, lng, elev, city, cc, large]) => ({ iata, icao, name, lat, lng, city, cc, large: !!large }))); return AIRPORTS; }
+export async function airports() { AIRPORTS ??= getLocal('data/airports.json').then((d) => d.rows.map(([iata, icao, name, lat, lng, elev, city, cc, large]) => ({ iata, icao, name, lat, lng, city, cc, large: !!large }))); return AIRPORTS; }
 
 export function cityHtml(c) {
   return `<div class="cy" data-city="${esc(c.name)}">

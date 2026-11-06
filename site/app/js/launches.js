@@ -2,6 +2,8 @@
 // Global Intelligence Atlas — rocket launches (The Space Devs' Launch Library 2) and global disaster alerts (GDACS).
 import { getFeed } from './feeds.js';
 import { fmtLat, fmtLng } from './astro.js';
+import { launchHtml, launchFill, launchOverlay } from './launchdetail.js';
+import { alertHtml, alertFill, alertOverlay } from './alertdetail.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const tip = (t, s = '') => `<div class="tip"><b>${esc(t)}</b>${s ? `<span>${esc(s)}</span>` : ''}</div>`;
@@ -28,6 +30,7 @@ export const launchesLayer = {
       mission: l.mission?.name ?? '', desc: l.mission?.description ?? '', mtype: l.mission?.type ?? '', orbit: l.mission?.orbit?.name ?? '',
       vids: (l.vidURLs ?? []).map((v) => ({ title: v.title || 'Webcast', url: v.url, live: v.live })).filter((v) => /^https?:/.test(v.url)).slice(0, 3),
       info: (l.infoURLs ?? []).map((v) => ({ title: v.title || 'Mission page', url: v.url })).filter((v) => /^https?:/.test(v.url)).slice(0, 2),
+      raw: l, // the whole detailed record, for the launch page (launchdetail.js)
     })).filter((l) => Number.isFinite(l.lat) && Number.isFinite(l.lng));
   },
   channels(ls, ctx) {
@@ -40,26 +43,23 @@ export const launchesLayer = {
           tip: tip(l.name, `${countdown(l.net - now)} · ${l.site}`), ref: { layer: 'launches', d: l } };
       }),
       rings: soon.map((l) => ({ lat: l.lat, lng: l.lng, color: l.live ? '#ff4d4d' : '#ff9e5e', maxR: 2.5, speed: 1.6, period: 1400 })),
+      ...(() => { const sel = window.gia?.state?.selected; const open = sel?.layer === 'launches' ? launchOverlay(ctx, sel) : null; return open?.custom?.length ? { custom: open.custom } : {}; })(), // the open launch page
     };
   },
   describe(l) {
-    const t = l.net - Date.now();
     return {
       title: l.mission || l.name, sub: `${l.rocket}${l.provider ? ` · ${l.provider}` : ''}`,
-      html: `${l.image ? `<img class="newsimg" src="${esc(l.image)}" alt="" loading="lazy" onerror="this.remove()"/>` : ''}
-        <p class="countdown" data-net="${l.net}">${countdown(t)}</p>
-        ${l.vids.length ? `<div class="row">${l.vids.map((v) => `<a class="btn${v.live ? '' : ' ghost'}" href="${esc(v.url)}" target="_blank" rel="noopener">${v.live ? '● Watch live' : 'Watch webcast'}</a>`).join('')}</div>` : ''}`,
-      rows: [['Launch time', new Date(l.net).toUTCString()], ['Status', l.status], ...(l.prob != null ? [['Weather go', `${l.prob} %`]] : []), ['Launch site', `${l.pad}, ${l.site}`], ['Mission type', l.mtype || '—'], ['Target orbit', l.orbit || '—'], ['Provider', `${l.provider}${l.ptype ? ` (${l.ptype})` : ''}`]],
-      body: l.desc || 'No mission description published yet.',
-      links: l.info.map((i) => ({ label: i.title, url: i.url })),
-      probe: [l.lat, l.lng], actions: [['launch-azimuth', 'Why launch from here?']],
+      html: launchHtml(l),
+      /** The launch page: countdown, weather at lift-off, flight plan, where it goes, crew, the rocket to scale, booster, mission and pad (launchdetail.js). */
+      async fill(stillOpen) { const gi = window.gia; await launchFill(l, { stillOpen, countryAt: (a, b) => gi.countryAt(a, b), refresh: () => gi.refreshLayer('launches', { soft: true }), byIso3: (c) => (c ? gi.state.data.borders?.find((x) => x.properties['ISO3166-1-Alpha-3'] === c) ?? null : null) }); },
+      probe: [l.lat, l.lng],
     };
   },
   learn: {
-    what: 'The next 25 orbital launches worldwide at their launch pads, with a countdown, the rocket, the mission and its target orbit, and a link to the live webcast. Pads with a launch in the next 24 hours pulse; a red pin is streaming live right now.',
-    how: 'The Space Devs’ Launch Library 2 is a community-maintained database of every orbital launch, updated as providers announce times and delays. Global Intelligence Atlas reads it straight from your browser every 30 minutes.',
+    what: 'The next 25 orbital launches worldwide at their launch pads. Pads with a launch in the next 24 hours pulse; a red pin is streaming live right now. Click one for its launch page: a live countdown, the weather at the pad for the launch hour, the flight plan step by step, the heading it leaves on and where its booster lands, the crew, the rocket drawn to scale with every launch it has flown, and the pad\'s own record. The globe draws its climb to orbit and its first orbit.',
+    how: 'The Space Devs’ Launch Library 2 is a community-maintained database of every orbital launch, updated as providers announce times and delays. Global Intelligence Atlas reads it straight from your browser every 30 minutes. The heading comes from the pad’s latitude and the orbit’s tilt (sin of the heading = cos of the tilt ÷ cos of the latitude); the path is a model of a typical climb, not tracking data. Weather from Open-Meteo.',
     try: 'Open the next launch, switch on Satellite shells, and after it flies compare its target orbit with the satellites already up there. Then use the time machine to jump to the launch time and watch the pad cross the terminator.',
-    refs: ['ll2'],
+    refs: ['ll2', 'openmeteo', 'curtis2020'],
   },
 };
 
@@ -82,15 +82,20 @@ export const alertsLayer = {
         url: p.url?.report ?? `https://www.gdacs.org/report.aspx?eventid=${p.eventid}&eventtype=${p.eventtype}`, glide: p.glide };
     });
   },
-  channels(as) {
+  channels(as, ctx) {
+    const sel = window.gia?.state?.selected; const open = ctx && sel?.layer === 'alerts' ? alertOverlay(ctx, sel) : null; // the open alert page (alertdetail.js)
     return {
+      ...(open?.custom?.length ? { custom: open.custom } : {}),
       points: as.map((a) => ({ lat: a.lat, lng: a.lng, alt: a.level === 'Red' ? 0.06 : 0.03, r: a.level === 'Red' ? 0.5 : 0.35, color: LEVEL[a.level] ?? '#ff9f43', label: a.name,
         tip: tip(a.name, `${a.level} alert · ${a.sev || GD[a.type]?.[0] || ''}`), ref: { layer: 'alerts', d: a } })),
       rings: as.filter((a) => a.level === 'Red').map((a) => ({ lat: a.lat, lng: a.lng, color: '#ff3b30', maxR: 3, speed: 2, period: 1100 })),
     };
   },
   describe(a) {
+    const gi = window.gia;
     return {
+      /** The alert page: the level and what it means, the people near it, the same event on other layers, the weather, other alerts (alertdetail.js). */
+      html: alertHtml(a), async fill(stillOpen) { await alertFill(a, { stillOpen, data: gi.state.data, refresh: () => gi.refreshLayer('alerts', { soft: true }) }); },
       title: a.name, sub: `${a.level} alert · ${GD[a.type]?.[0] ?? a.type}${a.country ? ` · ${a.country}` : ''}`,
       rows: [['Severity', a.sev || '—'], ['From', a.from ? new Date(`${a.from}Z`).toUTCString() : '—'], ['Until', a.to ? new Date(`${a.to}Z`).toUTCString() : '—'], ['GLIDE number', a.glide || '—'], ['Position', `${fmtLat(a.lat)}, ${fmtLng(a.lng)}`]],
       body: 'GDACS alert levels estimate humanitarian impact, not just physical size: a red alert means a likely need for international assistance, combining the hazard’s strength with how many people live in the affected area and how vulnerable they are.',
@@ -98,9 +103,9 @@ export const alertsLayer = {
     };
   },
   learn: {
-    what: 'Orange and red alerts from the Global Disaster Alert and Coordination System — earthquakes, tropical cyclones, floods, volcanoes, wildfires and droughts expected to need a humanitarian response. Red alerts pulse.',
+    what: 'Orange and red alerts from the Global Disaster Alert and Coordination System — earthquakes, tropical cyclones, floods, volcanoes, wildfires and droughts expected to need a humanitarian response. Red alerts pulse. Click one for its alert page: what its level means and what GDACS weighed to set it, the people living within the distances that matter for that hazard, the same quake, storm, volcano or fire on its own page, the weather there now and the other alerts nearby.',
     how: 'GDACS is run by the United Nations and the European Commission. Within minutes of an event it models the hazard (shaking, wind, water) against population and vulnerability data and issues a green, orange or red alert.',
     try: 'Compare a red earthquake alert with the plain Earthquakes layer: a small quake near a big city can outrank a large one offshore.',
-    refs: ['gdacs'],
+    refs: ['gdacs', 'eonet', 'openmeteo'],
   },
 };

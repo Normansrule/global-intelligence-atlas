@@ -17,7 +17,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@48,5,0.6&b=bluemarble&l=aircraft,borders', wait_until='commit'); pg.wait_for_timeout(12000)
     t=pg.evaluate("""async () => { const f = await import('./js/flights.js'); const ac = f.flightsNow(); const air = ac.filter((a) => !a.ground && a.kt >= 50).length;
       let trails = 0; gia.globe.scene().traverse((o) => { if (!o.userData?.keeper && o.visible && o.geometry?.instanceCount > 0 && o.material?.vertexShader?.includes('iLen')) trails++; });
@@ -33,7 +33,7 @@ with sync_playwright() as p:
     check('Trails: No trails switches them all off', pg.evaluate("async () => (await import('./js/flights.js')).trailCount()") == 0)
     # Just in (a fresh page)
     pg.close(); pg=b.new_page(viewport={'width':1280,'height':800}); pg.on('pageerror', lambda e: errs.append(str(e))); pg.route('**/*', handler)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@-33,-72,1.4&b=bluemarble&l=borders,quakes,landmarks', wait_until='commit'); pg.wait_for_timeout(10000)
     first=pg.evaluate("() => ({ fresh: gia.live.fresh(), marks: document.querySelectorAll('#ticker-track button.new').length })")
     check('nothing is "Just in" when the page opens', first['fresh'] == [] and first['marks'] == 0, first)

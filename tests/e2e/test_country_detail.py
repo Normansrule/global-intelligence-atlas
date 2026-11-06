@@ -12,7 +12,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.12')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@46,3,1.2&l=borders,quakes,landmarks', wait_until='commit'); pg.wait_for_timeout(11000)
     f=pg.evaluate("""async () => { const c = await import('./js/countrydetail.js'); const fr = gia.state.data.borders.find((x) => x.properties['ISO3166-1-Alpha-2'] === 'FR'); const inside = c.insideTest(fr);
       return { unit: c.personUnit(68042591), small: c.personUnit(39244), off: c.capitalOffset(['UTC-10:00', 'UTC+01:00', 'UTC+12:00'], 2.33), one: c.capitalOffset(['UTC'], 0),
