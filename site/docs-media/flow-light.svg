@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 330" width="1200" height="330" role="img" aria-label="How the data reaches you: open sources are fetched by GitHub Actions every few minutes into a public snapshot that the web app reads; the desktop app also fetches live sources directly.">
+<style>text{font-family:'Jost','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif}  @media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+<rect width="1200" height="330" rx="20" fill="#f6f1e6"/>
+<text x="30" y="52" font-size="24" font-weight="700" fill="#1d2a3a">How the world reaches your screen</text>
+<text x="30" y="80" font-size="15" fill="#5b6b7c">No server of our own: open data in, a public snapshot out, and your device does the rest.</text>
+<path id="p0" d="M260 160 C300 160 300 160 340 160" fill="none" stroke="#2e7d4a" stroke-opacity=".55" stroke-width="2.5" />
+<circle r="4.5" fill="#2e7d4a"><animateMotion dur="2.2s" begin="0s" repeatCount="indefinite" rotate="auto"><mpath href="#p0"/></animateMotion></circle><circle r="4.5" fill="#2e7d4a"><animateMotion dur="2.2s" begin="0.7333333333333334s" repeatCount="indefinite" rotate="auto"><mpath href="#p0"/></animateMotion></circle><circle r="4.5" fill="#2e7d4a"><animateMotion dur="2.2s" begin="1.4666666666666668s" repeatCount="indefinite" rotate="auto"><mpath href="#p0"/></animateMotion></circle>
+<path id="p1" d="M570 160 C610 160 610 160 650 160" fill="none" stroke="#b7791f" stroke-opacity=".55" stroke-width="2.5" />
+<circle r="4.5" fill="#b7791f"><animateMotion dur="2.2s" begin="0s" repeatCount="indefinite" rotate="auto"><mpath href="#p1"/></animateMotion></circle><circle r="4.5" fill="#b7791f"><animateMotion dur="2.2s" begin="0.7333333333333334s" repeatCount="indefinite" rotate="auto"><mpath href="#p1"/></animateMotion></circle><circle r="4.5" fill="#b7791f"><animateMotion dur="2.2s" begin="1.4666666666666668s" repeatCount="indefinite" rotate="auto"><mpath href="#p1"/></animateMotion></circle>
+<path id="p2" d="M880 160 C910 160 910 95 940 95" fill="none" stroke="#1f62c4" stroke-opacity=".55" stroke-width="2.5" />
+<circle r="4.5" fill="#1f62c4"><animateMotion dur="2s" begin="0s" repeatCount="indefinite" rotate="auto"><mpath href="#p2"/></animateMotion></circle><circle r="4.5" fill="#1f62c4"><animateMotion dur="2s" begin="0.6666666666666666s" repeatCount="indefinite" rotate="auto"><mpath href="#p2"/></animateMotion></circle><circle r="4.5" fill="#1f62c4"><animateMotion dur="2s" begin="1.3333333333333333s" repeatCount="indefinite" rotate="auto"><mpath href="#p2"/></animateMotion></circle>
+<path id="p3" d="M880 160 C910 160 910 235 940 235" fill="none" stroke="#1f62c4" stroke-opacity=".55" stroke-width="2.5" />
+<circle r="4.5" fill="#1f62c4"><animateMotion dur="2s" begin="0s" repeatCount="indefinite" rotate="auto"><mpath href="#p3"/></animateMotion></circle><circle r="4.5" fill="#1f62c4"><animateMotion dur="2s" begin="0.6666666666666666s" repeatCount="indefinite" rotate="auto"><mpath href="#p3"/></animateMotion></circle><circle r="4.5" fill="#1f62c4"><animateMotion dur="2s" begin="1.3333333333333333s" repeatCount="indefinite" rotate="auto"><mpath href="#p3"/></animateMotion></circle>
+<path id="p4" d="M145 215 C145 300 1055 330 1055 290" fill="none" stroke="#c4312b" stroke-opacity=".55" stroke-width="2.5" stroke-dasharray="6 7"/>
+<circle r="4.5" fill="#c4312b"><animateMotion dur="4.2s" begin="0s" repeatCount="indefinite" rotate="auto"><mpath href="#p4"/></animateMotion></circle><circle r="4.5" fill="#c4312b"><animateMotion dur="4.2s" begin="1.4000000000000001s" repeatCount="indefinite" rotate="auto"><mpath href="#p4"/></animateMotion></circle><circle r="4.5" fill="#c4312b"><animateMotion dur="4.2s" begin="2.8000000000000003s" repeatCount="indefinite" rotate="auto"><mpath href="#p4"/></animateMotion></circle>
+<g transform="translate(30,105)"><rect width="230" height="110" rx="16" fill="#fffaf0" stroke="#d8ccb4" stroke-width="1.5"/>
+<rect x="0" y="0" width="6" height="110" rx="3" fill="#2e7d4a"/><g transform="translate(22,22) scale(1.0833333333333333)" fill="none" stroke="#2e7d4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c3 3 3 16 0 19M12 2.5c-3 3-3 16 0 19"/></g>
+<text x="60" y="42" font-size="19" font-weight="700" fill="#1d2a3a">160+ open sources</text>
+<text x="22" y="74" font-size="14.5" fill="#5b6b7c">USGS, NASA, NOAA, ESA,</text><text x="22" y="95" font-size="14.5" fill="#5b6b7c">OpenSky, AISStream, GDACS…</text></g>
+<g transform="translate(340,105)"><rect width="230" height="110" rx="16" fill="#fffaf0" stroke="#d8ccb4" stroke-width="1.5"/>
+<rect x="0" y="0" width="6" height="110" rx="3" fill="#b7791f"/><g transform="translate(22,22) scale(1.0833333333333333)" fill="none" stroke="#b7791f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="17" rx="2"/><path d="M6.5 9l3.5 3-3.5 3M12.5 15.5h5"/></g>
+<text x="60" y="42" font-size="19" font-weight="700" fill="#1d2a3a">GitHub Actions</text>
+<text x="22" y="74" font-size="14.5" fill="#5b6b7c">fetch, check and shrink</text><text x="22" y="95" font-size="14.5" fill="#5b6b7c">every few minutes</text></g>
+<g transform="translate(650,105)"><rect width="230" height="110" rx="16" fill="#fffaf0" stroke="#d8ccb4" stroke-width="1.5"/>
+<rect x="0" y="0" width="6" height="110" rx="3" fill="#1f62c4"/><g transform="translate(22,22) scale(1.0833333333333333)" fill="none" stroke="#1f62c4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v12M7 11l5 5 5-5M4.5 20.5h15"/></g>
+<text x="60" y="42" font-size="19" font-weight="700" fill="#1d2a3a">Public snapshot</text>
+<text x="22" y="74" font-size="14.5" fill="#5b6b7c">live-data branch and</text><text x="22" y="95" font-size="14.5" fill="#5b6b7c">the published site</text></g>
+<g transform="translate(940,40)"><rect width="230" height="110" rx="16" fill="#fffaf0" stroke="#d8ccb4" stroke-width="1.5"/>
+<rect x="0" y="0" width="6" height="110" rx="3" fill="#c4312b"/><g transform="translate(22,22) scale(1.0833333333333333)" fill="none" stroke="#c4312b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c3 3 3 16 0 19M12 2.5c-3 3-3 16 0 19"/></g>
+<text x="60" y="42" font-size="19" font-weight="700" fill="#1d2a3a">Your browser</text>
+<text x="22" y="74" font-size="14.5" fill="#5b6b7c">the web app: no account,</text><text x="22" y="95" font-size="14.5" fill="#5b6b7c">no key, works offline</text></g>
+<g transform="translate(940,180)"><rect width="230" height="110" rx="16" fill="#fffaf0" stroke="#d8ccb4" stroke-width="1.5"/>
+<rect x="0" y="0" width="6" height="110" rx="3" fill="#c4312b"/><g transform="translate(22,22) scale(1.0833333333333333)" fill="none" stroke="#c4312b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="4.5" width="15" height="10.5" rx="1.6"/><path d="M2 18.5h20l-1.5 1.5h-17z"/></g>
+<text x="60" y="42" font-size="19" font-weight="700" fill="#1d2a3a">Desktop app</text>
+<text x="22" y="74" font-size="14.5" fill="#5b6b7c">Windows, macOS, Linux;</text><text x="22" y="95" font-size="14.5" fill="#5b6b7c">flights and ships in real time</text></g>
+<text x="600" y="318" text-anchor="middle" font-size="13.5" fill="#5b6b7c">The desktop app also asks the live sources directly (dashed), so it is not limited by what a browser may fetch.</text>
+</svg>

@@ -17,11 +17,14 @@
         "minHeight": 600,
         "backgroundColor": "#081827",
         "label": "main",
-        "additionalBrowserArgs": "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection"
+        "additionalBrowserArgs": "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --disable-features=msWebOOUI,msPdfOOUI"
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; media-src 'self' data: blob: https: http:; connect-src 'self' data: blob: https: wss: ipc: http://ipc.localhost; worker-src 'self' blob:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'",
+      "dangerousDisableAssetCspModification": [
+        "style-src"
+      ]
     }
   },
   "bundle": {

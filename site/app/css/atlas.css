@@ -204,6 +204,9 @@ body[data-look='crt'] #globe canvas { filter: saturate(1.35) contrast(1.15) brig
 .look-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 1; display: none; }
 body[data-look='nvg'] .look-overlay { display: block; background: radial-gradient(circle at 50% 50%, transparent 55%, rgba(0, 20, 0, .85) 100%), repeating-radial-gradient(circle at 30% 40%, var(--hover) 0 1px, transparent 1px 3px); }
 body[data-look='crt'] .look-overlay { display: block; background: repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px), radial-gradient(circle, transparent 60%, rgba(0,0,0,.55) 100%); mix-blend-mode: multiply; animation: flicker 4s infinite steps(1); }
+/* v2.16 Print: halftone dots in ink on paper (filter #look-print), with a soft paper grain and vignette */
+body[data-look='print'] #globe canvas { filter: url(#look-print); }
+body[data-look='print'] .look-overlay { display: block; background: radial-gradient(circle, transparent 60%, rgba(29, 42, 58, .35) 100%), repeating-linear-gradient(115deg, rgba(120, 96, 60, .05) 0 1px, transparent 1px 5px); mix-blend-mode: multiply; }
 body[data-look='flir'] .look-overlay { display: block; background: radial-gradient(circle, transparent 65%, rgba(0,0,0,.6) 100%); }
 @keyframes flicker { 50% { opacity: .92; } }
 @media (max-width: 860px) { .looks { order: 4; } }
@@ -214,6 +217,7 @@ body[data-look='flir'] .look-overlay { display: block; background: radial-gradie
 .mapctl button:hover { border-color: var(--ink-2); }
 .mapctl button svg { width: 20px; height: 20px; }
 .mapctl button[aria-busy='true'] { animation: blink 1s infinite; }
+.mapctl button[aria-pressed='true'] { background: var(--ink); color: var(--panel); border-color: var(--ink); } /* v2.19 tilt on */
 .scalebar { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-panel); padding: 4px 8px; font-size: var(--fs-caption); color: var(--ink-2); display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
 .scalebar i { display: block; height: 5px; border: 2px solid var(--ink); border-top: 0; min-width: 20px; }
 .notes.open ~ .mapctl { right: 384px; }
@@ -1272,3 +1276,9 @@ body.in-space #globe { cursor: grab; }
 .sv-thumb { display: block; width: 96px; height: 36px; object-fit: contain; }
 .pt-ship:has(.sv-slot) { grid-template-columns: 72px minmax(0, 1fr) auto; } .pt-ship .sv-thumb { width: 72px; height: 27px; } .sv-slot { display: inline-grid; place-items: center; min-width: 22px; line-height: 0; }
 .pt-big li:has(.sv-slot) { display: grid; grid-template-columns: 96px minmax(0, 1fr); column-gap: 8px; align-items: center; } .pt-big li > .sv-slot { grid-row: span 2; width: 96px; height: 36px; }
+/* v2.20 the solar system card */
+.sys-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0 10px; font-variant-numeric: tabular-nums; }
+.sys-table th { text-align: left; font-weight: 600; color: var(--ink-2); font-size: 11.5px; padding: 4px 6px; border-bottom: 1px solid var(--line); }
+.sys-table td { padding: 5px 6px; border-bottom: 1px solid var(--line); }
+.sys-table td .linkish { display: inline-flex; align-items: center; gap: 7px; min-height: 24px; font-weight: 600; }
+.sys-table td .linkish i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); box-shadow: 0 0 6px var(--c); }

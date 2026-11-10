@@ -19,6 +19,8 @@ import { writeFileSync, readFileSync, existsSync, mkdirSync, statSync, readdirSy
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { AIS_URL, SHIP_FIELDS, STATIC_FIELDS, aisSubscription, createAisStore, parseFrame } from '../site/app/js/ais.js';
+import { airSites, batchUrl, batchRows, CURRENT } from '../site/app/js/aqi.js';
+import { NWS_ACTIVE, slim, fillZones } from '../site/app/js/warnings.js';
 
 const OUT = process.argv[2] ?? 'live';
 mkdirSync(OUT, { recursive: true });
@@ -208,6 +210,36 @@ async function gdacs() {
   write('gdacs.json', { ...j, generatedAt: new Date().toISOString() });
   return `${j.features?.length ?? 0} events`;
 }
+// ------------------------------------------------------------------ air quality (v2.15)
+// The Air quality layer's ~400 places, refreshed hourly (the models update hourly). Rows: [lat, lng, ...CURRENT].
+async function air() {
+  if (ageMin('air.json') < 55) return 'fresh enough';
+  const sites = airSites(JSON.parse(readFileSync(new URL('../site/app/data/cities.json', import.meta.url), 'utf8')).rows);
+  const rows = [];
+  for (let i = 0; i < sites.length; i += 100) {
+    const part = sites.slice(i, i + 100);
+    batchRows(await get(batchUrl(part))).forEach((v, j) => rows.push([part[j].lat, part[j].lng, ...v]));
+    await sleep(400);
+  }
+  write('air.json', { generatedAt: new Date().toISOString(), fields: ['lat', 'lng', ...CURRENT], rows, source: 'Open-Meteo air-quality API (CAMS), CC BY 4.0' });
+  return { note: `${rows.filter((r) => r[2] != null).length} places`, count: rows.length };
+}
+
+// ------------------------------------------------------------------ US weather warnings (v2.15)
+// Every active NWS alert with an outline: storm-based polygons as sent, zone-based ones filled from their forecast zones
+// (zone outlines cached in the run folder for a day). Coordinates are rounded to 3 decimals (about 100 m).
+const round3 = (g) => { const w = (x) => (typeof x[0] === 'number' ? [Math.round(x[0] * 1e3) / 1e3, Math.round(x[1] * 1e3) / 1e3] : x.map(w)); return g ? { type: g.type, coordinates: w(g.coordinates) } : null; };
+async function nws() {
+  const j = await get(NWS_ACTIVE, { headers: { Accept: 'application/geo+json' } });
+  const alerts = (j.features ?? []).map(slim);
+  const zoneCache = (() => { try { const z = JSON.parse(readFileSync(join(OUT, 'nws-zones.json'), 'utf8')); return Date.now() - Date.parse(z.at) < 86_400_000 ? z.zones : {}; } catch { return {}; } })();
+  await fillZones(alerts, async (u) => { if (zoneCache[u] !== undefined) return { geometry: zoneCache[u] }; const z = await get(u, { headers: { Accept: 'application/geo+json' }, timeout: 20_000 }); zoneCache[u] = round3(z.geometry); return { geometry: zoneCache[u] }; }, { max: 400 });
+  write('nws-zones.json', { at: new Date().toISOString(), zones: zoneCache });
+  const out = alerts.filter((a) => a.geometry).map((a) => ({ ...a, geometry: round3(a.geometry), zones: a.zones }));
+  write('nws.json', { generatedAt: new Date().toISOString(), alerts: out, total: alerts.length });
+  return { note: `${out.length} of ${alerts.length} alerts with an outline`, count: out.length };
+}
+
 async function tles() {
   // CelesTrak asks that a group is downloaded at most once every two hours.
   if (ageMin('tle-meta.json') < 115) return 'fresh enough';
@@ -306,7 +338,7 @@ async function news() {
 // last real refresh from the previous status file.
 const prevStatus = (() => { try { return JSON.parse(readFileSync(join(OUT, 'status.json'), 'utf8')).feeds ?? {}; } catch { return {}; } })();
 const only = process.env.LIVE_ONLY?.split(','); // e.g. LIVE_ONLY=ships for a quick local test
-for (const [name, fn] of [['flights', flights], ['gdacs', gdacs], ['launches', launches], ['tle', tles], ['news', news], ['fires', fires], ['ships', ships]]) {
+for (const [name, fn] of [['flights', flights], ['gdacs', gdacs], ['launches', launches], ['tle', tles], ['news', news], ['fires', fires], ['ships', ships], ['air', air], ['nws', nws]]) {
   if (only && !only.includes(name)) { if (prevStatus[name]) status.feeds[name] = prevStatus[name]; continue; }
   const t0 = Date.now();
   try {
@@ -316,5 +348,5 @@ for (const [name, fn] of [['flights', flights], ['gdacs', gdacs], ['launches', l
   } catch (e) { status.feeds[name] = { ...prevStatus[name], ok: false, note: e.message, failedAt: new Date().toISOString() }; log(name, 'FAILED:', e.message); }
 }
 write('status.json', status);
-write('README.md', `# Global Intelligence Atlas live-data\n\nMachine-written snapshots for https://normansrule.github.io/global-intelligence-atlas/app/ — rebuilt every ~4 minutes by \`.github/workflows/live.yml\` on the main branch. Nothing here is edited by hand; each run replaces the whole branch.\n\nLast run: ${status.generatedAt}\n\n${Object.entries(status.feeds).map(([k, v]) => `- **${k}**: ${v.ok ? 'ok' : 'failed'} — ${v.note}`).join('\n')}\n\nData: OpenSky Network / airplanes.live / adsb.lol (flights), NASA FIRMS (fire hotspots), AISStream (ships), The Space Devs (launches), GDACS (disaster alerts), CelesTrak (orbits), The GDELT Project (news). See docs/REFERENCES.md on main for licences.\n`);
+write('README.md', `# Global Intelligence Atlas live-data\n\nMachine-written snapshots for https://normansrule.github.io/global-intelligence-atlas/app/ — rebuilt every ~4 minutes by \`.github/workflows/live.yml\` on the main branch. Nothing here is edited by hand; each run replaces the whole branch.\n\nLast run: ${status.generatedAt}\n\n${Object.entries(status.feeds).map(([k, v]) => `- **${k}**: ${v.ok ? 'ok' : 'failed'} — ${v.note}`).join('\n')}\n\nData: OpenSky Network / airplanes.live / adsb.lol (flights), NASA FIRMS (fire hotspots), AISStream (ships), The Space Devs (launches), GDACS (disaster alerts), CelesTrak (orbits), The GDELT Project (news), Open-Meteo / CAMS (air quality), US National Weather Service (weather warnings). See docs/REFERENCES.md on main for licences.\n`);
 if (!only && !status.feeds.flights?.ok && !existsSync(join(OUT, 'flights.json'))) process.exitCode = 1;

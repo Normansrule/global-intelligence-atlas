@@ -7,6 +7,8 @@
 //   longitude 0 in the middle · dot: colour of the far-away dot and label · atm: rim glow [r, g, b, strength]
 //   airless: lit like bare rock (Lommel-Seeliger), so a full Moon stays bright to its edge
 //   trek: a sharper global mosaic on NASA's Solar System Treks tile servers, loaded only when you fly in close
+//   trekMax: the deepest level of that tile pyramid worth loading, from the mosaic's own resolution (v2.20: tiles down
+//   to it are loaded around the point you look at)
 
 export const BODIES = [
   {
@@ -16,7 +18,7 @@ export const BODIES = [
   },
   {
     id: 'mercury', name: 'Mercury', kind: 'Planet', r: 2439.7, tex: 'mercury.jpg', dot: '#b9b1a6', credit: 'sss', airless: 1, glyph: '☿',
-    trek: 'https://trek.nasa.gov/tiles/Mercury/EQ/Mercury_MESSENGER_MDIS_Basemap_EnhancedColor_Mosaic_Global_665m/1.0.0/default/default028mm',
+    trekMax: 6, trek: 'https://trek.nasa.gov/tiles/Mercury/EQ/Mercury_MESSENGER_MDIS_Basemap_EnhancedColor_Mosaic_Global_665m/1.0.0/default/default028mm',
     facts: [['Radius', '2,440 km'], ['Day (sunrise to sunrise)', '176 Earth days'], ['Year', '88 days'], ['Gravity', '0.38 × Earth'], ['Temperature', '−180 to 430 °C'], ['Moons', '0']],
     about: 'The smallest planet and the closest to the Sun. With almost no air to hold heat, its days bake and its nights freeze. NASA’s MESSENGER mapped all of it from orbit between 2011 and 2015.',
   },
@@ -32,13 +34,13 @@ export const BODIES = [
   },
   {
     id: 'moon', name: 'Moon', kind: 'Earth’s moon', r: 1737.4, tex: 'moon.jpg', dot: '#e8e6df', credit: 'sss', airless: 1, parent: 'earth', glyph: '☾',
-    trek: 'https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/default/default028mm',
+    trekMax: 8, trek: 'https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/default/default028mm',
     facts: [['Radius', '1,737 km'], ['Orbits Earth in', '27.3 days'], ['Phases repeat every', '29.5 days'], ['Gravity', '0.17 × Earth'], ['Temperature', '−170 to 120 °C'], ['People who walked on it', '12 (1969–1972)']],
     about: 'Shown where it really is, turned the way it really faces us (its slow wobble, libration, included) and lit by the real Sun, so its phase here matches the sky. The map is made from NASA Lunar Reconnaissance Orbiter (LRO) images; fly in close for NASA’s full-resolution mosaic.',
   },
   {
     id: 'mars', name: 'Mars', kind: 'Planet', r: 3389.5, flat: 0.9941, tex: 'mars.jpg', dot: '#e0805a', credit: 'sss', atm: [1.0, 0.62, 0.42, 0.28], glyph: '♂',
-    trek: 'https://trek.nasa.gov/tiles/Mars/EQ/Mars_Viking_MDIM21_ClrMosaic_global_232m/1.0.0/default/default028mm',
+    trekMax: 7, trek: 'https://trek.nasa.gov/tiles/Mars/EQ/Mars_Viking_MDIM21_ClrMosaic_global_232m/1.0.0/default/default028mm',
     facts: [['Radius', '3,390 km'], ['Day', '24 h 40 min'], ['Year', '687 days'], ['Gravity', '0.38 × Earth'], ['Average', '−65 °C'], ['Moons', '2']],
     about: 'A cold desert with the solar system’s tallest volcano (Olympus Mons, about 22 km) and a canyon as long as the United States (Valles Marineris). Rovers are driving on it right now.',
   },

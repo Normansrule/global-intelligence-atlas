@@ -220,7 +220,7 @@ function ensureMesh() {
     m.onBeforeRender = () => { glide.value = Math.min(30, (performance.now() - layoutAt) / 1000); };
     meshes[cls] = m; group.add(m);
   }
-  group.add(ensureTrails());
+  group.add(ensureTrails()); group.add(ensureLights());
   return group;
 }
 // --------------------------------------------------------------- contrails
@@ -263,6 +263,48 @@ function ensureTrails() {
   return trailMesh;
 }
 export const trailCount = () => (trailMesh?.visible ? trailMesh.geometry.instanceCount : 0);
+// --------------------------------------------------------------- lifelike close-ups (v2.17)
+// Zoomed right in (below about 41 km, where ships become 3D models too) planes lose their map colours and are
+// painted like aircraft, in white, and they shrink smoothly from their readable map size to their
+// true size near the ground (never under a quarter of its map size, so it stays findable), to scale with the roads,
+// cars and buildings below it.
+// Each one also carries its real lights: a red light on the left wingtip, green on the right, a white strobe
+// that double-flashes on each wingtip and the tail, and a red beacon that blinks on the top. The lights are one
+// point cloud that glides with the planes on the GPU, like the trails, so they cost one draw call.
+export const CLOSE_ALT = 0.0065; const TRUE_ALT = 0.0009;
+export const closeness = (camAlt) => Math.min(1, Math.max(0, (CLOSE_ALT - camAlt) / (CLOSE_ALT - TRUE_ALT))); // 0 far, 1 at street level
+const LIGHT_VERT = `
+attribute vec3 iVel; attribute vec3 iCol; attribute float iKind; // kind: 0 steady nav light, 1 strobe, 2 beacon
+uniform float uDt; uniform float uTime; uniform float uPx;
+varying vec3 vCol; varying float vOn;
+void main() {
+  vec3 p = position + iVel * uDt;
+  float ph = fract(uTime + fract(iKind) * 2.0);
+  float strobe = step(ph, 0.05) + step(0.13, ph) * step(ph, 0.18); // two quick flashes a second
+  float beacon = step(fract(uTime * 0.75 + fract(iKind) * 2.0), 0.12);
+  float kind = floor(iKind + 0.5);
+  vOn = kind < 0.5 ? 1.0 : kind < 1.5 ? strobe : beacon; vCol = iCol;
+  vec4 mv = modelViewMatrix * vec4(p, 1.0);
+  gl_PointSize = uPx * (kind > 0.5 ? 5.0 : 3.5) * (0.6 + 0.4 * vOn);
+  gl_Position = projectionMatrix * mv;
+}`;
+const LIGHT_FRAG = `
+varying vec3 vCol; varying float vOn;
+void main() { if (vOn < 0.5) discard; vec2 c = gl_PointCoord - 0.5; float d = dot(c, c); if (d > 0.25) discard; gl_FragColor = vec4(vCol, smoothstep(0.25, 0.0, d)); }`;
+const LIGHTS_PER = 5; let lightMesh = null; const lightClock = { value: 0 };
+function ensureLights() {
+  if (lightMesh) return lightMesh;
+  const g = new THREE.BufferGeometry(); const n = 4000 * LIGHTS_PER;
+  for (const [k, m] of [['position', 3], ['iVel', 3], ['iCol', 3], ['iKind', 1]]) g.setAttribute(k, new THREE.BufferAttribute(new Float32Array(n * m), m).setUsage(THREE.DynamicDrawUsage));
+  g.setDrawRange(0, 0);
+  const mat = new THREE.ShaderMaterial({ vertexShader: LIGHT_VERT, fragmentShader: LIGHT_FRAG, uniforms: { uDt: glide, uTime: lightClock, uPx: { value: 1 } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+  lightMesh = new THREE.Points(g, mat); lightMesh.frustumCulled = false; lightMesh.raycast = () => {}; lightMesh.renderOrder = 6; lightMesh.visible = false;
+  lightMesh.userData.cap = 4000;
+  lightMesh.onBeforeRender = (renderer) => { glide.value = Math.min(30, (performance.now() - layoutAt) / 1000); lightClock.value = performance.now() / 1000; mat.uniforms.uPx.value = renderer.getPixelRatio(); };
+  return lightMesh;
+}
+export const lightCount = () => (lightMesh?.visible ? lightMesh.geometry.drawRange.count / LIGHTS_PER : 0);
+const LIVERY = [0.93, 0.95, 0.97];
 function setLod(next) {
   if (next === lod) return; lod = next;
   for (const m of Object.values(meshes)) { m.geometry = m.userData.geo[lod]; m.material = lod === '3d' ? mat3d : mat2d; }
@@ -300,6 +342,7 @@ export function layoutPlanes(globe, camAlt, list = lastList) {
   layoutAt = performance.now(); glide.value = 0;
   const n = {}; for (const c of CLASS_IDS) n[c] = 0;
   const T = trailMesh.geometry.attributes; let nt = 0; const trails = flightState.trails;
+  const near = lod === '3d' ? closeness(camAlt) : 0; const L = lightMesh.geometry.attributes; let nl = 0; // v2.17 lifelike close-ups
   for (const a of list) {
     const phi = (90 - a.lat) * D2R; const th = (90 - a.lng) * D2R;
     const sp = Math.sin(phi); const cp = Math.cos(phi); const st = Math.sin(th); const ct = Math.cos(th);
@@ -314,13 +357,13 @@ export function layoutPlanes(globe, camAlt, list = lastList) {
     const dx = nx * ch + ex_ * sh; const dy = ny * ch; const dz = nz * ch + ez * sh; // nose direction
     const rx = dy * uz - dz * uy; const ry = dz * ux - dx * uz; const rz = dx * uy - dy * ux; // right wing = nose × up
     const sel = flightState.selected === a.id; const em = EMERGENCY.has(a.squawk);
-    const k = Math.max(trueHalfLength(cls), size * CLASSES[cls].scale) * (sel || em ? 2.2 : 1);
+    const k = Math.max(trueHalfLength(cls), size * CLASSES[cls].scale * Math.max(0.25, 1 - near * near)) * (sel || em ? 2.2 : 1);
     const M = m.instanceMatrix.array; const o = i * 16;
     M[o] = rx * k; M[o + 1] = ry * k; M[o + 2] = rz * k; M[o + 3] = 0;
     M[o + 4] = dx * k; M[o + 5] = dy * k; M[o + 6] = dz * k; M[o + 7] = 0;
     M[o + 8] = ux * k; M[o + 9] = uy * k; M[o + 10] = uz * k; M[o + 11] = 0;
     M[o + 12] = ux * rr; M[o + 13] = uy * rr; M[o + 14] = uz * rr; M[o + 15] = 1;
-    const col = rgbOf(sel ? '#f07a63' : em ? '#ff3b30' : altColor(a.altFt, a.ground));
+    const col = near > 0 && !sel && !em ? LIVERY : rgbOf(sel ? '#f07a63' : em ? '#ff3b30' : altColor(a.altFt, a.ground));
     const C = m.instanceColor.array; C[i * 3] = col[0]; C[i * 3 + 1] = col[1]; C[i * 3 + 2] = col[2];
     const v = a.ground || !a.kt ? 0 : a.kt * KT_TO_UNITS_PER_S; const V = m.userData.vel.array; V[i * 3] = dx * v; V[i * 3 + 1] = dy * v; V[i * 3 + 2] = dz * v;
     if (trails && v > 0 && nt < MAX) { // the trail: 3 to 9 half-lengths of the drawn plane, by speed (so it reads the same at every zoom)
@@ -328,8 +371,21 @@ export function layoutPlanes(globe, camAlt, list = lastList) {
       T.iHead.array.set([ux * rr, uy * rr, uz * rr], nt * 3); T.iVel.array.set([dx * v, dy * v, dz * v], nt * 3);
       T.iDir.array.set([dx, dy, dz], nt * 3); T.iSide.array.set([rx, ry, rz], nt * 3); T.iCol.array.set(col, nt * 3); T.iLen.array.set([k, len], nt * 2); nt++;
     }
+    if (near > 0 && nl < lightMesh.userData.cap) { // wingtips, tail and top, in the plane's own frame (half-length = 1)
+      const wing = CLASSES[cls].S / CLASSES[cls].L; const top = CLASSES[cls].H / CLASSES[cls].L * 0.5;
+      const ph = (nl % 47) / 100; // each plane flashes on its own beat (kept below 0.5 so the kind still rounds down)
+      const pts = [[-wing, 0, 0, 0.95, 0.12, 0.1, 0], [wing, 0, 0, 0.15, 0.95, 0.35, 0], [wing, -0.02, 0, 1, 1, 1, 1 + ph], [0, -1, top, 1, 1, 1, 1 + ph], [0, 0.1, top * 0.6, 1, 0.15, 0.1, 2 + ph]];
+      for (let q = 0; q < LIGHTS_PER; q++) {
+        const [x, y, z, r, g, b, kind] = pts[q]; const j = nl * LIGHTS_PER + q;
+        L.position.array.set([ux * rr + (rx * x + dx * y + ux * z) * k, uy * rr + (ry * x + dy * y + uy * z) * k, uz * rr + (rz * x + dz * y + uz * z) * k], j * 3);
+        L.iVel.array.set([dx * v, dy * v, dz * v], j * 3); L.iCol.array.set([r, g, b], j * 3); L.iKind.array[j] = kind;
+      }
+      nl++;
+    }
     a._alt = alt; n[cls] = i + 1;
   }
+  lightMesh.geometry.setDrawRange(0, nl * LIGHTS_PER); lightMesh.visible = nl > 0;
+  for (const key of ['position', 'iVel', 'iCol', 'iKind']) { const at = L[key]; at.clearUpdateRanges?.(); at.addUpdateRange?.(0, Math.max(at.itemSize, nl * LIGHTS_PER * at.itemSize)); at.needsUpdate = true; }
   trailMesh.geometry.instanceCount = nt; trailMesh.visible = nt > 0;
   for (const key of ['iHead', 'iVel', 'iDir', 'iSide', 'iCol', 'iLen']) { const at = T[key]; at.clearUpdateRanges?.(); at.addUpdateRange?.(0, Math.max(at.itemSize, nt * at.itemSize)); at.needsUpdate = true; }
   trailMesh.material.uniforms.uAlpha.value = lod === '3d' ? 0.35 : 0.5;
@@ -421,7 +477,7 @@ export function flightsLayer(api) {
     options: [{ id: 'scope', label: 'Coverage', choices: [['world', 'Whole world'], ['near', 'Near my view (more detail)']], value: 'world' }, { id: 'trails', label: 'Trails', choices: [['on', 'Trails behind planes'], ['off', 'No trails']], value: 'on' }],
     load: (o, ctx) => { flightState.trails = o.trails !== 'off'; onTypes ??= () => api.refreshLayer('aircraft', { soft: true }); return loadFlights(o, ctx); },
     channels(d, ctx) {
-      allFlights = d.ac; loadFlightDb();
+      allFlights = d.ac; (window.requestIdleCallback ?? setTimeout)(() => loadFlightDb(), { timeout: 4000 }); // v2.16: the airline and type tables (600 kB) load when the browser is idle
       const ac = flightState.airline ? d.ac.filter((a) => a.call?.startsWith(flightState.airline) || a.id === flightState.selected) : d.ac;
       layoutPlanes(ctx.globe, ctx.pov.altitude, ac);
       WRAP.obj = ensureMesh();

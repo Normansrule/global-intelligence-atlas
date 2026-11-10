@@ -73,7 +73,7 @@ export function installNewsDesk(x) {
     tv.playing = c.key;
     const cap = `<div class="news-cap"><b>${esc(c.name)}</b> ${owner(c.owner)} <small>${esc(LANG[c.lang] ?? c.lang)} · ${esc(REGION[c.region] ?? '')}${c.yt ? ` · <a href="https://www.youtube.com/channel/${esc(c.yt)}" target="_blank" rel="noopener noreferrer">Broadcaster’s channel</a>` : ''}</small></div>`;
     if (p.kind === 'yt') {
-      box.innerHTML = `<div class="news-frame"><iframe src="${esc(p.src)}" title="${esc(c.name)} live" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>${cap}`;
+      box.innerHTML = `<div class="news-frame"><iframe src="${esc(p.src)}" title="${esc(c.name)} live" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox"></iframe></div>${cap}`;
     } else {
       box.innerHTML = `<div class="news-frame"><video controls muted autoplay playsinline aria-label="${esc(c.name)} live"></video></div>${cap}`;
       const v = box.querySelector('video');

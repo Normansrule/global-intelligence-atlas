@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 68" width="300" height="68" role="img" aria-label="Open in your browser Launch the atlas">
+<style>text{font-family:'Jost','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif} .shine{animation:sh 4.5s ease-in-out infinite}@keyframes sh{0%,55%{transform:translateX(0) skewX(-18deg)}100%{transform:translateX(520px) skewX(-18deg)}} @media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+<defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#1f4e9c"/><stop offset="1" stop-color="#2d6fd0"/></linearGradient>
+<linearGradient id="s" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".28"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<clipPath id="c"><rect x="1" y="1" width="298" height="66" rx="16"/></clipPath></defs>
+<rect x="1" y="1" width="298" height="66" rx="16" fill="url(#g)" stroke="none" stroke-width="1.5"/>
+<g clip-path="url(#c)"><rect class="shine" x="-120" y="0" width="90" height="68" fill="url(#s)" transform="skewX(-18)"/></g>
+<g transform="translate(20,20) scale(1.1666666666666667)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c3 3 3 16 0 19M12 2.5c-3 3-3 16 0 19"/></g>
+<text x="62" y="29" font-size="12.5" font-weight="500" fill="rgba(255,255,255,.78)" letter-spacing=".3">Open in your browser</text>
+<text x="62" y="50" font-size="20" font-weight="700" fill="#ffffff">Launch the atlas</text>
+<g transform="translate(258,22) scale(1)" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5.5v13l10-6.5z"/></g>
+</svg>

@@ -55,23 +55,33 @@ export const ECLIPSE_GLSL = `
   float angleBetween(vec3 u, vec3 v) { return atan(length(cross(u, v)), dot(u, v)); }`;
 // Bodies are lit in view space (camera-relative), so lighting stays crisp even 4.5 billion km from the origin.
 const BODY_VS = `
-  varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+  varying vec2 vUv; varying vec3 vN; varying vec3 vV; varying vec3 vObj;
   void main() {
-    vUv = uv; vec4 mv = modelViewMatrix * vec4(position, 1.0);
+    vUv = uv; vObj = position; vec4 mv = modelViewMatrix * vec4(position, 1.0);
     vN = normalize(normalMatrix * normal); vV = -mv.xyz;
     gl_Position = projectionMatrix * mv;
   }`;
 const BODY_FS = `
   uniform sampler2D map; uniform sampler2D map2; uniform float mix2; uniform vec3 sunV; uniform vec4 atm;
   uniform float airless; uniform float ambient; uniform float sun; uniform float uT;
-  uniform vec3 occV; uniform float occR; uniform float sunAng; uniform vec3 occRed;
-  varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+  uniform vec3 occV; uniform float occR; uniform float sunAng; uniform vec3 occRed; uniform float texW; uniform float grainF;
+  varying vec2 vUv; varying vec3 vN; varying vec3 vV; varying vec3 vObj;
   ${ECLIPSE_GLSL}
+  // v2.20 fine grain: closer than the map's own pixels, a faint grain (value noise in the body's own coordinates)
+  // keeps the surface from turning to blur. It fades in only where one map pixel covers more than two screen pixels.
+  float h3(vec3 p) { p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+  float vnoise(vec3 p) { vec3 i = floor(p); vec3 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(mix(h3(i), h3(i + vec3(1, 0, 0)), f.x), mix(h3(i + vec3(0, 1, 0)), h3(i + vec3(1, 1, 0)), f.x), f.y),
+               mix(mix(h3(i + vec3(0, 0, 1)), h3(i + vec3(1, 0, 1)), f.x), mix(h3(i + vec3(0, 1, 1)), h3(i + vec3(1, 1, 1)), f.x), f.y), f.z); }
+  float grain(vec3 p) { return vnoise(p) * 0.5 + vnoise(p * 2.13) * 0.3 + vnoise(p * 4.41) * 0.2; }
   void main() {
     vec3 n = normalize(vN); vec3 v = normalize(vV); vec3 l = normalize(sunV);
     vec2 uv = vUv;
     if (sun > 0.5) uv += 0.0025 * vec2(sin(vUv.y * 90.0 + uT * 0.35) + sin(vUv.x * 140.0 - uT * 0.2), cos(vUv.x * 120.0 + uT * 0.3));
     vec3 c = mix(texture2D(map, uv).rgb, texture2D(map2, uv).rgb, mix2);
+    float mag = fwidth(uv.x) * texW; // map pixels per screen pixel: below 0.5 we are looking closer than the map
+    if (sun < 0.5 && texW > 0.0) { float k = smoothstep(0.5, 0.12, mag) * (airless > 0.5 ? 1.0 : 0.6);
+      if (k > 0.0) c *= 1.0 + (grain(vObj * grainF * 0.32) - 0.5) * 0.22 * k + (grain(vObj * grainF * 1.7) - 0.5) * 0.12 * k; }
     float nv = max(dot(n, v), 0.0);
     if (sun > 0.5) { // the Sun: its own light, darker toward the edge (limb darkening), slowly churning
       vec3 hot = c * 1.35 + vec3(0.25, 0.16, 0.02) * pow(nv, 3.0);
@@ -166,7 +176,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
   const eqj = new THREE.Group(); eqj.matrixAutoUpdate = false; scene.add(eqj); // the J2000 equator, turned into the globe frame
   const loader = new THREE.TextureLoader(); const aniso = Math.min(8, renderer.capabilities.getMaxAnisotropy?.() ?? 1);
   const st = { sky: true, dark: true, bodies: true, orbits: false, sites: true, focus: null, fly: null, ctl: null, lastCalc: 0, ready: false, venusSurface: false, hires: {}, fast: false };
-  const tmp = new THREE.Vector3(); const tmp2 = new THREE.Vector3(); const mat3 = new THREE.Matrix3();
+  const tmp = new THREE.Vector3(); const tmp2 = new THREE.Vector3(); const tmp3 = new THREE.Vector3(); const mat3 = new THREE.Matrix3();
 
   // ---------------------------------------------------------------- the star sky (NASA Tycho star map, J2000 RA/Dec)
   const skyMat = new THREE.ShaderMaterial({ uniforms: { map: { value: null }, gain: { value: 2.6 } }, vertexShader: SKY_VS, fragmentShader: SKY_FS, depthTest: false, depthWrite: false, side: THREE.BackSide });
@@ -174,7 +184,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
   // The map has right ascension 0 h in the middle growing to the right and declination +90° at the top; three.js
   // spheres put u = 0.5 on +x and the north pole on +y, so a 90° turn about x brings +y onto the J2000 pole.
   sky.rotation.x = Math.PI / 2; sky.frustumCulled = false; sky.renderOrder = -10; sky.visible = false; eqj.add(sky);
-  loader.load('textures/space/stars-tycho.jpg', (t) => { t.anisotropy = aniso; skyMat.uniforms.map.value = t; sky.visible = true; wake?.(); });
+  (window.requestIdleCallback ?? setTimeout)(() => loader.load('textures/space/stars-tycho.jpg', (t) => { t.anisotropy = aniso; skyMat.uniforms.map.value = t; sky.visible = true; wake?.(); }), { timeout: 2500 }); // v2.16: the 900 kB star map after the Earth
 
   // ---------------------------------------------------------------- bodies
   const sphere = new THREE.SphereGeometry(1, 96, 48);
@@ -187,7 +197,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
         uniforms: {
           map: { value: blank(def.dot) }, map2: { value: blank(def.dot) }, mix2: { value: 0 }, sunV: { value: new THREE.Vector3(1, 0, 0) },
           atm: { value: new THREE.Vector4(...(def.atm ?? [0, 0, 0, 0])) }, airless: { value: def.airless ? 1 : 0 }, ambient: { value: def.id === 'moon' ? 0.018 : 0.006 },
-          sun: { value: def.id === 'sun' ? 1 : 0 }, uT: { value: 0 },
+          sun: { value: def.id === 'sun' ? 1 : 0 }, uT: { value: 0 }, texW: { value: 2048 }, grainF: { value: 2048 },
           occV: { value: new THREE.Vector3() }, occR: { value: 0 }, sunAng: { value: 0.00465 }, occRed: { value: new THREE.Vector3(...(def.id === 'moon' ? [0.36, 0.11, 0.035] : [0, 0, 0])) },
         },
         vertexShader: BODY_VS, fragmentShader: BODY_FS,
@@ -208,7 +218,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
   }
   function loadTex(b) {
     if (b.loaded || !b.def.tex) return; b.loaded = true;
-    const set = (k, url) => loader.load(`textures/space/${url}`, (t) => { t.anisotropy = aniso; b.mesh.material.uniforms[k].value = t; wake?.(); });
+    const set = (k, url) => loader.load(`textures/space/${url}`, (t) => { t.anisotropy = aniso; b.mesh.material.uniforms[k].value = t; if (k === 'map') b.mesh.material.uniforms.texW.value = b.mesh.material.uniforms.grainF.value = t.image?.width ?? 2048; wake?.(); });
     set('map', b.def.tex); if (b.def.tex2) set('map2', b.def.tex2);
   }
 
@@ -235,7 +245,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
   glow.renderOrder = 5; scene.add(glow);
 
   // Far-away bodies as glowing dots, all in one draw call.
-  const DOTS = ORDER.filter((id) => id !== 'sun' && id !== 'earth');
+  const DOTS = ORDER.filter((id) => id !== 'sun'); // v2.20: the Earth too, seen from out in the solar system
   const dotGeo = new THREE.BufferGeometry();
   dotGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(DOTS.length * 3), 3));
   dotGeo.setAttribute('aSize', new THREE.BufferAttribute(new Float32Array(DOTS.length), 1));
@@ -248,6 +258,32 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
   const orbitMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.38, depthWrite: false });
   const helio = new THREE.Group(); const jovian = new THREE.Group(); eqj.add(helio); eqj.add(jovian);
   let orbitsBuilt = false;
+
+  // v2.20 the asteroid belt and the Kuiper belt: where they really are (2.1–3.3 AU, with the Kirkwood gaps that
+  // Jupiter clears, and 39–48 AU beyond Neptune), drawn as thousands of rocks that each go round at their own
+  // Kepler speed, so the time machine sets them turning. The rocks themselves are illustrative, not real asteroids.
+  const BELT_VS = `attribute vec3 aOrb; attribute vec3 aAng; uniform float uDays; uniform float uAU; uniform mat3 uEcl; uniform float uPx;
+    void main() { float a = aOrb.x; float e = aOrb.y; float inc = aOrb.z; float node = aAng.x; float peri = aAng.y;
+      float M = aAng.z + 6.2831853 * uDays / (365.25 * pow(a, 1.5)); float E = M + e * sin(M); E = M + e * sin(E); // Kepler, two steps
+      float x = a * (cos(E) - e); float y = a * sqrt(1.0 - e * e) * sin(E);
+      float cw = cos(peri); float sw = cos(peri - 1.5707963); float cn = cos(node); float sn = sin(node); float ci = cos(inc); float si = sin(inc);
+      float xo = x * cw - y * sw; float yo = x * sw + y * cw;
+      vec3 p = vec3(xo * cn - yo * ci * sn, xo * sn + yo * ci * cn, yo * si) * uAU; // in the ecliptic
+      vec4 mv = modelViewMatrix * vec4(uEcl * p, 1.0); gl_Position = projectionMatrix * mv; gl_PointSize = uPx; }`;
+  const BELT_FS = `uniform vec3 uC; uniform float uA; void main() { float d = length(gl_PointCoord - 0.5) * 2.0; if (d > 1.0) discard; gl_FragColor = vec4(uC, uA * (1.0 - d * d)); }`;
+  const OBL = 23.4392911 * D2R; const eclToEq = new THREE.Matrix3().set(1, 0, 0, 0, Math.cos(OBL), -Math.sin(OBL), 0, Math.sin(OBL), Math.cos(OBL));
+  function belt(n, seed, pick, color, alpha, px = 1.6) {
+    let r = seed; const rnd = () => { r = (r * 16807) % 2147483647; return r / 2147483647; };
+    const orb = new Float32Array(n * 3); const ang = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { const [a, e, inc] = pick(rnd); orb.set([a, e, inc], i * 3); ang.set([rnd() * 6.2832, rnd() * 6.2832, rnd() * 6.2832], i * 3); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3)); g.setAttribute('aOrb', new THREE.BufferAttribute(orb, 3)); g.setAttribute('aAng', new THREE.BufferAttribute(ang, 3));
+    const m = new THREE.Points(g, new THREE.ShaderMaterial({ uniforms: { uDays: { value: 0 }, uAU: { value: AU }, uEcl: { value: eclToEq }, uPx: { value: px * Math.min(devicePixelRatio, 2) }, uC: { value: new THREE.Color(color) }, uA: { value: alpha } }, vertexShader: BELT_VS, fragmentShader: BELT_FS, transparent: true, depthWrite: false }));
+    m.frustumCulled = false; m.visible = false; helio.add(m); return m;
+  }
+  const gauss = (rnd) => Math.sqrt(-2 * Math.log(rnd() + 1e-9)) * Math.cos(6.2832 * rnd());
+  const GAPS = [2.502, 2.825, 2.958]; // Kirkwood gaps (3:1, 5:2, 7:3 with Jupiter)
+  const asteroids = belt(6000, 7, (rnd) => { let a; do a = 2.1 + rnd() * 1.2; while (GAPS.some((g) => Math.abs(a - g) < 0.025)); return [a, Math.min(0.3, Math.abs(gauss(rnd)) * 0.08), Math.abs(gauss(rnd)) * 7 * D2R]; }, '#b8a58c', 0.55);
+  const kuiper = belt(5000, 11, (rnd) => [rnd() < 0.25 ? 39.4 + gauss(rnd) * 0.3 : 42 + rnd() * 6, Math.min(0.35, Math.abs(gauss(rnd)) * 0.1), Math.abs(gauss(rnd)) * 10 * D2R], '#a9c2e6', 0.85, 2.4);
   function buildOrbits(t) {
     orbitsBuilt = true;
     const make = (ids, sample, steps) => {
@@ -266,7 +302,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     eqj.add(make(['moon'], (_id, f) => { const v = A.GeoMoon(A.MakeTime(ut + (f - 0.5) * 27.32)); return [v.x * AU, v.y * AU, v.z * AU]; }, 240));
     jovian.add(make(GALILEAN, (id, f) => { const v = A.JupiterMoons(A.MakeTime(ut + (f - 0.5) * MOON_PERIOD[id]))[id]; return [v.x * AU, v.y * AU, v.z * AU]; }, 160));
   }
-  const orbitLines = () => [...helio.children, ...jovian.children, ...eqj.children.filter((o) => o.isLineSegments)];
+  const orbitLines = () => [...helio.children.filter((o) => !o.isPoints), ...jovian.children, ...eqj.children.filter((o) => o.isLineSegments)];
 
   // ---------------------------------------------------------------- where everything is
   const F = new THREE.Matrix4(); const Finv = new THREE.Matrix4();
@@ -386,8 +422,10 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
       const k = DOTS.indexOf(id);
       if (k >= 0) {
         pos[k * 3] = b.pos.x; pos[k * 3 + 1] = b.pos.y; pos[k * 3 + 2] = b.pos.z;
-        size[k] = id === 'moon' ? 7 : GALILEAN.includes(id) ? 3.2 : id === 'pluto' ? 3 : id === 'venus' || id === 'jupiter' ? 7.5 : 5.5;
+        size[k] = id === 'moon' ? 7 : GALILEAN.includes(id) ? 3.2 : id === 'pluto' ? 3 : id === 'venus' || id === 'jupiter' ? 7.5 : id === 'earth' ? 6.5 : 5.5;
         alpha[k] = showBodies ? (1 - smooth(1.2, 4, b.px)) * (GALILEAN.includes(id) ? smooth(4, 40, B.jupiter.px) : 1) : 0;
+        if (id === 'earth') alpha[k] = st.focus ? 1 - smooth(1.2, 4, b.px) : 0; // on the globe the Earth is the globe
+        if (st.focus === 'system' && (id === 'moon' || GALILEAN.includes(id))) alpha[k] *= 0.35; // moons sit on their planets out here
       }
     }
     dotGeo.attributes.position.needsUpdate = true; dotGeo.attributes.aSize.needsUpdate = true; dotGeo.attributes.aAlpha.needsUpdate = true;
@@ -400,7 +438,10 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     }
     // the Sun's glow faces the camera
     const sun = B.sun; glow.visible = !!showBodies;
-    glow.position.copy(sunWorld); glow.quaternion.copy(cam.quaternion); glow.scale.setScalar(sun.r * (st.focus === 'sun' ? 7 : 12));
+    glow.position.copy(sunWorld); glow.quaternion.copy(cam.quaternion); glow.scale.setScalar(Math.max(sun.r * (st.focus === 'sun' ? 7 : 12), sun.dist * 0.035)); // never smaller than a bright star
+    // v2.20 the belts, turning at their Kepler speeds with the atlas clock
+    const belts = st.focus === 'system' || (!!st.focus && !!st.ctl && cam.position.distanceTo(st.ctl.target) > AU * 0.3); // close to a planet the rocks would only look like stars
+    for (const m of [asteroids, kuiper]) { m.visible = belts; if (belts && st.t) m.material.uniforms.uDays.value = st.t.ut; }
     sky.visible = !!skyMat.uniforms.map.value && (st.sky || !!st.focus);
     for (const l of orbitLines()) l.visible = st.orbits || !!st.focus;
     if (earthMesh) earthMesh.visible = !!st.focus;
@@ -424,8 +465,16 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     return toSun.multiplyScalar(0.82).addScaledVector(side, 0.5).addScaledVector(up, 0.18).normalize();
   }
   function fit(id) { const r = B[id].r; return id === 'sun' ? r * 4.2 : id === 'saturn' ? r * 5.2 : r * 3.4; }
+  /** v2.20 the whole solar system: from above the plane of the planets, a little tilted, with the Earth towards you. */
+  function systemView() {
+    const sun = toWorld(B.sun.pos, new THREE.Vector3());
+    const north = new THREE.Vector3(0, -Math.sin(OBL), Math.cos(OBL)).applyMatrix4(new THREE.Matrix4().extractRotation(F)); // the ecliptic's north pole
+    const toEarth = sun.clone().negate(); toEarth.addScaledVector(north, -toEarth.dot(north)).normalize();
+    return { dir: north.multiplyScalar(Math.sin(55 * D2R)).addScaledVector(toEarth, Math.cos(55 * D2R)).normalize(), dist: 100 * AU, tgt: () => toWorld(B.sun.pos, new THREE.Vector3()) };
+  }
   async function explore(id, { instant = false } = {}) {
     await loadEngine(); compute(); // fresh positions: the clock may just have jumped (an eclipse to watch)
+    if (id === 'system') return exploreSystem({ instant });
     if (!BODY[id]) return;
     if (id === 'earth' && !st.focus) return;
     const c = ensureControls(); ensureEarth();
@@ -445,10 +494,31 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     const hop = Math.max(0, Math.log(sep / Math.max(d0, d1, 1)) * 0.45);
     const ms = instant || reduceMotion ? 0 : 2200 + Math.min(2600, Math.log10(1 + sep) * 260);
     st.focus = id; st.fly = { t0: performance.now(), ms, tgt0, dir0, d0, dir1, d1, tgt1, hop, to: id };
-    c.enabled = false; c.minDistance = (id === 'earth' ? R : b.r) * 1.04; c.maxDistance = (id === 'earth' ? R : b.r) * (id === 'sun' ? 40 : 400);
+    c.enabled = false; c.enablePan = false; c.minDistance = id === 'earth' ? R * 1.04 : b.r + minAltitude(b); c.maxDistance = (id === 'earth' ? R : b.r) * (id === 'sun' ? 40 : 400);
     // On phones the card would cover the body you flew to: it waits behind the ⓘ button in the space bar.
     if (id !== 'earth') { loadTex(b); if (matchMedia('(max-width: 860px)').matches) closeNotes?.(); else card(id); }
     bar(); onChange?.(id === 'earth' ? null : id); wake?.(ms + 1500);
+  }
+  /** How close you may fly: until one pixel of the best map we have covers about a quarter of a screen pixel. */
+  function minAltitude(b) {
+    const d = b.def; const px = d.trek && d.trekMax ? 2 ** (d.trekMax + 1) * 256 : (b.mesh?.material.uniforms.texW.value ?? 2048);
+    const mPerPx = (2 * Math.PI * b.r) / px; const viewPx = renderer.domElement.height / renderer.getPixelRatio();
+    return Math.max(b.r * 0.004, (mPerPx * viewPx) / (2 * Math.tan((cam.fov * D2R) / 2)) / 4);
+  }
+  async function exploreSystem({ instant = false } = {}) {
+    const c = ensureControls(); ensureEarth();
+    if (!st.focus) {
+      cam.position.copy(mainCam.position); cam.quaternion.copy(mainCam.quaternion); cam.updateMatrixWorld(); c.target.set(0, 0, 0);
+      globe.controls().enabled = false; globe.enablePointerInteraction(false); globe.controls().autoRotate = false;
+      document.body.classList.add('in-space');
+    }
+    if (!orbitsBuilt && st.t) buildOrbits(st.t);
+    const v = systemView(); const tgt0 = c.target.clone(); const rel = cam.position.clone().sub(tgt0); const d0 = rel.length();
+    const ms = instant || reduceMotion ? 0 : 4200;
+    st.focus = 'system'; st.fly = { t0: performance.now(), ms, tgt0, dir0: rel.normalize(), d0, dir1: v.dir, d1: v.dist, tgt1: v.tgt, hop: 0, to: 'system' };
+    c.enabled = false; c.enablePan = true; c.screenSpacePanning = true; c.minDistance = B.sun.r * 6; c.maxDistance = 400 * AU;
+    if (matchMedia('(max-width: 860px)').matches) closeNotes?.(); else systemCard();
+    bar(); onChange?.('system'); wake?.(ms + 1500);
   }
   function stepFly() {
     const f = st.fly; const c = st.ctl;
@@ -475,9 +545,15 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     // The body keeps moving (the Moon covers its own width in under an hour, faster with the time machine): carry
     // the camera along so it stays put relative to the body.
     if (!st.focus || st.fly || st.focus === 'earth') return;
+    if (st.focus === 'system') { // the Sun drifts (seen from the Earth's frame): carry the view with it, keeping any pan
+      const p = toWorld(B.sun.pos, new THREE.Vector3()); if (st.follow) { const d = p.clone().sub(st.follow); cam.position.add(d); st.ctl.target.add(d); }
+      st.follow = p; st.ctl.rotateSpeed = 0.55; st.ctl.update(); return;
+    }
     const p = toWorld(B[st.focus].pos, new THREE.Vector3());
     if (st.follow) { const d = p.clone().sub(st.follow); cam.position.add(d); }
-    st.follow = p; st.ctl.target.copy(p); st.ctl.update();
+    st.follow = p; st.ctl.target.copy(p);
+    const alt = cam.position.distanceTo(p) - B[st.focus].r; st.ctl.rotateSpeed = 0.55 * Math.min(1, Math.max(0.002, alt / B[st.focus].r)); // slower turning near the ground
+    st.ctl.update(); detail();
   }
 
   // ---------------------------------------------------------------- the render pass
@@ -525,6 +601,34 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     el.innerHTML = `<i style="--c:${BODY[id].dot}"></i><span>${esc(BODY[id].name)}</span>`; el.title = `Fly to ${BODY[id].name}`;
     el.hidden = true; layer.appendChild(el); L[id] = el;
   }
+  // v2.20 humanity's farthest spacecraft, out beyond the planets. Approximate: each one's direction from the Sun
+  // (right ascension and declination, J2000) and its distance on 1 January 2025, moving outwards at its cruise speed.
+  // Good to about 1 AU, which is plenty at this scale; they are shown only in the solar system view.
+  const PROBES = [
+    { id: 'voyager1', name: 'Voyager 1', ra: 17.2, dec: 12.0, au: 166.4, auYr: 3.57, launched: 1977, note: 'Launched 1977; flew past Jupiter and Saturn, crossed into interstellar space in 2012. The farthest human-made object.', ref: 'jplvoyager' },
+    { id: 'voyager2', name: 'Voyager 2', ra: 20.0, dec: -59.5, au: 139.5, auYr: 3.22, launched: 1977, note: 'Launched 1977; the only spacecraft to visit Uranus (1986) and Neptune (1989). In interstellar space since 2018.', ref: 'jplvoyager' },
+    { id: 'newhorizons', name: 'New Horizons', ra: 19.75, dec: -20.5, au: 61.0, auYr: 2.89, launched: 2006, note: 'Launched 2006; flew past Pluto in 2015 and Arrokoth in the Kuiper belt in 2019.', ref: 'newhorizons' },
+  ];
+  const probeAU = (p, ms = now().getTime()) => p.au + p.auYr * (ms - Date.UTC(2025, 0, 1)) / 31557600000;
+  const probeDir = (p) => { const a = p.ra * 15 * D2R; const d = p.dec * D2R; return new THREE.Vector3(Math.cos(d) * Math.cos(a), Math.cos(d) * Math.sin(a), Math.sin(d)); };
+  const PL = {};
+  for (const p of PROBES) {
+    const el = document.createElement('button'); el.type = 'button'; el.className = 'space-label probe'; el.dataset.spaceProbe = p.id;
+    el.innerHTML = `<i style="--c:#7fe3c4"></i><span>${esc(p.name)}</span>`; el.title = `${p.name}: about ${Math.round(probeAU(p))} AU from the Sun`;
+    el.hidden = true; layer.appendChild(el); PL[p.id] = el;
+  }
+  function probeLabels(rect, host0) {
+    const on = st.focus === 'system' && !st.fly;
+    for (const p of PROBES) {
+      const el = PL[p.id]; let vis = on;
+      if (vis) {
+        const w = toWorld(tmp3.copy(B.sun.pos).addScaledVector(probeDir(p), probeAU(p) * AU), tmp);
+        ndc.copy(w).project(cam); vis = ndc.z < 1 && Math.abs(ndc.x) < 1.02 && Math.abs(ndc.y) < 1.02;
+        if (vis) el.style.transform = `translate(${(rect.left - host0.left + (ndc.x + 1) / 2 * rect.width).toFixed(1)}px, ${(rect.top - host0.top + (1 - ndc.y) / 2 * rect.height - 7).toFixed(1)}px) translate(-5px, 0)`;
+      }
+      if (el.hidden === vis) el.hidden = !vis;
+    }
+  }
   const ndc = new THREE.Vector3();
   function labels() {
     const exploring = !!st.focus; const show = exploring || (st.bodies && st.dark);
@@ -535,6 +639,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
       const el = L[id]; const b = B[id];
       let vis = show && !st.fly && id !== st.focus && !(id === 'earth' && !exploring);
       if (vis && GALILEAN.includes(id)) vis = exploring && (st.focus === 'jupiter' || GALILEAN.includes(st.focus)) && B.jupiter.px > 30;
+      if (vis && id === 'moon' && st.focus === 'system') vis = false; // out here it sits on the Earth's label
       if (vis) {
         const p = id === 'earth' ? tmp.set(0, 0, 0) : toWorld(b.pos, tmp);
         ndc.copy(p).project(cam);
@@ -542,18 +647,19 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
         // Hidden behind the Earth (globe view) or behind the body being explored.
         const occ = (cx, r) => { const d = tmp2.copy(p).sub(cpos); const len = d.length(); d.divideScalar(len); const oc = cx.clone().sub(cpos); const tca = oc.dot(d); if (tca < 0 || tca > len) return false; return oc.lengthSq() - tca * tca < r * r; };
         if (vis && !exploring && id !== 'earth' && occ(new THREE.Vector3(), earthR * 1.02)) vis = false;
-        if (vis && exploring && st.focus !== 'earth' && occ(toWorld(B[st.focus].pos, new THREE.Vector3()), B[st.focus].r)) vis = false;
+        if (vis && exploring && B[st.focus] && st.focus !== 'earth' && occ(toWorld(B[st.focus].pos, new THREE.Vector3()), B[st.focus].r)) vis = false;
         if (vis) {
           const x = rect.left - host0.left + (ndc.x + 1) / 2 * rect.width; const y = rect.top - host0.top + (1 - ndc.y) / 2 * rect.height;
-          const off = Math.min(60, b.px) + 6;
+          const off = Math.min(60, b.px) + (st.focus === 'system' ? 9 : 6);
           el.style.transform = `translate(${x.toFixed(1)}px, ${(y + off).toFixed(1)}px) translate(-50%, 0)`;
         }
       }
       if (el.hidden === vis) el.hidden = !vis;
     }
+    probeLabels(rect, host0);
     sites();
   }
-  function hideLabels() { for (const id of ORDER) if (!L[id].hidden) L[id].hidden = true; siteLayer.hidden = true; }
+  function hideLabels() { for (const id of ORDER) if (!L[id].hidden) L[id].hidden = true; for (const el of Object.values(PL)) el.hidden = true; siteLayer.hidden = true; }
 
   // ---------------------------------------------------------------- landing sites: pins on the Moon and Mars
   // Each pin sits on the body's own surface (its latitude and longitude turned by the body's spin), so it rides
@@ -664,7 +770,13 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     const rect = renderer.domElement.getBoundingClientRect();
     const ray = new THREE.Raycaster(); ray.setFromCamera(new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1), cam);
     const hits = ray.intersectObjects([...ORDER.map((id) => B[id].mesh).filter((m) => m?.visible), earthMesh].filter(Boolean), false);
-    const id = hits[0]?.object.userData.body; if (id && id !== st.focus) explore(id);
+    let id = hits[0]?.object.userData.body;
+    if (!id) { // v2.20 a click near a body's dot flies there too (out in the solar system the bodies are dots)
+      let best = 18; for (const k of ORDER) { const p = k === 'earth' ? tmp.set(0, 0, 0) : toWorld(B[k].pos, tmp); ndc.copy(p).project(cam); if (ndc.z > 1) continue;
+        const dx = (ndc.x + 1) / 2 * rect.width - (e.clientX - rect.left); const dy = (1 - ndc.y) / 2 * rect.height - (e.clientY - rect.top); const dd = Math.hypot(dx, dy);
+        if (dd < best && !(st.focus === 'system' && (k === 'moon' || GALILEAN.includes(k)))) { best = dd; id = k; } }
+    }
+    if (id && id !== st.focus) explore(id);
   });
 
   // ---------------------------------------------------------------- the space bar and the card
@@ -673,7 +785,8 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
   function bar() {
     barEl.hidden = !st.focus;
     if (!st.focus) return;
-    barEl.innerHTML = `<button class="sb-home" data-space="earth" title="Back to the globe">${ui('back')}Earth</button><div class="sb-list">${BAR.filter((id) => id !== 'earth').map((id) => `<button data-space="${id}" aria-pressed="${st.focus === id || (id === 'jupiter' && GALILEAN.includes(st.focus))}" title="${esc(BODY[id].name)}"><i style="--c:${BODY[id].dot}"></i>${esc(BODY[id].name)}</button>`).join('')}</div><button class="sb-orbits" aria-pressed="${st.orbits}" title="Show the orbits">Orbits</button>${LANDINGS[st.focus] ? `<button class="sb-sites" aria-pressed="${st.sites}" title="Show where spacecraft landed">Landings</button>` : ''}<button class="sb-info" data-space-card="1" title="About ${esc(BODY[st.focus].name)}" aria-label="About ${esc(BODY[st.focus].name)}">ⓘ</button>`;
+    const nm = st.focus === 'system' ? 'the solar system' : BODY[st.focus].name;
+    barEl.innerHTML = `<button class="sb-home" data-space="earth" title="Back to the globe">${ui('back')}Earth</button><div class="sb-list"><button data-space="system" aria-pressed="${st.focus === 'system'}" title="The whole solar system"><i style="--c:#ffd27a;box-shadow:0 0 0 2px rgba(255,210,122,.35)"></i>Solar system</button>${BAR.filter((id) => id !== 'earth').map((id) => `<button data-space="${id}" aria-pressed="${st.focus === id || (id === 'jupiter' && GALILEAN.includes(st.focus))}" title="${esc(BODY[id].name)}"><i style="--c:${BODY[id].dot}"></i>${esc(BODY[id].name)}</button>`).join('')}</div><button class="sb-orbits" aria-pressed="${st.orbits}" title="Show the orbits">Orbits</button>${LANDINGS[st.focus] ? `<button class="sb-sites" aria-pressed="${st.sites}" title="Show where spacecraft landed">Landings</button>` : ''}<button class="sb-info" data-space-card="1" title="About ${esc(nm)}" aria-label="About ${esc(nm)}">ⓘ</button>`;
   }
   barEl.addEventListener('click', (e) => {
     if (e.target.closest('.sb-orbits')) { st.orbits = !st.orbits; if (st.orbits && !orbitsBuilt && st.t) buildOrbits(st.t); bar(); wake?.(); }
@@ -710,15 +823,91 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
         ${refsHtml(['astronomyengine', 'iaurotation', 'nssdcfacts', d.credit === 'nasa3d' ? 'nasa3d' : d.credit === 'bluemarble' ? 'bluemarble' : 'solarsystemscope', ...(d.trek ? ['nasatrek'] : [])])}
       </details>`, `space:${id}`);
   }
+  /** v2.20 the solar system card: every planet, how far from the Sun it is now and how long its light takes. */
+  function systemCard() {
+    if (!st.ready) return;
+    const sun = B.sun.pos; const rows = BAR.filter((id) => id !== 'sun' && id !== 'moon').map((id) => { const au = B[id].pos.distanceTo(sun) / AU; return { id, au, min: (au * 149597870.7) / 299792.458 / 60 }; });
+    const fmtMin = (m) => (m < 60 ? `${m.toFixed(1)} min` : `${Math.floor(m / 60)} h ${Math.round(m % 60)} min`);
+    openNotes('Space', `
+      <h3 class="withglyph"><span class="space-glyph" style="--c:#ffd27a">☉</span><span>The solar system</span></h3><p class="sub">Where everything is now · drag to turn, right-drag or two fingers to slide, scroll to zoom · click a planet to fly there</p>
+      <table class="sys-table"><thead><tr><th>Planet</th><th>From the Sun</th><th>Sunlight takes</th></tr></thead><tbody>${rows.map((r) => `<tr><td><button class="linkish" data-space="${r.id}"><i style="--c:${BODY[r.id].dot}"></i>${esc(BODY[r.id].name)}</button></td><td>${r.au.toFixed(2)} AU</td><td>${fmtMin(r.min)}</td></tr>`).join('')}</tbody></table>
+      <p class="small muted">1 astronomical unit (AU) is the Earth's average distance from the Sun, 149.6 million km. Everything is drawn to scale, so out here the planets are dots: even Jupiter is less than a pixel wide.</p>
+      <p><b>Asteroid belt</b> (2.1–3.3 AU, between Mars and Jupiter) and <b>Kuiper belt</b> (39–48 AU, beyond Neptune, Pluto's home): drawn where they are, with the gaps Jupiter's pull clears in the asteroid belt, each rock going round at its own speed. The rocks are illustrative, not individual known asteroids.</p>
+      <h4>The farthest spacecraft</h4>
+      <table class="sys-table"><thead><tr><th>Spacecraft</th><th>From the Sun</th><th>Radio takes</th></tr></thead><tbody>${PROBES.map((p) => { const au = probeAU(p); return `<tr><td><button class="linkish" data-space-probe="${p.id}"><i style="--c:#7fe3c4"></i>${esc(p.name)}</button></td><td>about ${Math.round(au)} AU</td><td>${fmtMin((au * 149597870.7) / 299792.458 / 60)}</td></tr>`; }).join('')}</tbody></table>
+      <p class="small muted">Zoom out (scroll) to find them, far beyond Pluto. Their places are worked out from published distances and speeds, good to about 1 AU.</p>
+      <div class="quick"><button class="btn ghost" data-space="earth">Back to Earth</button></div>
+      <details class="more"><summary>Where the positions come from</summary><p class="small">Astronomy Engine (VSOP87) computes every planet for the time on the atlas clock; press the time machine to set them moving. The belts use typical orbits (Kirkwood gaps at 2.50, 2.82 and 2.96 AU; the plutinos at 39.4 AU) after Minor Planet Center statistics.</p>${refsHtml(['astronomyengine', 'nssdcfacts', 'jplvoyager', 'newhorizons'])}</details>`, 'space:system');
+  }
+  /** v2.20 one of the far spacecraft. */
+  function probeCard(id) {
+    const p = PROBES.find((q) => q.id === id); if (!p) return; const au = probeAU(p); const km = au * 149597870.7;
+    openNotes('Space', `
+      <h3 class="withglyph"><span class="space-glyph" style="--c:#7fe3c4">✦</span><span>${esc(p.name)}</span></h3><p class="sub">Spacecraft · launched ${p.launched}</p>
+      ${factsHtml([['From the Sun', `about ${Math.round(au)} AU (${(km / 1e9).toFixed(1)} billion km)`], ['Moving away at', `${(p.auYr * 149597870.7 / 31557600).toFixed(1)} km/s`], ['A radio signal takes', `${(km / 299792.458 / 3600).toFixed(1)} hours`]])}
+      <p>${esc(p.note)}</p>
+      <div class="quick"><button class="btn ghost" data-space="system">The solar system</button></div>
+      <details class="more"><summary>Where this comes from</summary><p class="small">Distance on 1 January 2025 and cruise speed from the mission's published status, carried forward to the atlas clock; direction in the sky as seen from the Sun. Good to about 1 AU.</p>${refsHtml([p.ref])}</details>`, `space:${p.id}`);
+  }
   document.addEventListener('click', (e) => {
+    const pr = e.target.closest('[data-space-probe]'); if (pr) { probeCard(pr.dataset.spaceProbe); return; }
     const v = e.target.closest('[data-space-venus]'); if (v) { st.venusSurface = !st.venusSurface; card('venus'); wake?.(); return; }
-    if (e.target.closest('[data-space-card]') && st.focus && st.focus !== 'earth') { card(st.focus); return; }
+    if (e.target.closest('[data-space-card]') && st.focus && st.focus !== 'earth') { if (st.focus === 'system') systemCard(); else card(st.focus); return; }
     const site = e.target.closest('[data-site]');
     if (site) { const [id, i] = site.dataset.site.split(':'); const x = LANDINGS[id]?.[+i]; if (x) { siteCard(id, +i); lookAtSite(id, x); } return; }
     if (e.target.closest('[data-eclipses]')) { eclipseCard(); return; }
     const ec = e.target.closest('[data-eclipse]'); if (ec) { const x = st.eclipses?.[+ec.dataset.eclipse]; if (x) watchEclipse?.(x); return; }
     const b = e.target.closest('[data-space]'); if (b) explore(b.dataset.space); // labels, the space bar, cards and Explore
   });
+
+  // ---------------------------------------------------------------- v2.20 deep zoom: NASA Treks tiles where you look
+  // The Treks maps are equirectangular tile pyramids (level z: 2^(z+1) × 2^z tiles of 256 px, row 0 at the north
+  // pole). Close to a body that has one, a patch of 6 × 6 tiles at the level that matches your height (one map pixel
+  // to about one screen pixel, down to the map's own resolution, trekMax) is laid over the globe map around the point
+  // under the middle of the screen, and rebuilt as you move. Tiles that do not arrive leave the coarser map showing.
+  const tileCache = new Map(); // url -> Promise<Image>
+  const getTile = (url) => {
+    if (!tileCache.has(url)) { tileCache.set(url, new Promise((ok, no) => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => ok(im); im.onerror = no; im.src = url; })); if (tileCache.size > 600) tileCache.delete(tileCache.keys().next().value); }
+    return tileCache.get(url);
+  };
+  const patch = { id: null, key: '', mesh: null, cv: null, tex: null, at: 0, z: 0, tiles: 0, loaded: 0 };
+  const N_T = 6;
+  function dropPatch() { if (patch.mesh) { patch.mesh.geometry.dispose(); patch.mesh.removeFromParent(); patch.tex?.dispose(); } Object.assign(patch, { id: null, key: '', mesh: null, tex: null, tiles: 0, loaded: 0 }); }
+  /** The point under the middle of the screen on a body: latitude and longitude (degrees, east positive) and height. */
+  function underView(b) {
+    const inv = new THREE.Matrix4().copy(b.mesh.matrixWorld).invert(); const p = cam.position.clone().applyMatrix4(inv); // unit-sphere space
+    const f = b.def.flat ?? 1; const n = p.clone(); n.y /= f; n.normalize();
+    return { lat: Math.asin(Math.max(-1, Math.min(1, n.y))) / D2R, lng: Math.atan2(-n.z, n.x) / D2R, alt: cam.position.distanceTo(toWorld(b.pos, tmp)) - b.r };
+  }
+  function detail() {
+    const id = st.focus; const b = B[id]; const d = b?.def;
+    if (!d?.trek || !d.trekMax || st.fly) { if (patch.id && patch.id !== id) dropPatch(); return; }
+    const now = performance.now(); if (now - patch.at < 400) return; patch.at = now;
+    const v = underView(b); const viewPx = renderer.domElement.height / renderer.getPixelRatio();
+    const mPerPx = (v.alt * 2 * Math.tan((cam.fov * D2R) / 2)) / viewPx; // ground units per screen pixel at the centre
+    const z = Math.min(d.trekMax, Math.max(4, Math.ceil(Math.log2((2 * Math.PI * b.r) / (256 * mPerPx)) - 1)));
+    if (z <= 4 || v.alt > b.r * 0.9) { if (patch.id) dropPatch(); return; } // far away: the global map is enough
+    const span = 180 / 2 ** z; const cols = 2 ** (z + 1); const rows = 2 ** z;
+    const cx = Math.floor((v.lng + 180) / span); const cy = Math.max(0, Math.min(rows - N_T, Math.floor((90 - v.lat) / span) - (N_T / 2 - 1)));
+    const x0 = cx - (N_T / 2 - 1); const key = `${id}/${z}/${x0}/${cy}`;
+    if (key === patch.key) return;
+    dropPatch(); patch.id = id; patch.key = key; patch.z = z;
+    const cv = document.createElement('canvas'); cv.width = cv.height = N_T * 256; const g = cv.getContext('2d');
+    // start from the coarser map, so missing tiles never leave holes
+    const base = b.mesh.material.uniforms.map.value.image;
+    if (base?.width > 1) { const sx = ((x0 * span) / 360) * base.width; const sy = ((cy * span) / 180) * base.height; const sw = ((N_T * span) / 360) * base.width; const sh = ((N_T * span) / 180) * base.height; try { g.drawImage(base, sx, sy, sw, sh, 0, 0, cv.width, cv.height); } catch { /* a map from another origin without CORS */ } }
+    const tex = new THREE.CanvasTexture(cv); tex.anisotropy = aniso; tex.colorSpace = b.mesh.material.uniforms.map.value.colorSpace ?? tex.colorSpace;
+    // the patch: a piece of the unit sphere, a hair above the body's own surface, sharing its lighting
+    const phi0 = ((x0 * span) / 360) * Math.PI * 2; const th0 = ((cy * span) / 180) * Math.PI; const dPhi = ((N_T * span) / 360) * Math.PI * 2; const dTh = ((N_T * span) / 180) * Math.PI;
+    const geo = new THREE.SphereGeometry(1 + Math.min(2e-4, 0.3 / b.def.r), 64, 64, phi0, dPhi, th0, dTh);
+    const mat = new THREE.ShaderMaterial({ uniforms: { ...b.mesh.material.uniforms, map: { value: tex }, map2: { value: tex }, texW: { value: N_T * 256 }, grainF: { value: cols * 256 } }, vertexShader: BODY_VS, fragmentShader: BODY_FS, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+    const mesh = new THREE.Mesh(geo, mat); mesh.frustumCulled = false; mesh.userData.body = id; mesh.renderOrder = 1; b.mesh.add(mesh);
+    Object.assign(patch, { mesh, cv, tex, tiles: N_T * N_T, loaded: 0 });
+    for (let j = 0; j < N_T; j++) for (let i = 0; i < N_T; i++) {
+      const tx = (((x0 + i) % cols) + cols) % cols; const ty = cy + j; const k = key;
+      getTile(`${d.trek}/${z}/${ty}/${tx}.jpg`).then((im) => { if (patch.key !== k) return; g.drawImage(im, i * 256, j * 256, 256, 256); patch.loaded++; tex.needsUpdate = true; wake?.(); }).catch(() => {});
+    }
+  }
 
   // ---------------------------------------------------------------- sharper maps from NASA Solar System Treks
   // Level 3 of the Treks equirectangular tile pyramid is 16 × 8 tiles of 256 px: a 4096 × 2048 global map. Loaded
@@ -733,7 +922,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
       const jobs = []; for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) if (x || y) jobs.push([y, x]);
       for (let i = 0; i < jobs.length; i += 16) await Promise.all(jobs.slice(i, i + 16).map(([y, x]) => one(y, x)));
       const t = new THREE.CanvasTexture(cv); t.anisotropy = aniso; t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter;
-      B[id].mesh.material.uniforms.map.value = t; st.hires[id] = 'ok'; wake?.();
+      B[id].mesh.material.uniforms.map.value = t; B[id].mesh.material.uniforms.texW.value = B[id].mesh.material.uniforms.grainF.value = cv.width; st.hires[id] = 'ok'; wake?.();
       if (st.focus === id) card(id);
     } catch { st.hires[id] = 'failed'; }
   }
@@ -751,6 +940,8 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     info: (id) => (B[id] && st.ready ? { km: B[id].pos.length() / KM, px: B[id].px, visible: !!B[id].mesh?.visible } : null),
     ready: () => st.ready,
     debug: () => ({ cam, B, st, F, scene }),
+    /** v2.20 the close-up patch of sharper map tiles, if one is showing: level, tiles asked for, tiles drawn. */
+    patch: () => ({ id: patch.id, z: patch.z, tiles: patch.tiles, loaded: patch.loaded }),
     get stars() { return { set visible(v) { st.dark = !!v; st.sky = !!v; }, get visible() { return st.sky; } }; },
   };
 }

@@ -56,7 +56,9 @@ function densify(a, b, maxDeg = 1.5) {
  * @param {{pts:([number,number]|[number,number,number])[], color:string, width?:number, alt?:number}[]} lines  (a point's third value overrides alt)
  * @returns {{ obj: THREE.Mesh, segs: {line:number, a:[number,number], b:[number,number]}[] }}
  */
-export function buildFatLines(toXYZ, lines, { opacity = 0.9 } = {}) {
+// farOpacity: a network seen from far away (every cable on Earth at once) fades toward this opacity, so the land and
+// the live pins stay readable at the whole-globe view; it is fully drawn again from about 4,000 km up (v2.17).
+export function buildFatLines(toXYZ, lines, { opacity = 0.9, farOpacity = opacity } = {}) {
   const starts = []; const ends = []; const cols = []; const widths = []; const segs = [];
   const c = new THREE.Color();
   lines.forEach((ln, li) => {
@@ -84,9 +86,12 @@ export function buildFatLines(toXYZ, lines, { opacity = 0.9 } = {}) {
     uniforms: { resolution: { value: new THREE.Vector2(1, 1) }, pxScale: { value: 1 }, opacity: { value: opacity } },
   });
   const obj = new THREE.Mesh(geo, mat);
-  obj.frustumCulled = false; obj.raycast = () => {}; obj.renderOrder = 2;
+  obj.frustumCulled = false; obj.raycast = () => {}; obj.renderOrder = 2; obj.userData.farOpacity = farOpacity;
   const size = new THREE.Vector2();
-  obj.onBeforeRender = (renderer) => { renderer.getDrawingBufferSize(size); mat.uniforms.resolution.value.copy(size); mat.uniforms.pxScale.value = renderer.getPixelRatio(); };
+  obj.onBeforeRender = (renderer, scene, camera) => {
+    renderer.getDrawingBufferSize(size); mat.uniforms.resolution.value.copy(size); mat.uniforms.pxScale.value = renderer.getPixelRatio();
+    if (farOpacity !== opacity) { const alt = camera.position.length() / 100 - 1; const k = Math.min(1, Math.max(0, (alt - 0.6) / 1.2)); mat.uniforms.opacity.value = opacity + (farOpacity - opacity) * k; }
+  };
   return { obj, segs: new Float32Array(segs) };
 }
 

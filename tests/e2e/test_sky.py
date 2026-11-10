@@ -4,7 +4,7 @@ import json
 # v2.13: clouds, rain, snow, lightning and fire smoke drawn physically from the weather grid and FIRMS (skyfx.js).
 res=[]
 def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok else 'FAIL ')+name, info)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.14')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}"
 W=json.loads(WEATHER)
 LAYER="async () => (await import('./js/layers.js')).layerById.skyfx"
 L=lambda expr: "async () => { const l = await ("+LAYER+")(); return "+expr+"; }"
@@ -13,11 +13,12 @@ def page(b, url, **kw):
     pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
     pg.on('console', lambda m: m.type=='error' and 'WebGL' in m.text and errs.append(m.text[:400]))  # shader compile errors (?debug)
     pg.route('**/*', handler); pg.add_init_script(INIT); pg.goto(url, wait_until='commit'); pg.wait_for_timeout(14000); return pg, errs
+specks="() => { let n = 0; gia.globe.scene().traverseVisible((o) => { if (o.userData.keeper) n++; }); return n; }"
 calls="() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => r(gia.globe.renderer().info.render.calls))))"
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS)
     pg, errs = page(b, 'http://localhost:8765/app/?debug#@20,40,2.4&l=sun')
-    base=pg.evaluate(calls)
+    base=pg.evaluate(calls); baseK=base-pg.evaluate(specks)
     pg.evaluate("() => gia.toggleLayer('skyfx', true)"); pg.wait_for_timeout(9000)
     st=pg.evaluate("() => gia.state.lstatus.skyfx")
     check('the sky layer loads from weather.json and FIRMS', st and st['s']=='ok' and 'thunderstorm' in st['note'] and 'fires' in st['note'], st)
@@ -47,8 +48,10 @@ with sync_playwright() as p:
     pg.evaluate("() => gia.toggleLayer('skyfx', false)")
     # compare at the same view as the baseline: close up, the map tiles add draw calls of their own
     pg.evaluate("() => gia.globe.pointOfView({ lat: 20, lng: 40, altitude: 2.4 }, 0)"); pg.wait_for_timeout(4000)
-    off=pg.evaluate(calls)
-    check('turning it off removes its draw calls', off<=base+1, (base, off))
+    # minus the program keeper's one-vertex specks (perf.js keeps one copy of each compiled shader so it is never recompiled;
+    # whether the sweep catches the sky's shaders depends on timing)
+    off=pg.evaluate(calls)-pg.evaluate(specks)
+    check('turning it off removes its draw calls', off<=baseK+1, (baseK, off))
     check('no page errors', not errs, errs[:3]); pg.context.close()
     # reduced motion: frozen drift and steady storm glow instead of flashes
     pg, errs = page(b, 'http://localhost:8765/app/#@20,40,2.4&l=sun,skyfx', reduced_motion='reduce')

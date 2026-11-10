@@ -1,12 +1,15 @@
 <!doctype html>
 <!-- SPDX-License-Identifier: AGPL-3.0-only — Global Intelligence Atlas, built on World Monitor (github.com/koala73/worldmonitor, (C) Elie Habib) -->
 <html lang="en" data-base=".." data-page="download"><head>
-<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; media-src 'self' data: blob: https: http:; connect-src 'self' data: blob: https: wss: ipc: http://ipc.localhost; worker-src 'self' blob:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Download — Global Intelligence Atlas (GIA)</title><meta name="description" content="Install Global Intelligence Atlas from your browser, or download the desktop app for Windows, macOS and Linux." /><meta name="theme-color" content="#f3f4f0" />
 <link rel="manifest" href="../manifest.webmanifest" /><link rel="icon" href="../icons/icon-192.png" /><link rel="apple-touch-icon" href="../icons/icon-192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Jost:wght@500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../assets/site.css" />
+<script src="../app/js/guard.js"></script>
 <script src="../app/js/theme-boot.js"></script>
 </head><body>
 
@@ -34,5 +37,5 @@ python3 -m http.server 8080      # then open http://localhost:8080</code></pre>
 <p class="intro">To build the desktop app yourself you need Rust and Node.js: <code>cd desktop && npm install && npx tauri build</code>.</p></section>
 </div></main>
 <script src="../assets/site.js"></script>
-<script>if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('../sw.js');</script>
+<script src="../sw-register.js"></script>
 </body></html>

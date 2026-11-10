@@ -385,7 +385,7 @@ export const LAYERS = [
       if (!cs._fat) {
         // open data (TeleGeography) splits a cable into several parts; each part is one line pointing at the same cable
         const lines = cs.flatMap((c) => (c.parts ?? [c.points]).map((pts) => [c, pts]));
-        cs._fat = ctx.fatLines(lines.map(([c, pts]) => ({ pts: lonLatToLatLng(pts), color: c.major ? '#6fcab9' : '#3f8a7e', width: c.major ? 1.6 : 1.1, alt: 0.0025 })));
+        cs._fat = ctx.fatLines(lines.map(([c, pts]) => ({ pts: lonLatToLatLng(pts), color: c.major ? '#6fcab9' : '#3f8a7e', width: c.major ? 1.6 : 1.1, alt: 0.0025 })), { farOpacity: 0.4 });
         cs._set = { segs: cs._fat.segs, items: lines.map(([c]) => ({ ref: { layer: 'cables', d: c }, tip: tip(c.name, c.rfsYear ? `in service ${c.rfsYear}` : c.planned ? 'planned' : 'submarine cable') })) };
       }
       const sel = window.gia?.state?.selected; const open = sel?.layer === 'cables' ? cableOverlay(ctx, sel) : null; // the open cable page (cabledetail.js)

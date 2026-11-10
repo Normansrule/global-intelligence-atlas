@@ -30,7 +30,7 @@ import { warmWakes } from './wakes.js';
 import { installShell, SECTION_FOR_KEY, SECTION_FOR_TITLE } from './shell.js';
 const pulses = createPulses(100);
 import { Quiz, buildQuestionPool } from './quiz.js';
-import { flightsLayer, flightState, layoutPlanes, deckAction, glidePlanes, flightsNow, planesStale, planeCounts, warmPlanes, findFlights, findAirlinesLive, setAirlineFilter, describeFlight } from './flights.js';
+import { flightsLayer, flightState, layoutPlanes, deckAction, glidePlanes, flightsNow, planesStale, planeCounts, lightCount, warmPlanes, findFlights, findAirlinesLive, setAirlineFilter, describeFlight } from './flights.js';
 import { camerasLayer, alprLayer, stopCameraMedia, alprRow } from './cameras.js';
 import { citiesLayer, airportsLayer } from './places.js';
 import { installNavigation } from './nav.js';
@@ -45,6 +45,7 @@ import { MarkerRenderer, GeoIndex, MultiIndex, iconsReady } from './markers.js';
 import { installPerformance, installProgramKeeper, installIdleGovernor } from './perf.js';
 import { clock, SPEEDS, speedLabel } from './clock.js';
 import { launchesLayer, alertsLayer, countdown } from './launches.js';
+import { animalNames } from './wildlife.js';
 import { installTrace } from './trace.js';
 import { installIntel } from './intel.js';
 import { installNewsDesk } from './newsdesk.js';
@@ -54,11 +55,13 @@ import { firesLayer, radarLayer } from './hazards.js';
 import { installHealth } from './health.js';
 import { installWatch } from './watch.js';
 import { installOffline } from './offline.js'; // offline mode
+import { installSound } from './sound.js'; // v2.15 sound cues and Listen
+import { airProbe } from './airquality.js'; // v2.15 the air at any clicked spot
 import { isOffline, servedSince } from './lastknown.js'; // offline mode
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.14';
+export const VERSION = '2.20';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg, unitSvg } from './icons.js';
@@ -123,6 +126,8 @@ const ECLIPSE_UNIFORMS = 'uniform vec3 moonPos; uniform float moonR; uniform vec
 // How much of the Sun the Moon hides from this point on the Earth (0 most of the time, 1 under the umbra).
 const MOON_SHADOW = `${ECLIPSE_GLSL}
   float moonShadow(vec3 p) { if (eclOn < 0.5) return 0.0; vec3 m = moonPos - p; float d = length(m); return discHidden(sunAt.w, asin(min(moonR / d, 1.0)), angleBetween(m / d, sunAt.xyz)); }`;
+// A one-pixel stand-in for a map that loads later.
+function flatTexture(v) { const t = new THREE.DataTexture(new Uint8Array([v, v, v, 255]), 1, 1); t.needsUpdate = true; return t; }
 const dayNightMaterial = new THREE.ShaderMaterial({
   uniforms: {
     ...eclipse,
@@ -130,7 +135,9 @@ const dayNightMaterial = new THREE.ShaderMaterial({
     nightTexture: { value: loader.load('textures/earth-night-2k.jpg') },
     // Relief and water: the elevation map three-globe ships (earth-topology.png) shades the mountains from the real
     // Sun direction, and its water mask (earth-water.png) gives the oceans the Sun's glint.
-    topo: { value: loader.load('textures/earth-topology.png') }, water: { value: loader.load('textures/earth-water.png') },
+    // Both wait until the Earth is on screen (see 'Sharper Earth' below): flat relief and no glint for the first second
+    // cost nothing to look at, and the two maps are 600 kB that the first view no longer waits for (v2.17).
+    topo: { value: flatTexture(128) }, water: { value: flatTexture(0) },
     texel: { value: new THREE.Vector2(1 / 2048, 1 / 1024) }, relief: { value: 9 },
     sunDir: { value: new THREE.Vector3(1, 0, 0) },
     mute: { value: 0 },
@@ -188,10 +195,10 @@ dayNightMaterial.uniforms.topo.value.wrapS = THREE.RepeatWrapping;
 // red-orange where the Sun is setting and almost nothing on the night side (globe.gl's own atmosphere glows the same
 // colour all the way round, so it is switched off). Behind the Earth (back faces only), one draw call.
 const airMaterial = new THREE.ShaderMaterial({
-  uniforms: { sunDir: dayNightMaterial.uniforms.sunDir, lit: { value: 1 }, strength: { value: 1 } },
+  uniforms: { sunDir: dayNightMaterial.uniforms.sunDir, lit: { value: 1 }, strength: { value: 1 }, tiltFade: { value: 1 } },
   vertexShader: 'varying vec3 vW; void main() { vW = (modelMatrix * vec4(position, 1.0)).xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
   fragmentShader: `
-    uniform vec3 sunDir; uniform float lit; uniform float strength; varying vec3 vW;
+    uniform vec3 sunDir; uniform float lit; uniform float strength; uniform float tiltFade; varying vec3 vW;
     void main() {
       vec3 C = cameraPosition; vec3 D = normalize(vW - C);
       vec3 T = C + D * max(-dot(C, D), 0.0); // where this line of sight passes closest to the Earth's centre
@@ -200,7 +207,7 @@ const airMaterial = new THREE.ShaderMaterial({
       float s = dot(normalize(T), normalize(sunDir));
       float day = mix(1.0, 0.03 + 0.97 * smoothstep(-0.3, 0.2, s), lit);
       vec3 c = mix(vec3(1.0, 0.42, 0.16), vec3(0.36, 0.62, 1.0), mix(1.0, smoothstep(-0.14, 0.28, s), lit));
-      gl_FragColor = vec4(c * a * day * strength, 1.0);
+      gl_FragColor = vec4(c * a * day * strength * tiltFade, 1.0);
     }`,
   side: THREE.BackSide, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
 });
@@ -300,7 +307,7 @@ globe
   // surface clicks + camera
   .onGlobeClick(({ lat, lng }) => surfaceClick(lat, lng, state.on.has('borders') ? countryAt(lat, lng) : null))
   .onZoom((pov) => onCamera(pov))
-  .onGlobeReady(() => { $('#loading').classList.add('gone'); intro(); });
+  .onGlobeReady(() => { $('#loading').classList.add('gone'); tileBackdrop(!!(TILE[state.base] ?? (state.detailTiles && TILE[state.detailTiles]))); intro(); });
 setTimeout(() => $('#loading').classList.add('gone'), 8000);
 
 restylePolygons();
@@ -317,6 +324,28 @@ const controls = globe.controls();
 controls.autoRotateSpeed = 0.35;
 globe.renderer().setPixelRatio(Math.min(devicePixelRatio, 1.75)); // 4K phones don't need 3× pixels for a globe
 const nav = installNavigation({ globe, R, $, reduceMotion, onLocate: (lat, lng) => { fly(lat, lng, 0.012); state.home = [lat, lng]; setTimeout(() => probeCard(lat, lng), 400); } });
+// v2.19 tilt: look across a city instead of straight down (tilt.js, loaded the first time it is used)
+let tilter = null; let tiltLoading = null;
+function loadTilt() {
+  return (tiltLoading ??= import('./tilt.js').then((m) => (tilter = m.installTilt(globe, { R, reduceMotion, onFrame: tiltFrame, onChange: (d) => { state.tilt = d; $('#tilt')?.setAttribute('aria-pressed', d > 0 ? 'true' : 'false'); writeHash(); } }))));
+}
+// Tilted near the ground the sky dome takes over from the air seen from space, and lines drawn kilometres above the
+// ground (country borders) would hang in the sky, so they step aside.
+function tiltFrame(k) { airMaterial.uniforms.tiltFade.value = 1 - k; const b = meshCache.borders?.obj; if (b) b.visible = k < 0.3; }
+async function setTilt(deg) {
+  const t = await loadTilt();
+  if (deg > 0 && state.pov.altitude > 0.05) { const p = globe.pointOfView(); globe.pointOfView({ lat: p.lat, lng: p.lng, altitude: 0.012 }, reduceMotion ? 0 : 1600); if (!setTilt.told) { setTilt.told = true; toast('Tilt works close to the ground: zooming in. Shift + drag up or down to tilt by hand.'); } }
+  t.set(deg); return t;
+}
+$('#tilt')?.addEventListener('click', () => setTilt((tilter?.get() ?? 0) > 0 ? 0 : 60));
+document.addEventListener('keydown', (e) => { if (!e.target.matches('input, select, textarea') && !e.ctrlKey && !e.metaKey && !e.altKey && (e.key === 'v' || e.key === 'V')) setTilt((tilter?.get() ?? 0) > 0 ? 0 : 60); });
+{ // Shift + drag up or down tilts by hand (the drag does not also turn the globe)
+  let drag = null; const el = $('#globe');
+  el?.addEventListener('pointerdown', (e) => { if (!e.shiftKey || e.button !== 0) return; drag = { y: e.clientY, from: tilter?.get() ?? 0 }; controls.enabled = false; el.setPointerCapture(e.pointerId); e.stopPropagation(); loadTilt(); }, true);
+  el?.addEventListener('pointermove', (e) => { if (drag && tilter) tilter.set(drag.from + (drag.y - e.clientY) * 0.3); });
+  const end = () => { if (drag) { drag = null; controls.enabled = true; } };
+  el?.addEventListener('pointerup', end); el?.addEventListener('pointercancel', end);
+}
 globe.scene().add(air);
 // Space behind the globe: the real star sky with the Milky Way, the Sun, the Moon and the planets where they really are
 // (cosmos.js). Click one to fly there. Shown with the night theme; exploring works in both.
@@ -330,12 +359,21 @@ cosmos.setBodies(state.on.has('planets'));
 // The theme switches the night sky (stars, Moon, planets) on and off and dims the air on the day theme's paper.
 const stars = { set visible(v) { cosmos.setDark(v); airMaterial.uniforms.strength.value = v ? 1 : 0.7; }, get visible() { return cosmos.stars.visible; } };
 installTheme({ globe, stars, button: $('#theme-toggle') });
-// Swap the quick 2K day/night textures for 4K ones once the page is idle.
+// Sharper Earth: once the page is idle, add the relief and water maps, then swap the quick 2K day/night textures for 4K.
 (window.requestIdleCallback ?? ((f) => setTimeout(f, 2500)))(() => {
+  const u = dayNightMaterial.uniforms; const texel = u.texel.value;
+  loader.load('textures/earth-topology.png', (t) => { u.topo.value = t; texel.set(1 / t.image.width, 1 / t.image.height); gov?.wake(300); });
+  loader.load('textures/earth-water.png', (t) => { u.water.value = t; gov?.wake(300); });
+  // The 4K pair is 2.2 MB: skipped when the browser asks to save data or the connection is slow, and fetched only
+  // after the live layers have had a few seconds to arrive, so it never holds up the planes or the earthquakes.
+  const net = navigator.connection; if (net?.saveData || /(^|-)2g|3g/.test(net?.effectiveType ?? '')) return;
+  setTimeout(sharper4k, 6000);
+});
+function sharper4k() {
   const aniso = globe.renderer().capabilities.getMaxAnisotropy?.() ?? 1; // sharper when the globe is seen at an angle
   loader.load('textures/earth-blue-marble.jpg', (t) => { t.anisotropy = Math.min(8, aniso); t.colorSpace = dayNightMaterial.uniforms.dayTexture.value.colorSpace; dayNightMaterial.uniforms.dayTexture.value = t; });
   loader.load('textures/earth-night.jpg', (t) => { t.anisotropy = Math.min(8, aniso); dayNightMaterial.uniforms.nightTexture.value = t; });
-});
+}
 // The globe fills the stage between the drawers; it is resized whenever a drawer opens or closes.
 const stageSize = { w: innerWidth, h: innerHeight };
 { const gEl = $('#globe'); const fit = () => { const w = gEl.clientWidth; const h = gEl.clientHeight; if (!w || !h || (w === stageSize.w && h === stageSize.h && globe.width() === w)) return; stageSize.w = w; stageSize.h = h; globe.width(w).height(h); markers?.setViewport(h); perf?.refit?.(); gov?.wake(600); }; new ResizeObserver(() => requestAnimationFrame(fit)).observe(gEl); requestAnimationFrame(fit); }
@@ -360,8 +398,21 @@ function setBase(base) {
   refreshLayer('sun');
   writeHash();
 }
+// Under the map tiles: globe.gl hides its sphere while tiles are on, so until they arrive (or when they cannot load
+// at all, offline or blocked) the view was black. The Sun-lit Earth now shows through instead (v2.17).
+function tileBackdrop(on) {
+  let underTiles = tileBackdrop.mesh; // kept on the function: this can run before the module reaches this line
+  if (on && !underTiles) {
+    let g = null; globe.scene().traverse((o) => { if (!g && o.__globeObjType === 'globe') g = o; });
+    if (!g) { if ((tileBackdrop.tries = (tileBackdrop.tries ?? 0) + 1) < 120) requestAnimationFrame(() => tileBackdrop(!!(TILE[state.base] ?? (state.detailTiles && TILE[state.detailTiles])))); return; } // the globe joins the scene a moment after it is ready
+    underTiles = new THREE.Mesh(new THREE.SphereGeometry(R * 0.9995, 128, 64), dayNightMaterial);
+    underTiles.rotation.y = -Math.PI / 2; underTiles.raycast = () => {}; underTiles.name = 'under-tiles'; g.add(underTiles); tileBackdrop.mesh = underTiles;
+  }
+  if (underTiles) underTiles.visible = on;
+}
 function applyBase() {
   const tiles = TILE[state.base] ?? (state.detailTiles && TILE[state.detailTiles]);
+  tileBackdrop(!!tiles);
   if (tiles) {
     globe.globeTileEngineMaxLevel(tiles.max).globeTileEngineUrl(tiles.url);
   } else {
@@ -375,9 +426,9 @@ function applyBase() {
   updateSun(); updateShade();
   if (state.base === 'gibs') globe.globeTileEngineClearCache();
   $('#gibs-pick').hidden = state.base !== 'gibs';
-  const credit = tiles ? tiles.attr : TEX[state.base].attr;
+  const credit = tiles ? tiles.attr : TEX[state.base].attr; closeNote.credit = credit;
   setTimeout(() => { const g = $('#gibs-date'); if (g) g.textContent = gibsDate(); });
-  $('#attribution').innerHTML = `${credit} · Built on <a href="https://github.com/koala73/worldmonitor">World Monitor</a> by Elie Habib · <a href="#" data-open-about>Sources and licence</a>`;
+  $('#attribution').innerHTML = `${closeNote.text ? `<b class="close-note">${esc(closeNote.text)}</b> · ` : ''}${credit} · Built on <a href="https://github.com/koala73/worldmonitor">World Monitor</a> by Elie Habib · <a href="#" data-open-about>Sources and licence</a>`;
 }
 
 // ------------------------------------------------------------------ layers: load + compose
@@ -1059,6 +1110,7 @@ function probeHtml(lat, lng) {
       <dt>Sun elevation</dt><dd>${el.toFixed(1)}° — ${el > 0 ? 'daytime' : el > -6 ? 'civil twilight' : el > -18 ? 'twilight' : 'night'}</dd>
     </dl>
     <div id="probe-live" class="muted">Fetching weather and elevation…</div>
+    <div id="probe-air"></div>
     <div id="probe-plate" class="muted"></div>
     <h4>Look around</h4>
     <div class="row">
@@ -1074,6 +1126,7 @@ function probeHtml(lat, lng) {
 async function fillProbe(lat, lng) {
   const token = `${lat},${lng}`; fillProbe.token = token;
   lookAround(lat, lng, token);
+  airProbe(lat, lng, $('#probe-air'), () => fillProbe.token === token); // v2.15
   getLocal('data/plate-boundaries.json').then((g) => {
     const lines = g.features.map((f) => ({ name: f.properties.Name, pts: f.geometry.coordinates.map(([a, b]) => [b, a]) }));
     const n = astro.nearestOnLines(lat, lng, lines);
@@ -1364,6 +1417,10 @@ q.addEventListener('input', async () => {
     const al = findAirlinesLive(q.value).map((x) => ({ name: x.name, kind: `Airline · ${x.n.toLocaleString()} in the air now`, airline: x.icao }));
     hits = [...fl, ...al, ...hits].slice(0, 9);
   }
+  // Animals: where to see one (wildlife.js); an exact animal name goes first
+  const wild = (await animalNames(s)).map((n) => ({ name: `Where to see: ${n}`, kind: 'Wildlife · best places and chances', wild: n, exact: n === s }));
+  if (q.value.trim().toLowerCase() !== s) return; // typed on meanwhile
+  hits = [...wild.filter((w) => w.exact), ...hits, ...wild.filter((w) => !w.exact)].slice(0, 9);
   hits.push({ name: `Search “${q.value.trim()}” worldwide`, kind: 'OpenStreetMap', osm: true });
   sel = -1; renderHits();
 });
@@ -1387,6 +1444,7 @@ async function choose(h) {
   if (h.flight) { fly(h.lat, h.lng, h.alt, false); return select({ layer: 'aircraft', d: h.flight }); }
   if (h.airline) { setAirlineFilter(h.airline, api); return toast(`Showing only ${h.name}. Clear it from any of its planes’ flight view.`); }
   if (h.layer) { toggleLayer(h.layer, true); return showLearn(h.layer); }
+  if (h.wild) return layerById.wildlife?.search(h.wild);
   if (h.osm) return geocode(q.value.trim());
   if (h.ref) { toggleLayer(h.ref.layer, true); select(h.ref); }
   fly(h.lat, h.lng, h.alt);
@@ -1413,6 +1471,19 @@ let followAt = 0;
 function followTo(lat, lng) { if (performance.now() - followAt < 900) return; followAt = performance.now(); globe.pointOfView({ lat, lng, altitude: state.pov.altitude }, reduceMotion ? 0 : 1100); }
 
 // ------------------------------------------------------------------ camera, readout, auto-detail, hash
+// ------------------------------------------------------------------ v2.16 lifelike close-ups
+const closeNote = { text: '', credit: '' };
+let closeup = null; let closeupLoading = false;
+function closeups(pov) {
+  if (closeup) return closeup.update(pov);
+  if (closeupLoading || pov.altitude > 0.0065 || $('#closeups')?.checked === false) return;
+  closeupLoading = true;
+  import('./closeup.js').then((m) => {
+    closeup = m.installCloseup({ globe, R, ships: () => (state.on.has('ships') ? state.data.ships : null),
+      note: (t) => { if (t === closeNote.text) return; closeNote.text = t; const a = $('#attribution'); if (a) { a.querySelector('.close-note')?.nextSibling?.remove(); a.querySelector('.close-note')?.remove(); if (t) a.insertAdjacentHTML('afterbegin', `<b class="close-note">${esc(t)}</b> · `); } if (t && !closeNote.told) { closeNote.told = true; toast('Close-up: ships are drawn at their real size; the cars are simulated on the real roads.'); } } });
+    closeup.update(state.pov);
+  }).catch(() => { closeupLoading = false; });
+}
 function onCamera(pov) {
   const prevAlt = state.pov.altitude;
   state.pov = pov;
@@ -1422,6 +1493,7 @@ function onCamera(pov) {
   // tens of metres up close, so low planes and the camera itself are never above or inside it.
   nightShade.scale.setScalar((1 + Math.min(0.0008, Math.max(0.000006, pov.altitude * 0.0015))) / 1.0008);
   if (state.on.has('aircraft') && (Math.abs(Math.log(pov.altitude / prevAlt)) > 0.02 || planesStale(pov))) layoutPlanes(globe, pov.altitude);
+  closeups(pov); // v2.16 lifelike close-ups (closeup.js, loaded the first time you zoom in that far)
   if (!onCamera.raf) onCamera.raf = requestAnimationFrame(() => {
     onCamera.raf = 0;
     // Zooming: re-seat pins on the ground and resize columns so nothing floats above or behind the camera.
@@ -1533,6 +1605,8 @@ $('#globe').addEventListener('pointermove', (e) => {
   if (!hoverQueued) { hoverQueued = true; requestAnimationFrame(() => { hoverQueued = false; setHover(cursor && state.on.has('borders') ? countryAt(cursor.lat, cursor.lng) : null); }); }
 });
 let hoverQueued = false;
+$('#closeups')?.addEventListener('change', (e) => { if (closeup) closeup.setEnabled(e.target.checked); else if (e.target.checked) closeups(state.pov); try { localStorage.setItem('global-intelligence-atlas-closeups', e.target.checked ? 'on' : 'off'); } catch { /* private mode */ } });
+try { if (localStorage.getItem('global-intelligence-atlas-closeups') === 'off' && $('#closeups')) $('#closeups').checked = false; } catch { /* private mode */ }
 $('#autodetail').addEventListener('change', (e) => { state.autoDetail = e.target.checked; if (!state.autoDetail && state.detailTiles) { state.detailTiles = null; applyBase(); } });
 
 function readHash() {
@@ -1542,13 +1616,14 @@ function readHash() {
   const b = h.match(/[&]b=([a-z]+)/); if (b && (TILE[b[1]] || TEX[b[1]])) state.base = b[1];
   const shared = /[&]s=1/.test(h); // a link someone shared: always honour its layers
   const l = h.match(/[&]l=([\w,]*)/); state.bootLayers = l ? l[1].split(',') : []; if (l && (!NEW_VERSION || shared)) state.on = new Set(l[1].split(',').filter((x) => layerById[x] && !state.excluded?.has(x)));
+  const tl = h.match(/[&]t=(\d+)/); state.pendingTilt = tl ? Math.min(75, +tl[1]) : 0; // v2.19 a tilted view: #...&t=60
   const sp = h.match(/[&]sp=([a-z]+)/); state.pendingSpace = sp ? sp[1] : null; // a link into space: #...&sp=saturn
   const sel = h.match(/[&]sel=([\w-]+)~([^&]+)/);
   if (sel && layerById[sel[1]]) { state.pendingSel = { layer: sel[1], id: sel[2] }; state.on.add(sel[1]); }
 }
 function writeHash() {
   const p = state.pov; const sel = currentSel();
-  history.replaceState(null, '', `#@${p.lat.toFixed(3)},${p.lng.toFixed(3)},${p.altitude.toFixed(3)}&b=${state.base}&l=${[...state.on].join(',')}${sel ? `&sel=${sel.layer}~${encodeURIComponent(sel.id)}` : ''}${state.space ? `&sp=${state.space}` : ''}`);
+  history.replaceState(null, '', `#@${p.lat.toFixed(p.altitude < 0.01 ? 5 : 3)},${p.lng.toFixed(p.altitude < 0.01 ? 5 : 3)},${p.altitude < 0.01 ? +p.altitude.toPrecision(2) : p.altitude.toFixed(3)}&b=${state.base}&l=${[...state.on].join(',')}${sel ? `&sel=${sel.layer}~${encodeURIComponent(sel.id)}` : ''}${state.space ? `&sp=${state.space}` : ''}${state.tilt ? `&t=${Math.round(state.tilt)}` : ''}`);
 }
 // ---- shareable links to one item: #...&sel=layer~id
 const idOf = (d) => { const v = d?.id ?? d?.icao ?? d?.mmsi ?? d?.iata ?? d?.norad ?? d?.name ?? d?.title; return v == null ? null : String(v).slice(0, 80); };
@@ -1653,7 +1728,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ------------------------------------------------------------------ sensor looks (idea from God's Eye View, MIT)
-const LOOKS = ['normal', 'nvg', 'flir', 'crt', 'hud'];
+const LOOKS = ['normal', 'nvg', 'flir', 'crt', 'hud', 'print'];
 function setLook(look) {
   state.look = LOOKS.includes(look) ? look : 'normal';
   document.body.dataset.look = state.look;
@@ -1668,7 +1743,7 @@ function viewLabel() {
 }
 document.getElementById('view-btn')?.addEventListener('click', () => shell?.open('map'));
 document.querySelectorAll('[data-look]').forEach((b) => b.addEventListener('click', () => setLook(b.dataset.look)));
-document.addEventListener('keydown', (e) => { if (!e.target.matches('input, select, textarea') && /^[1-5]$/.test(e.key)) setLook(LOOKS[Number(e.key) - 1]); });
+document.addEventListener('keydown', (e) => { if (!e.target.matches('input, select, textarea') && /^[1-6]$/.test(e.key)) setLook(LOOKS[Number(e.key) - 1]); });
 let hud = null; let tracer = null; let extras = null; let sky = null; let shell = null;
 $('#gibs-date-input').max = new Date(Date.now() - 24 * 3600_000).toISOString().slice(0, 10);
 $('#gibs-date-input').value = gibsDate();
@@ -1678,6 +1753,7 @@ $('#gibs-date-input').addEventListener('change', (e) => { state.gibsDate = e.tar
 const api = { factsHtml: (r) => factsHtml(r), now: () => clock.date(), view: () => viewOf(state.pov), particleBudget: () => ({ High: 6000, Balanced: 3500, Fast: 1500 }[perf.q.label] ?? 4000), clearTool: () => clearTool(), setPins: (p) => setPins(p), compose: () => { compose.forceMarkers = true; compose(); }, closeNotes: () => closeNotes(), LAYERS, pulse: (a, b, c) => pulse(a, b, c), flash: (a, b, c) => flash(a, b, c), globe, state, esc, $, reduceMotion, openNotes, isOpen, refreshLayer, fly, followTo, setBase, wmo: (c) => WMO[c] ?? '—', select, toast: (m) => toast(m), toggleLayer: (id, on) => toggleLayer(id, on), openWall: () => openWall(api), placeName: (a, b) => placeName(a, b), isDesktop, repoUrl: () => sourceRepoUrl() };
 const health = installHealth(api); const watch = installWatch(api);
 const offline = installOffline(api); // offline mode: the chip, the Offline kit, refresh when the internet is back
+installSound(); // v2.15: the speaker in the top bar and Listen in the page header
 {
   const add = (layer, afterId) => { const i = LAYERS.findIndex((l) => l.id === afterId); LAYERS.splice(i + 1, 0, layer); layerById[layer.id] = layer; };
   const added = [];
@@ -1751,7 +1827,7 @@ function manifestPanel() {
     <div class="table-scroll"><table class="manifest"><thead><tr><th>Layer</th><th>Sources and terms</th><th>Refresh</th><th>Can</th></tr></thead><tbody>
     ${m.layers.filter((l) => l.inThisEdition).map((l) => `<tr data-mf="${esc(l.id)}"><td><b style="color:${esc(l.swatch)}">●</b> ${esc(l.label)}<small>${esc(l.id)} · ${esc(l.group)}${l.origin !== 'core' ? ` · ${esc(l.origin)}` : ''}</small></td><td>${l.sources.map((s) => `${esc(s.name ?? s.id)}<small>${esc(s.license ?? '')}</small>`).join('')}</td><td>${l.refreshSeconds ? `${l.refreshSeconds >= 3600 ? `${Math.round(l.refreshSeconds / 3600)} h` : l.refreshSeconds >= 60 ? `${Math.round(l.refreshSeconds / 60)} min` : `${l.refreshSeconds} s`}` : 'once'}</td><td>${esc(l.capabilities.join(', '))}</td></tr>`).join('')}
     </tbody></table></div>
-    <p class="muted">Editions: ${Object.entries(EDITIONS).map(([k, e]) => `<a href="?edition=${k}${location.hash}">${esc(e.label)}</a>`).join(' · ')}. Plug-ins: ${m.plugins.length ? m.plugins.map((p) => `${esc(p.name)} (${p.ok ? 'added' : esc(p.problems[0])})`).join(', ') : 'none'}.</p>`, 'manifest');
+    <p class="muted">Editions: ${Object.entries(EDITIONS).map(([k, e]) => `<a href="?edition=${k}${esc(location.hash)}">${esc(e.label)}</a>`).join(' · ')}. Plug-ins: ${m.plugins.length ? m.plugins.map((p) => `${esc(p.name)} (${p.ok ? 'added' : esc(p.problems[0])})`).join(', ') : 'none'}.</p>`, 'manifest');
 }
 document.addEventListener('click', (e) => { if (e.target.closest('[data-manifest]')) manifestPanel(); });
 
@@ -1786,7 +1862,13 @@ function intro() {
 globe.pointOfView(state.pov, 0);
 setBase(state.base);
 renderLayerPanel();
-for (const id of state.on) refreshLayer(id);
+// v2.16 speed: draw the globe and the light layers first; big local files (the 5 MB traffic-camera list) wait until
+// the browser is idle after the first frames, so they never hold up the first view.
+const LATER = new Set(['cameras', 'webcams', 'alpr']);
+const whenIdle = (fn, ms = 1500) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: ms }) : setTimeout(fn, 300));
+for (const id of state.on) if (!LATER.has(id)) refreshLayer(id);
+addEventListener('load', () => whenIdle(() => { for (const id of state.on) if (LATER.has(id) && !state.data[id]) refreshLayer(id); }), { once: true });
+if (document.readyState === 'complete') whenIdle(() => { for (const id of state.on) if (LATER.has(id) && !state.data[id]) refreshLayer(id); });
 booted = true;
 $('#apply-now').addEventListener('click', applyPending);
 $('#notes-back')?.addEventListener('click', detailsBack);
@@ -1868,21 +1950,55 @@ setInterval(() => {
 // Keep side panels clear of the bottom bar, whose height changes when it wraps on narrower windows.
 gov = installIdleGovernor(globe, {
   busy: () => controls.autoRotate || !!state.tour || flightState.follow || !!state.ride || cosmos.flying(),
-  animating: () => compose.animating || !!cosmos.focus() || state.on.has('wind') || state.on.has('skyfx') || state.on.has('aircraft') || !clock.isLive(),
+  animating: () => !!closeup?.active() || compose.animating || !!cosmos.focus() || state.on.has('wind') || state.on.has('skyfx') || state.on.has('aircraft') || !clock.isLive(),
 });
 hud = installHud(api);
 if (state.look === 'hud') hud.show(true);
+if (state.pendingTilt) loadTilt().then((t) => t.set(state.pendingTilt));
 if (state.pendingSpace) setTimeout(() => cosmos.explore(state.pendingSpace, { instant: true }), 1800); // opened from a link into space
 addEventListener('keydown', (e) => { if (e.key === 'Escape' && cosmos.focus() && !e.target.closest?.('input, textarea')) cosmos.leave(); });
 if (NEW_VERSION) { if (!state.pendingSel && !state.pendingSpace) setTimeout(whatsNew, 600); try { localStorage.setItem('global-intelligence-atlas-version', VERSION); } catch { /* private mode */ } }
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>Ships you can see, alerts and power plants in depth</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>The whole solar system</h3>
     <div class="newlist">
-      <span>${g('ship', '#4aa3ff')}<b>Every ship in 3D:</b> click a ship to see its kind (container ship, tanker, bulk carrier, gas carrier, car carrier, cruise ship and more) built at its real size with its cargo, and what it carries when full. Port pages show each of their ships too.</span>
-      <span>${g('alert', '#ff3b30')}<b>Every disaster alert:</b> what green, orange and red mean, the people within reach, the earthquake or storm's own page, the weather there and other alerts nearby.</span>
-      <span>${g('bolt', '#ffe066')}<b>Every power plant:</b> how hard it runs against plants of its kind, how many people it supplies, its carbon against every other kind of power, its country's mix, and how hard a wind or solar farm is running right now.</span>
+      <span>${g('moon', '#ffd27a')}<b>Space opens on the solar system:</b> press the planet button and you see every planet where it is today, with its orbit, from above. Drag to turn, right-drag (or two fingers) to slide, scroll to zoom, and click any planet to fly there. The card lists how far each one is from the Sun and how long its sunlight takes.</span>
+      <span>${g('sat', '#a9c2e6')}<b>The belts and the farthest spacecraft:</b> the asteroid belt, with the gaps Jupiter's pull clears, and the Kuiper belt beyond Neptune, each rock turning at its own speed with the time machine. Zoom out to find Voyager 1 and 2 and New Horizons; click one for how far it is and how long a radio signal takes.</span>
+      <span>${g('peak', '#e3a27a')}<b>Fly much closer:</b> on the Moon, Mars and Mercury, sharper NASA map tiles load for the patch you are looking at as you go down, to the finest level NASA publishes (about 80 m per pixel on the Moon). You can fly in until one map pixel is about a quarter of a screen pixel, and fine grain keeps the closest views from looking smeared.</span>
+    </div>
+    <h4>From v2.19: a whole city up close</h4>
+    <div class="newlist">
+      <span>${g('peak', '#9fd3ff')}<b>Tilt:</b> press the tilt button (or V) when you are zoomed in, and the view swings down so you look across the city instead of straight down, with the sky above the horizon. Shift + drag up or down tilts by hand. Links keep the tilt.</span>
+      <span>${g('city', '#f2c66d')}<b>Buildings with windows:</b> every building has rows of windows a storey apart, glass towers have curtain walls and shops have shop windows at street level. Walls are lit from where the Sun really is, and after dark the windows light up, more in the evening, fewer after midnight.</span>
+      <span>${g('leaf', '#7bd389')}<b>Parks, woods, rivers and lakes:</b> drawn from OpenStreetMap, with trees, and water that ripples and catches the Sun. Streets have pavements, lane lines (yellow in the Americas), zebra crossings and street lamps that pool light on the road at night.</span>
+    </div>
+    <h4>From v2.18: close-ups that behave like the real thing</h4>
+    <div class="newlist">
+      <span>${g('car', '#f2c66d')}<b>Traffic that drives like traffic:</b> zoomed in to street level, every simulated car, van, lorry and bus keeps a safe gap to the one ahead, brakes and pulls away smoothly, slows for junctions and queues at red lights on town roads. The roads are real; the traffic is still simulated.</span>
+      <span>${g('ship', '#7ad3ff')}<b>Ships with wakes:</b> every moving ship drags a foam wake that spreads at the Kelvin angle (19.5°), the angle every boat's wake makes on calm water, longer and brighter the faster it goes.</span>
+      <span>${g('moon', '#ffd27a')}<b>Lights after dark:</b> where it is night, ships show their navigation lights (white masthead and stern, red to port, green to starboard) and vehicles their headlights and red tail lights, brighter when they brake.</span>
+    </div>
+    <h4>From v2.17: the Earth sooner, and never a black globe</h4>
+    <div class="newlist">
+      <span>${g('bolt', '#ffe066')}<b>The whole Earth sooner:</b> the relief and ocean-glint maps (600 kB) now arrive just after the first view instead of before it, and the sharper 4K Earth waits until the live layers are in (and is skipped on slow or data-saver connections). Measured on a throttled phone connection, the finished Earth appears 14 to 17 % sooner.</span>
+      <span>${g('sat', '#7ad3ff')}<b>No black globe:</b> when you zoom in close, the satellite photos load tile by tile; until they do (or if they cannot load at all) the Sun-lit Earth now shows underneath instead of black.</span>
+      <span>${g('plane', '#e9f2f7')}<b>Planes that look like planes:</b> zoom right in with Live flights on and planes are painted white like real aircraft, shrink to their true size near the ground, and carry their real lights: red on the left wingtip, green on the right, flashing white strobes and a red beacon. They glide smoothly between reports.</span>
+      <span>${g('ix', '#7ed6c4')}<b>A calmer whole-globe view:</b> undersea cables fade back when you see the whole planet, so the land and the live pins read first, and come back fully as you zoom in.</span>
+    </div>
+    <h4>From v2.16: closer, faster, truer to life</h4>
+    <div class="newlist">
+      <span>${g('ship', '#4aa3ff')}<b>Lifelike close-ups:</b> zoom right in with Live ships on and each ship becomes a 3D model at its real size, gliding on its heading. Below about 6 km, cars, vans, lorries and buses drive the real roads among the buildings. The traffic is simulated (the map says so); switch it off in Map.</span>
+      <span>${g('bolt', '#ffe066')}<b>Faster first view:</b> all start-up scripts are fetched at once, and the big camera list, flight tables and star map wait until the globe is on screen, so less than half as much is downloaded before it appears.</span>
+      <span>${g('leaf', '#72d2be')}<b>Animals in pictures:</b> every animal's page opens with a strip of openly licensed photos from the wild (press one to see it large, with its photographer), its family tree, a short summary and its conservation status.</span>
+      <span>${g('camera', '#7ad3ff')}<b>About 1,700 more cameras:</b> road cameras in Colorado, Pennsylvania, Wisconsin, Virginia and Singapore, volcano cameras from GeoNet and the US Geological Survey, and BC Ferries terminals, from the checked Open Eagle Eye list. Turn on Public webcams worldwide.</span>
+      <span>${g('eye', '#e8dcc2')}<b>Print look:</b> press 6 (or Map, then Print) to see the whole globe as halftone dots in ink on paper, like an old atlas plate.</span>
+    </div>
+<h4>From v2.15: the air you breathe, storm warnings and a voice</h4>
+    <div class="newlist">
+      <span>${g('air', '#5fc77a')}<b>Air quality everywhere:</b> about 400 places coloured by the air index now. Click one for who should take care and what to do, the main pollutant and why, each pollutant against the World Health Organization guideline, the dose as cigarettes, the next five days hour by hour with the cleanest hours to go out, UV, desert dust and pollen. Click any spot on the ground for its air too.</span>
+      <span>${g('warn', '#ff4d4d')}<b>US weather warnings:</b> every live tornado, thunderstorm, flood, winter storm, heat and fire-weather alert from the National Weather Service, drawn as the exact area it covers. Its page says how serious, how soon and how sure in plain words, the time left, the cities and people inside, and what to do.</span>
+      <span>${g('radio', '#93b6ff')}<b>Listen and sound:</b> the headphones button in any page reads it aloud. Switch on the speaker in the top bar for soft cues when something big happens.</span>
     </div>
     <h3>Click anything for the whole story</h3>
     <div class="newlist">
@@ -2098,7 +2214,7 @@ if (window.__TAURI_INTERNALS__) {
     if (a && new URL(a.href).origin !== location.origin) { e.preventDefault(); window.__TAURI_INTERNALS__.invoke('plugin:opener|open_url', { url: a.href }); }
   });
 }
-window.gia = { cosmos, layerManifest, loadPlugins, applyEdition, health, watch, planeCounts, gov: () => gov, extras: () => extras, tracer: () => tracer, markers, pickAt: (x, y) => pickAt(x, y), live, applyPending, preset, VERSION, globe, state, setBase, toggleLayer, startTour, setMode, select, showLearn, surfaceClick, countryAt, setLook, refreshLayer, flightState, clock }; // for tinkering in the console
+window.gia = { cosmos, layerManifest, loadPlugins, applyEdition, health, watch, planeCounts, lightCount, gov: () => gov, extras: () => extras, tracer: () => tracer, markers, pickAt: (x, y) => pickAt(x, y), live, applyPending, preset, VERSION, globe, state, setBase, toggleLayer, startTour, setMode, select, closeup: () => closeup, tilt: (d) => setTilt(d).then((t) => t.effective()), tilter: () => tilter, showLearn, surfaceClick, countryAt, setLook, refreshLayer, flightState, clock }; // for tinkering in the console
 
 // Fewer words on screen: long explanatory lines in the section drawer fold to one line ending in "…"; click or
 // press Enter on one to read it all. Short notes and status lines are left as they are.

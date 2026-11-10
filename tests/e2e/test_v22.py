@@ -9,13 +9,13 @@ def baltic(route):
     if 'meri.digitraffic.fi/api/ais/v1/locations' in u: return route.fulfill(status=200, body=BALTIC, headers={'Content-Type':'application/json','Access-Control-Allow-Origin':'*'})
     if 'meri.digitraffic.fi/api/ais/v1/vessels' in u: return route.fulfill(status=200, body='[]', headers={'Content-Type':'application/json','Access-Control-Allow-Origin':'*'})
     return handler(route)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.14')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}"
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1440,'height':900}); errs=[]
     pg.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
     pg.route('**/*', baltic); pg.add_init_script(INIT)
     pg.goto('http://localhost:8765/app/#@1.3,103.8,2.2&l=borders,ships', wait_until='commit'); pg.wait_for_timeout(14000)
-    check('version 2.14', pg.evaluate("() => gia.VERSION")=='2.14')
+    check('version 2.20', pg.evaluate("() => gia.VERSION")=='2.20')
     d=pg.evaluate("() => { const s=gia.state.data.ships; return s && { n: s.length, src: s.src, parts: gia.state.chan.ships?.particles.length, st: gia.state.lstatus.ships?.s } }")
     check('ships load worldwide from the snapshot', d and d['n']==4001 and d['src']=='world' and d['st']=='ok', d)
     check('ships drawn as one particle cloud', d and d['parts']==1, d)
@@ -35,7 +35,9 @@ with sync_playwright() as p:
     # without a snapshot: the Baltic feed takes over
     pg2=b.new_page(viewport={'width':1280,'height':800}); pg2.on('pageerror', lambda e: errs.append(getattr(e,'stack',str(e))[:400]))
     pg2.route('**/*', baltic); pg2.route('**/live-data/ships.json*', lambda r: r.fulfill(status=404, body='404: Not Found', headers={'Access-Control-Allow-Origin':'*'})); pg2.add_init_script(INIT)
-    pg2.goto('http://localhost:8765/app/#@60,24,1.2&l=borders,ships', wait_until='commit'); pg2.wait_for_timeout(14000)
+    pg2.bring_to_front(); pg2.goto('http://localhost:8765/app/#@60,24,1.2&l=borders,ships', wait_until='commit')
+    try: pg2.wait_for_function("() => window.gia && gia.state.data.ships?.length", timeout=30000)
+    except Exception: pass
     f=pg2.evaluate("() => { const s=gia.state.data.ships; return s && { n: s.length, src: s.src } }")
     check('falls back to the Baltic without a snapshot', f and f['src']=='baltic' and f['n']==50, f)
     pg2.evaluate("() => gia.select({layer:'ships', d: gia.state.data.ships[0]})"); pg2.wait_for_timeout(500)
@@ -49,7 +51,9 @@ with sync_playwright() as p:
             seen.append(u); return route.fulfill(status=200, body=json.dumps({"rows":[[563000001,1.3,103.9,9.9,50,50,0,int(__import__('time').time()//60)+1,"MOCK STAR",70],[999000001,1.2,103.7,4,10,None,0,int(__import__('time').time()//60),"PROXY ONLY",80]],"statics":[]}), headers={'Content-Type':'application/json','Access-Control-Allow-Origin':'*'})
         return baltic(route)
     pg3.route('**/*', proxied); pg3.add_init_script(INIT)
-    pg3.goto('http://localhost:8765/app/#@1.3,103.8,0.3&l=borders,ships', wait_until='commit'); pg3.wait_for_timeout(15000)
+    pg3.bring_to_front(); pg3.goto('http://localhost:8765/app/#@1.3,103.8,0.3&l=borders,ships', wait_until='commit')
+    try: pg3.wait_for_function("() => window.gia && gia.state.data.ships?.some((x) => x.via === 'live')", timeout=30000)
+    except Exception: pass
     q=pg3.evaluate("() => { const s=gia.state.data.ships||[]; const a=s.find(x=>x.mmsi===563000001); return { n: s.length, live: s.filter(x=>x.via==='live').length, lat: a?.lat, extra: !!s.find(x=>x.mmsi===999000001) } }")
     check('proxy adds ships in view and newer positions win', q['live']==2 and q['lat']==1.3 and q['extra'] and q['n']==4002, {**q, 'calls': seen[:2]})
     check('proxy box covers the view', seen and all(p in seen[0] for p in ['b=']), seen[:1])
@@ -65,7 +69,7 @@ with sync_playwright() as p:
                   JSON.stringify({ MessageType: 'ShipStaticData', MetaData: { MMSI: 777000001, time_utc: t }, Message: { ShipStaticData: { UserID: 777000001, Name: 'DESKTOP LIVE@@', Type: 80, CallSign: 'D3SK', Destination: 'SINGAPORE', MaximumStaticDraught: 9, Dimension: { A: 150, B: 30, C: 12, D: 12 } } } })]; }
         throw new Error('unknown command ' + cmd);
       } };""")
-    pg4.goto('http://localhost:8765/app/#@1.3,103.8,0.3&l=borders,ships', wait_until='commit'); pg4.wait_for_timeout(14000)
+    pg4.bring_to_front(); pg4.goto('http://localhost:8765/app/#@1.3,103.8,0.3&l=borders,ships', wait_until='commit'); pg4.wait_for_timeout(14000)
     if not pg4.evaluate("() => document.body.classList.contains('left-open')"): pg4.click('.rail [data-section=layers]')
     pg4.wait_for_timeout(600)
     check('desktop shows the key form', pg4.evaluate("() => !!document.querySelector('[data-ais-form] input')"))

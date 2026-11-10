@@ -1,7 +1,14 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Global Intelligence Atlas main window",
-  "windows": ["main"],
-  "permissions": ["core:default", "opener:default", "notification:default"]
+  "description": "Global Intelligence Atlas main window: only the app's own pages, opening web links in the browser, and notifications",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "opener:allow-open-url",
+    "opener:allow-default-urls",
+    "notification:default"
+  ]
 }

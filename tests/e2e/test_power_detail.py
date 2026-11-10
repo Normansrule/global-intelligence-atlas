@@ -16,7 +16,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@53.7,-1,0.5&l=borders,power&s=1', wait_until='commit'); pg.wait_for_timeout(10000)
     f=pg.evaluate("""async () => { const m = await import('./js/powerdetail.js');
       return { cf: m.capacityFactor(1000, 7889.4), co2: m.yearCo2(1000, 'Coal'), w: [m.windShare(2), m.windShare(7.5), m.windShare(12), m.windShare(30)], s: m.solarShare(500) } }""")

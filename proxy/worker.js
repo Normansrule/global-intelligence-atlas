@@ -19,6 +19,10 @@ const HOSTS = [
   // Intelligence toolkit (osint.js)
   'dns.google', 'rdap.org', 'crt.sh', 'stat.ripe.net', 'cveawg.mitre.org', 'api.first.org', 'blockstream.info', 'eth.blockscout.com',
 ];
+// Headers on every answer: the browser must treat it as data, never run it as a page of this proxy's own site.
+const SAFE = { 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'; sandbox", 'Referrer-Policy': 'no-referrer', 'Cross-Origin-Resource-Policy': 'cross-origin' };
+// rdap.org is a directory: it redirects each query to the registry that holds the record (rdap.verisign.com,
+// rdap.arin.net, pubapi.registry.google/rdap/…), so from rdap.org only, a redirect may end on any RDAP address.
 // Seconds to cache each host's answers at the edge.
 const TTL = { 'opensky-network.org': 60, 'api.airplanes.live': 8, 'api.adsb.lol': 8, 'opendata.adsb.fi': 8, 'api.adsbdb.com': 86400, 'll.thespacedevs.com': 900, 'www.gdacs.org': 600, 'celestrak.org': 7200, 'firms.modaps.eosdis.nasa.gov': 1800, 'rdap.org': 3600, 'crt.sh': 3600, 'cveawg.mitre.org': 3600, 'api.first.org': 3600 };
 
@@ -30,12 +34,16 @@ export default {
       'Access-Control-Allow-Origin': origins.includes('*') ? '*' : origins.includes(origin) ? origin : origins[0],
       'Access-Control-Allow-Methods': 'GET, OPTIONS', 'Vary': 'Origin',
     };
+    // v2.14 security: a browser on some other website may not spend this proxy's free quota. (Tools outside a
+    // browser send no Origin header and are still served, so this is a fence against hotlinking, not a lock.)
+    if (origin && !origins.includes('*') && !origins.includes(origin)) return new Response('Origin not allowed', { status: 403, headers: { ...cors, ...SAFE } });
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
     if (request.method !== 'GET') return new Response('GET only', { status: 405, headers: cors });
+    if (request.url.length > 4096) return new Response('Address too long', { status: 414, headers: cors });
     if (new URL(request.url).pathname === '/ais') return ais(request, env, ctx, cors);
     let target;
     try { target = new URL(new URL(request.url).searchParams.get('url') ?? ''); } catch { return new Response('Pass ?url=https://…', { status: 400, headers: cors }); }
-    if (target.protocol !== 'https:' || !HOSTS.some((h) => target.hostname === h || target.hostname.endsWith(`.${h}`))) {
+    if (target.protocol !== 'https:' || target.username || target.password || (target.port && target.port !== '443') || !HOSTS.some((h) => target.hostname === h || target.hostname.endsWith(`.${h}`))) {
       return new Response('Host not allowed', { status: 403, headers: cors });
     }
     const ttl = TTL[target.hostname] ?? 30;
@@ -46,8 +54,15 @@ export default {
       if (target.hostname === 'opensky-network.org' && env.OPENSKY_CLIENT_ID && env.OPENSKY_CLIENT_SECRET) {
         const tok = await openskyToken(env); if (tok) headers.Authorization = `Bearer ${tok}`;
       }
-      const up = await fetch(target.toString(), { headers, cf: { cacheTtl: ttl } });
-      res = new Response(up.body, { status: up.status, headers: { 'Content-Type': up.headers.get('Content-Type') ?? 'application/json', 'Cache-Control': `public, max-age=${ttl}` } });
+      const up = await fetch(target.toString(), { headers, cf: { cacheTtl: ttl }, redirect: 'follow' });
+      // a redirect must end on a listed host too (rdap.org, for one, hands each query on to a registry)
+      const end = new URL(up.url || target.toString());
+      const listed = HOSTS.some((h) => end.hostname === h || end.hostname.endsWith(`.${h}`));
+      const registry = target.hostname === 'rdap.org' && /rdap/i.test(end.hostname + end.pathname);
+      if (end.protocol !== 'https:' || !(listed || registry)) {
+        return new Response('Redirected off the host list', { status: 502, headers: { ...cors, ...SAFE } });
+      }
+      res = new Response(up.body, { status: up.status, headers: { 'Content-Type': up.headers.get('Content-Type') ?? 'application/json', 'Cache-Control': `public, max-age=${ttl}`, ...SAFE } });
       if (up.ok) ctx.waitUntil(cache.put(key, res.clone()));
     }
     const out = new Response(res.body, res);

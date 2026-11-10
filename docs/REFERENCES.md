@@ -76,6 +76,8 @@ Autostrade per l'Italia. (n.d.). *Webcam: Viabilità in tempo reale* [Data set].
 
 Baker, N. T., & Stone, W. W. (2015). *Estimated annual agricultural pesticide use for counties of the conterminous United States, 2008–12* (Data Series 907). U.S. Geological Survey. https://doi.org/10.3133/ds907
 
+Bayer, B. E. (1973). An optimum method for two-level rendition of continuous-tone pictures. In *Proceedings of the IEEE International Conference on Communications* (Vol. 1, pp. 26-11–26-15). IEEE.
+
 BBC News. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://feeds.bbci.co.uk/news/world/rss.xml
 
 Bird, P. (2003). An updated digital model of plate boundaries. *Geochemistry, Geophysics, Geosystems, 4*(3), Article 1027. https://doi.org/10.1029/2001GC000252
@@ -142,6 +144,10 @@ CNA. (n.d.-a). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from h
 
 CNA. (n.d.-b). *CNA (Channel NewsAsia) live* [Video live stream]. YouTube. https://www.youtube.com/channel/UC83jt4dlz1Gjl58fzQrrHZg/live
 
+codeptor. (n.d.). *ascii-dither-shader* [Computer software]. GitHub. https://github.com/codeptor/ascii-dither-shader
+
+Copernicus Atmosphere Monitoring Service. (n.d.). *CAMS global and European air quality forecasts* [Data set]. European Centre for Medium-Range Weather Forecasts. Retrieved November 9, 2026, from https://atmosphere.copernicus.eu
+
 Croft, B. (2023). *LLM visualization* [Computer software]. GitHub. https://github.com/bbycroft/llm-viz
 
 Cross, D. (2023). *Astronomy Engine* (Version 2.1.19) [Computer software]. GitHub. https://github.com/cosinekitty/astronomy
@@ -170,6 +176,8 @@ El Hattab, H. (n.d.). *reveal.js* [Computer software]. GitHub. https://github.co
 
 Electronic Frontier Foundation. (n.d.). *Automated license plate readers (ALPRs)*. Street-Level Surveillance. https://sls.eff.org/technologies/automated-license-plate-readers-alprs
 
+ElevenLabs. (n.d.). *ElevenLabs MCP server* [Computer software]. GitHub. https://github.com/elevenlabs/elevenlabs-mcp
+
 Ember. (2024). *Global electricity review 2024*. https://ember-energy.org/latest-insights/global-electricity-review-2024/
 
 Embraer. (n.d.). *E175: Specifications* [Manufacturer specifications]. https://www.embraercommercialaviation.com
@@ -183,6 +191,8 @@ euronews. (n.d.). *Euronews live* [Video live stream]. YouTube. https://www.yout
 Eurostat. (n.d.). *House price index – quarterly data (prc_hpi_q)* [Data set]. Retrieved October 14, 2026, from https://ec.europa.eu/eurostat/databrowser/view/prc_hpi_q/default/table
 
 Exec. Order No. 13526, 75 Fed. Reg. 707 (2010). https://www.federalregister.gov/d/E9-31418
+
+Faure, A. (n.d.). *free-sfx* [Sound recording collection]. GitHub. https://github.com/arnofaure/free-sfx
 
 Federal Bureau of Investigation. (n.d.). *FBI records: The Vault* [Data set]. Retrieved October 14, 2026, from https://vault.fbi.gov/
 
@@ -206,6 +216,8 @@ Gardner, J. K., & Knopoff, L. (1974). Is the sequence of earthquakes in Southern
 
 Gaulier, G., & Zignago, S. (2010). *BACI: International trade database at the product-level. The 1994–2007 version* (CEPII Working Paper No. 2010-23). CEPII. https://www.cepii.fr/CEPII/en/publications/wp/abstract.asp?NoDoc=2726
 
+GBIF.org. (n.d.). *GBIF occurrence and species APIs* [Data set]. Global Biodiversity Information Facility. Retrieved October 14, 2026, from https://www.gbif.org/developer/summary
+
 The GDELT Project. (n.d.). *GDELT GEO 2.0 API and GDELT 2.0 event database* [Data set]. Retrieved October 14, 2026, from https://www.gdeltproject.org
 
 Georgia Department of Transportation. (n.d.). *511GA: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511ga.org/
@@ -213,8 +225,6 @@ Georgia Department of Transportation. (n.d.). *511GA: Traffic cameras* [Data set
 Global Disaster Alert and Coordination System. (n.d.). *GDACS disaster alerts* [Data set]. United Nations Office for the Coordination of Humanitarian Affairs and European Commission Joint Research Centre. Retrieved October 14, 2026, from https://www.gdacs.org
 
 Google. (n.d.). *Google Public DNS: JSON API for DNS over HTTPS* [Web service]. Retrieved October 14, 2026, from https://developers.google.com/speed/public-dns/docs/doh/json
-
-GoSlowPoke168. (n.d.). *Argus* [Computer software]. GitHub. https://github.com/GoSlowPoke168/Argus
 
 Graser, A. (2019). MovingPandas: Efficient structures for movement data in Python. *GI_Forum, 7*(1), 54–68. https://doi.org/10.1553/giscience2019_01_s54
 
@@ -244,6 +254,8 @@ Houston TranStar. (n.d.). *Traffic cameras* [Data set]. Retrieved October 14, 20
 
 ibelick. (n.d.). *Motion Primitives* [Computer software]. GitHub. https://github.com/ibelick/motion-primitives
 
+iNaturalist. (n.d.). *iNaturalist API* (Version 1) [Data set]. California Academy of Sciences and National Geographic Society. Retrieved October 14, 2026, from https://api.inaturalist.org/v1/docs/
+
 Indiana Department of Transportation. (n.d.). *511 Indiana (TrafficWise): Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511in.org/
 
 International Atomic Energy Agency. (n.d.). *Power Reactor Information System (PRIS)* [Data set]. https://pris.iaea.org
@@ -266,6 +278,8 @@ Japan Center for Asian Historical Records. (n.d.). *JACAR* [Data set]. National 
 
 The Japan Times. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.japantimes.co.jp/feed/
 
+Johns Hopkins University Applied Physics Laboratory. (n.d.). *Where is New Horizons?* New Horizons. https://pluto.jhuapl.edu/Mission/Where-is-New-Horizons/index.php
+
 Kalman, R. E. (1960). A new approach to linear filtering and prediction problems. *Journal of Basic Engineering, 82*(1), 35–45. https://doi.org/10.1115/1.3662552
 
 Kandadai, S. (n.d.). *satellite.js* [Computer software]. GitHub. https://github.com/shashwatak/satellite-js
@@ -279,6 +293,8 @@ Kennett, B. L. N., & Engdahl, E. R. (1991). Traveltimes for global earthquake lo
 kepler.gl contributors. (n.d.). *kepler.gl* [Computer software]. GitHub. https://github.com/keplergl/kepler.gl
 
 Kious, W. J., & Tilling, R. I. (1996). *This dynamic Earth: The story of plate tectonics*. U.S. Geological Survey. https://pubs.usgs.gov/gip/dynamic/dynamic.html
+
+Kowalski, E. (2026). *Skills for designers and engineers* [Computer software]. GitHub. https://github.com/emilkowalski/skills
 
 The Kyiv Independent. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://kyivindependent.com/news-archive/rss/
 
@@ -312,6 +328,8 @@ Meeus, J. (1998). *Astronomical algorithms* (2nd ed.). Willmann-Bell.
 
 MercoPress. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://en.mercopress.com/rss/
 
+Meyer, T. (n.d.). *Argus* [Computer software]. GitHub. https://github.com/MeyerThorsten/Argus
+
 Michigan Department of Transportation. (n.d.). *MiDrive: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://mdotjboss.state.mi.us/MiDrive/
 
 Ministry of Land, Infrastructure, Transport and Tourism. (n.d.). *River disaster prevention information: Live camera images* [Data set]. Retrieved October 14, 2026, from https://www.river.go.jp/
@@ -326,7 +344,13 @@ Mozilla. (2025). *PDF.js* (Version 4.10.38) [Computer software]. GitHub. https:/
 
 MuckRock. (n.d.). *MuckRock*. https://www.muckrock.com/
 
+Muller, R. A., & Muller, E. (2015). *Air pollution and cigarette equivalence*. Berkeley Earth. https://berkeleyearth.org/air-pollution-and-cigarette-equivalence/
+
+Myers, N., Mittermeier, R. A., Mittermeier, C. G., da Fonseca, G. A. B., & Kent, J. (2000). Biodiversity hotspots for conservation priorities. *Nature, 403*(6772), 853–858. https://doi.org/10.1038/35002501
+
 NASA Earth Observatory. (n.d.). *Blue Marble and Black Marble* [Image collection]. Visible Earth. https://visibleearth.nasa.gov/collection/1484/blue-marble
+
+NASA Jet Propulsion Laboratory. (n.d.). *Where are Voyager 1 and Voyager 2 now?* NASA Science. https://science.nasa.gov/mission/voyager/where-are-voyager-1-and-voyager-2-now/
 
 NASA Space Science Data Coordinated Archive. (n.d.). *NSSDCA master catalog* [Data set]. National Aeronautics and Space Administration. https://nssdc.gsfc.nasa.gov/nmc/
 
@@ -361,6 +385,8 @@ National Security Agency. (n.d.). *Declassified historical releases* [Data set].
 National Security Archive. (n.d.). *National Security Archive* [Data set]. George Washington University. Retrieved October 14, 2026, from https://nsarchive.gwu.edu/
 
 National Water Quality Monitoring Council. (n.d.). *Water Quality Portal* [Data set]. U.S. Geological Survey and U.S. Environmental Protection Agency. Retrieved October 14, 2026, from https://www.waterqualitydata.us
+
+National Weather Service. (n.d.). *API web service: Active alerts and forecast zones* [Data set]. National Oceanic and Atmospheric Administration. Retrieved November 9, 2026, from https://www.weather.gov/documentation/services-web-api
 
 Natural Earth. (n.d.). *Natural Earth: Free vector and raster map data* [Data set]. https://www.naturalearthdata.com
 
@@ -404,6 +430,8 @@ NPR. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from htt
 
 NZ Transport Agency Waka Kotahi. (n.d.). *Traffic cameras API* [Data set]. https://www.nzta.govt.nz/traffic-and-travel-information/infoconnect-section-page/about-the-apis/traffic-cameras/
 
+OASIS. (2010). *Common Alerting Protocol version 1.2* (OASIS Standard). https://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html
+
 Observable. (n.d.). *Observable Plot* [Computer software]. GitHub. https://github.com/observablehq/plot
 
 Office of Foreign Assets Control, U.S. Department of the Treasury. (n.d.). *Specially Designated Nationals and Blocked Persons list (SDN)* [Data set]. Retrieved October 14, 2026, from https://sanctionslist.ofac.treas.gov/
@@ -414,7 +442,9 @@ Olive, X. (2019). traffic, a toolbox for processing and analysing air traffic da
 
 Ontario Ministry of Transportation. (n.d.). *511 Ontario: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511on.ca/
 
-Open-Meteo. (n.d.). *Marine weather API* [Computer software]. Retrieved November 4, 2026, from https://open-meteo.com/en/docs/marine-weather-api
+Open-Meteo. (n.d.-a). *Marine weather API* [Computer software]. Retrieved November 4, 2026, from https://open-meteo.com/en/docs/marine-weather-api
+
+Open-Meteo. (n.d.-b). *Air quality API* [Computer software]. Retrieved November 9, 2026, from https://open-meteo.com/en/docs/air-quality-api
 
 OpenLayers contributors. (n.d.). *OpenLayers* [Computer software]. GitHub. https://github.com/openlayers/openlayers
 
@@ -492,6 +522,8 @@ The Space Devs. (n.d.). *Launch Library 2* [Data set]. Retrieved October 14, 202
 
 Stam, J. (1999). Stable fluids. In *Proceedings of the 26th Annual Conference on Computer Graphics and Interactive Techniques* (pp. 121–128). ACM Press. https://doi.org/10.1145/311535.311548
 
+stuchapin909. (2026). *Open Eagle Eye* (cameras.json camera registry) [Computer software and data set]. GitHub. Retrieved November 9, 2026, from https://github.com/stuchapin909/Open-Eagle-Eye
+
 Tauri Programme within The Commons Conservancy. (2024). *Tauri* (Version 2) [Computer software]. https://tauri.app
 
 Tauri Programme within The Commons Conservancy. (n.d.). *Calling Rust from the frontend*. Tauri 2 documentation. https://v2.tauri.app/develop/calling-rust/
@@ -531,6 +563,8 @@ U.S. Energy Information Administration. (2024). *Electric power monthly: Tables 
 U.S. Energy Information Administration. (n.d.). *World oil transit chokepoints*. https://www.eia.gov/international/analysis/special-topics/World_Oil_Transit_Chokepoints
 
 U.S. Environmental Protection Agency. (2023). *Greenhouse gas emissions from a typical passenger vehicle*. https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical-passenger-vehicle
+
+U.S. Environmental Protection Agency. (2024). *Technical assistance document for the reporting of daily air quality: The Air Quality Index (AQI)* (EPA-454/B-24-002). https://www.airnow.gov/publications/air-quality-index/technical-assistance-document-for-reporting-the-daily-aqi/
 
 U.S. Environmental Protection Agency. (n.d.-a). *ECHO Exporter* [Data set]. Enforcement and Compliance History Online. Retrieved October 14, 2026, from https://echo.epa.gov/tools/data-downloads
 
@@ -604,6 +638,8 @@ Worden, C. B., Thompson, E. M., Hearne, M., & Wald, D. J. (2020). *ShakeMap manu
 
 World Bank. (n.d.). *World Bank Open Data API* [Data set]. https://datahelpdesk.worldbank.org/knowledgebase/articles/889392
 
+World Health Organization. (2021). *WHO global air quality guidelines: Particulate matter (PM2.5 and PM10), ozone, nitrogen dioxide, sulfur dioxide and carbon monoxide*. https://www.who.int/publications/i/item/9789240034228
+
 World Meteorological Organization. (2019). *Manual on codes: International codes, Volume I.1, Part A: Alphanumeric codes* (WMO-No. 306; 2011 ed., updated 2019). https://library.wmo.int/idurl/4/35713
 
 World Resources Institute. (2021). *Global power plant database* (Version 1.3.0) [Data set]. https://datasets.wri.org/dataset/globalpowerplantdatabase
@@ -665,6 +701,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (City of Ottawa, n.d.) | Ottawa road camera stills. | Public data (City of Ottawa) |
 | (City of Toronto, n.d.) | Toronto road camera stills. | Open Government Licence – Toronto |
 | (simplifaisoul, 2026) | Curated list of about 900 public webcams in 74 countries — SkylineWebcams across Asia, Africa, Latin America and Europe, and webcams their operators broadcast on their own sites or YouTube channels — added to the worldwide webcam layer as links to each publisher (a few owner-run streams play in place). Coordinates were resolved by Osiris with OpenStreetMap Nominatim. | MIT (code and camera lists); images and streams © each publisher |
+| (stuchapin909, 2026) | About 31,000 still-image cameras, each checked by the registry’s maintainers; the atlas adds the ones it does not already show (about 1,700: Colorado, Pennsylvania, Wisconsin and Virginia road cameras, Singapore, GeoNet and USGS volcano cameras, BC Ferries) under the same reviewed-publisher rules as WorldCam. | MIT (code and registry); images © each publisher |
 | (SkylineWebcams, n.d.) | Live tourism webcams on every continent, including mainland China, Japan, South Korea and Southeast Asia; the atlas links to each camera’s page on skylinewebcams.com. | Images © SkylineWebcams and camera owners; linked, never copied or embedded |
 | (YouTube, n.d.) | About 200 webcams in the Osiris directory are run by their operators (towns, harbours, hotels, tourist boards) as YouTube live channels; the atlas links to the channel’s live page. | Streams © each channel owner; linked, never copied |
 | (Houston TranStar, n.d.) | Houston-area and eastern Yoakum-district highway cameras, Texas. | Public data (Houston TranStar consortium; Texas Department of Transportation) |
@@ -674,7 +711,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Land Transport Authority, n.d.) | Singapore expressway cameras. | Singapore Open Data Licence, version 1.0 |
 | (Ministry of Land, Infrastructure, Transport and Tourism, n.d.) | River and bridge cameras in Tokyo and Yokohama, Japan. | Public data (MLIT, Japan; Government of Japan Standard Terms of Use) |
 | (MALCO2BZ, 2026) | Worldwide list of about 229,000 public camera records; the atlas keeps about 170,000 published on purpose by agencies, cities, research groups and webcam directories. | MIT (code and camera list); images © each publisher |
-| (GoSlowPoke168, n.d.) | Original project WorldCam is derived from. | MIT |
+| (Meyer, n.d.) | Original project WorldCam is derived from. | MIT |
 | (Windyty, n.d.) | Owner-submitted tourism and weather webcams, the largest publisher in the worldwide webcam layer. | Images © webcam owners; shown with attribution to Windy.com |
 | (OpenStreetMap contributors, n.d.) | Street map tiles for deep zoom. | ODbL 1.0 — © OpenStreetMap contributors |
 | (DeFlock, n.d.) | Project behind most mapped Flock and other ALPR cameras. | Data in OpenStreetMap (ODbL) |
@@ -715,7 +752,14 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Schlömer et al., 2014) | The power plant page: life-cycle greenhouse gas of each kind of power, grams of carbon dioxide equivalent per kWh (medians). | IPCC (free to use with attribution) |
 | (U.S. Environmental Protection Agency, 2023) | The power plant page: about 4.6 tonnes of carbon dioxide a year from a typical car, to put a plant’s carbon in cars. | Public domain (U.S. Government) |
 | (Ember, 2024) | The nuclear and power plant pages: world electricity use per person (about 30,000 TWh in 2023 for 8 billion people), to say how many people a plant supplies. | CC BY 4.0 |
-| (Open-Meteo, n.d.) | The port page: waves, swell, sea temperature and ocean current at the harbour now, and the sea level (tide) over yesterday, today and tomorrow, from global wave and ocean models. | CC BY 4.0 |
+| (Open-Meteo, n.d.-a) | The port page: waves, swell, sea temperature and ocean current at the harbour now, and the sea level (tide) over yesterday, today and tomorrow, from global wave and ocean models. | CC BY 4.0 |
+| (Open-Meteo, n.d.-b) | Air quality: the US and European air-quality indices, fine and coarse particles, ozone, nitrogen dioxide, sulphur dioxide, carbon monoxide, desert dust, ultraviolet (UV) index and European pollen, now and for the next five days, for about 400 places and any clicked spot. | CC BY 4.0 (data from CAMS, Copernicus licence) |
+| (Copernicus Atmosphere Monitoring Service, n.d.) | Air quality: the atmospheric-composition models behind every air-quality value, about 40 km worldwide and 10 km over Europe. | Copernicus licence (free, with attribution) |
+| (U.S. Environmental Protection Agency, 2024) | Air quality: the index bands, their colours, who is sensitive and what each band advises. | US government work (public domain) |
+| (World Health Organization, 2021) | Air quality: the guideline level each pollutant bar is measured against. | Cited (facts only) |
+| (Muller & Muller, 2015) | Air quality: 22 µg/m³ of fine particles for a day as about one cigarette. | Cited (facts only) |
+| (National Weather Service, n.d.) | US weather warnings: every live warning, watch and advisory with its area, timing, severity, urgency, certainty, instructions and full text, and the outlines of the forecast zones it names. | US government work (public domain) |
+| (OASIS, 2010) | US weather warnings: the plain-words meaning of each alert’s severity, urgency and certainty. | Cited (standard) |
 | (World Meteorological Organization, 2019) | What the weather codes from Open-Meteo mean: thunderstorms (95–99), snow (71–77, 85–86) and the rest, for the clouds, rain and storms layer; and the words for the sea on the port page, from calm to phenomenal by wave height. | Reference (WMO) |
 | (REST Countries, n.d.) | The country page: official name, capital and its position, population and area (and their rank among all countries), languages, money, time zones, neighbours, driving side, phone code and web suffix. | MPL-2.0 |
 | (World Bank, n.d.) | The country page: income per person, life expectancy, life in towns and cities, internet use, electricity, renewable energy and forest, each against the world with its trend since 1990. | CC BY 4.0 |
@@ -747,6 +791,9 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Wikimedia Foundation, n.d.-a) | The photo, first sentence and Wikidata item for each landmark card. | CC BY-SA 4.0 (text) |
 | (Wikimedia Foundation, n.d.-d) | Landmark photos, credited to their authors under the licence each file carries. | Each file under its own free licence (shown with the photo) |
 | (Wikimedia Foundation, n.d.-b) | Landmark figures: when built, height or elevation, area, visitors a year and World Heritage status. | CC0 1.0 (public domain dedication) |
+| (GBIF.org, n.d.) | Wildlife: ten years of logged sightings of any animal by country, state or province and month, the class totals the chance is counted against, sample sightings with positions and photos, and the IUCN (International Union for Conservation of Nature) Red List category. | Records under CC0, CC BY or CC BY-NC (per dataset); photos under their own licences, credited |
+| (iNaturalist, n.d.) | Wildlife: finding an animal from its everyday name, its photo, and the animal species and endemic species seen in each hotspot. | Observations and photos under each observer’s licence (Creative Commons only shown, credited) |
+| (Myers et al., 2000) | Wildlife: the places on Earth richest in species found nowhere else, which the hotspot pins follow. | Cited (facts only) |
 | (Wikimedia Foundation, n.d.-c) | Nuclear power plants, spaceports, stock exchanges, central banks and critical-mineral mines (open data for those layers). | CC0 1.0 (public domain dedication) |
 | (National Geospatial-Intelligence Agency, n.d.) | Every large, medium and small harbour with depths and limits (open data for Ports), and the port page: tide range, shelter, entry limits, pilots and tugs, cargo facilities, cranes and lifts, repairs, supplies, services and charts. | Public domain (U.S. Government) |
 | (United Nations Conference on Trade and Development, n.d.) | Further reading on global shipping. | Reference |
@@ -768,6 +815,8 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (D. R. Williams, n.d.) | Sizes, day and year lengths, gravity, temperatures and moon counts on the space cards. | Public domain (NASA) |
 | (Davies & Colvin, 2000) | Latitude and longitude of the six Apollo lunar modules, pinned on the Moon. | Published paper (facts cited) |
 | (NASA Space Science Data Coordinated Archive, n.d.) | Landing dates and places of the other Moon and Mars landers and rovers. | Public domain (NASA) |
+| (NASA Jet Propulsion Laboratory, n.d.) | Distances and speeds of Voyager 1 and 2, shown out beyond the planets in the solar system view. | Public domain (NASA) |
+| (Johns Hopkins University Applied Physics Laboratory, n.d.) | Distance and speed of New Horizons, shown out beyond Pluto in the solar system view. | Reference (mission facts) |
 | (Espenak, n.d.) | The eclipse predictions the atlas’s own eclipse times were checked against. | Public domain (NASA) |
 | (Thomson, 1887) | The 19.47° half-angle of the V-shaped wake drawn behind moving ships. | Public domain (1887) |
 | (International Telecommunication Union, 2014) | AIS message fields, ship-type codes and navigational status codes used to read ship reports. | ITU Recommendation (free to read) |
@@ -920,3 +969,11 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Bombardier, n.d.) | Real dimensions for the business-jet model. | Reference |
 | (Textron Aviation, n.d.) | Real dimensions for the light-aircraft model. | Reference |
 | (Lockheed Martin, n.d.) | Real dimensions for the fast-jet model. | Reference |
+| (Meyer, n.d.) | v2.15 idea source: an air-quality layer and US weather-service alerts on a 3D intelligence globe. Ideas only; no code copied. | AGPL-3.0 |
+| (Faure, n.d.) | v2.15 idea source for the sound cues; the cues are synthesised in the browser, no audio copied. | CC BY 4.0 |
+| (ElevenLabs, n.d.) | v2.15 idea source for Listen (a voice for every page); Listen uses the system voice, no key or code. | MIT |
+| (Sidhu, n.d.) | v2.16 idea source for the lifelike close-ups: simulated traffic on real roads. Ideas only; no code copied. | MIT |
+| (OpenStreetMap contributors, n.d.) | v2.16 close-ups: the roads the simulated traffic drives on and the buildings around it, via the Overpass API. | ODbL |
+| (codeptor, n.d.) | v2.16 idea source for the Print look (ordered dithering as a visual style). Ideas only: the repository has no licence file, so no code or text was copied. | No licence stated |
+| (Bayer, 1973) | The 4×4 ordered-dither threshold matrix behind the Print look. | Paper |
+| (Kowalski, 2026) | v2.15 motion rules for the new pages: ease-out curves, under 300 ms, grow from 96 %, reduced-motion respected. | MIT |

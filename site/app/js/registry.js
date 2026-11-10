@@ -14,6 +14,9 @@ import { flightsLayer } from './flights.js';
 import { camerasLayer, alprLayer } from './cameras.js';
 import { citiesLayer, airportsLayer } from './places.js';
 import { landmarksLayer } from './landmarks.js';
+import { wildlifeLayer } from './wildlife.js';
+import { airLayer } from './airquality.js';
+import { warningsLayer } from './warnings.js';
 import { newsLayer } from './news.js';
 import { crimeLayer } from './crime.js';
 import { webcamsLayer } from './worldcams.js';
@@ -42,6 +45,7 @@ export const REGISTRY = [
   { make: () => citiesLayer, after: 'grid' },
   { make: () => airportsLayer, after: 'cities' },
   { make: (api) => landmarksLayer(api), after: 'cities' },
+  { make: (api) => wildlifeLayer(api), after: 'landmarks' },
   { make: () => newsLayer, after: 'aircraft' },
   { make: () => crimeLayer, after: 'alpr', group: 'civic' },
   { make: () => shipsLayer, after: 'news' },
@@ -51,8 +55,10 @@ export const REGISTRY = [
   { make: () => powerLayer, after: 'nuclear' },
   { make: () => launchesLayer, after: 'stations' },
   { make: () => alertsLayer, after: 'events' },
+  { make: (api) => warningsLayer(api), after: 'alerts' }, // v2.15 US weather warnings (warnings.js)
   { make: (api) => windLayer(api), after: 'grid' },
   { make: (api) => skyLayer(api), after: 'wind' },
+  { make: (api) => airLayer(api), after: 'sky' }, // v2.15 air quality (airquality.js)
   { make: () => moonLayer, after: 'sun' },
   { make: () => planetsLayer, after: 'moon' },
   { make: (api) => firesLayer(api), after: 'events' },

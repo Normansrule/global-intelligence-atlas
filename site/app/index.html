@@ -5,23 +5,106 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; media-src 'self' data: blob: https: http:; connect-src 'self' data: blob: https: wss: ipc: http://ipc.localhost; worker-src 'self' blob:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Global Intelligence Atlas (GIA) — a 3D Earth to explore and learn from</title>
   <meta name="description" content="A zoomable 3D Earth with live earthquakes, natural events, satellites, aurora, day and night, plate tectonics and World Monitor's infrastructure layers — plus guided tours, a geography quiz and a measuring tool." />
   <meta name="theme-color" content="#f3f4f0" />
+  <script src="js/guard.js"></script>
   <script src="js/theme-boot.js"></script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%231f4e9c' stroke='%23c4312b' stroke-width='4'/%3E%3Cpath d='M8 32h48M32 4c10 9 10 47 0 56M32 4c-10 9-10 47 0 56' stroke='%23ffffff' stroke-width='3' fill='none'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Jost:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/atlas.css" />
-  <!-- Browser tuning (v2.10): fetch the globe engine and the first modules in parallel with the page, instead of one import at a time. -->
-  <link rel="modulepreload" href="vendor/vendor.min.mjs" />
+  <!-- Browser tuning: fetch the globe engine and every start-up module in parallel with the page, instead of one level of imports at a time.
+       The list is written by tools/build-preload.mjs (v2.16); do not edit it by hand. -->
+  <!-- preload:start -->
   <link rel="modulepreload" href="js/main.js" />
+  <link rel="modulepreload" href="js/uicons.js" />
+  <link rel="modulepreload" href="vendor/vendor.min.mjs" />
   <link rel="modulepreload" href="js/layers.js" />
+  <link rel="modulepreload" href="js/quakedetail.js" />
+  <link rel="modulepreload" href="js/citydetail.js" />
+  <link rel="modulepreload" href="js/eventdetail.js" />
+  <link rel="modulepreload" href="js/satdetail.js" />
+  <link rel="modulepreload" href="js/launchdetail.js" />
+  <link rel="modulepreload" href="js/portdetail.js" />
+  <link rel="modulepreload" href="js/cabledetail.js" />
+  <link rel="modulepreload" href="js/nucleardetail.js" />
+  <link rel="modulepreload" href="js/alertdetail.js" />
+  <link rel="modulepreload" href="js/powerdetail.js" />
+  <link rel="modulepreload" href="js/countrydetail.js" />
   <link rel="modulepreload" href="js/feeds.js" />
+  <link rel="modulepreload" href="js/astro.js" />
+  <link rel="modulepreload" href="js/sources.js" />
+  <link rel="modulepreload" href="js/tours.js" />
+  <link rel="modulepreload" href="js/moon.js" />
+  <link rel="modulepreload" href="js/extras.js" />
+  <link rel="modulepreload" href="js/sky.js" />
+  <link rel="modulepreload" href="js/fatlines.js" />
+  <link rel="modulepreload" href="js/pulses.js" />
+  <link rel="modulepreload" href="js/wakes.js" />
+  <link rel="modulepreload" href="js/shell.js" />
+  <link rel="modulepreload" href="js/quiz.js" />
+  <link rel="modulepreload" href="js/flights.js" />
+  <link rel="modulepreload" href="js/cameras.js" />
+  <link rel="modulepreload" href="js/places.js" />
+  <link rel="modulepreload" href="js/nav.js" />
+  <link rel="modulepreload" href="js/news.js" />
+  <link rel="modulepreload" href="js/crime.js" />
+  <link rel="modulepreload" href="js/live.js" />
+  <link rel="modulepreload" href="js/worldcams.js" />
+  <link rel="modulepreload" href="js/networks.js" />
+  <link rel="modulepreload" href="js/hud.js" />
   <link rel="modulepreload" href="js/markers.js" />
+  <link rel="modulepreload" href="js/perf.js" />
+  <link rel="modulepreload" href="js/clock.js" />
+  <link rel="modulepreload" href="js/launches.js" />
+  <link rel="modulepreload" href="js/wildlife.js" />
+  <link rel="modulepreload" href="js/trace.js" />
+  <link rel="modulepreload" href="js/intel.js" />
+  <link rel="modulepreload" href="js/newsdesk.js" />
+  <link rel="modulepreload" href="js/wind.js" />
+  <link rel="modulepreload" href="js/hazards.js" />
+  <link rel="modulepreload" href="js/health.js" />
+  <link rel="modulepreload" href="js/watch.js" />
+  <link rel="modulepreload" href="js/offline.js" />
+  <link rel="modulepreload" href="js/sound.js" />
+  <link rel="modulepreload" href="js/airquality.js" />
+  <link rel="modulepreload" href="js/lastknown.js" />
   <link rel="modulepreload" href="js/registry.js" />
+  <link rel="modulepreload" href="js/opendata.js" />
+  <link rel="modulepreload" href="js/icons.js" />
+  <link rel="modulepreload" href="js/theme.js" />
+  <link rel="modulepreload" href="js/cosmos.js" />
+  <link rel="modulepreload" href="js/satellites.js" />
+  <link rel="modulepreload" href="js/flightdb.js" />
+  <link rel="modulepreload" href="js/shipdb.js" />
+  <link rel="modulepreload" href="js/shipview.js" />
+  <link rel="modulepreload" href="js/newslist.js" />
+  <link rel="modulepreload" href="js/osint.js" />
+  <link rel="modulepreload" href="js/planes3d.js" />
+  <link rel="modulepreload" href="js/planeview.js" />
+  <link rel="modulepreload" href="js/surroundings.js" />
+  <link rel="modulepreload" href="js/ais.js" />
+  <link rel="modulepreload" href="js/redaction.js" />
+  <link rel="modulepreload" href="js/photo-osint.js" />
+  <link rel="modulepreload" href="js/aqi.js" />
+  <link rel="modulepreload" href="js/landmarks.js" />
+  <link rel="modulepreload" href="js/warnings.js" />
+  <link rel="modulepreload" href="js/skyfx.js" />
+  <link rel="modulepreload" href="js/replay.js" />
+  <link rel="modulepreload" href="js/chemicals.js" />
+  <link rel="modulepreload" href="js/wmbaseline.js" />
+  <link rel="modulepreload" href="js/economy.js" />
+  <link rel="modulepreload" href="js/bodies.js" />
+  <link rel="modulepreload" href="js/landings.js" />
+  <link rel="modulepreload" href="js/osint-core.js" />
+  <link rel="modulepreload" href="js/landscape.js" />
+  <link rel="modulepreload" href="js/plss.js" />
+  <!-- preload:end -->
   <link rel="manifest" href="../manifest.webmanifest" />
   <link rel="apple-touch-icon" href="../icons/icon-192.png" />
 </head>
@@ -29,7 +112,7 @@
   <header class="topbar">
     <a class="brand" href="#" id="brand" title="Back to the whole Earth">
       <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" /><path d="M5 32h54M32 5c11 9 11 45 0 54M32 5c-11 9-11 45 0 54" /></svg>
-      <span>Global Intelligence Atlas</span><small class="ver">v2.14</small>
+      <span>Global Intelligence Atlas</span><small class="ver">v2.20</small>
     </a>
     <form class="search" id="search" role="search">
       <label class="sr" for="q">Search places and layers</label>
@@ -77,15 +160,17 @@
         </div>
         <label class="gibs-pick" id="gibs-pick" hidden>Date <input type="date" id="gibs-date-input" min="2012-01-19" /></label>
         <h3>Sensor look</h3>
-        <p class="muted">Colour filters over the whole view (keys 1–5). HUD adds an overlay; press S to scan.</p>
+        <p class="muted">Colour filters over the whole view (keys 1–6). HUD adds an overlay; press S to scan.</p>
         <div class="looks" role="radiogroup" aria-label="Sensor look">
           <button data-look="normal" role="radio" title="Normal (1)">Normal</button>
           <button data-look="nvg" role="radio" title="Night vision (2)">NVG</button>
           <button data-look="flir" role="radio" title="Thermal (3)">Thermal</button>
           <button data-look="crt" role="radio" title="CRT screen (4)">CRT</button>
           <button data-look="hud" role="radio" title="Overwatch HUD (5) — press S to scan">HUD</button>
+          <button data-look="print" role="radio" title="Print: halftone dots in ink on paper (6)">Print</button>
         </div>
         <label class="toggle" title="Switch to high-resolution tiles automatically when you zoom close"><input type="checkbox" id="autodetail" checked /> Sharp satellite imagery when zoomed in</label>
+        <label class="toggle" title="When you zoom right in: live ships as 3D models at their real size, simulated traffic on the real roads, and buildings"><input type="checkbox" id="closeups" checked /> Lifelike close-ups: ships, traffic and buildings</label>
       
         <h3>Performance</h3>
         <p class="muted">Auto lowers the quality if the frame rate drops. Fast draws fewer markers and fewer pixels.</p>
@@ -119,7 +204,8 @@
     </div>
     <div class="mapctl" aria-label="Map controls">
       <button id="locate" title="Go to my location" aria-label="Go to my location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
-      <button id="space-open" data-space="moon" title="Fly into space: the Moon and the planets, where they are now" aria-label="Fly into space"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><ellipse cx="12" cy="12" rx="10" ry="3.6" transform="rotate(-24 12 12)"/></svg></button>
+      <button id="space-open" data-space="system" title="Fly out into the solar system: every planet where it is now" aria-label="Fly into space"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><ellipse cx="12" cy="12" rx="10" ry="3.6" transform="rotate(-24 12 12)"/></svg></button>
+      <button id="tilt" title="Tilt: look across the city (V). Shift + drag up or down to tilt by hand" aria-label="Tilt the view" aria-pressed="false"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18 8 8h8l5 10z"/><path d="M6 13h12M10.5 8 9 18M13.5 8 15 18"/></svg></button>
       <button id="zin" title="Zoom in (+)" aria-label="Zoom in"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
       <button id="zout" title="Zoom out (−)" aria-label="Zoom out"><svg class="ui-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
       <div class="scalebar" id="scalebar" aria-hidden="true"><i></i><span></span></div>
@@ -159,8 +245,19 @@
       <feColorMatrix type="matrix" values="0.1 0.2 0.05 0 0  0.35 0.75 0.2 0 0.03  0.08 0.15 0.05 0 0  0 0 0 1 0" />
       <feComponentTransfer><feFuncG type="gamma" amplitude="1.5" exponent="0.75" offset="0" /></feComponentTransfer>
     </filter>
+    <!-- v2.16 Print: an ordered (Bayer 4×4) halftone in ink on paper, an idea from ascii-dither-shader -->
+    <filter id="look-print" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 0 1" result="lum" />
+      <feComponentTransfer in="lum" result="tone"><feFuncR type="gamma" amplitude="1" exponent="0.6" offset="0" /><feFuncG type="gamma" amplitude="1" exponent="0.6" offset="0" /><feFuncB type="gamma" amplitude="1" exponent="0.6" offset="0" /></feComponentTransfer>
+      <feImage href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='2' height='2' fill='rgb(8,8,8)'/%3E%3Crect x='2' y='0' width='2' height='2' fill='rgb(135,135,135)'/%3E%3Crect x='4' y='0' width='2' height='2' fill='rgb(40,40,40)'/%3E%3Crect x='6' y='0' width='2' height='2' fill='rgb(167,167,167)'/%3E%3Crect x='0' y='2' width='2' height='2' fill='rgb(199,199,199)'/%3E%3Crect x='2' y='2' width='2' height='2' fill='rgb(72,72,72)'/%3E%3Crect x='4' y='2' width='2' height='2' fill='rgb(231,231,231)'/%3E%3Crect x='6' y='2' width='2' height='2' fill='rgb(104,104,104)'/%3E%3Crect x='0' y='4' width='2' height='2' fill='rgb(56,56,56)'/%3E%3Crect x='2' y='4' width='2' height='2' fill='rgb(183,183,183)'/%3E%3Crect x='4' y='4' width='2' height='2' fill='rgb(24,24,24)'/%3E%3Crect x='6' y='4' width='2' height='2' fill='rgb(151,151,151)'/%3E%3Crect x='0' y='6' width='2' height='2' fill='rgb(247,247,247)'/%3E%3Crect x='2' y='6' width='2' height='2' fill='rgb(120,120,120)'/%3E%3Crect x='4' y='6' width='2' height='2' fill='rgb(215,215,215)'/%3E%3Crect x='6' y='6' width='2' height='2' fill='rgb(88,88,88)'/%3E%3C/svg%3E" x="0" y="0" width="8" height="8" result="cell" />
+      <feTile in="cell" result="screen" />
+      <feComposite in="tone" in2="screen" operator="arithmetic" k1="0" k2="8" k3="-8" k4="1" result="dots" />
+      <feComponentTransfer in="dots">
+        <feFuncR type="discrete" tableValues="0.114 0.937" /><feFuncG type="discrete" tableValues="0.165 0.902" /><feFuncB type="discrete" tableValues="0.227 0.824" /><feFuncA type="discrete" tableValues="1" />
+      </feComponentTransfer>
+    </filter>
   </svg>
   <script type="module" src="js/main.js"></script>
-  <script>if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('../sw.js');</script>
+  <script src="../sw-register.js"></script>
 </body>
 </html>

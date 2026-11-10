@@ -29,13 +29,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
+          persist-credentials: false
           sparse-checkout: |
             tools
             site/app/data/countries.geojson
           sparse-checkout-cone-mode: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
       - name: Previous economy data
@@ -44,8 +45,9 @@ jobs:
         run: git clone --quiet --depth 1 --branch economy-data "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" economy || mkdir -p economy
       - name: Fetch and boil down
         env:
+          ONLY: ${{ github.event.inputs.only || 'fhfa,acs,ukhpi,ppd,eurostat,oecd,baci,trace' }}
           CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
-        run: node tools/fetch-economy.mjs economy "${{ github.event.inputs.only || 'fhfa,acs,ukhpi,ppd,eurostat,oecd,baci,trace' }}"
+        run: node tools/fetch-economy.mjs economy "$ONLY"
       - name: Summary
         if: always()
         run: node tools/economy-summary.mjs economy/status.json >> "$GITHUB_STEP_SUMMARY" || true

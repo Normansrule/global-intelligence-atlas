@@ -33,7 +33,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler); pg.route('https://marine-api.open-meteo.com/**', marine); pg.route('https://raw.githubusercontent.com/**/open-data/**', opendata)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
     pg.goto('http://localhost:8765/app/?datasets=open#@1.3,103.8,0.4&l=borders,ports,ships,cities&s=1', wait_until='commit'); pg.wait_for_timeout(12000)
     f=pg.evaluate("""async () => { const m = await import('./js/portdetail.js'); const r = { channelDepthM: 14, cargoPierDepthM: 12, oilTerminalDepthM: 17, tideM: 2, anchorageDepthM: 20, yn: '' };
       const v = (id) => m.shipVerdict(r, m.REF_SHIPS.find((s) => s.id === id)).ok;

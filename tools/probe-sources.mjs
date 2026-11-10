@@ -30,6 +30,8 @@ const PROBES = [
   ['NASA FIRMS fires', 'https://firms.modaps.eosdis.nasa.gov/data/active_fire/noaa-20-viirs-c2/csv/J1_VIIRS_C2_Global_24h.csv', text(10_000, /^latitude,longitude/)],
   ['RainViewer radar', 'https://api.rainviewer.com/public/weather-maps.json', json(0, (j) => j.radar?.past?.length > 0)],
   ['Open-Meteo weather', 'https://api.open-meteo.com/v1/forecast?latitude=51.5&longitude=0&current=temperature_2m', json(0, (j) => j.current)],
+  ['Open-Meteo air quality', 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=52.5,28.6&longitude=13.4,77.2&current=us_aqi,pm2_5', json(0, (j) => Array.isArray(j) && j[0].current)],
+  ['NWS active alerts', 'https://api.weather.gov/alerts/active?status=actual&area=KS', json(0, (j) => Array.isArray(j.features))],
   ['NASA GIBS imagery', 'https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/wmts.cgi?SERVICE=WMTS&REQUEST=GetCapabilities', text(10_000)],
   ['Fintraffic ships (AIS)', 'https://meri.digitraffic.fi/api/ais/v1/locations', json(0, (j) => Array.isArray(j.features))],
   ['Wikipedia summaries', 'https://en.wikipedia.org/api/rest_v1/page/summary/Earth', json(0, (j) => j.title)],

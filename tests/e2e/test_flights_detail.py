@@ -12,7 +12,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14');localStorage.setItem('gia-theme','dark')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20');localStorage.setItem('gia-theme','dark')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@51,-20,1.6&b=bluemarble&l=borders,aircraft,ships', wait_until='commit'); pg.wait_for_timeout(16000)
     # pick a British Airways flight when the snapshot has one, else any airline flight the tables know
     pick=pg.evaluate("""() => { const ac = gia.state.data.aircraft?.ac ?? []; const a = ac.find((a) => /^BAW\\d+$/.test(a.call) && !a.ground) || ac.find((a) => /^[A-Z]{3}\\d+$/.test(a.call) && !a.ground);

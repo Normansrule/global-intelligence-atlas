@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" width="1200" height="340" role="img" aria-label="Animated: cars queue at a red traffic light and pull away one after another on green; a ship trails a V-shaped foam wake at 19.5 degrees with a red light to port and green to starboard.">
+<style>text{font-family:'Jost','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif} .red{animation:red 10s steps(1) infinite}.grn{animation:grn 10s steps(1) infinite}
+@keyframes red{0%{opacity:1}50%{opacity:.15}}@keyframes grn{0%{opacity:.15}50%{opacity:1}}
+.blink{animation:bl 1.6s ease-in-out infinite alternate}@keyframes bl{from{opacity:.55}to{opacity:1}}
+.foam{animation:fm 2.4s ease-in-out infinite alternate}@keyframes fm{from{stroke-opacity:.5}to{stroke-opacity:.9}} @media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+<defs><clipPath id="road"><rect x="30" y="150" width="560" height="100" rx="10"/></clipPath><clipPath id="sea"><rect x="640" y="100" width="530" height="170" rx="14"/></clipPath></defs>
+<rect width="1200" height="340" rx="20" fill="#f6f1e6"/>
+<text x="30" y="52" font-size="24" font-weight="700" fill="#1d2a3a">Close-ups that behave like the real thing</text>
+<text x="30" y="80" font-size="15" fill="#5b6b7c">Zoom right in: traffic flows and queues on the real roads, and ships cut wakes through the water.</text>
+<rect x="640" y="100" width="530" height="170" rx="14" fill="#2b5f8a"/>
+<g clip-path="url(#sea)"><g><path d="M950 200 L530 51.27019953710683 M950 200 L530 348.7298004628932" stroke="#ffffff" stroke-opacity=".75" stroke-width="5" stroke-linecap="round" class="foam"/>
+<path d="M950 200 L614 200" stroke="#ffffff" stroke-opacity=".35" stroke-width="12" stroke-linecap="round"/>
+</g><text x="820" y="160" font-size="16" font-weight="700" fill="#b7791f">19.5°</text>
+<path d="M940 182 H1060 L1100 200 L1060 218 H940 Z" fill="#22313f" stroke="#9fb3c8"/>
+<rect x="1020" y="188" width="22" height="24" rx="3" fill="#f4f6f7"/>
+<circle class="blink" cx="1030" cy="178" r="5" fill="#ff3b30"/><circle class="blink" cx="1030" cy="222" r="5" fill="#33d17a"/><circle cx="1050" cy="200" r="4" fill="#fff6d8"/></g>
+<text x="660" y="290" font-size="15" fill="#5b6b7c">Every moving ship trails foam at the Kelvin angle, 19.5°, the same for</text>
+<text x="660" y="312" font-size="15" fill="#5b6b7c">any boat on calm water. At night: red to port, green to starboard.</text>
+<g clip-path="url(#road)"><rect x="30" y="160" width="560" height="80" fill="#cfc6b4"/>
+<path d="M30 200 H590" stroke="#f6f1e6" stroke-width="3" stroke-dasharray="18 14"/><path d="M505 165 V235" stroke="#fff" stroke-width="4"/>
+<g class="car" style="animation:c0 10s cubic-bezier(.45,0,.55,1) infinite"><rect x="-22" y="-11" width="44" height="22" rx="6" fill="#e9ecef"/><rect x="2" y="-9" width="12" height="18" rx="3" fill="#1b2631" opacity=".75"/><circle class="tail" cx="-22" cy="-7" r="2.6" fill="#ff3b30"/><circle class="tail" cx="-22" cy="7" r="2.6" fill="#ff3b30"/></g>
+<style>@keyframes c0{0%{transform:translate(-80px,200px)}38%{transform:translate(470px,200px)}52%{transform:translate(470px,200px)}100%{transform:translate(1170px,200px)}}</style>
+<g class="car" style="animation:c1 10s cubic-bezier(.45,0,.55,1) infinite"><rect x="-22" y="-11" width="44" height="22" rx="6" fill="#c0392b"/><rect x="2" y="-9" width="12" height="18" rx="3" fill="#1b2631" opacity=".75"/><circle class="tail" cx="-22" cy="-7" r="2.6" fill="#ff3b30"/><circle class="tail" cx="-22" cy="7" r="2.6" fill="#ff3b30"/></g>
+<style>@keyframes c1{0%{transform:translate(-175px,200px)}38%{transform:translate(408px,200px)}57%{transform:translate(408px,200px)}100%{transform:translate(1108px,200px)}}</style>
+<g class="car" style="animation:c2 10s cubic-bezier(.45,0,.55,1) infinite"><rect x="-22" y="-11" width="44" height="22" rx="6" fill="#2e5c8a"/><rect x="2" y="-9" width="12" height="18" rx="3" fill="#1b2631" opacity=".75"/><circle class="tail" cx="-22" cy="-7" r="2.6" fill="#ff3b30"/><circle class="tail" cx="-22" cy="7" r="2.6" fill="#ff3b30"/></g>
+<style>@keyframes c2{0%{transform:translate(-270px,200px)}38%{transform:translate(346px,200px)}62%{transform:translate(346px,200px)}100%{transform:translate(1046px,200px)}}</style>
+<g class="car" style="animation:c3 10s cubic-bezier(.45,0,.55,1) infinite"><rect x="-22" y="-11" width="44" height="22" rx="6" fill="#d9b44a"/><rect x="2" y="-9" width="12" height="18" rx="3" fill="#1b2631" opacity=".75"/><circle class="tail" cx="-22" cy="-7" r="2.6" fill="#ff3b30"/><circle class="tail" cx="-22" cy="7" r="2.6" fill="#ff3b30"/></g>
+<style>@keyframes c3{0%{transform:translate(-365px,200px)}38%{transform:translate(284px,200px)}67%{transform:translate(284px,200px)}100%{transform:translate(984px,200px)}}</style>
+<g class="car" style="animation:c4 10s cubic-bezier(.45,0,.55,1) infinite"><rect x="-22" y="-11" width="44" height="22" rx="6" fill="#1f6f50"/><rect x="2" y="-9" width="12" height="18" rx="3" fill="#1b2631" opacity=".75"/><circle class="tail" cx="-22" cy="-7" r="2.6" fill="#ff3b30"/><circle class="tail" cx="-22" cy="7" r="2.6" fill="#ff3b30"/></g>
+<style>@keyframes c4{0%{transform:translate(-460px,200px)}38%{transform:translate(222px,200px)}72%{transform:translate(222px,200px)}100%{transform:translate(922px,200px)}}</style></g>
+<g transform="translate(520,104)"><rect width="34" height="78" rx="9" fill="#111a26" stroke="#d8ccb4"/>
+<circle class="red" cx="17" cy="20" r="10" fill="#ff3b30"/><circle class="grn" cx="17" cy="56" r="10" fill="#33d17a"/></g>
+<text x="30" y="290" font-size="15" fill="#5b6b7c">Each driver keeps about 1.2 s and 2 m to the one ahead,</text>
+<text x="30" y="312" font-size="15" fill="#5b6b7c">brakes at up to 6 m/s² and stops at the line on red.</text>
+</svg>

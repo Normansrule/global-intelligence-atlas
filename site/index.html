@@ -1,12 +1,15 @@
 <!doctype html>
 <!-- SPDX-License-Identifier: AGPL-3.0-only — Global Intelligence Atlas, built on World Monitor (github.com/koala73/worldmonitor, (C) Elie Habib) -->
 <html lang="en" data-base="." data-page="home"><head>
-<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; media-src 'self' data: blob: https: http:; connect-src 'self' data: blob: https: wss: ipc: http://ipc.localhost; worker-src 'self' blob:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Global Intelligence Atlas (GIA): the world right now, counted</title><meta name="description" content="Zoom from orbit to street level on a live 3D Earth: earthquakes, storms, satellites, aurora, undersea cables and trade routes — with guided tours, a quiz and a desktop app." /><meta name="theme-color" content="#f3f4f0" />
 <link rel="manifest" href="./manifest.webmanifest" /><link rel="icon" href="./icons/icon-192.png" /><link rel="apple-touch-icon" href="./icons/icon-192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Jost:wght@500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="./assets/site.css" />
+<script src="./app/js/guard.js"></script>
 <script src="./app/js/theme-boot.js"></script>
 </head><body>
 
@@ -17,7 +20,7 @@
       <h1>The world right now, counted</h1>
       <p class="lede">A live 3D Earth. Click anything to see what it is, how it is measured and where the number comes from.</p>
       <div class="row"><a class="btn magnetic" href="app/">Open the 3D Earth</a><a class="btn ghost" href="learn/">Start learning</a><a class="btn ghost" href="download/">Desktop app</a></div>
-      <p class="hero-meta"><a href="app/">Version 2.14</a> · free, no account, no server</p>
+      <p class="hero-meta"><a href="app/">Version 2.20</a> · free, no account, no server</p>
       <ul class="tally" id="tally" aria-label="Counts from live public data">
         <li><button class="tone-red" data-k="quakes" aria-pressed="false"><span class="l">Earthquakes in the last 24 hours <small id="tq-note">from the US Geological Survey (USGS)</small></span><b id="tq">…</b><span class="u wait" id="uq"></span></button></li>
         <li><button class="tone-ochre" data-k="fires" aria-pressed="false"><span class="l">Wildfires NASA is tracking <small>open events</small></span><b id="tf">…</b><span class="u wait" id="uf"></span></button></li>
@@ -98,5 +101,5 @@
 </main>
 <script type="module" src="./assets/home.js"></script>
 <script src="./assets/site.js"></script>
-<script>if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('./sw.js');</script>
+<script src="./sw-register.js"></script>
 </body></html>

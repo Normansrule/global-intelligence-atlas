@@ -1,0 +1,87 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+   Global Intelligence Atlas: Air quality pages (aq-), US weather warning pages (wn-), the sound button and Listen.
+   Loaded by airquality.js, warnings.js and sound.js, so atlas.css stays untouched.
+   Motion follows the house rules: ease-out, under 300 ms, things grow from 96 % not from nothing, and nothing moves
+   when the system asks for reduced motion. */
+:root { --sense-ease: cubic-bezier(0.23, 1, 0.32, 1); }
+
+/* ---------------------------------------------------------------- air quality */
+.aq { display: grid; gap: 10px; }
+.aq-head { display: grid; grid-template-columns: 128px 1fr; gap: 12px; align-items: center; padding: 10px 12px; border-radius: var(--r-panel); background: linear-gradient(120deg, color-mix(in srgb, var(--c) 22%, var(--sunk)), var(--sunk) 70%); border: 1px solid color-mix(in srgb, var(--c) 45%, var(--line)); animation: sense-in 280ms var(--sense-ease) both; }
+.aq-head.skel { min-height: 92px; }
+.aq-head > div { display: grid; gap: 2px; }
+.aq-num { font-family: var(--display); font-size: 40px; line-height: 1; color: var(--c); font-variant-numeric: tabular-nums; }
+.aq-word { font-weight: 600; font-size: var(--fs-lead); color: var(--ink); }
+.aq-head small { color: var(--ink-2); font-size: var(--fs-caption); }
+.aq-gauge { width: 128px; height: 72px; overflow: visible; }
+.aq-arcs path { fill: none; stroke-width: 9; stroke-linecap: butt; opacity: 0.9; }
+.aq-needle { stroke: var(--ink); stroke-width: 3; stroke-linecap: round; transform-origin: 64px 62px; animation: aq-needle 700ms var(--sense-ease) both; filter: drop-shadow(0 0 4px var(--c)); }
+@keyframes aq-needle { from { transform: rotate(var(--from, 0deg)); } to { transform: rotate(0); } }
+.aq-advice { margin: 0; font-size: var(--fs-small); line-height: 1.45; }
+.aq-figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 8px; }
+.aq-fig { display: grid; gap: 2px; padding: 8px 10px; border-radius: var(--r-ctl); background: var(--sunk); border: 1px solid var(--line); animation: sense-in 280ms var(--sense-ease) both; }
+.aq-fig:nth-child(2) { animation-delay: 40ms; } .aq-fig:nth-child(3) { animation-delay: 80ms; } .aq-fig:nth-child(4) { animation-delay: 120ms; }
+.aq-fig.skel { min-height: 52px; }
+.aq-fig b { font-family: var(--display); font-size: 20px; font-variant-numeric: tabular-nums; }
+.aq-fig small { color: var(--ink-2); font-size: var(--fs-caption); line-height: 1.3; }
+.aq-trend, .aq-why { margin: 0; font-size: var(--fs-small); color: var(--ink-2); line-height: 1.45; }
+.aq-strip { width: 100%; height: auto; display: block; }
+.aq-strip text { fill: var(--ink-2); font-size: 8px; }
+.aq-strip .aq-day { stroke: var(--line); stroke-width: 0.6; }
+.aq-strip .aq-guide { stroke: var(--ink-2); stroke-width: 0.4; stroke-dasharray: 2 2; opacity: 0.6; }
+.aq-strip rect { transform-origin: bottom; transform-box: fill-box; animation: aq-grow 420ms var(--sense-ease) both; }
+@keyframes aq-grow { from { transform: scaleY(0.2); opacity: 0; } to { transform: none; opacity: 1; } }
+.aq-best { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: var(--fs-caption); color: var(--ink-2); }
+.aq-best b { color: var(--ink); font-weight: 600; }
+.aq-more summary { cursor: pointer; font-size: var(--fs-small); color: var(--accent); min-height: 32px; display: flex; align-items: center; }
+.aq-bars { display: grid; gap: 8px; margin: 6px 0 10px; }
+.aq-bar { display: grid; gap: 3px; font-size: var(--fs-caption); }
+.aq-bar span { color: var(--ink); } .aq-bar span b { margin-right: 4px; }
+.aq-bar i { display: block; height: 6px; border-radius: 3px; background: var(--sunk); position: relative; overflow: hidden; }
+.aq-bar i::after { content: ''; position: absolute; inset: 0 auto 0 0; width: var(--w); border-radius: 3px; background: var(--ok, #3fbf5f); }
+.aq-bar.warn i::after { background: var(--warn, #f0a23c); } .aq-bar.bad i::after { background: var(--red, #e5413a); }
+.aq-bar i::before { content: ''; position: absolute; left: 33.3%; top: -2px; bottom: -2px; width: 1px; background: var(--ink-2); z-index: 1; } /* the guideline */
+.aq-bar small { color: var(--ink-2); }
+.aq-pollen { display: flex; flex-wrap: wrap; gap: 6px; }
+.aq-probe { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0; font-size: var(--fs-small); }
+.aq-probe i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent); }
+
+/* ---------------------------------------------------------------- weather warnings */
+.wn { display: grid; gap: 10px; }
+.wn-band { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--r-ctl); background: color-mix(in srgb, var(--c) 26%, var(--sunk)); border-left: 4px solid var(--c); overflow: hidden; animation: sense-in 260ms var(--sense-ease) both; }
+.wn-kind { font-weight: 600; font-size: var(--fs-small); }
+.wn-left { font-variant-numeric: tabular-nums; font-size: var(--fs-small); color: var(--ink); }
+.wn-left.future { color: var(--ink-2); }
+.wn-prog { position: absolute; left: 0; bottom: 0; height: 3px; width: var(--p); background: var(--c); }
+.wn-head { margin: 0; font-weight: 600; line-height: 1.4; }
+.wn-caps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.wn-cap { display: grid; gap: 1px; padding: 7px 8px; border-radius: var(--r-ctl); background: var(--sunk); border: 1px solid var(--line); animation: sense-in 260ms var(--sense-ease) both; }
+.wn-cap:nth-child(2) { animation-delay: 40ms; } .wn-cap:nth-child(3) { animation-delay: 80ms; }
+.wn-cap small { color: var(--ink-2); font-size: var(--fs-micro, 11px); text-transform: uppercase; letter-spacing: 0.04em; }
+.wn-cap b { font-size: var(--fs-small); }
+.wn-cap span { color: var(--ink-2); font-size: var(--fs-caption); line-height: 1.3; }
+.wn-people { font-size: var(--fs-small); line-height: 1.45; margin: 0; }
+.wn-do { padding: 8px 12px; border-radius: var(--r-ctl); border: 1px solid color-mix(in srgb, var(--c) 50%, var(--line)); }
+.wn-do h4 { margin: 0 0 4px; }
+.wn-do p { margin: 0 0 6px; font-size: var(--fs-small); line-height: 1.45; }
+.wn-near { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.wn-near small { color: var(--ink-2); margin-right: 2px; }
+.wn-near .chip i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; background: var(--c); margin-right: 5px; }
+.wn-more summary { cursor: pointer; font-size: var(--fs-small); color: var(--accent); min-height: 32px; display: flex; align-items: center; }
+.wn-text { font-size: var(--fs-small); line-height: 1.5; white-space: normal; }
+@media (max-width: 420px) { .wn-caps { grid-template-columns: 1fr; } .aq-head { grid-template-columns: 96px 1fr; } .aq-gauge { width: 96px; height: 54px; } }
+
+/* ---------------------------------------------------------------- sound button and Listen */
+.chipbtn.soundb { padding: 6px 9px; min-width: 34px; justify-content: center; }
+.soundb .ui-i, #notes-listen .ui-i { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.soundb .snd-wave { display: none; } .soundb.on .snd-wave { display: inline; } .soundb.on .snd-mute { display: none; }
+.soundb.on { border-color: var(--accent); color: var(--accent); }
+#notes-listen { display: inline-grid; place-items: center; transition: color var(--dur-ui, 160ms) var(--sense-ease), transform var(--dur-press, 100ms) var(--sense-ease); }
+#notes-listen:active { transform: scale(0.96); }
+#notes-listen[aria-pressed="true"] { color: var(--accent); animation: listen-pulse 1.6s ease-in-out infinite; }
+@keyframes listen-pulse { 50% { opacity: 0.55; } }
+
+@keyframes sense-in { from { opacity: 0; transform: translateY(4px) scale(0.96); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .aq-head, .aq-fig, .aq-strip rect, .aq-needle, .wn-band, .wn-cap, #notes-listen[aria-pressed="true"] { animation: none; }
+}

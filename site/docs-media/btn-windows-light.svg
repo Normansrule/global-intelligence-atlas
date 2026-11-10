@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 68" width="220" height="68" role="img" aria-label="Download for Windows">
+<style>text{font-family:'Jost','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif}  @media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+<defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#1f4e9c"/><stop offset="1" stop-color="#2d6fd0"/></linearGradient>
+<linearGradient id="s" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".28"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<clipPath id="c"><rect x="1" y="1" width="218" height="66" rx="16"/></clipPath></defs>
+<rect x="1" y="1" width="218" height="66" rx="16" fill="#fffaf0" stroke="#d8ccb4" stroke-width="1.5"/>
+
+<g transform="translate(20,20) scale(1.1666666666666667)" fill="none" stroke="#1d2a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="14" rx="2"/><path d="M8 21h8M12 17.5V21M2.5 7.5h19"/></g>
+<text x="62" y="29" font-size="12.5" font-weight="500" fill="#5b6b7c" letter-spacing=".3">Download for</text>
+<text x="62" y="50" font-size="20" font-weight="700" fill="#1d2a3a">Windows</text>
+<g transform="translate(178,22) scale(1)" fill="none" stroke="#1f62c4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v12M7 11l5 5 5-5M4.5 20.5h15"/></g>
+</svg>

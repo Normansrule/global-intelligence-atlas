@@ -8,7 +8,7 @@
 //   PACK     "Save everything for offline" (Tools → Offline kit): every bundled file in app/data/offline-pack.json
 //   TILES    OpenStreetMap and NASA GIBS map tiles you have already looked at, the newest 3,000
 // Only GET answers with res.ok are kept: same-origin ones, plus CORS (never opaque) tiles from TILE_HOSTS.
-const VERSION = 'global-intelligence-atlas-v2.14';
+const VERSION = 'global-intelligence-atlas-v2.20';
 const PACK = 'gia-offline-pack';
 const TILES = 'gia-offline-tiles';
 const KEEP = new Set([VERSION, PACK, TILES]);
@@ -19,7 +19,7 @@ const TILE_HOSTS = new Set(['tile.openstreetmap.org', 'gibs.earthdata.nasa.gov']
 const SHELL = [
   './', 'app/', 'app/css/atlas.css', 'app/vendor/vendor.min.mjs',
   'app/js/main.js', 'app/js/lastknown.js', 'app/js/offline.js', 'app/css/offline.css', 'app/data/offline-pack.json', 'app/vendor/astronomy.min.mjs', 'app/js/layers.js', 'app/js/opendata.js', 'app/js/flights.js', 'app/js/cameras.js', 'app/js/places.js', 'app/js/nav.js', 'app/js/icons.js', 'app/js/news.js', 'app/js/crime.js', 'app/js/live.js', 'app/js/networks.js', 'app/js/hud.js', 'app/js/markers.js', 'app/js/perf.js', 'app/js/clock.js', 'app/js/launches.js', 'app/js/trace.js', 'app/js/wind.js', 'app/js/feeds.js', 'app/js/astro.js', 'app/js/satellites.js', 'app/js/sources.js', 'app/js/tours.js', 'app/js/quiz.js', 'app/js/moon.js', 'app/js/extras.js', 'app/js/sky.js', 'app/js/shell.js', 'app/js/fatlines.js', 'app/js/pulses.js', 'app/js/planes3d.js', 'app/js/planeview.js', 'app/js/hazards.js', 'app/js/health.js', 'app/js/watch.js', 'app/js/osint.js', 'app/js/osint-core.js', 'app/js/worldcams.js', 'app/js/intel.js', 'app/js/newsdesk.js', 'app/js/newslist.js', 'app/js/redaction.js', 'app/js/photo-osint.js', 'app/js/ais.js', 'app/js/landscape.js', 'app/js/surroundings.js', 'app/js/replay.js', 'app/js/registry.js', 'app/js/chemicals.js', 'app/js/wmbaseline.js', 'app/js/economy.js', 'app/js/plss.js', 'app/js/skyfx.js', 'app/js/landmarks.js', 'app/js/wakes.js', 'app/js/cosmos.js', 'app/js/bodies.js', 'app/js/landings.js', 'app/js/flightdb.js', 'app/js/shipdb.js', 'app/js/uicons.js', 'app/js/quakedetail.js', 'app/js/countrydetail.js', 'app/js/citydetail.js', 'app/js/eventdetail.js', 'app/js/satdetail.js', 'app/js/launchdetail.js', 'app/js/portdetail.js', 'app/js/cabledetail.js', 'app/js/nucleardetail.js', 'app/js/alertdetail.js', 'app/js/powerdetail.js', 'app/js/shipview.js', 'app/plugins/daylength.js', 'app/config.json',
-  'app/data/worldmonitor-static.json', 'app/data/open/waterways.json', 'app/data/countries.geojson', 'app/data/plate-boundaries.json', 'app/data/tle-snapshot-leo.txt', 'app/data/cities.json', 'app/data/airports.json', 'app/data/landmarks.json',
+  'app/data/worldmonitor-static.json', 'app/data/open/waterways.json', 'app/data/countries.geojson', 'app/data/plate-boundaries.json', 'app/data/tle-snapshot-leo.txt', 'app/data/cities.json', 'app/data/airports.json', 'app/data/landmarks.json', 'app/js/wildlife.js', 'app/css/wildlife.css', 'app/data/wildlife.json', 'app/js/aqi.js', 'app/js/airquality.js', 'app/js/warnings.js', 'app/js/sound.js', 'app/css/sense.css', 'app/js/closeup.js',
   'app/textures/earth-blue-marble-2k.jpg', 'app/textures/earth-night-2k.jpg', 'app/textures/earth-topology.png',
   'learn/', 'fluid/', 'download/', 'credits/', 'assets/site.css', 'assets/site.js', 'assets/home.js', 'assets/orbits.svg', 'app/js/theme.js', 'app/js/theme-boot.js',
   'icons/icon-192.png', 'manifest.webmanifest',

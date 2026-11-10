@@ -22,7 +22,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler); pg.route('https://raw.githubusercontent.com/**/open-data/**', opendata)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
     pg.goto('http://localhost:8765/app/?datasets=open#@10,45,2.2&l=borders,cables,ships&s=1', wait_until='commit'); pg.wait_for_timeout(12000)
     f=pg.evaluate("""async () => { const m = await import('./js/cabledetail.js');
       return { ms: m.lightMs(6605), words: [m.lengthWords(45000), m.lengthWords(6600), m.lengthWords(400)], km: Math.round(m.routeKm({ points: [[0, 0], [1, 0]] })) } }""")

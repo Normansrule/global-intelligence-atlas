@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 346" width="1200" height="346" role="img" aria-label="Phone-like connection: the finished Earth: v2.16 4.01 s, v2.17 3.45 s; Broadband: the finished Earth: v2.16 1.91 s, v2.17 1.58 s; Downloaded before the Earth is drawn: v2.16 2.38 MB, v2.17 1.59 MB">
+<style>text{font-family:'Jost','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif} .bar{transform-box:fill-box;transform-origin:left center;animation:grow 1.4s cubic-bezier(.2,.8,.2,1) both}@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}} @media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+<rect width="1200" height="346" rx="20" fill="#f6f1e6"/>
+<text x="30" y="52" font-size="24" font-weight="700" fill="#1d2a3a">A first visit, timed</text>
+<text x="30" y="80" font-size="15" fill="#5b6b7c">Median of five runs on the same machine: HTTP/2 with gzip like GitHub Pages, throttled network and processor (tests/perf/startup.py).</text>
+<text x="30" y="134" font-size="16" font-weight="600" fill="#1d2a3a">Phone-like connection: the finished Earth</text>
+<g transform="translate(420,110)"><rect class="bar" style="animation-delay:0s" width="611.0476190476189" height="18" rx="9" fill="#d8ccb4"/>
+<text x="621.0476190476189" y="14" font-size="14" fill="#5b6b7c">v2.16 · 4.01 s</text></g>
+<g transform="translate(420,134)"><rect class="bar" style="animation-delay:0.15s" width="525.7142857142857" height="18" rx="9" fill="#1f62c4"/>
+<text x="535.7142857142857" y="14" font-size="14" font-weight="700" fill="#1d2a3a">v2.17 · 3.45 s</text>
+<text x="675.7142857142857" y="14" font-size="14" font-weight="700" fill="#2e7d4a">−14 %</text></g>
+<text x="30" y="206" font-size="16" font-weight="600" fill="#1d2a3a">Broadband: the finished Earth</text>
+<g transform="translate(420,182)"><rect class="bar" style="animation-delay:0.3s" width="291.047619047619" height="18" rx="9" fill="#d8ccb4"/>
+<text x="301.047619047619" y="14" font-size="14" fill="#5b6b7c">v2.16 · 1.91 s</text></g>
+<g transform="translate(420,206)"><rect class="bar" style="animation-delay:0.44999999999999996s" width="240.76190476190476" height="18" rx="9" fill="#1f62c4"/>
+<text x="250.76190476190476" y="14" font-size="14" font-weight="700" fill="#1d2a3a">v2.17 · 1.58 s</text>
+<text x="390.76190476190476" y="14" font-size="14" font-weight="700" fill="#2e7d4a">−17 %</text></g>
+<text x="30" y="278" font-size="16" font-weight="600" fill="#1d2a3a">Downloaded before the Earth is drawn</text>
+<g transform="translate(420,254)"><rect class="bar" style="animation-delay:0.6s" width="585.8461538461538" height="18" rx="9" fill="#d8ccb4"/>
+<text x="595.8461538461538" y="14" font-size="14" fill="#5b6b7c">v2.16 · 2.38 MB</text></g>
+<g transform="translate(420,278)"><rect class="bar" style="animation-delay:0.75s" width="391.38461538461536" height="18" rx="9" fill="#1f62c4"/>
+<text x="401.38461538461536" y="14" font-size="14" font-weight="700" fill="#1d2a3a">v2.17 · 1.59 MB</text>
+<text x="541.3846153846154" y="14" font-size="14" font-weight="700" fill="#2e7d4a">−33 %</text></g>
+</svg>

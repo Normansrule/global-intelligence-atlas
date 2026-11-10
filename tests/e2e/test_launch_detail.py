@@ -36,7 +36,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler); pg.route('https://ll.thespacedevs.com/**', ll2); pg.route('https://api.open-meteo.com/v1/forecast**', meteo)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@30,-100,2.4&l=borders,launches,cities&s=1', wait_until='commit'); pg.wait_for_timeout(12000)
     f=pg.evaluate("""async () => { const m = await import('./js/launchdetail.js');
       const o = (name, orbit, ab, lat, lng, cc) => m.targetOrbit({ name, mission: name, orbit, orbitAbbrev: ab }, lat, lng, cc);

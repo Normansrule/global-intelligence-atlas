@@ -14,7 +14,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler); pg.route('https://eonet.gsfc.nasa.gov/**', eonet)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@1.3,103.8,0.4&b=bluemarble&l=ships,borders,events', wait_until='commit'); pg.wait_for_timeout(13000)
     w=pg.evaluate("""async () => { const { shipWakes } = await import('./js/wakes.js'); const ss = gia.state.data.ships ?? [];
       const moving = ss.filter((s) => s.sog >= 0.5 && s.sog < 102.3 && s.cog >= 0 && s.cog < 360).length;

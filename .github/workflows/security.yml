@@ -1,0 +1,71 @@
+# Global Intelligence Atlas: security checks. Nothing here commits or opens pull requests; results go to the
+# repository's Security tab (code scanning) and to this run's summary.
+# - CodeQL static analysis of the website's JavaScript and of these workflow files (GitHub's own scanner).
+# - RustSec advisories for the desktop app's Rust crates (desktop/src-tauri/Cargo.lock), via cargo-audit.
+# - npm advisories for the desktop build tool (desktop/package-lock.json).
+# - A check that every third-party action is pinned to a full commit SHA and that no workflow pastes event text
+#   straight into a shell command (the two most common ways a GitHub Actions setup gets taken over).
+name: Security checks
+on:
+  push:
+    branches: [main]
+    paths: ['site/**', 'desktop/**', 'proxy/**', 'tools/**', '.github/workflows/**']
+  schedule:
+    - cron: '23 5 * * 1'   # every Monday, so new advisories against unchanged code still show up
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: security
+  cancel-in-progress: true
+jobs:
+  codeql:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, actions]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+          # the minified third-party bundles are not ours to fix and only add noise
+          config: |
+            paths-ignore:
+              - site/app/vendor
+              - site/fluid/dat.gui.min.js
+      - uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          category: /language:${{ matrix.language }}
+  dependencies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Rust crates (RustSec advisory database)
+        run: |
+          cargo install cargo-audit --locked --quiet
+          cargo audit --file desktop/src-tauri/Cargo.lock | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: npm packages (desktop build tool)
+        working-directory: desktop
+        run: npm audit --audit-level=high | tee -a "$GITHUB_STEP_SUMMARY"
+  workflows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Actions pinned to commits, no event text in shell commands
+        run: python3 tools/check-workflows.py .github/workflows | tee -a "$GITHUB_STEP_SUMMARY"

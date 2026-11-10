@@ -1,0 +1,13 @@
+[
+  {
+    "key": "eagleeye",
+    "name": "Open Eagle Eye — verified public camera registry (stuchapin909)",
+    "url": "https://github.com/stuchapin909/Open-Eagle-Eye",
+    "license": "MIT (code and registry); images © each publisher",
+    "role": "About 31,000 still-image cameras checked by the registry's maintainers. tools/fetch-worldcams.mjs downloads cameras.json during the daily data job and adds only cameras that are verified, need no sign-in, use HTTPS on a reviewed public host and are not already shown (no camera within 60 m and no identical address).",
+    "apa": [
+      "stuchapin909, 2026",
+      "stuchapin909. (2026). *Open Eagle Eye* (cameras.json camera registry) [Computer software and data set]. GitHub. Retrieved November 9, 2026, from https://github.com/stuchapin909/Open-Eagle-Eye"
+    ]
+  }
+]

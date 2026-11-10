@@ -18,7 +18,7 @@ with sync_playwright() as p:
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     shader=[]; pg.on('console', lambda m: ('Shader Error' in m.text or 'shader' in m.text.lower() and m.type == 'error') and shader.append(m.text[:300]))
     pg.route('**/*', handler); pg.route('https://trek.nasa.gov/**', trek)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14');localStorage.setItem('gia-theme','dark')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20');localStorage.setItem('gia-theme','dark')}catch(e){}")
     pg.goto('http://localhost:8765/app/?debug#@20,10,2.4&b=daynight&l=sun,borders,planets', wait_until='commit'); pg.wait_for_timeout(14000)
     pg.wait_for_function('() => gia.cosmos.ready()', timeout=20000)
     m=pg.evaluate("() => gia.cosmos.info('moon')")
@@ -31,16 +31,19 @@ with sync_playwright() as p:
       const lon = Math.atan2(toE.dot(E), toE.dot(P)) * 180 / Math.PI; const lat = Math.asin(toE.dot(N)) * 180 / Math.PI; const l = A.Libration(t);
       return { lon, lat, elon: l.elon, elat: l.elat }; }""")
     check('the Moon turns the face it really shows us, libration included (within 0.2°)', abs(lib['lon']-lib['elon']) < 0.2 and abs(lib['lat']-lib['elat']) < 0.2, lib)
-    calls=pg.evaluate("() => { const { scene } = gia.cosmos.debug(); let pts = 0; scene.traverse((o) => { if (o.isPoints) pts++; }); return pts; }")
-    check('all far-away bodies are one set of dots (one draw call)', calls == 1, calls)
+    calls=pg.evaluate("() => { const { scene } = gia.cosmos.debug(); let pts = 0; scene.traverse((o) => { if (o.isPoints && !o.material.uniforms?.uAU) pts++; }); return pts; }")
+    check('all far-away bodies are one set of dots (one draw call; the two belts are separate and drawn only out in the solar system)', calls == 1, calls)
     check('no shader errors (Earth, air, bodies, rings, sky)', not shader, shader)
     # Explore: fly to the Moon
     pg.evaluate("() => document.querySelector('#space-open').click()"); pg.wait_for_timeout(9000)
     st=pg.evaluate("""() => ({ inSpace: document.body.classList.contains('in-space'), bar: !document.querySelector('.space-bar').hidden,
       card: document.querySelector('#notes-body h3')?.textContent ?? '', rows: document.querySelector('#notes-body .facts')?.textContent ?? '', hash: location.hash,
       mainCtl: gia.globe.controls().enabled })""")
-    check('the space button flies to the Moon: space bar, Moon card with live distance', st['inSpace'] and st['bar'] and 'Moon' in st['card'] and 'From Earth now' in st['rows'], st)
-    check('the globe’s own controls rest while exploring, and the link remembers the place', (not st['mainCtl']) and 'sp=moon' in st['hash'], st)
+    check('the space button opens the whole solar system: space bar and the solar system card', st['inSpace'] and st['bar'] and 'solar system' in st['card'], st)
+    check('the globe’s own controls rest while exploring, and the link remembers the place', (not st['mainCtl']) and 'sp=system' in st['hash'], st)
+    pg.evaluate("() => gia.cosmos.explore('moon')"); pg.wait_for_timeout(9000)
+    st=pg.evaluate("""() => ({ card: document.querySelector('#notes-body h3')?.textContent ?? '', rows: document.querySelector('#notes-body .facts')?.textContent ?? '', hash: location.hash })""")
+    check('from there it flies to the Moon: Moon card with live distance', 'Moon' in st['card'] and 'From Earth now' in st['rows'] and 'sp=moon' in st['hash'], st)
     o=pg.evaluate(ON_SCREEN, 'moon')
     check('the Moon fills the view, on screen, with its map loaded', o['visible'] and o['px'] > 120 and abs(o['x']) < 0.2 and abs(o['y']) < 0.2 and o['ready'], o)
     # Every body: fly there (instantly) and check it is drawn in the middle of the view
@@ -57,7 +60,7 @@ with sync_playwright() as p:
     pg.evaluate("() => gia.cosmos.explore('moon', { instant: true })"); pg.wait_for_timeout(1500)
     pg.evaluate("() => { const { cam, st, B } = gia.cosmos.debug(); const t = st.ctl.target; cam.position.sub(t).setLength(B.moon.r * 1.6).add(t); }"); pg.wait_for_timeout(9000)
     h=pg.evaluate("() => gia.cosmos.debug().st.hires.moon")
-    check('flying in close loads NASA’s Moon Trek mosaic (128 tiles)', h == 'ok' and len(trek_hits) >= 128 and all('/3/' in u for u in trek_hits), (h, len(trek_hits)))
+    check('flying in close loads NASA’s Moon Trek mosaic (128 tiles)', h == 'ok' and len(trek_hits) >= 128 and sum('/3/' in u for u in trek_hits) >= 128, (h, len(trek_hits)))
     # Back to Earth: the globe takes over again where the camera is
     pg.evaluate("() => gia.cosmos.explore('earth')"); pg.wait_for_timeout(9000)
     back=pg.evaluate("() => ({ inSpace: document.body.classList.contains('in-space'), ctl: gia.globe.controls().enabled, alt: gia.globe.pointOfView().altitude, focus: gia.cosmos.focus(), hash: location.hash })")
@@ -71,7 +74,7 @@ with sync_playwright() as p:
     # A link into space opens there; the day theme keeps the paper background but space is still black
     pg=b.new_page(viewport={'width':1280,'height':800}); errs2=[]; pg.on('pageerror', lambda e: errs2.append(str(e)))
     pg.route('**/*', handler); pg.route('https://trek.nasa.gov/**', trek)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.14');localStorage.setItem('gia-theme','light')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20');localStorage.setItem('gia-theme','light')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@20,10,2.4&b=daynight&l=sun,planets&sp=jupiter', wait_until='commit'); pg.wait_for_timeout(16000)
     j=pg.evaluate("() => ({ focus: gia.cosmos.focus(), stars: gia.cosmos.stars.visible })")
     check('a link with &sp=jupiter opens at Jupiter; the day theme hides the night sky on the globe', j['focus'] == 'jupiter' and j['stars'] is False, j)
