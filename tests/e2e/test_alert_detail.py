@@ -16,7 +16,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.22')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@25,115,2.2&l=borders,alerts,quakes,events,cities&s=1', wait_until='commit'); pg.wait_for_timeout(10000)
     f=pg.evaluate("""async () => { const m = await import('./js/alertdetail.js');
       return { span: [m.spanWords('2026-09-25T00:00:00', '2026-09-28T12:00:00', Date.parse('2026-10-01T00:00:00Z')), m.spanWords('2026-09-27T05:13:35', '2026-09-27T05:13:35')],

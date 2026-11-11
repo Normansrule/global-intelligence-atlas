@@ -7,6 +7,9 @@
 //   longitude 0 in the middle · dot: colour of the far-away dot and label · atm: rim glow [r, g, b, strength]
 //   airless: lit like bare rock (Lommel-Seeliger), so a full Moon stays bright to its edge
 //   trek: a sharper global mosaic on NASA's Solar System Treks tile servers, loaded only when you fly in close
+//   shape: a radius map in data/shapes (v2.22, tools/build-smallworlds.py) for a world that is not round
+//   rot: [pole right ascension, pole declination, W0, W1] (IAU rotation elements, degrees and degrees a day) for a
+//   body Astronomy Engine does not turn
 //   trekMax: the deepest level of that tile pyramid worth loading, from the mosaic's own resolution (v2.20: tiles down
 //   to it are loaded around the point you look at)
 
@@ -43,6 +46,16 @@ export const BODIES = [
     trekMax: 7, trek: 'https://trek.nasa.gov/tiles/Mars/EQ/Mars_Viking_MDIM21_ClrMosaic_global_232m/1.0.0/default/default028mm',
     facts: [['Radius', '3,390 km'], ['Day', '24 h 40 min'], ['Year', '687 days'], ['Gravity', '0.38 × Earth'], ['Average', '−65 °C'], ['Moons', '2']],
     about: 'A cold desert with the solar system’s tallest volcano (Olympus Mons, about 22 km) and a canyon as long as the United States (Valles Marineris). Rovers are driving on it right now.',
+  },
+  {
+    id: 'phobos', name: 'Phobos', kind: 'Moon of Mars', r: 11.08, tex: 'phobos.jpg', shape: 'phobos', dot: '#b8a48e', credit: 'nasa3d', airless: 1, parent: 'mars', glyph: '●',
+    facts: [['Size', '27 × 22 × 18 km'], ['Orbits Mars in', '7 h 39 min'], ['Above Mars', 'about 6,000 km'], ['Biggest crater', 'Stickney, 9 km']],
+    about: 'A dark, lumpy moon so close to Mars that it goes round three times a day, rising in the west. Mars’s pull is slowly drawing it in: in some tens of millions of years it will break up or crash. Its shape is the real one, from spacecraft images.',
+  },
+  {
+    id: 'deimos', name: 'Deimos', kind: 'Moon of Mars', r: 6.2, tex: 'deimos.jpg', shape: 'deimos', dot: '#c7b8a2', credit: 'stellarium', airless: 1, parent: 'mars', glyph: '●',
+    facts: [['Size', '15 × 12 × 11 km'], ['Orbits Mars in', '30 h 18 min'], ['Above Mars', 'about 20,000 km'], ['Surface', 'smoothed by dust']],
+    about: 'The smaller and farther of Mars’s two moons, its craters softened under a blanket of dust. From Mars it looks like a bright star that takes two and a half days to cross the sky. Its shape is the real one, from Viking and Mars Reconnaissance Orbiter images.',
   },
   {
     id: 'jupiter', name: 'Jupiter', kind: 'Planet', r: 69911, flat: 0.9351, tex: 'jupiter.jpg', dot: '#e8c9a0', credit: 'sss', atm: [0.95, 0.85, 0.7, 0.3], glyph: '♃',
@@ -153,6 +166,26 @@ export const BODIES = [
     id: 'pluto', name: 'Pluto', kind: 'Dwarf planet', r: 1188.3, tex: 'pluto.jpg', dot: '#d8c3a8', credit: 'sss', airless: 1, glyph: '♇',
     facts: [['Radius', '1,188 km'], ['Day', '6.4 Earth days (backwards)'], ['Year', '248 years'], ['Surface', '−230 °C'], ['Moons', '5']],
     about: 'A world of nitrogen ice glaciers and water-ice mountains, first seen up close by NASA’s New Horizons in 2015. The black band is the part New Horizons could not see: it was in the dark.',
+  },
+  {
+    id: 'charon', name: 'Charon', kind: 'Moon of Pluto', r: 606, tex: 'charon.jpg', dot: '#bfb3a6', credit: 'nasa3dnh', airless: 1, parent: 'pluto', glyph: '●',
+    facts: [['Radius', '606 km (half of Pluto)'], ['Orbits Pluto in', '6.4 days'], ['From Pluto', '19,600 km'], ['Red north pole', 'Mordor Macula']],
+    about: 'Half Pluto’s size, so big that the two swing round a point between them. Each always shows the other the same face, so Charon hangs over one spot in Pluto’s sky. New Horizons saw canyons longer than the Grand Canyon in 2015; it saw one side of Charon in detail.',
+  },
+  {
+    id: 'ceres', name: 'Ceres', kind: 'Dwarf planet (asteroid belt)', r: 482, flat: 0.925, tex: 'ceres.jpg', dot: '#b5ab9c', credit: 'usgsdawn', airless: 1, glyph: '⚳', rot: [291.418, 66.764, 170.65, 952.1532],
+    facts: [['Radius', '470 km'], ['Day', '9 h 4 min'], ['Year', '4.6 years'], ['Share of the belt’s mass', 'about 40 %'], ['Bright spots', 'salts in Occator crater']],
+    about: 'The biggest world in the asteroid belt, round under its own gravity. NASA’s Dawn orbited it from 2015 to 2018 and found salty brine that once welled up into Occator crater, leaving the white spots. Its place is from its orbit (Minor Planet Center).',
+  },
+  {
+    id: 'vesta', name: 'Vesta', kind: 'Asteroid', r: 262.7, tex: 'vesta.jpg', shape: 'vesta', dot: '#c9c3b8', credit: 'usgsdawn', airless: 1, glyph: '⚶', rot: [309.031, 42.235, 285.39, 1617.3329428],
+    facts: [['Size', '573 × 557 × 446 km'], ['Day', '5 h 20 min'], ['Year', '3.6 years'], ['South pole', 'Rheasilvia, a crater 500 km wide'], ['Pieces on Earth', 'about 1 meteorite in 20']],
+    about: 'The second biggest asteroid, with a giant crater, Rheasilvia, that took away much of its south pole; the blow threw out the rocks that fall to Earth as HED meteorites. Dawn orbited it in 2011 and 2012. Its shape is the real one; the grey in the north was in winter darkness when Dawn was there.',
+  },
+  {
+    id: 'bennu', name: 'Bennu', kind: 'Near-Earth asteroid', r: 0.245, tex: 'bennu.jpg', shape: 'bennu', dot: '#9c9890', credit: 'nasaosirisrex', airless: 1, glyph: '◆', rot: [85.46, -60.36, 0, 2011.145],
+    facts: [['Size', '565 × 535 × 508 m'], ['Day', '4 h 18 min'], ['Year', '1.2 years'], ['Sample brought home', '122 g, 24 September 2023'], ['Chance of hitting Earth', 'about 1 in 2,700 by 2300']],
+    about: 'A spinning-top pile of rubble loosely held together, rich in carbon and water-bearing minerals. NASA’s OSIRIS-REx touched it in 2020 and its capsule landed in Utah in 2023 with the biggest asteroid sample ever returned. Its place comes from a fixed orbit, so it is approximate.',
   },
 ];
 

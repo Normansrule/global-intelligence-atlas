@@ -25,7 +25,7 @@ with sync_playwright() as p:
     pg=b.new_page(viewport={'width':1280,'height':800}); errs=[]
     pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler); pg.route('https://overpass-api.de/**', overpass)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.22')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@59.9,24.5,1.2&b=bluemarble&l=borders,ships', wait_until='commit')
     pg.wait_for_function("() => window.gia && (gia.state.data.ships||[]).length > 50", timeout=40000)
     # the driving model on its own: one 300 m town road, twelve cars, a minute of simulated time

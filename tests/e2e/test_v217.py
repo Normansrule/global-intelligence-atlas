@@ -4,7 +4,7 @@ from playwright.sync_api import sync_playwright
 # the close-up imagery while its tiles load or cannot load, and undersea cables that fade back at the whole-globe view.
 res = []
 def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok else 'FAIL ') + name, info)
-INIT = "try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}"
+INIT = "try{localStorage.setItem('global-intelligence-atlas-version','2.22')}catch(e){}"
 with sync_playwright() as p:
     b = p.chromium.launch(args=ARGS); errs = []; asked = []
     pg = b.new_page(viewport={'width': 1440, 'height': 900}); pg.on('pageerror', lambda e: errs.append(str(e)[:300]))
@@ -18,7 +18,7 @@ with sync_playwright() as p:
     pg.goto('http://localhost:8765/app/#@20,0,2.4&l=borders,cables', wait_until='commit')
     pg.wait_for_function("() => window.gia && document.getElementById('loading')?.classList.contains('gone')", timeout=30000)
     first = [a for a in asked if isinstance(a, str)]
-    check('version 2.21', pg.evaluate("() => gia.VERSION")=='2.21')
+    check('version 2.22', pg.evaluate("() => gia.VERSION")=='2.22')
     check('the first view asks only for the quick 2K Earth', 'earth-blue-marble-2k.jpg' in first and 'earth-night-2k.jpg' in first and not any(x in first for x in ['earth-topology.png', 'earth-water.png', 'earth-blue-marble.jpg', 'earth-night.jpg']), first)
     flat = pg.evaluate("() => { const u = gia.globe.globeMaterial().uniforms; return [u.topo.value.image.width, u.water.value.image.width]; }")
     pg.wait_for_function("() => gia.globe.globeMaterial().uniforms.topo.value.image.width > 1 && gia.globe.globeMaterial().uniforms.water.value.image.width > 1", timeout=20000)

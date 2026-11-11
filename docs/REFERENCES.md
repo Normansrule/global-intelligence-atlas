@@ -214,6 +214,8 @@ Freire, S., Florczyk, A. J., Pesaresi, M., & Sliuzas, R. (2019). An improved glo
 
 Gajdosik, J. (2005). *TASS 1.7 and GUST86 in C* [Computer software]. Stellarium. https://github.com/Stellarium/stellarium/tree/master/src/core/planetsephems
 
+Gajdosik, J. (2006). *The ephemerides of the Martian satellites in C* [Computer software]. Stellarium. https://github.com/Stellarium/stellarium/blob/master/src/core/planetsephems/marssat.c
+
 Gardner, J. K., & Knopoff, L. (1974). Is the sequence of earthquakes in Southern California, with aftershocks removed, Poissonian? *Bulletin of the Seismological Society of America, 64*(5), 1363–1367. https://doi.org/10.1785/BSSA0640051363
 
 Gaulier, G., & Zignago, S. (2010). *BACI: International trade database at the product-level. The 1994–2007 version* (CEPII Working Paper No. 2010-23). CEPII. https://www.cepii.fr/CEPII/en/publications/wp/abstract.asp?NoDoc=2726
@@ -302,6 +304,8 @@ The Kyiv Independent. (n.d.). *World news feeds* [RSS feed]. Retrieved October 1
 
 Labbe, R. R. (n.d.). *FilterPy: Kalman filters and other optimal and non-optimal estimation filters in Python* [Computer software]. GitHub. https://github.com/rlabbe/filterpy
 
+Lainey, V., Dehant, V., & Pätzold, M. (2007). First numerical ephemerides of the Martian moons. *Astronomy and Astrophysics, 465*(3), 1075–1084. https://doi.org/10.1051/0004-6361:20065466
+
 Land Transport Authority. (n.d.). *Traffic images* [Data set]. data.gov.sg. Retrieved October 14, 2026, from https://api.data.gov.sg/v1/transport/traffic-images
 
 Laskar, J., & Jacobson, R. A. (1987). GUST86: An analytical ephemeris of the Uranian satellites. *Astronomy and Astrophysics, 188*, 212–224. https://ui.adsabs.harvard.edu/abs/1987A%26A...188..212L
@@ -340,6 +344,8 @@ Ministry of Land, Infrastructure, Transport and Tourism. (n.d.). *River disaster
 
 Ministère des Transports et de la Mobilité durable du Québec. (n.d.). *Québec 511: Road cameras* [Data set]. Données Québec. https://www.donneesquebec.ca/
 
+Minor Planet Center. (n.d.). *MPC orbit (MPCORB) database*. International Astronomical Union. https://minorplanetcenter.net/iau/MPCORB.html
+
 MITRE Corporation. (n.d.). *CVE Program: CVE Services API* [Data set]. Retrieved October 14, 2026, from https://www.cve.org
 
 Montenbruck, O., & Gill, E. (2000). *Satellite orbits: Models, methods and applications*. Springer. https://doi.org/10.1007/978-3-642-58351-3
@@ -353,6 +359,8 @@ Muller, R. A., & Muller, E. (2015). *Air pollution and cigarette equivalence*. B
 Myers, N., Mittermeier, R. A., Mittermeier, C. G., da Fonseca, G. A. B., & Kent, J. (2000). Biodiversity hotspots for conservation priorities. *Nature, 403*(6772), 853–858. https://doi.org/10.1038/35002501
 
 NASA Earth Observatory. (n.d.). *Blue Marble and Black Marble* [Image collection]. Visible Earth. https://visibleearth.nasa.gov/collection/1484/blue-marble
+
+NASA Goddard Space Flight Center & University of Arizona. (n.d.). *Bennu global mosaic* [Image]. OSIRIS-REx. https://www.asteroidmission.org/bennu_global_mosaic/
 
 NASA Jet Propulsion Laboratory. (n.d.-a). *Where are Voyager 1 and Voyager 2 now?* NASA Science. https://science.nasa.gov/mission/voyager/where-are-voyager-1-and-voyager-2-now/
 
@@ -528,6 +536,8 @@ The Space Devs. (n.d.). *Launch Library 2* [Data set]. Retrieved October 14, 202
 
 Stam, J. (1999). Stable fluids. In *Proceedings of the 26th Annual Conference on Computer Graphics and Interactive Techniques* (pp. 121–128). ACM Press. https://doi.org/10.1145/311535.311548
 
+Stellarium contributors. (n.d.). *Stellarium* [Computer software; models and textures]. https://github.com/Stellarium/stellarium
+
 stuchapin909. (2026). *Open Eagle Eye* (cameras.json camera registry) [Computer software and data set]. GitHub. Retrieved November 9, 2026, from https://github.com/stuchapin909/Open-Eagle-Eye
 
 Tauri Programme within The Commons Conservancy. (2024). *Tauri* (Version 2) [Computer software]. https://tauri.app
@@ -579,6 +589,8 @@ U.S. Environmental Protection Agency. (n.d.-b). *National primary drinking water
 U.S. Environmental Protection Agency. (n.d.-c). *TRI basic data files: Calendar years 1987–present* [Data set]. Retrieved October 14, 2026, from https://www.epa.gov/toxics-release-inventory-tri-program/tri-basic-data-files-calendar-years-1987-present
 
 U.S. Federal Housing Finance Agency. (n.d.). *House Price Index datasets* [Data set]. Retrieved October 14, 2026, from https://www.fhfa.gov/data/hpi
+
+U.S. Geological Survey Astrogeology Science Center. (n.d.). *Ceres and Vesta Dawn global mosaics* [Data set]. https://astrogeology.usgs.gov/search?target=ceres
 
 U.S. Geological Survey. (n.d.-a). *Earthquake Hazards Program: ComCat event detail feed and FDSN event web service* [Data set]. Retrieved October 14, 2026, from https://earthquake.usgs.gov/fdsnws/event/1/
 
@@ -826,6 +838,12 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Vienne & Duriez, 1995) | Where Mimas, Enceladus, Tethys, Dione, Rhea, Titan and Iapetus are, computed in the browser (v2.21). | Published theory |
 | (Laskar & Jacobson, 1987) | Where Miranda, Ariel, Umbriel, Titania and Oberon are, computed in the browser (v2.21). | Published theory |
 | (Gajdosik, 2005) | The code and coefficient tables the atlas translated to JavaScript (outermoons.js) for the moons of Saturn and Uranus. | MIT (these files) |
+| (Lainey et al., 2007) | Where Phobos and Deimos are, computed in the browser (v2.22). | Published theory |
+| (Gajdosik, 2006) | The code and term tables the atlas translated to JavaScript (smallworlds.js) for Phobos and Deimos. | MIT (this file) |
+| (Minor Planet Center, n.d.) | The orbits of Ceres, Vesta and Bennu (v2.22). | Free to use with credit |
+| (Stellarium contributors, n.d.) | The real shapes of Phobos, Deimos and Vesta, and the maps of Deimos, Ceres, Vesta and Bennu (v2.22). | GNU General Public License 2.0 or later; the Ceres and Vesta maps from USGS (public domain) and the Bennu map from NASA (public domain), per Stellarium’s credits |
+| (U.S. Geological Survey Astrogeology Science Center, n.d.) | The source of the Ceres and Vesta maps (v2.22). | Public domain (USGS and NASA) |
+| (NASA Goddard Space Flight Center & University of Arizona, n.d.) | Bennu’s map and, through NASA 3D Resources, its shape (v2.22). | Public domain (NASA) |
 | (NASA Jet Propulsion Laboratory, n.d.-b) | Triton’s orbit around Neptune (its place along the orbit is approximate). | Public domain (NASA) |
 | (NASA Jet Propulsion Laboratory, n.d.-a) | Distances and speeds of Voyager 1 and 2, shown out beyond the planets in the solar system view. | Public domain (NASA) |
 | (Johns Hopkins University Applied Physics Laboratory, n.d.) | Distance and speed of New Horizons, shown out beyond Pluto in the solar system view. | Reference (mission facts) |

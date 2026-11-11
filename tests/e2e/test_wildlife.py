@@ -78,7 +78,7 @@ with sync_playwright() as p:
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e))); csp=[]; pg.on('console', lambda m: csp.append(m.text) if 'Content Security Policy' in m.text else None)
     pg.route('**/*', handler)
     pg.route('https://api.gbif.org/**', gbif); pg.route('https://api.inaturalist.org/**', inat); pg.route('https://inaturalist-open-data.s3.amazonaws.com/**', img)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.22')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@30,10,2.2&b=bluemarble&l=borders,wildlife', wait_until='commit'); pg.wait_for_timeout(10000)
     m=pg.evaluate("async () => { const { validateLayer } = await import('./js/registry.js'); const { wildlifeLayer } = await import('./js/wildlife.js'); return validateLayer(wildlifeLayer({}), { groups: [{ id: 'places' }] }); }")
     check('the layer passes the registry check (sources in sources.js, learn text)', m == [], m)

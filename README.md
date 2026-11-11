@@ -17,7 +17,7 @@
 
 <sub><a href="https://normansrule.github.io/global-intelligence-atlas/">Website</a> · <a href="#-get-the-app">Install it from the browser, or which download to pick</a></sub>
 
-[![Version](https://img.shields.io/badge/version-2.21.0-1f4e9c)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.22.0-1f4e9c)](CHANGELOG.md)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Deploy to Pages](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml)
 [![Tests](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml)
@@ -41,7 +41,7 @@
   <img src="site/docs-media/layers-dark.svg" alt="All 71 layers of the atlas scrolling past as labelled chips, each with its colour: air quality, US weather warnings, live flights, earthquakes, ships, rocket launches, wildlife, satellites, undersea cables, landmarks and the rest" width="100%" />
 </picture>
 
-[What's new](#-new-in-v221-moons-of-saturn-uranus-and-neptune) · [Get the app](#-get-the-app) · [Click anything](#-click-anything) · [At a glance](#-at-a-glance) · [Web or desktop](#-web-app-and-desktop-app) · [Gallery](#-gallery) · [Features](#-features) · [Design](#-design) · [Progress](#-progress) · [How it works](#-how-it-works) · [Run it](#-run-it-yourself) · [References](#-data-and-references) · [Credits](#-credits) · [Changelog](CHANGELOG.md)
+[What's new](#-new-in-v222-the-small-worlds) · [Get the app](#-get-the-app) · [Click anything](#-click-anything) · [At a glance](#-at-a-glance) · [Web or desktop](#-web-app-and-desktop-app) · [Gallery](#-gallery) · [Features](#-features) · [Design](#-design) · [Progress](#-progress) · [How it works](#-how-it-works) · [Run it](#-run-it-yourself) · [References](#-data-and-references) · [Credits](#-credits) · [Changelog](CHANGELOG.md)
 
 <sub>Global Intelligence Atlas (GIA) is built on the basis of <a href="https://github.com/koala73/worldmonitor">World Monitor</a> by Elie Habib.</sub>
 
@@ -49,14 +49,21 @@
 
 ---
 
-## ✨ New in v2.21: moons of Saturn, Uranus and Neptune
+## ✨ New in v2.22: the small worlds
+
+<p align="center"><img src="site/docs-media/v222-small-worlds.jpg" alt="Three views from the atlas's space mode. Left: Phobos, a lumpy grey potato covered in craters and grooves. Middle: Vesta, seen from the south, with the ridges of its giant Rheasilvia crater. Right: Bennu, a small rubble-covered rock shaped like a spinning top." width="100%"></p>
+<p align="center"><sub>Phobos, Vesta and Bennu in their real shapes, where they really are now.</sub></p>
+
+Six more worlds: Mars's moons **Phobos and Deimos**, Pluto's moon **Charon**, the dwarf planet **Ceres**, the asteroid **Vesta** and the near-Earth asteroid **Bennu**, from which NASA's OSIRIS-REx brought a sample home in 2023. Phobos, Deimos, Vesta and Bennu are drawn in their real shapes, from spacecraft shape models, instead of as balls. Phobos and Deimos are placed by Lainey's theory of the Martian moons. Charon always hangs over the same spot of Pluto. Ceres, Vesta and Bennu follow their orbits round the Sun, from Minor Planet Center elements; Bennu's place is approximate. Each has its map, its facts and a card. Fly to Mars to find its moons, or zoom in on the inner solar system to find the asteroids.
+
+## ✨ Also new in v2.21: moons of Saturn, Uranus and Neptune
 
 <p align="center"><img src="site/docs-media/v221-moons.jpg" alt="Three views from the atlas's space mode. Left: Saturn and its rings with its moons Mimas, Enceladus, Tethys, Dione and Rhea labelled where they are. Middle: Dione close up, grey and cratered. Right: Titan, a pale orange ball of haze." width="100%"></p>
 <p align="center"><sub>Fly to Saturn, Uranus or Neptune and their big moons are where they really are; each planet's card lists them to fly to.</sub></p>
 
 Thirteen more moons: **Mimas, Enceladus, Tethys, Dione, Rhea, Titan and Iapetus** round Saturn, **Miranda, Ariel, Umbriel, Titania and Oberon** round Uranus, and **Triton** round Neptune. Their positions are worked out in your browser from the same theories planetarium software uses (TASS 1.7 for Saturn's moons and GUST86 for Uranus's, from the Paris Observatory's IMCCE), each with a NASA map, its facts and its orbit. Where no spacecraft has photographed a moon, its map is plain grey. Triton follows a fixed orbit from NASA JPL elements, so its place is approximate. Also in v2.21, the planets appear within 5 seconds even on a busy device.
 
-## ✨ Also new in v2.20: the whole solar system
+## ✨ And in v2.20: the whole solar system
 
 <p align="center"><img src="site/docs-media/v220-space.jpg" alt="Three views from the atlas's space mode. Left: the solar system from above, every planet on its orbit where it is today, the asteroid belt as a ring of brown specks around the Sun and the Kuiper belt as pale blue specks beyond Neptune. Middle: zoomed out further, the Kuiper belt as a blue ring with New Horizons and Voyager 2 labelled outside it. Right: Mars close up, the Valles Marineris canyon across its face." width="100%"></p>
 <p align="center"><sub>Press the planet button: space now opens on the whole solar system. Click any planet to fly there.</sub></p>
@@ -84,7 +91,7 @@ On the **Moon, Mars and Mercury**, a patch of sharper **NASA Treks** map tiles l
 </tr>
 </table>
 
-## ✨ And in v2.19: a whole city up close
+## ✨ Also in v2.19: a whole city up close
 
 <p align="center"><img src="site/docs-media/v219-city.jpg" alt="Two tilted views across the same town, about 700 m up. Afternoon: glass towers and brick and plaster blocks lit from the side where the Sun is, a park with a rippling pond and trees, a road with lane lines. Midnight: the same blocks dark with about a third of their windows lit in warm and cool colours, street lamps glowing along every road." width="100%"></p>
 <p align="center"><sub>A made-up test town (the real one comes from OpenStreetMap wherever you zoom in). Press the tilt button or <kbd>V</kbd> to look across the city; <kbd>Shift</kbd> + drag tilts by hand.</sub></p>
@@ -112,7 +119,7 @@ Roads get **pavements, lane lines** (yellow in the Americas, white elsewhere), e
 </tr>
 </table>
 
-## ✨ Also in v2.18: close-ups that behave like the real thing
+## ✨ And in v2.18: close-ups that behave like the real thing
 
 <p align="center"><picture><source media="(prefers-color-scheme: light)" srcset="site/docs-media/closeups-v218-light.svg" /><img src="site/docs-media/closeups-v218-dark.svg" alt="Animated: cars queue at a red traffic light and pull away one after another on green; a ship trails a V-shaped foam wake at 19.5 degrees with a red light to port and green to starboard." width="100%" /></picture></p>
 
@@ -451,7 +458,7 @@ Click an earthquake and its card becomes an event page. It opens with the magnit
 <details>
 <summary><b>🪐 The Moon, the planets, eclipses and a cinematic Earth</b></summary>
 
-The globe is lit by the real Sun: mountains cast shading from the Sun's direction, the oceans glint where sunlight reflects toward you, the air glows blue on the day side and red-orange along the line of sunset, and city lights come on only where it is dark. Behind it is NASA's Tycho star map with the Milky Way, and the Sun, the Moon, the eight planets, Pluto Jupiter's four big moons and (since v2.21) the thirteen big moons of Saturn, Uranus and Neptune at their true positions, sizes and distances, worked out in the browser by [Astronomy Engine](https://github.com/cosinekitty/astronomy) and turned the way the International Astronomical Union (IAU) says each one faces, so the Moon shows its real phase and wobble (libration) and Saturn's rings their real tilt. The planet button by the zoom buttons (or Explore → The solar system) opens the whole solar system from above, with the asteroid and Kuiper belts and the farthest spacecraft (Voyager 1 and 2, New Horizons); click a name and the camera flies there and you can turn it and zoom in, on the Moon, Mars and Mercury down to the finest map NASA publishes; the space bar flies on to the next one, Orbits draws their paths, and Earth flies back to the globe. Maps come from Solar System Scope (Creative Commons Attribution 4.0, made from NASA mission imagery) and NASA 3D Resources (public domain); close to the Moon, Mars or Mercury the atlas also loads NASA's own full global mosaic from Solar System Treks. Links can open in space (`#…&sp=saturn`).
+The globe is lit by the real Sun: mountains cast shading from the Sun's direction, the oceans glint where sunlight reflects toward you, the air glows blue on the day side and red-orange along the line of sunset, and city lights come on only where it is dark. Behind it is NASA's Tycho star map with the Milky Way, and the Sun, the Moon, the eight planets, Pluto Jupiter's four big moons and (since v2.21) the thirteen big moons of Saturn, Uranus and Neptune, and (since v2.22) Phobos, Deimos, Charon, Ceres, Vesta and Bennu, at their true positions, sizes and distances, worked out in the browser by [Astronomy Engine](https://github.com/cosinekitty/astronomy) and turned the way the International Astronomical Union (IAU) says each one faces, so the Moon shows its real phase and wobble (libration) and Saturn's rings their real tilt. The planet button by the zoom buttons (or Explore → The solar system) opens the whole solar system from above, with the asteroid and Kuiper belts and the farthest spacecraft (Voyager 1 and 2, New Horizons); click a name and the camera flies there and you can turn it and zoom in, on the Moon, Mars and Mercury down to the finest map NASA publishes; the space bar flies on to the next one, Orbits draws their paths, and Earth flies back to the globe. Maps come from Solar System Scope (Creative Commons Attribution 4.0, made from NASA mission imagery) and NASA 3D Resources (public domain); close to the Moon, Mars or Mercury the atlas also loads NASA's own full global mosaic from Solar System Treks. Links can open in space (`#…&sp=saturn`).
 
 **Eclipses and landing sites.** Explore → Eclipses lists the coming eclipses of the Sun and the Moon; Watch runs the time machine through one while the real shadows are drawn: the Moon's shadow sweeping across the globe (its centre within 20 km of NASA's greatest-eclipse point) and the Earth's copper-red shadow on the Moon. Gold pins mark 17 landings on the Moon and 10 on Mars, each with its story.
 </details>
@@ -563,7 +570,8 @@ Fifteen lessons on the [Learn page](https://normansrule.github.io/global-intelli
 | v2.10 | The Global Intelligence Atlas (GIA) repository launch: this README, browser tuning, release branding |
 | v2.11 | Cameras from 22 more agencies and Osiris's worldwide webcam list, the rest of World Monitor's map datasets, markers that share a spot, economy, property and industry |
 | v2.12 | A News tab: headlines from 16 publishers' own feeds around the world and free live news channels from broadcasters' official streams |
-| **v2.21** | **Thirteen big moons of Saturn, Uranus and Neptune, placed by the TASS 1.7 and GUST86 theories, with NASA maps; the desktop app builds on Windows again** |
+| **v2.22** | **The small worlds: Phobos, Deimos, Charon, Ceres, Vesta and Bennu, the odd-shaped ones in their real shapes, each where it really is now** |
+| v2.21 | **Thirteen big moons of Saturn, Uranus and Neptune, placed by the TASS 1.7 and GUST86 theories, with NASA maps; the desktop app builds on Windows again** |
 | v2.20 | **The whole solar system: space opens on every planet where it is today, with the asteroid and Kuiper belts and the farthest spacecraft; click a planet to fly there; sharper NASA maps as you fly in close to the Moon, Mars and Mercury** |
 | v2.19 | **A whole city up close: tilt to look across it, buildings with windows lit by the real Sun and after dark, parks, woods, rivers and lakes with trees and rippling water, pavements, lane lines and street lamps** |
 | v2.18 | **Close-ups that behave like the real thing: traffic that keeps its distance and queues at red lights, ship wakes at the Kelvin angle, and navigation, head and tail lights after dark** |

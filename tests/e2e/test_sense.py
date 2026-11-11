@@ -68,7 +68,7 @@ with sync_playwright() as p:
     pg.route('**/*', handler)
     pg.route('https://air-quality-api.open-meteo.com/**', air); pg.route('https://api.weather.gov/**', nws)
     pg.route('https://raw.githubusercontent.com/**/live-data/*.json', snap)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.22')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@35,-97,1.6&b=bluemarble&l=borders,air,warnings', wait_until='commit'); pg.wait_for_timeout(12000)
 
     v=pg.evaluate("""async () => { const { validateLayer } = await import('./js/registry.js'); const { airLayer } = await import('./js/airquality.js'); const { warningsLayer } = await import('./js/warnings.js');
@@ -137,7 +137,7 @@ with sync_playwright() as p:
     down['aq']=True; down['nws']=True
     pg2=b.new_page(viewport={'width':1280,'height':800}); pg2.on('pageerror', lambda e: errs.append(str(e)))
     pg2.route('**/*', handler); pg2.route('https://air-quality-api.open-meteo.com/**', air); pg2.route('https://api.weather.gov/**', nws); pg2.route('https://raw.githubusercontent.com/**/live-data/*.json', snap)
-    pg2.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
+    pg2.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.22')}catch(e){}")
     pg2.goto('http://localhost:8765/app/#@35,-97,1.6&b=bluemarble&l=borders,air,warnings', wait_until='commit'); pg2.wait_for_function("() => window.gia && gia.state.data.air && gia.state.data.warnings", timeout=30000)
     f=pg2.evaluate("() => ({ air: gia.state.data.air?.length, tokyo: gia.state.data.air?.[0]?.name, warn: gia.state.data.warnings?.alerts?.map((a) => a.id), src: gia.state.data.warnings?.src })")
     check('with Open-Meteo unreachable, air comes from the hourly snapshot', f['air'] == 1 and f['tokyo'] == 'Tokyo', f)

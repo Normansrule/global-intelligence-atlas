@@ -11,7 +11,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.22')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@37,142,1.4&l=quakes,borders', wait_until='commit'); pg.wait_for_timeout(11000)
     # the formulas
     f=pg.evaluate("""async () => { const q = await import('./js/quakedetail.js');

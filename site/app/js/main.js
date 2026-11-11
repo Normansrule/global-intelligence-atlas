@@ -61,7 +61,7 @@ import { isOffline, servedSince } from './lastknown.js'; // offline mode
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.21';
+export const VERSION = '2.22';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg, unitSvg } from './icons.js';
@@ -1961,7 +1961,13 @@ if (NEW_VERSION) { if (!state.pendingSel && !state.pendingSpace) setTimeout(what
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>Moons of Saturn, Uranus and Neptune</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>The small worlds</h3>
+    <div class="newlist">
+      <span>${g('moon', '#b8a48e')}<b>Phobos and Deimos:</b> Mars's two little moons, in their real lumpy shapes, where they really are now (from Lainey's theory of the Martian moons). Phobos goes round Mars three times a day.</span>
+      <span>${g('peak', '#c9c3b8')}<b>Ceres, Vesta and Bennu:</b> the biggest world in the asteroid belt, the second biggest asteroid (in its real shape, with its giant south-pole crater) and the near-Earth asteroid OSIRIS-REx brought a sample home from, each on its orbit with NASA's maps. Zoom in on the inner solar system to find them, or pick them on the solar system card.</span>
+      <span>${g('moon', '#bfb3a6')}<b>Charon:</b> Pluto's big moon, hanging over the same spot of Pluto as the two turn face to face.</span>
+    </div>
+    <h4>From v2.21: moons of Saturn, Uranus and Neptune</h4>
     <div class="newlist">
       <span>${g('moon', '#d9a964')}<b>13 more moons:</b> Titan, Enceladus, Mimas, Tethys, Dione, Rhea and Iapetus round Saturn; Miranda, Ariel, Umbriel, Titania and Oberon round Uranus; and Triton round Neptune. Each one is where it really is now (from the TASS 1.7 and GUST86 theories), with its NASA map, its facts, and buttons on its planet's card to fly between them. Where no spacecraft has photographed a moon, its map is plain grey.</span>
       <span>${g('bolt', '#ffe066')}<b>Planets on slow devices:</b> the planets now appear within 5 seconds even when the device is busy the whole time.</span>

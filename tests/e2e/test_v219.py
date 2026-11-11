@@ -56,7 +56,7 @@ with sync_playwright() as p:
     pg=b.new_page(viewport={'width':1280,'height':800}); errs=[]
     pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler); pg.route('https://overpass-api.de/**', overpass)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.22')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@30,10,1.2&l=borders', wait_until='commit')
     pg.wait_for_function("() => window.gia && gia.globe", timeout=40000); pg.wait_for_timeout(2000)
     u=pg.evaluate("""async () => { const w = await import('./js/world.js'); const t = await import('./js/tilt.js');

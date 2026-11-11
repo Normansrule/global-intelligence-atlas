@@ -23,6 +23,8 @@ jobs:
       - run: pip install playwright==1.56.0 && python -m playwright install --with-deps chromium
       - name: v2.16 speed (every start-up module preloaded in parallel)
         run: node tools/build-preload.mjs --check
+      - name: v2.22 small worlds (Phobos, Deimos, Charon, Ceres, Vesta, Bennu; Lainey, Kepler orbits, real shapes)
+        run: bash tests/e2e/run.sh test_v222.py | tee v222.log && grep -q "SUMMARY 21 / 21" v222.log
       - name: v2.21 moons of Saturn, Uranus and Neptune (TASS 1.7, GUST86, Triton), Windows-safe file names, offline pack
         run: bash tests/e2e/run.sh test_v221.py | tee v221.log && grep -q "SUMMARY 21 / 21" v221.log
       - name: v2.20 the whole solar system (system view, belts, spacecraft, fly to a planet, close-up NASA tiles)

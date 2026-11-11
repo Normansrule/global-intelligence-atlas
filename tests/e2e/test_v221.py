@@ -9,7 +9,7 @@ res=[]
 def check(n, ok, info=''): res.append(bool(ok)); print(('PASS ' if ok else 'FAIL ')+n, '' if ok else info)
 ROOT=os.path.abspath(os.path.join(sys.argv[-1], '..', '..'))
 SAT=['mimas','enceladus','tethys','dione','rhea','titan','iapetus']; URA=['miranda','ariel','umbriel','titania','oberon']; ALL=SAT+URA+['triton']
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.21');localStorage.setItem('gia-theme','dark')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.22');localStorage.setItem('gia-theme','dark')}catch(e){}"
 # repository checks (no browser)
 bad=[]
 for d, _, fs in os.walk(os.path.join(ROOT, 'site')):
@@ -31,7 +31,7 @@ with sync_playwright() as p:
     try: pg.wait_for_function("() => gia.cosmos.ready()", timeout=25000)
     except Exception: ok=False
     check('the planets are ready within 25 s without being asked (the start no longer waits for an idle moment)', ok)
-    check('version 2.21', pg.evaluate("() => gia.VERSION")=='2.21')
+    check('version 2.22', pg.evaluate("() => gia.VERSION")=='2.22')
     check('the moons’ code is not loaded on the globe', not pg.evaluate("() => performance.getEntriesByType('resource').some((e) => e.name.includes('outermoons.js'))"))
     rf=pg.evaluate("async () => { const m = await import('/app/js/flightdb.js'); return [m.routeFile('CON'), m.routeFile('BAW'), m.routeFile('com1')]; }")
     check('flight routes: reserved airline codes use their underscored file', rf==['_CON.json', 'BAW.json', '_com1.json'], rf)

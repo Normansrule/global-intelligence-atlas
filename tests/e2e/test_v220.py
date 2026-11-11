@@ -9,7 +9,7 @@ res=[]
 def check(n, ok, info=''): res.append(bool(ok)); print(('PASS ' if ok else 'FAIL ')+n, '' if ok else info)
 TILE=open(os.path.join(sys.argv[-1], 'tile.jpg'), 'rb').read(); hits=[]
 def trek(route): hits.append(route.request.url); route.fulfill(status=200, content_type='image/jpeg', body=TILE)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.21');localStorage.setItem('gia-theme','dark')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.22');localStorage.setItem('gia-theme','dark')}catch(e){}"
 ZOOM="""([id, a]) => { const { cam, B, st } = gia.cosmos.debug(); const c = st.ctl.target.clone(); const d = cam.position.clone().sub(c).normalize(); cam.position.copy(c).addScaledVector(d, B[id].r * (1 + a)); st.ctl.update(); }"""
 with sync_playwright() as p:
     b=p.chromium.launch(args=['--use-gl=swiftshader','--enable-unsafe-swiftshader'])
@@ -18,7 +18,7 @@ with sync_playwright() as p:
     pg.route('**/*', handler); pg.route('https://trek.nasa.gov/**', trek); pg.add_init_script(INIT)
     pg.goto('http://localhost:8765/app/#@20,0,2.4&b=daynight&l=sun,borders,planets', wait_until='commit')
     pg.wait_for_function("() => window.gia && gia.cosmos && gia.cosmos.ready()", timeout=60000); pg.wait_for_timeout(1500)
-    check('version 2.21', pg.evaluate("() => gia.VERSION")=='2.21')
+    check('version 2.22', pg.evaluate("() => gia.VERSION")=='2.22')
     sh=pg.evaluate("() => ({ open: document.querySelector('#space-open')?.dataset.space, title: document.querySelector('#space-open')?.title ?? '' })")
     check('the space button is the solar system', sh['open']=='system', sh)
     # the solar system view

@@ -20,7 +20,7 @@ with sync_playwright() as p:
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     shader=[]; pg.on('console', lambda m: ('Shader Error' in m.text or 'shader' in m.text.lower() and m.type == 'error') and shader.append(m.text[:300]))
     pg.route('**/*', handler)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21');localStorage.setItem('gia-theme','dark')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.22');localStorage.setItem('gia-theme','dark')}catch(e){}")
     pg.goto('http://localhost:8765/app/?debug#@20,10,2.4&b=bluemarble&l=borders,planets', wait_until='commit'); pg.wait_for_timeout(14000)
     pg.wait_for_function('() => gia.cosmos.ready()', timeout=20000)
     # pin the clock to a known day, so the list below is always the same

@@ -27,7 +27,7 @@ with sync_playwright() as p:
     pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.on('request', lambda r: scripts.append(r.url) if r.url.endswith('.js') else None)
     pg.route('**/*', handler); pg.route('https://overpass-api.de/**', overpass)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.22')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@59.9,24.5,1.2&b=bluemarble&l=borders,ships', wait_until='commit'); pg.wait_for_timeout(10000)
     check('close-up code is not loaded at start-up', not any('closeup.js' in u for u in scripts))
     n=pg.evaluate("(gia.state.data.ships||[]).length")
