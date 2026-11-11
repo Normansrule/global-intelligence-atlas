@@ -15,7 +15,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler); pg.route('https://raw.githubusercontent.com/**/open-data/**', opendata)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
     pg.goto('http://localhost:8765/app/?datasets=open#@1.3,103.7,0.5&l=borders,ports,ships&s=1', wait_until='commit'); pg.wait_for_timeout(12000)
     f=pg.evaluate("""async () => { const m = await import('./js/shipview.js'); const k = (name, shipType, length) => m.shipClass({ name, shipType, length }).id;
       return { kinds: [k('MAERSK EINDHOVEN', 71, 366), k('MSC GULSUN', 70, 400), k('AL KHUWAIR', 84, 315), k('ARCTIC PRINCESS LNG', 84, 288), k('GLOVIS CROWN', 70, 200), k('CAPE OCEAN', 70, 292), k('NONAME', 70, 229), k('NONAME', 70, 110), k('SYMPHONY OF THE SEAS', 60, 362), k('STENA', 60, 180), k('X', 30, 30), k('X', 52, 28), k('X', 36, 12)],

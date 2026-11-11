@@ -212,6 +212,8 @@ Freeway Bureau, Ministry of Transportation and Communications. (n.d.). *Road sur
 
 Freire, S., Florczyk, A. J., Pesaresi, M., & Sliuzas, R. (2019). An improved global analysis of population distribution in proximity to active volcanoes, 1975–2015. *ISPRS International Journal of Geo-Information, 8*(8), 341. https://doi.org/10.3390/ijgi8080341
 
+Gajdosik, J. (2005). *TASS 1.7 and GUST86 in C* [Computer software]. Stellarium. https://github.com/Stellarium/stellarium/tree/master/src/core/planetsephems
+
 Gardner, J. K., & Knopoff, L. (1974). Is the sequence of earthquakes in Southern California, with aftershocks removed, Poissonian? *Bulletin of the Seismological Society of America, 64*(5), 1363–1367. https://doi.org/10.1785/BSSA0640051363
 
 Gaulier, G., & Zignago, S. (2010). *BACI: International trade database at the product-level. The 1994–2007 version* (CEPII Working Paper No. 2010-23). CEPII. https://www.cepii.fr/CEPII/en/publications/wp/abstract.asp?NoDoc=2726
@@ -302,6 +304,8 @@ Labbe, R. R. (n.d.). *FilterPy: Kalman filters and other optimal and non-optimal
 
 Land Transport Authority. (n.d.). *Traffic images* [Data set]. data.gov.sg. Retrieved October 14, 2026, from https://api.data.gov.sg/v1/transport/traffic-images
 
+Laskar, J., & Jacobson, R. A. (1987). GUST86: An analytical ephemeris of the Uranian satellites. *Astronomy and Astrophysics, 188*, 212–224. https://ui.adsabs.harvard.edu/abs/1987A%26A...188..212L
+
 Leetaru, K., & Schrodt, P. A. (2013, April 3–6). *GDELT: Global data on events, location, and tone, 1979–2012* [Paper presentation]. International Studies Association Annual Convention, San Francisco, CA, United States.
 
 Library and Archives Canada. (n.d.). *Library and Archives Canada*. Retrieved October 14, 2026, from https://library-archives.canada.ca/
@@ -350,7 +354,9 @@ Myers, N., Mittermeier, R. A., Mittermeier, C. G., da Fonseca, G. A. B., & Kent,
 
 NASA Earth Observatory. (n.d.). *Blue Marble and Black Marble* [Image collection]. Visible Earth. https://visibleearth.nasa.gov/collection/1484/blue-marble
 
-NASA Jet Propulsion Laboratory. (n.d.). *Where are Voyager 1 and Voyager 2 now?* NASA Science. https://science.nasa.gov/mission/voyager/where-are-voyager-1-and-voyager-2-now/
+NASA Jet Propulsion Laboratory. (n.d.-a). *Where are Voyager 1 and Voyager 2 now?* NASA Science. https://science.nasa.gov/mission/voyager/where-are-voyager-1-and-voyager-2-now/
+
+NASA Jet Propulsion Laboratory. (n.d.-b). *Planetary satellite mean elements*. Solar System Dynamics. https://ssd.jpl.nasa.gov/sats/elem/
 
 NASA Space Science Data Coordinated Archive. (n.d.). *NSSDCA master catalog* [Data set]. National Aeronautics and Space Administration. https://nssdc.gsfc.nasa.gov/nmc/
 
@@ -600,6 +606,8 @@ Vegagerðin. (n.d.). *Road cameras* [Data set]. Icelandic Road and Coastal Admin
 
 video-dev. (n.d.). *hls.js* [Computer software]. GitHub. https://github.com/video-dev/hls.js
 
+Vienne, A., & Duriez, L. (1995). TASS1.7: Theory of the Saturnian satellites. *Astronomy and Astrophysics, 297*, 588–605. https://doi.org/10.1051/0004-6361:19950327
+
 Virtual Radar Server. (2026). *Standing data: Airlines, aircraft types, ICAO address blocks, airports and routes* [Data set]. GitHub. https://github.com/vradarserver/standing-data
 
 vis.gl contributors. (n.d.). *deck.gl* [Computer software]. GitHub. https://github.com/visgl/deck.gl
@@ -815,7 +823,11 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (D. R. Williams, n.d.) | Sizes, day and year lengths, gravity, temperatures and moon counts on the space cards. | Public domain (NASA) |
 | (Davies & Colvin, 2000) | Latitude and longitude of the six Apollo lunar modules, pinned on the Moon. | Published paper (facts cited) |
 | (NASA Space Science Data Coordinated Archive, n.d.) | Landing dates and places of the other Moon and Mars landers and rovers. | Public domain (NASA) |
-| (NASA Jet Propulsion Laboratory, n.d.) | Distances and speeds of Voyager 1 and 2, shown out beyond the planets in the solar system view. | Public domain (NASA) |
+| (Vienne & Duriez, 1995) | Where Mimas, Enceladus, Tethys, Dione, Rhea, Titan and Iapetus are, computed in the browser (v2.21). | Published theory |
+| (Laskar & Jacobson, 1987) | Where Miranda, Ariel, Umbriel, Titania and Oberon are, computed in the browser (v2.21). | Published theory |
+| (Gajdosik, 2005) | The code and coefficient tables the atlas translated to JavaScript (outermoons.js) for the moons of Saturn and Uranus. | MIT (these files) |
+| (NASA Jet Propulsion Laboratory, n.d.-b) | Triton’s orbit around Neptune (its place along the orbit is approximate). | Public domain (NASA) |
+| (NASA Jet Propulsion Laboratory, n.d.-a) | Distances and speeds of Voyager 1 and 2, shown out beyond the planets in the solar system view. | Public domain (NASA) |
 | (Johns Hopkins University Applied Physics Laboratory, n.d.) | Distance and speed of New Horizons, shown out beyond Pluto in the solar system view. | Reference (mission facts) |
 | (Espenak, n.d.) | The eclipse predictions the atlas’s own eclipse times were checked against. | Public domain (NASA) |
 | (Thomson, 1887) | The 19.47° half-angle of the V-shaped wake drawn behind moving ships. | Public domain (1887) |

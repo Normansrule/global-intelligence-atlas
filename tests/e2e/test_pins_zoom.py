@@ -17,7 +17,7 @@ PROBE="""async ([id, alt]) => {
 }"""
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800}); pg.route('**/*', handler)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@30,-40,2.2&b=bluemarble&l=ships,quakes,power', wait_until='commit'); pg.wait_for_timeout(15000)
     for id in ['ships', 'quakes', 'power']:
         got = {alt: pg.evaluate(PROBE, [id, alt]) for alt in [0.3, 0.05, 0.01, 0.002, 0.0005, 0.00009]}

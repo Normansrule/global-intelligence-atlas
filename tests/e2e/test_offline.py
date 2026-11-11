@@ -16,7 +16,7 @@ def route(r):
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); ctx=b.new_context(viewport={'width':1280,'height':800}, service_workers='allow')
     ctx.route('**/*', route)
-    ctx.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
+    ctx.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
     pg=ctx.new_page(); errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.goto(URL, wait_until='commit'); pg.wait_for_timeout(10000)
     live=pg.evaluate("() => ({ q: gia.state.data.quakes?.length ?? 0, note: gia.state.lstatus.quakes })")

@@ -4,6 +4,17 @@ Release notes for Global Intelligence Atlas (GIA), newest first. Versions before
 
 ---
 
+## 🌗 v2.21: moons of Saturn, Uranus and Neptune
+
+- **Thirteen more moons:** Mimas, Enceladus, Tethys, Dione, Rhea, Titan and Iapetus (Saturn), Miranda, Ariel, Umbriel, Titania and Oberon (Uranus) and Triton (Neptune), each drawn at its real size with a map from NASA 3D Resources, its facts from NASA's fact sheets, a label, its orbit (with Orbits on) and a card. A planet's card lists its big moons to fly to; a moon's card offers its planet and its sisters.
+- **Real positions:** new `outermoons.js` computes Saturn's moons with TASS 1.7 (Vienne and Duriez, 1995) and Uranus's with GUST86 (Laskar and Jacobson, 1987), translated from Johannes Gajdosik's MIT-licensed C compilation in Stellarium by the new `tools/build-outermoons.py`, then turned from the ecliptic into the J2000 equator frame the rest of the space view uses. Triton follows fixed JPL osculating elements for June 2008; its orbit plane slowly turns, so its place is approximate and its card says so. The file (about 35 kB compressed) loads only when Saturn, Uranus or Neptune is close enough for its moons to show.
+- **Honest maps:** where Voyager 2 never photographed a moon (the northern halves of Uranus's moons, most of Triton) the NASA maps were black, which looked like night; those parts are now plain grey, and the cards say what the grey means. Titan's map, a rendering of its haze, is toned down towards its real colour and lit like a world with air.
+- **Planets on busy devices:** the space view started only when the browser had an idle moment, which a slow or busy device might never have, so the planets could stay missing; it now starts within 5 seconds regardless.
+- **Repository fixes:** the desktop app build failed on Windows because one flight-route file was named `CON.json`, a name Windows reserves; Windows-reserved airline codes now get a leading underscore (`_CON.json`; `build-flightdb.py` and `flightdb.js` agree). The Tests workflow failed since early November because the News tab test had grown to 28 checks while the workflow still expected 25; it now requires all checks to pass, whatever their number. The offline pack (`offline-pack.json`) was rebuilt: it was missing the files added since v2.14, such as the close-up and tilt code.
+- **Under the hood:** new `tests/e2e/test_v221.py` (21 checks: no Windows-reserved names, the offline pack, the start without an idle moment, each moon's distance, the planes of the orbits, Triton going backwards, Titan's period, loading on demand, cards and chips, every moon drawn and mapped, orbits). The first visit grows by about 3.9 kB compressed (the moons' facts and names in `bodies.js` and `cosmos.js`, and the new references); the moons' positions code (35 kB) and maps load only when needed.
+
+---
+
 ## 🪐 v2.20: the whole solar system
 
 - **Space opens on the solar system:** the planet button (and Explore → The solar system, and links with `&sp=system`) now open a view from about 100 astronomical units (AU) out, 55° above the plane of the planets with the Earth towards you, instead of flying straight to the Moon. Every planet and Pluto sits where Astronomy Engine puts it for the atlas clock, on its orbit, as a dot with its name (the Earth too). Drag to turn, right-drag or two fingers to slide, scroll to zoom (out to 400 AU); click a planet or its name to fly there. The card lists each planet's distance from the Sun and how long its sunlight takes.

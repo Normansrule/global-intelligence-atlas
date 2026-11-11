@@ -61,7 +61,7 @@ import { isOffline, servedSince } from './lastknown.js'; // offline mode
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.20';
+export const VERSION = '2.21';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg, unitSvg } from './icons.js';
@@ -1961,7 +1961,12 @@ if (NEW_VERSION) { if (!state.pendingSel && !state.pendingSpace) setTimeout(what
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>The whole solar system</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>Moons of Saturn, Uranus and Neptune</h3>
+    <div class="newlist">
+      <span>${g('moon', '#d9a964')}<b>13 more moons:</b> Titan, Enceladus, Mimas, Tethys, Dione, Rhea and Iapetus round Saturn; Miranda, Ariel, Umbriel, Titania and Oberon round Uranus; and Triton round Neptune. Each one is where it really is now (from the TASS 1.7 and GUST86 theories), with its NASA map, its facts, and buttons on its planet's card to fly between them. Where no spacecraft has photographed a moon, its map is plain grey.</span>
+      <span>${g('bolt', '#ffe066')}<b>Planets on slow devices:</b> the planets now appear within 5 seconds even when the device is busy the whole time.</span>
+    </div>
+    <h4>From v2.20: the whole solar system</h4>
     <div class="newlist">
       <span>${g('moon', '#ffd27a')}<b>Space opens on the solar system:</b> press the planet button and you see every planet where it is today, with its orbit, from above. Drag to turn, right-drag (or two fingers) to slide, scroll to zoom, and click any planet to fly there. The card lists how far each one is from the Sun and how long its sunlight takes.</span>
       <span>${g('sat', '#a9c2e6')}<b>The belts and the farthest spacecraft:</b> the asteroid belt, with the gaps Jupiter's pull clears, and the Kuiper belt beyond Neptune, each rock turning at its own speed with the time machine. Zoom out to find Voyager 1 and 2 and New Horizons; click one for how far it is and how long a radio signal takes.</span>

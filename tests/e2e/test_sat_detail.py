@@ -26,7 +26,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler); pg.route('https://celestrak.org/satcat/**', satcat); pg.route('https://celestrak.org/NORAD/elements/gp.php?GROUP=gps-ops*', gps)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@20,0,3.2&l=borders,stations,satellites', wait_until='commit'); pg.wait_for_timeout(12000); pg.evaluate("() => gia.toggleLayer('satellites', true)"); pg.wait_for_timeout(5000)
     f=pg.evaluate("""async () => { const m = await import('./js/satdetail.js');
       return { p: [m.purposeOf('ISS (ZARYA)').word, m.purposeOf('STARLINK-1007').word, m.purposeOf('NAVSTAR 81 (USA 319)').word, m.purposeOf('NOAA 19').word, m.purposeOf('SL-16 R/B').word, m.purposeOf('FOO 1', 'Geostationary').word],

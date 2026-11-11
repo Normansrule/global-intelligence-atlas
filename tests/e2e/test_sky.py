@@ -4,7 +4,7 @@ import json
 # v2.13: clouds, rain, snow, lightning and fire smoke drawn physically from the weather grid and FIRMS (skyfx.js).
 res=[]
 def check(name, ok, info=''): res.append((name, bool(ok))); print(('PASS ' if ok else 'FAIL ')+name, info)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}"
 W=json.loads(WEATHER)
 LAYER="async () => (await import('./js/layers.js')).layerById.skyfx"
 L=lambda expr: "async () => { const l = await ("+LAYER+")(); return "+expr+"; }"

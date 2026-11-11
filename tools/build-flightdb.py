@@ -96,7 +96,10 @@ for f in glob.glob(f'{SRC}/routes/schema-01/*/*.csv'):
         routes.setdefault(code, {})[num] = '-'.join(format(i, 'x') for i in idx)
 dump('airports.json', {'fields': ['icao', 'iata', 'name', 'city', 'cc', 'lat', 'lng'], 'rows': [apt[a] for a in sorted(used, key=used.get)]})
 for old in glob.glob(os.path.join(OUT, 'routes', '*.json')): os.remove(old)
-for code, m in routes.items(): dump(f'routes/{code}.json', m)
+# Windows cannot have a file called CON, PRN, AUX, NUL, COM1-9 or LPT1-9 (any extension), so a checkout there fails:
+# those airline codes get a leading underscore (flightdb.js routeFile() does the same).
+WIN_RESERVED = {'CON', 'PRN', 'AUX', 'NUL', *(f'COM{i}' for i in range(1, 10)), *(f'LPT{i}' for i in range(1, 10))}
+for code, m in routes.items(): dump(f"routes/{'_' if code.upper() in WIN_RESERVED else ''}{code}.json", m)
 # Per airport, every scheduled nonstop leg out of it: [destination index, flight numbers, up to four airlines by count].
 legs = {}
 for code, m in routes.items():

@@ -8,7 +8,7 @@
 //   PACK     "Save everything for offline" (Tools → Offline kit): every bundled file in app/data/offline-pack.json
 //   TILES    OpenStreetMap and NASA GIBS map tiles you have already looked at, the newest 3,000
 // Only GET answers with res.ok are kept: same-origin ones, plus CORS (never opaque) tiles from TILE_HOSTS.
-const VERSION = 'global-intelligence-atlas-v2.20';
+const VERSION = 'global-intelligence-atlas-v2.21';
 const PACK = 'gia-offline-pack';
 const TILES = 'gia-offline-tiles';
 const KEEP = new Set([VERSION, PACK, TILES]);

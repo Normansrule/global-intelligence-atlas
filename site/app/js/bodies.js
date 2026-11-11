@@ -75,14 +75,79 @@ export const BODIES = [
     about: 'Its rings are billions of pieces of water ice, from grains to house-sized blocks, yet mostly just tens of metres thick. They are drawn at their real tilt, with Saturn’s shadow falling across them.',
   },
   {
+    id: 'mimas', name: 'Mimas', kind: 'Moon of Saturn', r: 198.2, tex: 'mimas.jpg', dot: '#cfcac2', credit: 'nasa3d', airless: 1, parent: 'saturn', glyph: '●',
+    facts: [['Radius', '198 km'], ['Orbits Saturn in', '22.6 hours'], ['Biggest crater', 'Herschel, 130 km']],
+    about: 'Small and icy, with one giant crater a third as wide as the moon itself.',
+  },
+  {
+    id: 'enceladus', name: 'Enceladus', kind: 'Moon of Saturn', r: 252.1, tex: 'enceladus.jpg', dot: '#f4f6f8', credit: 'nasa3d', airless: 1, parent: 'saturn', glyph: '●',
+    facts: [['Radius', '252 km'], ['Orbits Saturn in', '1.4 days'], ['Reflects', 'about 99 % of sunlight']],
+    about: 'Jets of water from an ocean under the ice spray out of cracks at its south pole and feed one of Saturn’s rings. Cassini flew through them.',
+  },
+  {
+    id: 'tethys', name: 'Tethys', kind: 'Moon of Saturn', r: 531.1, tex: 'tethys.jpg', dot: '#e3e0da', credit: 'nasa3d', airless: 1, parent: 'saturn', glyph: '●',
+    facts: [['Radius', '531 km'], ['Orbits Saturn in', '1.9 days'], ['Canyon', 'Ithaca Chasma, 2,000 km long']],
+    about: 'Almost pure water ice, with a crater (Odysseus) 450 km across and a canyon running most of the way round.',
+  },
+  {
+    id: 'dione', name: 'Dione', kind: 'Moon of Saturn', r: 561.4, tex: 'dione.jpg', dot: '#d9d6cf', credit: 'nasa3d', airless: 1, parent: 'saturn', glyph: '●',
+    facts: [['Radius', '561 km'], ['Orbits Saturn in', '2.7 days'], ['Wispy lines', 'ice cliffs hundreds of metres high']],
+    about: 'Its bright streaks, once thought to be frost, turned out to be ice cliffs where the crust has cracked.',
+  },
+  {
+    id: 'rhea', name: 'Rhea', kind: 'Moon of Saturn', r: 763.8, tex: 'rhea.jpg', dot: '#d4d0c8', credit: 'nasa3d', airless: 1, parent: 'saturn', glyph: '●',
+    facts: [['Radius', '764 km'], ['Orbits Saturn in', '4.5 days'], ['Rank', 'Saturn’s second-largest moon']],
+    about: 'A cold, heavily cratered ball of ice and rock.',
+  },
+  {
+    id: 'titan', name: 'Titan', kind: 'Moon of Saturn', r: 2574.7, tex: 'titan.jpg', dot: '#d9a964', credit: 'nasa3d', parent: 'saturn', glyph: '●', atm: [0.9, 0.62, 0.32, 0.35],
+    facts: [['Radius', '2,575 km (bigger than Mercury)'], ['Orbits Saturn in', '16 days'], ['Air at the ground', '1.5 times Earth’s'], ['Surface', '−179 °C']],
+    about: 'The only moon with thick air, an orange smog of nitrogen and methane hiding rivers, lakes and seas of liquid methane. ESA’s Huygens landed in 2005; NASA’s Dragonfly drone is due in 2034.',
+  },
+  {
+    id: 'iapetus', name: 'Iapetus', kind: 'Moon of Saturn', r: 734.5, tex: 'iapetus.jpg', dot: '#a8998a', credit: 'nasa3d', airless: 1, parent: 'saturn', glyph: '●',
+    facts: [['Radius', '735 km'], ['Orbits Saturn in', '79 days'], ['Equatorial ridge', 'up to 20 km high']],
+    about: 'Two-faced: the side leading round its orbit is as dark as coal, the other as bright as snow.',
+  },
+  {
     id: 'uranus', name: 'Uranus', kind: 'Planet', r: 25362, flat: 0.9771, tex: 'uranus.jpg', dot: '#a9e1e8', credit: 'sss', atm: [0.6, 0.9, 1.0, 0.35], glyph: '⛢',
     facts: [['Radius', '25,362 km (4 Earths)'], ['Day', '17 h 14 min (backwards)'], ['Year', '84 years'], ['Tilt', '98°: it rolls on its side'], ['Cloud tops', '−195 °C'], ['Moons', '28']],
     about: 'An ice giant knocked onto its side, probably by a giant collision, so each pole gets 42 years of sunlight and then 42 years of night. Only Voyager 2 has visited, in 1986.',
   },
   {
+    id: 'miranda', name: 'Miranda', kind: 'Moon of Uranus', r: 235.8, tex: 'miranda.jpg', dot: '#c9c6c2', credit: 'nasa3d', airless: 1, parent: 'uranus', glyph: '●',
+    facts: [['Radius', '236 km'], ['Orbits Uranus in', '1.4 days'], ['Tallest cliff', 'Verona Rupes, about 20 km']],
+    about: 'A patchwork of grooves and cliffs that looks pieced together. Voyager 2 flew past in 1986 and photographed only the half facing the Sun then; the plain grey on this map is the part no spacecraft has seen.',
+  },
+  {
+    id: 'ariel', name: 'Ariel', kind: 'Moon of Uranus', r: 578.9, tex: 'ariel.jpg', dot: '#cdc9c3', credit: 'nasa3d', airless: 1, parent: 'uranus', glyph: '●',
+    facts: [['Radius', '579 km'], ['Orbits Uranus in', '2.5 days'], ['Surface', 'the youngest of Uranus’s big moons']],
+    about: 'Criss-crossed by valleys where its icy crust has pulled apart. Voyager 2 flew past in 1986 and photographed only the half facing the Sun then; the plain grey on this map is the part no spacecraft has seen.',
+  },
+  {
+    id: 'umbriel', name: 'Umbriel', kind: 'Moon of Uranus', r: 584.7, tex: 'umbriel.jpg', dot: '#8f8a84', credit: 'nasa3d', airless: 1, parent: 'uranus', glyph: '●',
+    facts: [['Radius', '585 km'], ['Orbits Uranus in', '4.1 days'], ['Brightness', 'the darkest of Uranus’s big moons']],
+    about: 'Old, dark and covered in craters, with one bright ring near its pole. Voyager 2 flew past in 1986 and photographed only the half facing the Sun then; the plain grey on this map is the part no spacecraft has seen.',
+  },
+  {
+    id: 'titania', name: 'Titania', kind: 'Moon of Uranus', r: 788.9, tex: 'titania.jpg', dot: '#c4bdb4', credit: 'nasa3d', airless: 1, parent: 'uranus', glyph: '●',
+    facts: [['Radius', '789 km'], ['Orbits Uranus in', '8.7 days'], ['Rank', 'Uranus’s largest moon']],
+    about: 'Cut by canyons up to 1,500 km long. Voyager 2 flew past in 1986 and photographed only the half facing the Sun then; the plain grey on this map is the part no spacecraft has seen.',
+  },
+  {
+    id: 'oberon', name: 'Oberon', kind: 'Moon of Uranus', r: 761.4, tex: 'oberon.jpg', dot: '#b5aca2', credit: 'nasa3d', airless: 1, parent: 'uranus', glyph: '●',
+    facts: [['Radius', '761 km'], ['Orbits Uranus in', '13.5 days'], ['Rank', 'the outermost of the big five']],
+    about: 'Old and cratered, with dark patches on some crater floors. Voyager 2 flew past in 1986 and photographed only the half facing the Sun then; the plain grey on this map is the part no spacecraft has seen.',
+  },
+  {
     id: 'neptune', name: 'Neptune', kind: 'Planet', r: 24622, flat: 0.9829, tex: 'neptune.jpg', dot: '#6f8ff0', credit: 'sss', atm: [0.45, 0.6, 1.0, 0.35], glyph: '♆',
     facts: [['Radius', '24,622 km (4 Earths)'], ['Day', '16 h 6 min'], ['Year', '165 years'], ['Fastest winds', '2,100 km/h'], ['Cloud tops', '−200 °C'], ['Moons', '16']],
     about: 'The farthest planet: dark, cold and swept by the fastest winds measured anywhere in the solar system. It was found in 1846 from the pull it had on Uranus, before anyone saw it.',
+  },
+  {
+    id: 'triton', name: 'Triton', kind: 'Moon of Neptune', r: 1353.4, tex: 'triton.jpg', dot: '#d9c9c0', credit: 'nasa3d', airless: 1, parent: 'neptune', glyph: '●',
+    facts: [['Radius', '1,353 km'], ['Orbits Neptune in', '5.9 days, backwards'], ['Surface', '−235 °C'], ['Geysers', 'nitrogen, 8 km high']],
+    about: 'The only big moon that goes round its planet backwards, so it was probably a Kuiper belt world that Neptune captured. Voyager 2 saw nitrogen geysers in 1989, on the part shown here; the plain grey is the part no spacecraft has seen. Its place on its orbit is approximate.',
   },
   {
     id: 'pluto', name: 'Pluto', kind: 'Dwarf planet', r: 1188.3, tex: 'pluto.jpg', dot: '#d8c3a8', credit: 'sss', airless: 1, glyph: '♇',

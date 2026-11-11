@@ -126,10 +126,12 @@ export function registeredIn(hex) {
 }
 const airportOf = (i) => { const r = T.airports[i]; return r && { icao: r[0], iata: r[1], name: r[2], city: r[3], cc: r[4], lat: r[5], lng: r[6], country: T.countries[r[4]] ?? r[4] }; };
 const routeFiles = new Map();
+/** The route file of an airline; Windows-reserved names (CON, PRN, AUX, NUL, COM1–9, LPT1–9) carry a leading underscore. */
+export const routeFile = (code) => `${/^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i.test(code) ? '_' : ''}${code}.json`;
 /** The scheduled route for a callsign: a list of airports (two, or more for a multi-stop flight), or null. */
 export async function scheduledRoute(call) {
   const d = decodeCall(call); if (!d) return null;
-  if (!routeFiles.has(d.code)) routeFiles.set(d.code, getLocal(`${BASE}routes/${d.code}.json`).catch(() => null));
+  if (!routeFiles.has(d.code)) routeFiles.set(d.code, getLocal(`${BASE}routes/${routeFile(d.code)}`).catch(() => null));
   const m = await routeFiles.get(d.code); if (!m) return null;
   const chain = m[d.number] ?? m[d.number.replace(/^0+(?=\d)/, '')]; if (!chain) return null;
   return chain.split('-').map((x) => airportOf(parseInt(x, 16))).filter(Boolean);

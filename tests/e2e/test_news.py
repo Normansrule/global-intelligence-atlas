@@ -30,7 +30,7 @@ def pic(route):
 embeds=[]
 def yt(route): embeds.append(route.request.url); return route.fulfill(status=200, body='<html><body>player</body></html>', headers={'Content-Type':'text/html'})
 def m3u8(route): return route.fulfill(status=200, body='#EXTM3U\n', headers={'Content-Type':'application/vnd.apple.mpegurl','Access-Control-Allow-Origin':'*'})
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.20');localStorage.setItem('global-intelligence-atlas-section','layers')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.21');localStorage.setItem('global-intelligence-atlas-section','layers')}catch(e){}"
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS)
     pg=b.new_page(viewport={'width':1440,'height':900}); errs=[]

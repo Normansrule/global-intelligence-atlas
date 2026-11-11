@@ -1282,3 +1282,7 @@ body.in-space #globe { cursor: grab; }
 .sys-table td { padding: 5px 6px; border-bottom: 1px solid var(--line); }
 .sys-table td .linkish { display: inline-flex; align-items: center; gap: 7px; min-height: 24px; font-weight: 600; }
 .sys-table td .linkish i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); box-shadow: 0 0 6px var(--c); }
+/* v2.21 a planet's big moons on its space card */
+.moon-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.moon-chips .chip { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; }
+.moon-chips .chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }

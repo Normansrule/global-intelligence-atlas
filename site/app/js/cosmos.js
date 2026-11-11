@@ -27,9 +27,16 @@ import { LANDINGS } from './landings.js';
 const D2R = Math.PI / 180;
 const R = 100; const KM = R / 6371.0088; // scene units per km
 const AU = 149597870.7 * KM;
-const ORDER = ['sun', 'mercury', 'venus', 'earth', 'moon', 'mars', 'jupiter', 'io', 'europa', 'ganymede', 'callisto', 'saturn', 'uranus', 'neptune', 'pluto'];
+// v2.21 the big moons of Saturn, Uranus and Neptune (positions from outermoons.js, loaded when first needed)
+const SATURNIAN = ['mimas', 'enceladus', 'tethys', 'dione', 'rhea', 'titan', 'iapetus'];
+const URANIAN = ['miranda', 'ariel', 'umbriel', 'titania', 'oberon'];
+const ORDER = ['sun', 'mercury', 'venus', 'earth', 'moon', 'mars', 'jupiter', 'io', 'europa', 'ganymede', 'callisto', 'saturn', ...SATURNIAN, 'uranus', ...URANIAN, 'neptune', 'triton', 'pluto'];
 const BAR = ['sun', 'mercury', 'venus', 'earth', 'moon', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
 const GALILEAN = ['io', 'europa', 'ganymede', 'callisto'];
+const OUTER = [...SATURNIAN, ...URANIAN, 'triton'];
+const MOONS_OF = { jupiter: GALILEAN, saturn: SATURNIAN, uranus: URANIAN, neptune: ['triton'] };
+/** The planet a moon goes round (not the Earth's Moon), or null. */
+const hostOf = (id) => { for (const p in MOONS_OF) if (MOONS_OF[p].includes(id)) return p; return null; };
 const PERIOD = { mercury: 87.97, venus: 224.7, mars: 686.98, jupiter: 4332.6, saturn: 10759, uranus: 30685, neptune: 60190, pluto: 90560, earth: 365.256 };
 const MOON_PERIOD = { io: 1.769, europa: 3.551, ganymede: 7.155, callisto: 16.69 };
 
@@ -257,6 +264,15 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
   // Orbits: the planets' paths around the Sun (one line set), the Moon's around the Earth, Jupiter's moons around Jupiter.
   const orbitMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.38, depthWrite: false });
   const helio = new THREE.Group(); const jovian = new THREE.Group(); eqj.add(helio); eqj.add(jovian);
+  const moonOrbits = { saturn: new THREE.Group(), uranus: new THREE.Group(), neptune: new THREE.Group() }; for (const g of Object.values(moonOrbits)) eqj.add(g);
+  // v2.21 outermoons.js (about 35 kB compressed): fetched the first time Saturn, Uranus or Neptune is close enough for
+  // its moons to show, or you fly to one of them.
+  let OM = null; let omLoading = false; let outerOrbitsBuilt = false;
+  const wantOuter = () => ['saturn', 'uranus', 'neptune'].some((p) => B[p].px > 3 || st.focus === p || hostOf(st.focus) === p);
+  function loadOuter() {
+    if (OM || omLoading) return; omLoading = true;
+    import('./outermoons.js').then((m) => { OM = m; compute(); if (orbitsBuilt && st.t) buildOuterOrbits(st.t); wake?.(); }).catch(() => { omLoading = false; });
+  }
   let orbitsBuilt = false;
 
   // v2.20 the asteroid belt and the Kuiper belt: where they really are (2.1–3.3 AU, with the Kirkwood gaps that
@@ -301,8 +317,22 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     }, 360));
     eqj.add(make(['moon'], (_id, f) => { const v = A.GeoMoon(A.MakeTime(ut + (f - 0.5) * 27.32)); return [v.x * AU, v.y * AU, v.z * AU]; }, 240));
     jovian.add(make(GALILEAN, (id, f) => { const v = A.JupiterMoons(A.MakeTime(ut + (f - 0.5) * MOON_PERIOD[id]))[id]; return [v.x * AU, v.y * AU, v.z * AU]; }, 160));
+    if (OM) buildOuterOrbits(t);
   }
-  const orbitLines = () => [...helio.children.filter((o) => !o.isPoints), ...jovian.children, ...eqj.children.filter((o) => o.isLineSegments)];
+  function buildOuterOrbits(t) {
+    if (outerOrbitsBuilt || !OM) return; outerOrbitsBuilt = true;
+    const make = (ids, sample) => {
+      const pos = []; const col = [];
+      for (const id of ids) { const c = hexRgb(BODY[id].dot); let prev = null; for (let i = 0; i <= 160; i++) { const v = sample(id, i / 160); if (prev) { pos.push(...prev, ...v); col.push(...c, ...c); } prev = v; } }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+      const l = new THREE.LineSegments(g, orbitMat); l.frustumCulled = false; return l;
+    };
+    const jd = t.tt + 2451545.0; const at = (fn, id, f) => { const v = fn(jd + (f - 0.5) * OM.PERIOD[id]); const w = Array.isArray(v) ? v : v[id]; return [w[0] * AU, w[1] * AU, w[2] * AU]; };
+    moonOrbits.saturn.add(make(SATURNIAN, (id, f) => at(OM.saturnMoons, id, f)));
+    moonOrbits.uranus.add(make(URANIAN, (id, f) => at(OM.uranusMoons, id, f)));
+    moonOrbits.neptune.add(make(['triton'], (id, f) => at(OM.triton, id, f)));
+  }
+  const orbitLines = () => [...helio.children.filter((o) => !o.isPoints), ...jovian.children, ...Object.values(moonOrbits).flatMap((g) => g.children), ...eqj.children.filter((o) => o.isLineSegments)];
 
   // ---------------------------------------------------------------- where everything is
   const F = new THREE.Matrix4(); const Finv = new THREE.Matrix4();
@@ -345,20 +375,26 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
       const b = B[id]; if (id === 'earth') { b.pos.set(0, 0, 0); continue; }
       let v;
       if (id === 'moon') v = A.GeoMoon(t);
-      else if (GALILEAN.includes(id)) continue;
+      else if (hostOf(id)) continue;
       else v = A.GeoVector(name(id), t, true);
       b.pos.set(v.x * AU, v.y * AU, v.z * AU);
       try { const ax = A.RotationAxis(name(id), t); orient(b, ax.north, ax.spin); } catch { b.basis.identity(); }
     }
     const jm = A.JupiterMoons(t); const jp = B.jupiter;
     jovian.position.copy(jp.pos); jovian.updateMatrix();
-    for (const id of GALILEAN) {
-      const b = B[id]; const v = jm[id]; b.pos.set(v.x * AU, v.y * AU, v.z * AU).add(jp.pos);
-      // Tidally locked: longitude 0 faces Jupiter; the pole is Jupiter's.
-      const north = new THREE.Vector3().setFromMatrixColumn(jp.basis, 1);
-      const toJ = tmp2.copy(jp.pos).sub(b.pos); toJ.addScaledVector(north, -toJ.dot(north)).normalize();
+    // v2.21 Saturn's, Uranus's and Neptune's moons, once outermoons.js is here (until then they are not drawn)
+    const jd = t.tt + 2451545.0; const om = OM ? { ...OM.saturnMoons(jd), ...OM.uranusMoons(jd), triton: OM.triton(jd) } : null;
+    for (const p of ['saturn', 'uranus', 'neptune']) { const g = moonOrbits[p]; g.position.copy(B[p].pos); g.updateMatrix(); }
+    for (const id of [...GALILEAN, ...OUTER]) {
+      const p = hostOf(id); const pp = B[p]; const b = B[id]; const v = GALILEAN.includes(id) ? jm[id] : om?.[id];
+      b.hidden = !v; if (!v) { b.pos.copy(pp.pos); continue; }
+      b.pos.set((v.x ?? v[0]) * AU, (v.y ?? v[1]) * AU, (v.z ?? v[2]) * AU).add(pp.pos);
+      // Tidally locked: longitude 0 faces the planet; the pole is the planet's (near enough for these moons).
+      const north = new THREE.Vector3().setFromMatrixColumn(pp.basis, 1);
+      const toJ = tmp2.copy(pp.pos).sub(b.pos); toJ.addScaledVector(north, -toJ.dot(north)).normalize();
       b.basis.makeBasis(toJ, north, new THREE.Vector3().crossVectors(toJ, north));
     }
+    if (!OM && wantOuter()) loadOuter();
     const sp = B.sun.pos; helio.position.copy(sp); helio.updateMatrix();
     for (const id of ORDER) place(B[id]);
     // Saturn's rings share Saturn's frame (without its slight squash).
@@ -404,15 +440,15 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     for (const id of ORDER) {
       const b = B[id]; toWorld(b.pos, bodyWorld); const dist = bodyWorld.distanceTo(camWorld); b.dist = dist; b.px = pxRadius(b.r, dist);
       if (b.mesh) {
-        b.mesh.visible = !!showBodies && b.px > 1.2;
+        b.mesh.visible = !!showBodies && b.px > 1.2 && !b.hidden;
         if (b.mesh.visible) {
           if (b.px > 2.5 || st.focus === id) loadTex(b);
           const u = b.mesh.material.uniforms; u.uT.value = reduceMotion ? 0 : t;
           u.sunV.value.copy(sunWorld).sub(bodyWorld).normalize().applyMatrix3(viewRot);
           u.mix2.value = id === 'venus' && st.venusSurface ? 1 : 0;
-          const occ = id === 'moon' ? 'earth' : GALILEAN.includes(id) ? 'jupiter' : null;
+          const occ = id === 'moon' ? 'earth' : hostOf(id);
           if (occ) {
-            const o = occ === 'earth' ? occW.set(0, 0, 0) : toWorld(B.jupiter.pos, occW);
+            const o = occ === 'earth' ? occW.set(0, 0, 0) : toWorld(B[occ].pos, occW);
             u.occV.value.copy(o).sub(camWorld).applyMatrix3(viewRot);
             u.occR.value = B[occ].r * (occ === 'earth' ? 1.02 : 1); // the air makes the Earth's shadow about 2 % wider
             u.sunAng.value = B.sun.r / B.sun.pos.distanceTo(b.pos);
@@ -422,10 +458,10 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
       const k = DOTS.indexOf(id);
       if (k >= 0) {
         pos[k * 3] = b.pos.x; pos[k * 3 + 1] = b.pos.y; pos[k * 3 + 2] = b.pos.z;
-        size[k] = id === 'moon' ? 7 : GALILEAN.includes(id) ? 3.2 : id === 'pluto' ? 3 : id === 'venus' || id === 'jupiter' ? 7.5 : id === 'earth' ? 6.5 : 5.5;
-        alpha[k] = showBodies ? (1 - smooth(1.2, 4, b.px)) * (GALILEAN.includes(id) ? smooth(4, 40, B.jupiter.px) : 1) : 0;
+        size[k] = id === 'moon' ? 7 : GALILEAN.includes(id) || id === 'titan' || id === 'triton' ? 3.2 : hostOf(id) ? 2.6 : id === 'pluto' ? 3 : id === 'venus' || id === 'jupiter' ? 7.5 : id === 'earth' ? 6.5 : 5.5;
+        alpha[k] = showBodies && !b.hidden ? (1 - smooth(1.2, 4, b.px)) * (hostOf(id) ? smooth(4, 40, B[hostOf(id)].px) : 1) : 0;
         if (id === 'earth') alpha[k] = st.focus ? 1 - smooth(1.2, 4, b.px) : 0; // on the globe the Earth is the globe
-        if (st.focus === 'system' && (id === 'moon' || GALILEAN.includes(id))) alpha[k] *= 0.35; // moons sit on their planets out here
+        if (st.focus === 'system' && (id === 'moon' || hostOf(id))) alpha[k] *= 0.35; // moons sit on their planets out here
       }
     }
     dotGeo.attributes.position.needsUpdate = true; dotGeo.attributes.aSize.needsUpdate = true; dotGeo.attributes.aAlpha.needsUpdate = true;
@@ -638,7 +674,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     for (const id of ORDER) {
       const el = L[id]; const b = B[id];
       let vis = show && !st.fly && id !== st.focus && !(id === 'earth' && !exploring);
-      if (vis && GALILEAN.includes(id)) vis = exploring && (st.focus === 'jupiter' || GALILEAN.includes(st.focus)) && B.jupiter.px > 30;
+      if (vis && hostOf(id)) vis = !B[id].hidden && exploring && (st.focus === hostOf(id) || hostOf(st.focus) === hostOf(id)) && B[hostOf(id)].px > 12;
       if (vis && id === 'moon' && st.focus === 'system') vis = false; // out here it sits on the Earth's label
       if (vis) {
         const p = id === 'earth' ? tmp.set(0, 0, 0) : toWorld(b.pos, tmp);
@@ -774,7 +810,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     if (!id) { // v2.20 a click near a body's dot flies there too (out in the solar system the bodies are dots)
       let best = 18; for (const k of ORDER) { const p = k === 'earth' ? tmp.set(0, 0, 0) : toWorld(B[k].pos, tmp); ndc.copy(p).project(cam); if (ndc.z > 1) continue;
         const dx = (ndc.x + 1) / 2 * rect.width - (e.clientX - rect.left); const dy = (1 - ndc.y) / 2 * rect.height - (e.clientY - rect.top); const dd = Math.hypot(dx, dy);
-        if (dd < best && !(st.focus === 'system' && (k === 'moon' || GALILEAN.includes(k)))) { best = dd; id = k; } }
+        if (dd < best && !(st.focus === 'system' && (k === 'moon' || hostOf(k)))) { best = dd; id = k; } }
     }
     if (id && id !== st.focus) explore(id);
   });
@@ -786,7 +822,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     barEl.hidden = !st.focus;
     if (!st.focus) return;
     const nm = st.focus === 'system' ? 'the solar system' : BODY[st.focus].name;
-    barEl.innerHTML = `<button class="sb-home" data-space="earth" title="Back to the globe">${ui('back')}Earth</button><div class="sb-list"><button data-space="system" aria-pressed="${st.focus === 'system'}" title="The whole solar system"><i style="--c:#ffd27a;box-shadow:0 0 0 2px rgba(255,210,122,.35)"></i>Solar system</button>${BAR.filter((id) => id !== 'earth').map((id) => `<button data-space="${id}" aria-pressed="${st.focus === id || (id === 'jupiter' && GALILEAN.includes(st.focus))}" title="${esc(BODY[id].name)}"><i style="--c:${BODY[id].dot}"></i>${esc(BODY[id].name)}</button>`).join('')}</div><button class="sb-orbits" aria-pressed="${st.orbits}" title="Show the orbits">Orbits</button>${LANDINGS[st.focus] ? `<button class="sb-sites" aria-pressed="${st.sites}" title="Show where spacecraft landed">Landings</button>` : ''}<button class="sb-info" data-space-card="1" title="About ${esc(nm)}" aria-label="About ${esc(nm)}">ⓘ</button>`;
+    barEl.innerHTML = `<button class="sb-home" data-space="earth" title="Back to the globe">${ui('back')}Earth</button><div class="sb-list"><button data-space="system" aria-pressed="${st.focus === 'system'}" title="The whole solar system"><i style="--c:#ffd27a;box-shadow:0 0 0 2px rgba(255,210,122,.35)"></i>Solar system</button>${BAR.filter((id) => id !== 'earth').map((id) => `<button data-space="${id}" aria-pressed="${st.focus === id || hostOf(st.focus) === id}" title="${esc(BODY[id].name)}"><i style="--c:${BODY[id].dot}"></i>${esc(BODY[id].name)}</button>`).join('')}</div><button class="sb-orbits" aria-pressed="${st.orbits}" title="Show the orbits">Orbits</button>${LANDINGS[st.focus] ? `<button class="sb-sites" aria-pressed="${st.sites}" title="Show where spacecraft landed">Landings</button>` : ''}<button class="sb-info" data-space-card="1" title="About ${esc(nm)}" aria-label="About ${esc(nm)}">ⓘ</button>`;
   }
   barEl.addEventListener('click', (e) => {
     if (e.target.closest('.sb-orbits')) { st.orbits = !st.orbits; if (st.orbits && !orbitsBuilt && st.t) buildOrbits(st.t); bar(); wake?.(); }
@@ -799,11 +835,11 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     if (id === 'sun' || id === 'moon') { const n = nextEclipse(id); if (n) rows.push(['Next eclipse', n]); }
     if (id !== 'sun' && id !== 'earth') {
       try {
-        const il = A.Illumination(name(GALILEAN.includes(id) ? 'jupiter' : id), t);
-        if (!GALILEAN.includes(id)) rows.push(['Brightness in our sky', `magnitude ${il.mag.toFixed(1)}`]);
+        const il = A.Illumination(name(hostOf(id) ?? id), t);
+        if (!hostOf(id)) rows.push(['Brightness in our sky', `magnitude ${il.mag.toFixed(1)}`]);
         if (id === 'moon' || id === 'venus' || id === 'mercury') rows.push(['Lit side facing us', `${Math.round(il.phase_fraction * 100)} %`]);
       } catch { /* not every body has a magnitude model */ }
-      try { const eq = A.Equator(name(GALILEAN.includes(id) ? 'jupiter' : id), t, new A.Observer(0, 0, 0), false, true); rows.push(['In front of the stars of', A.Constellation(eq.ra, eq.dec).name]); } catch { /* ignore */ }
+      try { const eq = A.Equator(name(hostOf(id) ?? id), t, new A.Observer(0, 0, 0), false, true); rows.push(['In front of the stars of', A.Constellation(eq.ra, eq.dec).name]); } catch { /* ignore */ }
     }
     return rows;
   }
@@ -811,16 +847,20 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     const d = BODY[id];
     const credit = { sss: 'Map: Solar System Scope, from NASA imagery (Creative Commons Attribution 4.0)', nasa3d: 'Map: NASA 3D Resources, from Voyager and Galileo images (public domain)', bluemarble: 'Map: NASA Blue Marble and Black Marble (public domain)' }[d.credit];
     const venus = id === 'venus' ? `<button class="btn ghost" data-space-venus="1" aria-pressed="${st.venusSurface}">${st.venusSurface ? 'Show the clouds' : 'See the surface (radar)'}</button>` : '';
+    // v2.21 a planet's card lists its big moons, a moon's card offers its planet and its sisters
+    const fam = MOONS_OF[id] ?? MOONS_OF[hostOf(id)] ?? null;
+    const moons = fam ? `<p class="small muted">${MOONS_OF[id] ? 'Big moons' : `Other moons of ${esc(BODY[hostOf(id)].name)}`}:</p><div class="chips moon-chips">${(MOONS_OF[id] ? fam : [hostOf(id), ...fam.filter((m) => m !== id)]).map((m) => `<button class="chip" data-space="${m}"><i style="--c:${BODY[m].dot}"></i>${esc(BODY[m].name)}</button>`).join('')}</div>` : '';
     const sharp = st.hires[id] === 'ok' ? '<p class="muted small">Showing NASA’s full global mosaic from the Solar System Treks tile service.</p>' : '';
     openNotes('Space', `
       <h3 class="withglyph"><span class="space-glyph" style="--c:${d.dot}">${esc(d.glyph)}</span><span>${esc(d.name)}</span></h3><p class="sub">${esc(d.kind)} · drag to turn, scroll to fly closer</p>
       ${factsHtml([...live(id), ...d.facts])}
       <p class="fold" tabindex="0" role="button" aria-expanded="false" title="Show the full text">${esc(d.about)}</p>
+      ${moons}
       <div class="quick">${venus}${id === 'sun' || id === 'moon' ? '<button class="btn ghost" data-eclipses="1">Eclipses</button>' : ''}<button class="btn ghost" data-space="earth">Back to Earth</button></div>
       ${sharp}
       <details class="more"><summary>Where the picture comes from</summary>
-        <p class="small">${esc(credit ?? '')}. Position and spin: Astronomy Engine, computed in your browser for the time on the atlas clock (the time machine moves everything).</p>
-        ${refsHtml(['astronomyengine', 'iaurotation', 'nssdcfacts', d.credit === 'nasa3d' ? 'nasa3d' : d.credit === 'bluemarble' ? 'bluemarble' : 'solarsystemscope', ...(d.trek ? ['nasatrek'] : [])])}
+        <p class="small">${esc(credit ?? '')}. Position and spin: ${OUTER.includes(id) ? `${id === 'triton' ? 'a fixed orbit from JPL elements for 2008 (approximate)' : SATURNIAN.includes(id) ? 'the TASS 1.7 theory of Saturn’s moons (IMCCE)' : 'the GUST86 theory of Uranus’s moons (IMCCE)'}, around a planet placed by Astronomy Engine` : 'Astronomy Engine'}, computed in your browser for the time on the atlas clock (the time machine moves everything).</p>
+        ${refsHtml(['astronomyengine', ...(OUTER.includes(id) ? [id === 'triton' ? 'jplsatelem' : SATURNIAN.includes(id) ? 'tass17' : 'gust86', 'stellariumephem'] : []), 'iaurotation', 'nssdcfacts', d.credit === 'nasa3d' ? 'nasa3d' : d.credit === 'bluemarble' ? 'bluemarble' : 'solarsystemscope', ...(d.trek ? ['nasatrek'] : [])])}
       </details>`, `space:${id}`);
   }
   /** v2.20 the solar system card: every planet, how far from the Sun it is now and how long its light takes. */
@@ -929,7 +969,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
   setInterval(() => { const f = st.focus; if (f && !st.fly && BODY[f]?.trek && B[f].px > 380) sharpen(f); }, 1500);
 
   // ---------------------------------------------------------------- start
-  (window.requestIdleCallback ?? ((f) => setTimeout(f, 1500)))(() => loadEngine().then(() => { compute(); wake?.(); }));
+  (window.requestIdleCallback ?? ((f) => setTimeout(f, 1500)))(() => loadEngine().then(() => { compute(); wake?.(); }), { timeout: 5000 }); // v2.21: at most 5 s, even on a device that is never idle
   return active = {
     explore, leave: () => st.focus && explore('earth'), eclipses: () => eclipseCard(), eclipseList: () => (A ? eclipseList() : []),
     focus: () => st.focus, flying: () => !!st.fly,

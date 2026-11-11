@@ -23,6 +23,8 @@ jobs:
       - run: pip install playwright==1.56.0 && python -m playwright install --with-deps chromium
       - name: v2.16 speed (every start-up module preloaded in parallel)
         run: node tools/build-preload.mjs --check
+      - name: v2.21 moons of Saturn, Uranus and Neptune (TASS 1.7, GUST86, Triton), Windows-safe file names, offline pack
+        run: bash tests/e2e/run.sh test_v221.py | tee v221.log && grep -q "SUMMARY 21 / 21" v221.log
       - name: v2.20 the whole solar system (system view, belts, spacecraft, fly to a planet, close-up NASA tiles)
         run: bash tests/e2e/run.sh test_v220.py | tee v220.log && grep -q "SUMMARY 22 / 22" v220.log
       - name: v2.19 a whole city up close (tilt, buildings with windows, parks, water, trees, street lamps)
@@ -44,7 +46,7 @@ jobs:
       - name: v2.3 terrain and buildings (landscape, Street level, 3D surroundings)
         run: bash tests/e2e/run.sh test_v23.py | tee v23.log && grep -q "SUMMARY 15 / 15" v23.log
       - name: v2.12 News tab (headlines, live TV, offline fetcher checks)
-        run: node tests/news/test-news.mjs && bash tests/e2e/run.sh test_news.py | tee news.log && grep -q "SUMMARY 25 / 25" news.log
+        run: node tests/news/test-news.mjs && bash tests/e2e/run.sh test_news.py | tee news.log && grep -qE "SUMMARY ([0-9]+) / \\1$" news.log
       - name: v2.11 World Monitor baseline layers
         run: bash tests/e2e/run.sh test_wmbaseline.py | tee wmb.log && grep -qE "SUMMARY ([0-9]+) / \\1$" wmb.log
       - name: v2.11 markers that share a spot (spread up close, listed from afar)

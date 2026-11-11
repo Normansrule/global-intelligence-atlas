@@ -43,7 +43,7 @@ with sync_playwright() as p:
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler)
     pg.route('https://en.wikipedia.org/w/api.php**', wiki); pg.route('https://www.wikidata.org/w/api.php**', wd); pg.route('https://upload.wikimedia.org/**', img)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@30,10,2.2&b=bluemarble&l=landmarks', wait_until='commit'); pg.wait_for_timeout(12000)
     info=pg.evaluate("() => { const d = gia.state.data.landmarks ?? []; return { n: d.length, kinds: [...new Set(d.map((x) => x.kind))].length, south: d.some((x) => x.lat < -60), lon: [Math.min(...d.map((x) => x.lng)), Math.max(...d.map((x) => x.lng))], titles: new Set(d.map((x) => x.title)).size } }")
     check('about 190 landmarks of all six kinds load, from Antarctica to the Pacific', info['n'] >= 180 and info['kinds'] == 6 and info['south'] and info['lon'][0] < -150 and info['lon'][1] > 160 and info['titles'] == info['n'], info)

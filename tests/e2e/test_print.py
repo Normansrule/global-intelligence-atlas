@@ -10,7 +10,7 @@ with sync_playwright() as p:
     pg=b.new_page(viewport={'width':1280,'height':800}); errs=[]
     pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@30,10,2.2&b=bluemarble&l=borders,cities', wait_until='commit'); pg.wait_for_timeout(9000)
     pg.keyboard.press('6'); pg.wait_for_timeout(1500)
     check('key 6 picks Print', pg.evaluate("document.body.dataset.look")=='print')

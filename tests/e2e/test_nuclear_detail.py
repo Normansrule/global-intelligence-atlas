@@ -19,7 +19,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler); pg.route('https://raw.githubusercontent.com/**/open-data/**', opendata)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
     pg.goto('http://localhost:8765/app/?datasets=open#@51,4,1.2&l=borders,nuclear,cities&s=1', wait_until='commit'); pg.wait_for_timeout(10000)
     y=pg.evaluate("async () => { const m = await import('./js/nucleardetail.js'); return m.yearOutput(1000) }")
     check('1,000 MW at 90% makes about 7.9 TWh a year, the electricity of about 2.1 million people', 7.8 < y['twh'] < 8.0 and 2.0e6 < y['people'] < 2.2e6, y)

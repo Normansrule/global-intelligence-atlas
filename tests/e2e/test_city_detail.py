@@ -12,7 +12,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800})
     errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler)
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.20')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.21')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@48.8,2.3,0.6&l=borders,cities,quakes,landmarks', wait_until='commit'); pg.wait_for_timeout(11000)
     f=pg.evaluate("""async () => { const c = await import('./js/citydetail.js');
       return { eq: c.dayLength(0, 0), pole: c.dayLength(80, 23.44), night: c.dayLength(80, -23.44), parisJun: c.dayLength(48.87, 23.44), parisDec: c.dayLength(48.87, -23.44),
