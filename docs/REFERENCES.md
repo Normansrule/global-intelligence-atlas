@@ -1,6 +1,6 @@
 # References
 
-Every library, data set, paper and reference used by Global Intelligence Atlas, in APA 7th edition style (American Psychological Association, 2020). Entries are in one alphabetical list, as APA requires. Live feeds change continuously, so they carry a retrieval date. The second table shows where each source is used and under which licence; `site/app/js/sources.js` holds the same sources for the About panel in the app.
+Every library, data set, paper and reference used by Global Intelligence Atlas, in APA 7th edition style (American Psychological Association, 2020). Entries are in one alphabetical list, as APA requires. Live feeds change continuously, so they carry a retrieval date. The second table shows where each source is used and under which licence; `site/app/js/sources.js` holds the same sources for the About panel in the app. What the atlas assumes, approximates or could not verify, and why it chose one source over another, is written down release by release in [ASSUMPTIONS.md](ASSUMPTIONS.md).
 
 Global Intelligence Atlas grew out of World Monitor (Habib, 2026) and ships its curated datasets, so it is distributed under the same licence, AGPL-3.0-only.
 

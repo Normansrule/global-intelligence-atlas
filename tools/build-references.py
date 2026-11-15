@@ -369,7 +369,7 @@ if missing: sys.exit(f'no APA entry for: {missing}')
 refs = sorted({v[1] for v in E.values() if v[1]}, key=lambda r: r.lower().replace('the ', '', 1) if r.startswith('The ') else r.lower())
 rows = [(E[k][0], s['role'], s['license']) for k, s in src.items()] + [(E[k][0], role, lic) for k, role, lic in EXTRA_USE]
 md = ['# References', '',
- 'Every library, data set, paper and reference used by Global Intelligence Atlas, in APA 7th edition style (American Psychological Association, 2020). Entries are in one alphabetical list, as APA requires. Live feeds change continuously, so they carry a retrieval date. The second table shows where each source is used and under which licence; `site/app/js/sources.js` holds the same sources for the About panel in the app.', '',
+ 'Every library, data set, paper and reference used by Global Intelligence Atlas, in APA 7th edition style (American Psychological Association, 2020). Entries are in one alphabetical list, as APA requires. Live feeds change continuously, so they carry a retrieval date. The second table shows where each source is used and under which licence; `site/app/js/sources.js` holds the same sources for the About panel in the app. What the atlas assumes, approximates or could not verify, and why it chose one source over another, is written down release by release in [ASSUMPTIONS.md](ASSUMPTIONS.md).', '',
  'Global Intelligence Atlas grew out of World Monitor (Habib, 2026) and ships its curated datasets, so it is distributed under the same licence, AGPL-3.0-only.', '',
  '## Reference list', '']
 md += [r + '\n' for r in refs]

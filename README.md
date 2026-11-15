@@ -17,7 +17,7 @@
 
 <sub><a href="https://normansrule.github.io/global-intelligence-atlas/">Website</a> · <a href="#-get-the-app">Install it from the browser, or which download to pick</a></sub>
 
-[![Version](https://img.shields.io/badge/version-2.22.0-1f4e9c)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.23.0-1f4e9c)](CHANGELOG.md)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Deploy to Pages](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml)
 [![Tests](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml)
@@ -570,7 +570,8 @@ Fifteen lessons on the [Learn page](https://normansrule.github.io/global-intelli
 | v2.10 | The Global Intelligence Atlas (GIA) repository launch: this README, browser tuning, release branding |
 | v2.11 | Cameras from 22 more agencies and Osiris's worldwide webcam list, the rest of World Monitor's map datasets, markers that share a spot, economy, property and industry |
 | v2.12 | A News tab: headlines from 16 publishers' own feeds around the world and free live news channels from broadcasters' official streams |
-| **v2.22** | **The small worlds: Phobos, Deimos, Charon, Ceres, Vesta and Bennu, the odd-shaped ones in their real shapes, each where it really is now** |
+| **v2.23** | **References and assumptions on record: what each release assumes or approximates, in `docs/ASSUMPTIONS.md`; the change list and licence notices brought up to date; every version number checked** |
+| v2.22 | **The small worlds: Phobos, Deimos, Charon, Ceres, Vesta and Bennu, the odd-shaped ones in their real shapes, each where it really is now** |
 | v2.21 | **Thirteen big moons of Saturn, Uranus and Neptune, placed by the TASS 1.7 and GUST86 theories, with NASA maps; the desktop app builds on Windows again** |
 | v2.20 | **The whole solar system: space opens on every planet where it is today, with the asteroid and Kuiper belts and the farthest spacecraft; click a planet to fly there; sharper NASA maps as you fly in close to the Moon, Mars and Mercury** |
 | v2.19 | **A whole city up close: tilt to look across it, buildings with windows lit by the real Sun and after dark, parks, woods, rivers and lakes with trees and rippling water, pavements, lane lines and street lamps** |
@@ -694,6 +695,8 @@ python3 tests/docs/check_readme.py                # README pictures, links and p
 ## 📚 Data and references
 
 Every library, data set and paper is cited in APA 7th edition style in [`docs/REFERENCES.md`](docs/REFERENCES.md) (over 300 references), with a second table showing where each is used and under which licence. The app’s About panel lists the same sources.
+
+What the atlas **assumes, approximates or could not verify**, and why it picked one source over another, is written down release by release in [`docs/ASSUMPTIONS.md`](docs/ASSUMPTIONS.md): for example, that Phobos's position in 2026 extrapolates a theory fitted to observations up to 2005, that the asteroid belt's rocks are illustrative, and that a ship's cargo is inferred from its type and size. Each item is marked as an assumption, an approximation, something not verified, or a judgement between sources.
 
 Key references:
 

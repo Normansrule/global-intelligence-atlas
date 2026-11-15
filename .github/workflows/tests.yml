@@ -4,7 +4,7 @@ name: Tests
 on:
   push:
     branches: [main]
-    paths: ['site/**', 'tests/**', 'proxy/**', 'tools/fetch-live.mjs', 'tools/check-workflows.py', 'README.md', 'HANDOFF.md', 'CHANGELOG.md', '.github/workflows/**']
+    paths: ['site/**', 'tests/**', 'proxy/**', 'tools/fetch-live.mjs', 'tools/check-workflows.py', 'README.md', 'HANDOFF.md', 'CHANGELOG.md', 'NOTICE.md', 'CITATION.cff', 'docs/**', 'LICENSES/**', 'desktop/package.json', 'desktop/src-tauri/tauri.conf.json', 'desktop/src-tauri/Cargo.toml', '.github/workflows/**']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -23,6 +23,8 @@ jobs:
       - run: pip install playwright==1.56.0 && python -m playwright install --with-deps chromium
       - name: v2.16 speed (every start-up module preloaded in parallel)
         run: node tools/build-preload.mjs --check
+      - name: v2.23 release records (version strings agree, assumptions section, NOTICE row, licence notices)
+        run: python3 tests/docs/check_release.py
       - name: v2.22 small worlds (Phobos, Deimos, Charon, Ceres, Vesta, Bennu; Lainey, Kepler orbits, real shapes)
         run: bash tests/e2e/run.sh test_v222.py | tee v222.log && grep -q "SUMMARY 21 / 21" v222.log
       - name: v2.21 moons of Saturn, Uranus and Neptune (TASS 1.7, GUST86, Triton), Windows-safe file names, offline pack

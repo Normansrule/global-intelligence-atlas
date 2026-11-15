@@ -4,6 +4,16 @@ Release notes for Global Intelligence Atlas (GIA), newest first. Versions before
 
 ---
 
+## 📎 v2.23: references and assumptions on record
+
+- **Assumptions written down:** the new [`docs/ASSUMPTIONS.md`](docs/ASSUMPTIONS.md) lists, release by release, what the atlas takes as true without checking it, what it simplifies (with the size of the error where known), what could not be tested here, and why one source was chosen over another. It covers v2.20 to v2.22 in full and v2.13 to v2.19 from their changelog entries. The README, `docs/REFERENCES.md` and the app's About panel link to it.
+- **Change list and licence notices:** `NOTICE.md`, the list of changes the AGPL asks for, stopped at v2.12; it now has a row for every release up to this one. A new [`LICENSES/stellarium-planetsephems-MIT.txt`](LICENSES/stellarium-planetsephems-MIT.txt) carries the full MIT notice of Johannes Gajdosik's code that the moon positions of v2.21 and v2.22 were translated from, and `outermoons.js` and `smallworlds.js` point to it.
+- **Version numbers that agree:** the desktop app (`desktop/package.json`, `package-lock.json`, `tauri.conf.json`, `Cargo.toml`, `Cargo.lock`) had stayed at 2.12.0 and `CITATION.cff` at 2.10.0; they now say 2.23.0.
+- **Fix (tests):** the Tests check on GitHub failed for v2.22 because one v2.21 check, that Saturn's moons are labelled when you fly there, depended on the date: the camera arrives about 5 Saturn radii out, and on some days no moon is in front of it. The check now backs out to about 40 radii first and asks for at least three labelled moons. The app itself was not wrong.
+- **Under the hood:** new `tests/docs/check_release.py` (10 checks: every version string matches the app, this release has its section in `ASSUMPTIONS.md` with labelled items, its row in `NOTICE.md` and its changelog section, every licence notice `NOTICE.md` points to exists, and the README and references link the assumptions), run by the Tests workflow; the release checklist in `HANDOFF.md` section 8 adds the assumptions section.
+
+---
+
 ## 🪨 v2.22: the small worlds
 
 - **Six more worlds:** Mars's moons Phobos and Deimos, Pluto's moon Charon, the dwarf planet Ceres, the asteroid Vesta and the near-Earth asteroid Bennu, each with its map, its facts (NASA fact sheets and mission pages), a label, its orbit (with Orbits on) and a card. Mars's card lists its two moons and Pluto's lists Charon; the solar system card has a Small worlds table with each one's distance from the Sun and from the Earth. Their names show once you zoom in on the inner solar system.

@@ -4,7 +4,7 @@
 //   fitted to observations from 1877 to 2005), as compiled into C by Johannes Gajdosik for Stellarium (MIT licence;
 //   Copyright (c) 2006 Johannes Gajdosik: "Permission is hereby granted, free of charge, to any person obtaining a copy
 //   of this software ... The above copyright notice and this permission notice shall be included in all copies or
-//   substantial portions of the Software."), translated with tools/build-smallworlds.py. Returned in AU from Mars, in
+//   substantial portions of the Software."), translated with tools/build-smallworlds.py (full notice: LICENSES/stellarium-planetsephems-MIT.txt). Returned in AU from Mars, in
 //   the J2000 equator frame (EQJ) that Astronomy Engine and cosmos.js use, for a Julian day (Terrestrial Time).
 //   Ceres, Vesta and Bennu: two-body (Kepler) orbits from Minor Planet Center osculating elements (ecliptic J2000, as
 //   listed in Stellarium's ssystem_minor.ini), from the Sun, in AU, EQJ. Good to a small fraction of a degree for some

@@ -9,7 +9,7 @@ res=[]
 def check(n, ok, info=''): res.append(bool(ok)); print(('PASS ' if ok else 'FAIL ')+n, '' if ok else info)
 ROOT=os.path.abspath(os.path.join(sys.argv[-1], '..', '..'))
 SAT=['mimas','enceladus','tethys','dione','rhea','titan','iapetus']; URA=['miranda','ariel','umbriel','titania','oberon']; ALL=SAT+URA+['triton']
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.22');localStorage.setItem('gia-theme','dark')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.23');localStorage.setItem('gia-theme','dark')}catch(e){}"
 # repository checks (no browser)
 bad=[]
 for d, _, fs in os.walk(os.path.join(ROOT, 'site')):
@@ -31,7 +31,7 @@ with sync_playwright() as p:
     try: pg.wait_for_function("() => gia.cosmos.ready()", timeout=25000)
     except Exception: ok=False
     check('the planets are ready within 25 s without being asked (the start no longer waits for an idle moment)', ok)
-    check('version 2.22', pg.evaluate("() => gia.VERSION")=='2.22')
+    check('version 2.23', pg.evaluate("() => gia.VERSION")=='2.23')
     check('the moons’ code is not loaded on the globe', not pg.evaluate("() => performance.getEntriesByType('resource').some((e) => e.name.includes('outermoons.js'))"))
     rf=pg.evaluate("async () => { const m = await import('/app/js/flightdb.js'); return [m.routeFile('CON'), m.routeFile('BAW'), m.routeFile('com1')]; }")
     check('flight routes: reserved airline codes use their underscored file', rf==['_CON.json', 'BAW.json', '_com1.json'], rf)
@@ -61,7 +61,11 @@ with sync_playwright() as p:
       labels: [...document.querySelectorAll('.space-label:not([hidden])')].map((e) => e.dataset.space) }; }""")
     check('flying to Saturn loads the moons, and every one is placed', s['loaded'] and not s['hidden'], s)
     check('Saturn’s card lists its seven big moons to fly to', s['chips']==SAT, s['chips'])
-    check('some of Saturn’s moons are labelled around it', len([l for l in s['labels'] if l in SAT]) >= 1, s['labels'])
+    # Arriving puts the camera about 5 Saturn radii out, so which moons are in view depends on the date (on some days
+    # none are); back out to about 40 radii, where the inner moons' orbits fit on screen, before looking for labels.
+    pg.evaluate("() => { const { cam, st } = gia.cosmos.debug(); const c = st.ctl.target; cam.position.sub(c).multiplyScalar(8).add(c); st.ctl.update(); }"); pg.wait_for_timeout(1500)
+    s['labels']=pg.evaluate("() => [...document.querySelectorAll('.space-label:not([hidden])')].map((e) => e.dataset.space)")
+    check('backed out a little, Saturn’s moons are labelled around it', len([l for l in s['labels'] if l in SAT]) >= 3, s['labels'])
     pg.evaluate("() => document.querySelector('#notes-body .moon-chips [data-space=titan]').click()"); pg.wait_for_timeout(8000)
     t=pg.evaluate("() => ({ focus: gia.cosmos.focus(), card: document.querySelector('#notes-body')?.textContent ?? '', chips: [...document.querySelectorAll('#notes-body .moon-chips [data-space]')].map((e) => e.dataset.space) })")
     check('a moon chip flies there; the moon’s card offers its planet and sisters', t['focus']=='titan' and 'Moon of Saturn' in t['card'] and t['chips'][0]=='saturn' and 'titan' not in t['chips'], t['chips'])

@@ -7,7 +7,7 @@
 //   Both as compiled into C by Johannes Gajdosik for Stellarium (MIT licence; Copyright (c) 2005 Johannes Gajdosik:
 //   "Permission is hereby granted, free of charge, to any person obtaining a copy of this software ... The above
 //   copyright notice and this permission notice shall be included in all copies or substantial portions of the
-//   Software."), translated to JavaScript with tools/build-outermoons.py. Accurate to a few hundred kilometres.
+//   Software."), translated to JavaScript with tools/build-outermoons.py (full notice: LICENSES/stellarium-planetsephems-MIT.txt). Accurate to a few hundred kilometres.
 //   Neptune: Triton on a fixed ellipse from JPL osculating elements for 1 June 2008 (as listed in Stellarium's
 //   ssystem_major.ini). Triton's orbit plane slowly turns (once in about 690 years), so its place is approximate
 //   (a few degrees round its orbit by the 2020s).

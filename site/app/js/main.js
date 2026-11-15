@@ -61,7 +61,7 @@ import { isOffline, servedSince } from './lastknown.js'; // offline mode
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.22';
+export const VERSION = '2.23';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg, unitSvg } from './icons.js';
@@ -1328,6 +1328,7 @@ function aboutPanel() {
     <h4>Keyboard</h4>${rowsHtml([['C', 'Trace connections'], ['S', 'Area scan'], ['[ ]', 'Time machine slower / faster'], ['\\', 'Back to live time'], ['/', 'Search'], ['R', 'Auto-rotate'], ['1 – 4', 'Normal, night vision, thermal, CRT'], ['L', 'Layers'], ['?', 'Keyboard and about'], ['Ctrl+K', 'Find anything: layers, places, flights, tools'], ['T · Q · M', 'Tours, quiz, measure'], ['Esc', 'Close the details, then the section']])}
     <p><button class="btn ghost" data-health="open">Data health: is every source working?</button> <button class="btn ghost" data-manifest>Layer manifest</button> <button class="btn ghost" data-datasets>Datasets: open data or World Monitor</button></p>
     <h4>Data, libraries and references</h4>
+    <p class="muted">What the atlas assumes, approximates or could not check, and why it chose each source: <a href="${esc(repo)}/blob/main/docs/ASSUMPTIONS.md" target="_blank" rel="noopener">assumptions, release by release</a>.</p>
     <ul class="sources">${Object.values(SOURCES).filter((s) => !s.ref).map(sourceItem).join('')}</ul>
     <h4>Reference projects</h4><p class="muted">Twenty open-source projects Atlas learns from for visuals, presentation, frameworks and modelling theory. No code is copied from them, and every licence is compatible with the AGPL.</p>
     <ul class="sources">${Object.values(SOURCES).filter((s) => s.ref).map(sourceItem).join('')}</ul>`);
@@ -1961,7 +1962,11 @@ if (NEW_VERSION) { if (!state.pendingSel && !state.pendingSpace) setTimeout(what
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>The small worlds</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>References and assumptions on record</h3>
+    <div class="newlist">
+      <span>${g('dossier', '#9fd3ff')}<b>What the atlas assumes:</b> every release now writes down what it takes as true without checking, what it simplifies and by how much, and why it chose its sources. About and sources links to the list.</span>
+    </div>
+    <h4>From v2.22: the small worlds</h4>
     <div class="newlist">
       <span>${g('moon', '#b8a48e')}<b>Phobos and Deimos:</b> Mars's two little moons, in their real lumpy shapes, where they really are now (from Lainey's theory of the Martian moons). Phobos goes round Mars three times a day.</span>
       <span>${g('peak', '#c9c3b8')}<b>Ceres, Vesta and Bennu:</b> the biggest world in the asteroid belt, the second biggest asteroid (in its real shape, with its giant south-pole crater) and the near-Earth asteroid OSIRIS-REx brought a sample home from, each on its orbit with NASA's maps. Zoom in on the inner solar system to find them, or pick them on the solar system card.</span>

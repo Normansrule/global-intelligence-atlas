@@ -20,7 +20,7 @@ A briefing for the next developer or AI agent. Read this first, then `README.md`
 - The interface must never have overlapping panels: lots of information, in clearly separated sections that are easy to navigate. Run the overlap check after any layout change.
 - Performance matters: the owner notices lag and flicker. Measure before and after.
 - Every data source, library and paper must appear in `docs/REFERENCES.md` in APA 7th edition style. Add the source to `site/app/js/sources.js` and `tools/build-references.py`, then run `python3 tools/build-references.py`.
-- Bump the version in all places (section 8) and add a "What's new" entry, a README section and a `NOTICE.md` row for each release.
+- Bump the version in all places (section 8) and add a "What's new" entry, a README section, a `NOTICE.md` row and a `docs/ASSUMPTIONS.md` section for each release.
 
 ## 3. Repository map
 
@@ -188,7 +188,7 @@ cd desktop/src-tauri && cargo check             # desktop crate
 
 ## 8. Release checklist
 
-Version strings (also the version pins in `tests/e2e/*.py`): `VERSION` in `site/app/js/main.js`, the badge in `site/app/index.html`, the cache name in `site/sw.js`, `desktop/package.json`, `desktop/src-tauri/tauri.conf.json`, `desktop/src-tauri/Cargo.toml` and the `global-intelligence-atlas` entry in `Cargo.lock`, the ribbon in `site/index.html`, `CITATION.cff`. Then: What's new (`whatsNew()` in `main.js`), a `CHANGELOG.md` section (and the README version badge and Progress table), a `NOTICE.md` row, regenerate references, run the tests, push, and tag `vX.Y.Z` to build the desktop installers.
+Version strings (also the version pins in `tests/e2e/*.py`): `VERSION` in `site/app/js/main.js`, the badge in `site/app/index.html`, the cache name in `site/sw.js`, `desktop/package.json`, `desktop/src-tauri/tauri.conf.json`, `desktop/src-tauri/Cargo.toml` and the `global-intelligence-atlas` entry in `Cargo.lock`, the ribbon in `site/index.html`, `CITATION.cff`. Then: What's new (`whatsNew()` in `main.js`), a `CHANGELOG.md` section (and the README version badge and Progress table), a `NOTICE.md` row, a section at the top of `docs/ASSUMPTIONS.md` (what the release assumes, approximates or could not verify, and why it chose its sources), regenerate references, run `python3 tests/docs/check_release.py`, run the tests, push, and tag `vX.Y.Z` to build the desktop installers.
 
 ## 9. Recommended next features (in priority order)
 

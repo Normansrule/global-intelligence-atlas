@@ -1,0 +1,33 @@
+Moon theories compiled into C by Johannes Gajdosik for Stellarium (src/core/planetsephems/)
+
+Global Intelligence Atlas translates three of these files into JavaScript:
+  - tass17.c   (TASS 1.7, Saturn's moons; Vienne & Duriez, 1995)  -> site/app/js/outermoons.js (v2.21)
+  - gust86.c   (GUST86, Uranus's moons; Laskar & Jacobson, 1987)  -> site/app/js/outermoons.js (v2.21)
+  - marssat.c  (Lainey's ephemerides of Phobos and Deimos)       -> site/app/js/smallworlds.js (v2.22)
+The term tables were converted by tools/build-outermoons.py and tools/build-smallworlds.py.
+The surrounding code (the rest of the atlas) is AGPL-3.0-only; these parts keep the notice below.
+
+----------------------------------------------------------------------------
+
+MIT License
+
+Copyright (c) 2005 Johannes Gajdosik (tass17.c, gust86.c)
+Copyright (c) 2006 Johannes Gajdosik (marssat.c)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
