@@ -151,3 +151,17 @@ export function nextMoonPhase(targetAge, from = new Date()) {
   }
   return null;
 }
+
+/** v2.24: a typed position, with no geocoder: "48.8584, 2.2945", "geo:39.7392,-104.9903" (RFC 5870), "33.87 S 151.21 E",
+ *  "48°51′30″N 2°17′40″E". Returns { lat, lng } or null. (Idea from God's Eye View's keyless search, Sidhu 2026, MIT.) */
+export function parseCoords(text) {
+  const s = String(text).trim().replace(/^geo:/i, '').replace(/[;?].*$/, '').replace(/[′’']/g, "'").replace(/[″”"]/g, '"');
+  const part = String.raw`(-?\d+(?:\.\d+)?)\s*(?:°\s*(?:(\d+(?:\.\d+)?)\s*'\s*(?:(\d+(?:\.\d+)?)\s*")?)?)?\s*([NSEW])?`;
+  const m = s.match(new RegExp(`^${part}\\s*[,\\s]\\s*${part}$`, 'i'));
+  if (!m) return null;
+  const val = (d, mi, se, h) => { let v = Math.abs(+d) + (+mi || 0) / 60 + (+se || 0) / 3600; if (d.startsWith('-') || /[SW]/i.test(h ?? '')) v = -v; return v; };
+  let a = { v: val(m[1], m[2], m[3], m[4]), h: (m[4] ?? '').toUpperCase() }; let b = { v: val(m[5], m[6], m[7], m[8]), h: (m[8] ?? '').toUpperCase() };
+  if (/[EW]/.test(a.h) || /[NS]/.test(b.h)) [a, b] = [b, a]; // written longitude first
+  if (Math.abs(a.v) > 90 || Math.abs(b.v) > 180) return null;
+  return { lat: a.v, lng: b.v };
+}

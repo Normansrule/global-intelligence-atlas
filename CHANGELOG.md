@@ -4,6 +4,17 @@ Release notes for Global Intelligence Atlas (GIA), newest first. Versions before
 
 ---
 
+## 🛰️ v2.24: dock with the ISS
+
+- **Dock with the ISS:** a new window (Tools → Dock with the ISS, the station's card, or the command palette) puts you in a crew capsule 200 m in front of the International Space Station. Fly it to the forward docking port by hand (W/S forward and back, A/D left and right, R/F up and down, arrow keys and Q/E to turn, or the on-screen pads) or press Autopilot (P) and watch it fly the approach the way real ones go: straight in, a hold at 20 m, then about 0.1 m/s to contact. Contact counts only within the soft-capture limits of the International Docking System Standard (closing at 0.05–0.10 m/s, within 10 cm of the axis, lined up within 4°); miss one and the window says which. Three views (chase, the capsule's own camera with a cross to line up, and from the station) and three time speeds (1×, 10×, 50×).
+- **Real orbit, real Earth:** the capsule drifts the way orbital mechanics makes it drift near a station (the Clohessy–Wiltshire equations), and below is the part of the Earth the real station is over right now, moving at its speed, lit by the real Sun, so the station passes into the Earth's shadow when the real one does (the capsule's floodlights come on).
+- **The station:** NASA's public-domain ISS model, thinned to about 73,000 triangles and scaled to the real 109 m truss by the new `tools/build-iss.py` (the station comes out 109 × 76 m; NASA gives 109 × 73 m). It loads only when you open the window (380 kB compressed).
+- **Positions in search:** type a position (48.8584, 2.2945, or 33.87 S 151.21 E, or 48°51′30″N 2°17′40″E) or paste a `geo:` link, and the first result flies there and opens what is at that spot, with no lookup on the internet.
+- **Where these came from:** of the six projects sent for ideas, God's Eye View gave the position search, and an autopilot for SpaceX's docking simulator the idea of the autopilot; no code was taken from either. Open Eagle Eye's cameras have been in the atlas since v2.16. What was used, left out and why is in `docs/ASSUMPTIONS.md`.
+- **Under the hood:** new `tests/e2e/test_v224.py` (19 checks: the station's size and port, the autopilot docking from 200 m, a too-fast contact refused, drift off the V-bar, the window and its controls, position search).
+
+---
+
 ## 📎 v2.23: references and assumptions on record
 
 - **Assumptions written down:** the new [`docs/ASSUMPTIONS.md`](docs/ASSUMPTIONS.md) lists, release by release, what the atlas takes as true without checking it, what it simplifies (with the size of the error where known), what could not be tested here, and why one source was chosen over another. It covers v2.20 to v2.22 in full and v2.13 to v2.19 from their changelog entries. The README, `docs/REFERENCES.md` and the app's About panel link to it.

@@ -78,6 +78,7 @@ export function installShell(x) {
       <div class="toolgrid">
         <button class="tool" data-board="1">${g('plane', '#8ecbff')}<b>Flights board</b><small>Fastest, highest, emergencies.</small></button>
         <button class="tool" data-ride="on">${g('sat', '#ffd37a')}<b>Ride with the ISS</b><small>The camera follows the station.</small></button>
+        <button class="tool" data-dock>${g('rocket', '#7ef0b0')}<b>Dock with the ISS</b><small>Fly a capsule to its docking port.</small></button>
         <button class="tool" data-tool="find">${g('plane', '#e3b55b')}<b>Find a flight</b><small>Callsign, airline, registration or type.</small></button>
         <button class="tool" data-wall="1">${g('camera', '#7ed6c4')}<b>Camera wall</b><small>Every live camera in view.</small></button>
       </div>

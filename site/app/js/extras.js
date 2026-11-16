@@ -41,6 +41,7 @@ export function installExtras(x) {
     const out = [];
     const c = (group, label, run, hint = '') => out.push({ group, label, run, hint, key: `${label} ${group} ${hint}`.toLowerCase() });
     c('Action', 'Ride along with the ISS', () => ride(true), 'follow the space station');
+    c('Action', 'Dock with the ISS', () => dock(), 'fly a capsule to the space station, by hand or on autopilot');
     c('Action', 'Flights board', () => flightsBoard(), 'fastest, highest, emergencies');
     c('Action', 'Sky above the centre of the view', () => x.sky(state.pov.lat, state.pov.lng), 'Sun, Moon, satellites and planes overhead');
     c('Action', 'Save this view', () => saveView(), 'bookmark camera and layers');
@@ -155,6 +156,7 @@ export function installExtras(x) {
     if (t.dataset.viewSave) { saveView(); viewsPanel(); }
     if (t.dataset.flight) { const a = state.data.aircraft?.ac.find((f) => f.id === t.dataset.flight); if (a) { x.layer('aircraft').open({ ...a, src: state.data.aircraft.src }); x.fly(a.lat, a.lng, Math.min(state.pov.altitude, 0.4), false); } }
     if (t.dataset.ride) ride(t.dataset.ride === 'on');
+    if (t.dataset.dock !== undefined) dock();
   });
 
   // ------------------------------------------------------------ ride along with the ISS
@@ -225,5 +227,16 @@ export function installExtras(x) {
       <p class="muted">Airliners cruise at 30,000–41,000 ft where the air is thin (less drag) but engines still get enough oxygen. Ground speeds above ~1,000 km/h are almost always a strong jet-stream tailwind, not a faster plane.</p></div>`, 'flightsboard');
   }
 
-  return { open, ride, flightsBoard, saveView, viewsPanel };
+  // ------------------------------------------------------------ v2.24 dock with the ISS (docking.js, loaded on first use)
+  function dock() {
+    if (state.ride) ride(false);
+    if (!state.on.has('stations')) { x.toggleLayer('stations', true); x.renderLayerPanel(); } // for the station's real position
+    const where = (d) => {
+      const g = state.data.stations; if (!g) return null;
+      const p = positions(g, d ?? x.now()).find((q) => /ISS \(ZARYA\)|^ISS$/.test(q.name)); if (!p) return null;
+      return { ...p, over: x.countryAt(p.lat, p.lng)?.properties?.name ?? waterName(p.lat, p.lng) };
+    };
+    return import('./docking.js').then((m) => m.openDocking({ iss: where, now: () => x.now() }));
+  }
+  return { open, ride, dock, flightsBoard, saveView, viewsPanel };
 }

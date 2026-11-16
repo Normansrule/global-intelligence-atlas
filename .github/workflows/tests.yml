@@ -23,6 +23,8 @@ jobs:
       - run: pip install playwright==1.56.0 && python -m playwright install --with-deps chromium
       - name: v2.16 speed (every start-up module preloaded in parallel)
         run: node tools/build-preload.mjs --check
+      - name: v2.24 dock with the ISS (station model, autopilot, docking limits, orbital drift, the window) and positions in search
+        run: bash tests/e2e/run.sh test_v224.py | tee v224.log && grep -q "SUMMARY 19 / 19" v224.log
       - name: v2.23 release records (version strings agree, assumptions section, NOTICE row, licence notices)
         run: python3 tests/docs/check_release.py
       - name: v2.22 small worlds (Phobos, Deimos, Charon, Ceres, Vesta, Bennu; Lainey, Kepler orbits, real shapes)

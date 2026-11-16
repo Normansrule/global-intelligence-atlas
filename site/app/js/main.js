@@ -61,7 +61,7 @@ import { isOffline, servedSince } from './lastknown.js'; // offline mode
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.23';
+export const VERSION = '2.24';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg, unitSvg } from './icons.js';
@@ -999,6 +999,7 @@ function airportBoard(ap) {
 async function runAction(kind) {
   const ref = state.selected; const out = $('#sel-action');
   if (kind === 'ride') return extras?.ride(true);
+  if (kind === 'dock') return extras?.dock();
   if (kind === 'airport-board' && ref?.d) { if (out) out.innerHTML = airportBoard(ref.d); return; }
   if (kind === 'orbit' && ref?.d?.sat) { orbitOf.sat = ref.d.sat; orbitOf.snapshot = ref.d.snapshot; toggleLayer('satellites', true); refreshLayer('satellites', { soft: true }); if (out) out.innerHTML = '<p class="muted">Orbit drawn in violet — one full revolution from now.</p>'; }
   if (kind === 'passes' && ref?.d?.sat) {
@@ -1050,7 +1051,7 @@ function showLearn(id) {
     ${id === 'alpr' ? '<p><button class="btn ghost" data-alpr-live="1">Load the latest for this area from OpenStreetMap</button></p>' : ''}
     ${id === 'cameras' ? '<p><button class="btn" data-wall="1">Open the camera wall for this view</button></p>' : ''}
     ${id === 'aircraft' ? '<p><button class="btn" data-board="1">Open the flights board</button></p>' : ''}
-    ${id === 'stations' ? '<p><button class="btn" data-ride="on">Ride along with the ISS</button></p>' : ''}
+    ${id === 'stations' ? '<p><button class="btn" data-ride="on">Ride along with the ISS</button> <button class="btn ghost" data-dock>Dock with the ISS</button></p>' : ''}
     <h4>Sources and further reading</h4>${refsHtml(l.learn.refs)}`);
 }
 document.addEventListener('click', (e) => {
@@ -1422,6 +1423,9 @@ q.addEventListener('input', async () => {
   const wild = (await animalNames(s)).map((n) => ({ name: `Where to see: ${n}`, kind: 'Wildlife · best places and chances', wild: n, exact: n === s }));
   if (q.value.trim().toLowerCase() !== s) return; // typed on meanwhile
   hits = [...wild.filter((w) => w.exact), ...hits, ...wild.filter((w) => !w.exact)].slice(0, 9);
+  // v2.24 a typed position (decimal, degrees-minutes-seconds or a geo: link) goes first, with no geocoder
+  const pc = astro.parseCoords(q.value);
+  if (pc) hits = [{ name: `${astro.fmtLat(pc.lat)}, ${astro.fmtLng(pc.lng)}`, kind: 'Go to this position', lat: pc.lat, lng: pc.lng, alt: 0.12, coords: true }, ...hits].slice(0, 9);
   hits.push({ name: `Search “${q.value.trim()}” worldwide`, kind: 'OpenStreetMap', osm: true });
   sel = -1; renderHits();
 });
@@ -1447,6 +1451,7 @@ async function choose(h) {
   if (h.layer) { toggleLayer(h.layer, true); return showLearn(h.layer); }
   if (h.wild) return layerById.wildlife?.search(h.wild);
   if (h.osm) return geocode(q.value.trim());
+  if (h.coords) { fly(h.lat, h.lng, h.alt); return surfaceClick(h.lat, h.lng, countryAt(h.lat, h.lng)); }
   if (h.ref) { toggleLayer(h.ref.layer, true); select(h.ref); }
   fly(h.lat, h.lng, h.alt);
   if (h.kind === 'Country') { setPins([]); }
@@ -1962,7 +1967,12 @@ if (NEW_VERSION) { if (!state.pendingSel && !state.pendingSpace) setTimeout(what
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>References and assumptions on record</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>Dock with the ISS</h3>
+    <div class="newlist">
+      <span>${g('rocket', '#7ef0b0')}<b>Fly a capsule to the space station:</b> from 200 m out to its forward docking port, by hand or on autopilot, over the part of the Earth the real station is above right now. Contact only counts as gently and as straight as a real docking must be. <button class="btn ghost" data-dock>Try it</button></span>
+      <span>${g('pin', '#ffd37a')}<b>Positions in search:</b> type a latitude and longitude (any common way of writing it) or paste a geo: link to fly straight there.</span>
+    </div>
+    <h4>From v2.23: references and assumptions on record</h4>
     <div class="newlist">
       <span>${g('dossier', '#9fd3ff')}<b>What the atlas assumes:</b> every release now writes down what it takes as true without checking, what it simplifies and by how much, and why it chose its sources. About and sources links to the list.</span>
     </div>

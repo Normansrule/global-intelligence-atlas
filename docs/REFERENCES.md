@@ -140,6 +140,8 @@ City of Toronto. (n.d.). *Traffic cameras* [Data set]. City of Toronto Open Data
 
 Climate TRACE. (n.d.). *Climate TRACE emissions inventory: Asset-level data* [Data set]. Retrieved October 14, 2026, from https://climatetrace.org/data
 
+Clohessy, W. H., & Wiltshire, R. S. (1960). Terminal guidance system for satellite rendezvous. *Journal of the Aerospace Sciences, 27*(9), 653–658. https://doi.org/10.2514/8.8704
+
 CNA. (n.d.-a). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml&category=6311
 
 CNA. (n.d.-b). *CNA (Channel NewsAsia) live* [Video live stream]. YouTube. https://www.youtube.com/channel/UC83jt4dlz1Gjl58fzQrrHZg/live
@@ -270,6 +272,8 @@ International Organization for Standardization. (1975). *Standard atmosphere* (I
 
 International Organization for Standardization. (2020). *Document management — Portable document format — Part 2: PDF 2.0* (ISO Standard No. 32000-2:2020). https://www.iso.org/standard/75839.html
 
+International Space Station Multilateral Coordination Board. (2016). *International Docking System Standard (IDSS) interface definition document (IDD)* (Revision E). https://www.internationaldockingstandard.com/
+
 International Telecommunication Union. (2014). *Technical characteristics for an automatic identification system using time division multiple access in the VHF maritime mobile frequency band* (Recommendation ITU-R M.1371-5). https://www.itu.int/rec/R-REC-M.1371
 
 International Telecommunication Union. (2019). *Assignment and use of identities in the maritime mobile service* (Recommendation ITU-R M.585-8). https://www.itu.int/rec/R-REC-M.585
@@ -330,6 +334,8 @@ Mapbox. (n.d.). *Supercluster* [Computer software]. GitHub. https://github.com/m
 
 MapLibre contributors. (n.d.). *MapLibre GL JS* [Computer software]. GitHub. https://github.com/maplibre/maplibre-gl-js
 
+Mayrhofer, A., & Spanring, C. (2010). *A uniform resource identifier for geographic locations (‘geo’ URI)* (RFC 5870). Internet Engineering Task Force. https://doi.org/10.17487/RFC5870
+
 MDN contributors. (n.d.). *Cross-Origin Resource Sharing (CORS)*. Mozilla. https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS
 
 Meeus, J. (1998). *Astronomical algorithms* (2nd ed.). Willmann-Bell.
@@ -379,6 +385,8 @@ National Aeronautics and Space Administration. (n.d.-c). *Fire Information for R
 National Aeronautics and Space Administration. (n.d.-d). *NASA 3D resources: Images and textures* [Image collection]. GitHub. https://github.com/nasa/NASA-3D-Resources
 
 National Aeronautics and Space Administration. (n.d.-e). *Solar System Treks: Moon, Mars and Mercury Trek map services* [Data set]. Jet Propulsion Laboratory. Retrieved October 14, 2026, from https://trek.nasa.gov
+
+National Aeronautics and Space Administration. (n.d.-f). *International Space Station (ISS) (B)* [3D model]. NASA 3D Resources, GitHub. https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models/International%20Space%20Station%20(ISS)%20(B)
 
 National Archives and Records Administration. (n.d.-a). *National Archives catalog* [Data set]. Retrieved October 14, 2026, from https://catalog.archives.gov/
 
@@ -484,6 +492,8 @@ Panoramax. (n.d.). *Panoramax* [Data set]. https://panoramax.fr
 
 PeeringDB. (n.d.). *PeeringDB* [Data set]. https://www.peeringdb.com
 
+Petrov, D. (n.d.). *ISS sim automatic docking system* [Computer software]. GitHub. https://github.com/DaniruKun/spacex-iss-docking-sim-autopilot
+
 PROJ contributors. (2026). *PROJ coordinate transformation software library* [Computer software]. Open Source Geospatial Foundation. https://doi.org/10.5281/zenodo.5884394
 
 RainViewer. (n.d.). *Weather maps API: Global radar mosaic* [Data set]. Retrieved October 14, 2026, from https://www.rainviewer.com/api.html
@@ -516,7 +526,7 @@ Schäfer, M., Strohmeier, M., Lenders, V., Martinovic, I., & Wilhelm, M. (2014).
 
 Sectigo. (n.d.). *crt.sh: Certificate search* [Data set]. Retrieved October 14, 2026, from https://crt.sh
 
-Sidhu, B. (n.d.). *God’s eye view* [Computer software]. GitHub. https://github.com/bilawalsidhu/gods-eye-view
+Sidhu, B. (2026). *God’s Eye View* [Computer software]. GitHub. https://github.com/bilawalsidhu/gods-eye-view
 
 Simon, B. (2019). *folio-2019* [Computer software]. GitHub. https://github.com/brunosimon/folio-2019
 
@@ -687,7 +697,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Van Flandern & Pulkkinen, 1979) | Moon position, distance and phase for the Moon and tides layer. | Published formulae |
 | (Norman, 2026b) | Every ~4 minutes, fetches feeds that browsers may not read directly (flights, launches, GDACS, orbits, GDELT news) and serves them with CORS headers. | AGPL-3.0 code; data keeps each source’s licence |
 | (NASA, n.d.-b) | Yesterday’s Earth base map. We acknowledge the use of imagery provided by services from NASA’s Global Imagery Browse Services (GIBS), part of NASA’s Earth Science Data and Information System (ESDIS). | Public domain; acknowledgement requested |
-| (Sidhu, n.d.) | Inspiration for sensor looks and keyless browser data sources. | MIT |
+| (Sidhu, 2026) | The idea of typing a position or a geo: link straight into search (v2.24). | MIT (no code used) |
 | (airplanes.live, n.d.) | Regional aircraft fallback feed. | Free non-commercial API |
 | (adsbdb, n.d.) | Aircraft type, registration, photo and route for a selected flight (looked up live, never stored). | Courtesy API; route data © David Taylor & Jim Mason, not stored |
 | (Virtual Radar Server, 2026) | Airline names and codes, aircraft models, the country each aircraft address block belongs to, airports and 620,000 scheduled flight routes, built into the site by tools/build-flightdb.py. | CC0 1.0 (public domain) |
@@ -843,6 +853,11 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Minor Planet Center, n.d.) | The orbits of Ceres, Vesta and Bennu (v2.22). | Free to use with credit |
 | (Stellarium contributors, n.d.) | The real shapes of Phobos, Deimos and Vesta, and the maps of Deimos, Ceres, Vesta and Bennu (v2.22). | GNU General Public License 2.0 or later; the Ceres and Vesta maps from USGS (public domain) and the Bennu map from NASA (public domain), per Stellarium’s credits |
 | (U.S. Geological Survey Astrogeology Science Center, n.d.) | The source of the Ceres and Vesta maps (v2.22). | Public domain (USGS and NASA) |
+| (NASA, n.d.-f) | The station in Dock with the ISS, thinned and scaled to its real size by tools/build-iss.py (v2.24). | Public domain (NASA) |
+| (Clohessy & Wiltshire, 1960) | The equations for how the capsule drifts relative to the station in Dock with the ISS (v2.24). | Published paper |
+| (International Space Station Multilateral Coordination Board, 2016) | The soft-capture limits a docking must meet in Dock with the ISS (v2.24). | Published standard |
+| (Petrov, n.d.) | The idea of an autopilot that flies the approach axis by axis (v2.24). | Eclipse Public License 2.0 (no code used) |
+| (Mayrhofer & Spanring, 2010) | The geo: link format search understands (v2.24). | IETF document |
 | (NASA Goddard Space Flight Center & University of Arizona, n.d.) | Bennu’s map and, through NASA 3D Resources, its shape (v2.22). | Public domain (NASA) |
 | (NASA Jet Propulsion Laboratory, n.d.-b) | Triton’s orbit around Neptune (its place along the orbit is approximate). | Public domain (NASA) |
 | (NASA Jet Propulsion Laboratory, n.d.-a) | Distances and speeds of Voyager 1 and 2, shown out beyond the planets in the solar system view. | Public domain (NASA) |
@@ -1002,7 +1017,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Meyer, n.d.) | v2.15 idea source: an air-quality layer and US weather-service alerts on a 3D intelligence globe. Ideas only; no code copied. | AGPL-3.0 |
 | (Faure, n.d.) | v2.15 idea source for the sound cues; the cues are synthesised in the browser, no audio copied. | CC BY 4.0 |
 | (ElevenLabs, n.d.) | v2.15 idea source for Listen (a voice for every page); Listen uses the system voice, no key or code. | MIT |
-| (Sidhu, n.d.) | v2.16 idea source for the lifelike close-ups: simulated traffic on real roads. Ideas only; no code copied. | MIT |
+| (Sidhu, 2026) | v2.16 idea source for the lifelike close-ups: simulated traffic on real roads. Ideas only; no code copied. | MIT |
 | (OpenStreetMap contributors, n.d.) | v2.16 close-ups: the roads the simulated traffic drives on and the buildings around it, via the Overpass API. | ODbL |
 | (codeptor, n.d.) | v2.16 idea source for the Print look (ordered dithering as a visual style). Ideas only: the repository has no licence file, so no code or text was copied. | No licence stated |
 | (Bayer, 1973) | The 4×4 ordered-dither threshold matrix behind the Print look. | Paper |

@@ -8,6 +8,28 @@ Every release adds a section at the top. `tests/docs/check_release.py` fails if 
 
 ---
 
+## v2.24: dock with the ISS, and positions in search
+
+Where the ideas came from
+- **Judgement:** of the six projects Alek sent, three were reference material rather than features: two lists of agent skills and Apple's design guidance (Apache 2.0), used only as a check on the controls' sizes and contrast. Open Eagle Eye (MIT) has fed the worldwide webcam layer since v2.16 and its registry is read live, so nothing new was needed from it. God's Eye View (Sidhu, 2026, MIT) overlaps the atlas almost everywhere (cockpit view, 3D aircraft, night-vision and thermal looks, licence-plate readers, simulated traffic, satellite passes, an area scan); from it came one small idea, typing a position into search. Its live-feed layers (lightning, hurricane forecast cones, wildfire perimeters, restricted airspace, GPS interference) could not be reached from the build environment, so they were not added untested.
+- **Judgement:** the docking autopilot for SpaceX's ISS Docking Simulator (Petrov, n.d.) is under the Eclipse Public License 2.0 and drives SpaceX's own website through a browser robot. Neither its code nor SpaceX's simulator was used or copied; the atlas has its own capsule, controls, physics and look, and takes from the project only the idea of an autopilot that flies the approach axis by axis.
+
+The station
+- **Approximation:** the station is NASA 3D Resources' "International Space Station (ISS) (B)" model (public domain), thinned from 172,200 to 72,710 triangles. The model is not dated and shows an older layout (its Russian segment and visiting craft differ from the station in 2026); a stray copy of a truss piece floating above it was removed.
+- **Approximation:** the model has no units. It was scaled so its main truss is 109 m long; the result is 109 × 76 m with the arrays, against the 109 × 73 m NASA gives, so sizes are good to a few per cent.
+- **Assumption:** the forward docking port is the far end of the model's main stack of modules (found by `tools/build-iss.py`), and the model's +x side is the one facing away from the Earth. The model does not say which side is which; the real station flies with Harmony's forward port in the direction of flight, which is how it is placed here.
+- **Judgement:** the model's materials are all one grey. Parts were coloured by role (solar arrays dark gold, radiators white, truss grey, modules off-white) from which material each part uses, with colours chosen by eye.
+- **Approximation (illustrative):** the capsule is generic (about 4 m across and 8 m long with its trunk, the size of today's crew capsules), not any one company's design.
+
+The flying
+- **Approximation:** the motion uses the Clohessy–Wiltshire equations (Clohessy & Wiltshire, 1960) for a circular orbit at the station's height, with thrusters giving a fixed 0.03 m/s² and turning at 0.5°/s². Real capsules have stronger, pulsed thrusters, the orbit is slightly elliptical and drag is ignored; over the few hundred metres and minutes of an approach these errors are small.
+- **Not verified:** the soft-capture limits (closing at 0.05–0.10 m/s, within 0.10 m of the axis, sideways drift under 0.04 m/s, lined up within 4°, turning under 0.4°/s) are the initial-contact conditions of the International Docking System Standard as remembered from its interface definition document (International Space Station Multilateral Coordination Board, 2016). The document could not be opened from the build environment to check each number.
+- **Approximation:** the approach copies the shape of real ones (a straight-in approach ahead of the station, a hold at 20 m, then about 0.1 m/s to contact), not any one mission's timings. The autopilot docks from 200 m in about 16 simulated minutes; the time speed buttons (10×, 50×) shorten the wait.
+- **Approximation:** the Earth below is turned so the point under the station and its direction of travel are the real ones (from its orbital elements, refreshed every 30 seconds), and then turns beneath at the orbital rate. The Sun's direction comes from the real subsolar point, so the station passes into and out of the Earth's shadow at about the times the real one does (the check is geometric: the Sun behind the Earth as seen from the station’s height). With space stations off or offline, it uses a typical orbit and says so.
+
+Search
+- **Judgement:** typed positions are read as latitude then longitude unless the letters say otherwise (E or W on the first number), which is the order of the `geo:` link (Mayrhofer & Spanring, 2010) and of most maps. Two bare numbers such as "12 34" are offered as a position at the top of the list, alongside the other matches, not instead of them.
+
 ## v2.23: references and assumptions on record
 
 - **Judgement:** this file starts at v2.23, with full sections for the space releases (v2.20 to v2.22). The earlier releases have a shorter section built from what their changelog entries already said; nothing in them was re-checked for this file.

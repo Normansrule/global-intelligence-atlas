@@ -1,0 +1,46 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+   Global Intelligence Atlas: Dock with the ISS (js/docking.js). Always dark: it is space. */
+.dock { position: fixed; inset: 0; z-index: 90; background: #000; color: #eaeef4; font-family: var(--sans, system-ui, sans-serif); overflow: hidden; touch-action: none; }
+.dock canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.dock-top { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  padding: max(12px, env(safe-area-inset-top)) 16px 12px; background: linear-gradient(#000b, #0000); pointer-events: none; }
+.dock-top b { display: block; font-size: 1.05rem; letter-spacing: 0.01em; }
+.dock-top small { color: #a7b5c6; font-size: 0.82rem; }
+.dock-x { pointer-events: auto; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #ffffff33; background: #0b1524cc; color: inherit; font-size: 1.5rem; line-height: 1; cursor: pointer; }
+.dock-x:focus-visible, .dock button:focus-visible { outline: 2px solid #93b6ff; outline-offset: 2px; }
+.dock-hud { position: absolute; top: 76px; left: 16px; margin: 0; padding: 10px 12px; display: grid; gap: 6px; min-width: 210px;
+  background: #0b1524b3; border: 1px solid #ffffff1f; border-radius: 10px; backdrop-filter: blur(6px); font-size: 0.8rem; pointer-events: none; }
+.dock-hud div { display: grid; grid-template-columns: 1fr; }
+.dock-hud dt { color: #a7b5c6; font-size: 0.72rem; }
+.dock-hud dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 600; }
+.dock-hud .ok dd { color: #7ef0b0; }
+.dock-hud .warn dd { color: #ffc069; }
+.dock-msg { position: absolute; left: 50%; top: 80px; transform: translateX(-50%); margin: 0; max-width: min(560px, calc(100% - 260px)); text-align: center;
+  font-size: 0.85rem; color: #dfe8f5; text-shadow: 0 1px 3px #000; pointer-events: none; }
+.dock-cross { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; pointer-events: none;
+  background: linear-gradient(#5cf2a3, #5cf2a3) center / 2px 100% no-repeat, linear-gradient(#5cf2a3, #5cf2a3) center / 100% 2px no-repeat; opacity: 0.7; border-radius: 50%; box-shadow: inset 0 0 0 2px #5cf2a366; }
+.dock-result { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(420px, calc(100% - 32px)); padding: 18px 20px; border-radius: 14px;
+  background: #0b1524ee; border: 1px solid #ffffff2a; text-align: center; box-shadow: 0 12px 40px #000a; }
+.dock-result b { display: block; font-size: 1.4rem; margin-bottom: 6px; color: #ffc069; }
+.dock-result[data-ok='true'] b { color: #7ef0b0; }
+.dock-result p { margin: 0 0 14px; color: #c9d4e2; line-height: 1.4; }
+.dock-result .btn { min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #93b6ff; background: #93b6ff; color: #0b1524; font: inherit; font-weight: 600; cursor: pointer; }
+.dock-result .btn.ghost { background: transparent; color: #eaeef4; border-color: #ffffff44; }
+.dock-pad { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 14px;
+  padding: 12px 16px max(14px, env(safe-area-inset-bottom)); background: linear-gradient(#0000, #000a); }
+.dock-grp { display: grid; grid-template-columns: repeat(3, 44px); gap: 6px; position: relative; padding-top: 18px; }
+.dock-grp > span { position: absolute; top: 0; left: 0; font-size: 0.7rem; color: #a7b5c6; text-transform: uppercase; letter-spacing: 0.08em; }
+.dock-grp button { width: 44px; height: 44px; border-radius: 10px; border: 1px solid #ffffff2e; background: #13233acc; color: #eaeef4; font-size: 1.05rem; cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: none; }
+.dock-grp button.on, .dock-grp button:active { background: #93b6ff; color: #0b1524; }
+.dock-modes { grid-template-columns: auto; padding-top: 0; }
+.dock-modes button { width: auto; min-width: 150px; padding: 0 12px; font-size: 0.85rem; }
+.dock-modes button[aria-pressed='true'] { background: #7ef0b0; color: #0b1524; border-color: #7ef0b0; }
+@media (max-width: 640px) {
+  .dock-hud { top: 70px; left: 8px; min-width: 0; font-size: 0.72rem; padding: 8px; gap: 4px; }
+  .dock-msg { top: auto; bottom: 196px; max-width: calc(100% - 32px); }
+  .dock-pad { gap: 8px 14px; }
+  .dock-grp { grid-template-columns: repeat(3, 40px); gap: 4px; }
+  .dock-grp button { width: 40px; height: 40px; }
+  .dock-modes { display: flex; width: 100%; justify-content: center; gap: 6px; order: -1; }
+  .dock-modes button { flex: 1; min-width: 0; max-width: 150px; height: 44px; padding: 0 6px; font-size: 0.78rem; }
+}

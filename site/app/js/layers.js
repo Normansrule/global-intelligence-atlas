@@ -256,7 +256,7 @@ export const LAYERS = [
         async fill(stillOpen) { const gi = window.gia; await satFill(p, { stillOpen, countryAt: (a, b) => gi.countryAt(a, b), refresh: () => gi.refreshLayer('stations', { soft: true }) }); },
         body: 'At this height the station is still inside a thin trace of atmosphere, so drag slowly lowers its orbit and it needs periodic re-boosts. The yellow line is its ground track: the orbit stays fixed in space while Earth turns underneath, so each pass shifts about 23° west.',
         links: [{ label: 'NASA — Spot the Station', url: 'https://spotthestation.nasa.gov' }, wiki(p.name)],
-        actions: [['passes', 'When can I see it from here?'], ['orbit', 'Show its full orbit'], ...(/ISS/.test(p.name) ? [['ride', 'Ride along with the ISS']] : [])],
+        actions: [['passes', 'When can I see it from here?'], ['orbit', 'Show its full orbit'], ...(/ISS/.test(p.name) ? [['ride', 'Ride along with the ISS'], ['dock', 'Dock with the ISS']] : [])],
       };
     },
     learn: {

@@ -17,7 +17,7 @@
 
 <sub><a href="https://normansrule.github.io/global-intelligence-atlas/">Website</a> · <a href="#-get-the-app">Install it from the browser, or which download to pick</a></sub>
 
-[![Version](https://img.shields.io/badge/version-2.23.0-1f4e9c)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.24.0-1f4e9c)](CHANGELOG.md)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Deploy to Pages](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml)
 [![Tests](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml)
@@ -41,7 +41,7 @@
   <img src="site/docs-media/layers-dark.svg" alt="All 71 layers of the atlas scrolling past as labelled chips, each with its colour: air quality, US weather warnings, live flights, earthquakes, ships, rocket launches, wildlife, satellites, undersea cables, landmarks and the rest" width="100%" />
 </picture>
 
-[What's new](#-new-in-v222-the-small-worlds) · [Get the app](#-get-the-app) · [Click anything](#-click-anything) · [At a glance](#-at-a-glance) · [Web or desktop](#-web-app-and-desktop-app) · [Gallery](#-gallery) · [Features](#-features) · [Design](#-design) · [Progress](#-progress) · [How it works](#-how-it-works) · [Run it](#-run-it-yourself) · [References](#-data-and-references) · [Credits](#-credits) · [Changelog](CHANGELOG.md)
+[What's new](#-new-in-v224-dock-with-the-iss) · [Get the app](#-get-the-app) · [Click anything](#-click-anything) · [At a glance](#-at-a-glance) · [Web or desktop](#-web-app-and-desktop-app) · [Gallery](#-gallery) · [Features](#-features) · [Design](#-design) · [Progress](#-progress) · [How it works](#-how-it-works) · [Run it](#-run-it-yourself) · [References](#-data-and-references) · [Credits](#-credits) · [Changelog](CHANGELOG.md)
 
 <sub>Global Intelligence Atlas (GIA) is built on the basis of <a href="https://github.com/koala73/worldmonitor">World Monitor</a> by Elie Habib.</sub>
 
@@ -49,7 +49,14 @@
 
 ---
 
-## ✨ New in v2.22: the small worlds
+## ✨ New in v2.24: dock with the ISS
+
+<p align="center"><img src="site/docs-media/v224-dock-iss.jpg" alt="Two views of the atlas's Dock with the ISS window. Left: from behind a crew capsule, the International Space Station spreads across the view 35 m ahead, its truss and solar arrays above the desert of Egypt, with readouts for distance, closing speed and alignment on the left. Right: the same capsule seen from the station, 5 m from its docking port, with the Nile delta and the Mediterranean below." width="100%"></p>
+<p align="center"><sub>Fly a capsule to the station's docking port, by hand or on autopilot, over where the real station is now.</sub></p>
+
+**Dock with the ISS** (Tools, the station's card, or the command palette) puts you in a crew capsule 200 m in front of the International Space Station (ISS). Fly it to the forward docking port with the keys or the on-screen pads, or press **Autopilot** and watch it fly the approach real ones fly: straight in, a hold at 20 m, then about 0.1 m/s to contact. Contact only counts within the soft-capture limits of the International Docking System Standard (IDSS): closing at 0.05 to 0.10 m/s, within 10 cm of the axis, lined up within 4°. The capsule drifts the way orbital mechanics makes it drift near a station (the Clohessy–Wiltshire equations), and below is the part of the Earth the real station is over right now, lit by the real Sun. The station is NASA's public-domain model, scaled to its real 109 m truss. Search now also takes a typed position or a `geo:` link. What this release assumes is in [`docs/ASSUMPTIONS.md`](docs/ASSUMPTIONS.md).
+
+## ✨ Also new in v2.22: the small worlds
 
 <p align="center"><img src="site/docs-media/v222-small-worlds.jpg" alt="Three views from the atlas's space mode. Left: Phobos, a lumpy grey potato covered in craters and grooves. Middle: Vesta, seen from the south, with the ridges of its giant Rheasilvia crater. Right: Bennu, a small rubble-covered rock shaped like a spinning top." width="100%"></p>
 <p align="center"><sub>Phobos, Vesta and Bennu in their real shapes, where they really are now.</sub></p>
@@ -570,7 +577,8 @@ Fifteen lessons on the [Learn page](https://normansrule.github.io/global-intelli
 | v2.10 | The Global Intelligence Atlas (GIA) repository launch: this README, browser tuning, release branding |
 | v2.11 | Cameras from 22 more agencies and Osiris's worldwide webcam list, the rest of World Monitor's map datasets, markers that share a spot, economy, property and industry |
 | v2.12 | A News tab: headlines from 16 publishers' own feeds around the world and free live news channels from broadcasters' official streams |
-| **v2.23** | **References and assumptions on record: what each release assumes or approximates, in `docs/ASSUMPTIONS.md`; the change list and licence notices brought up to date; every version number checked** |
+| **v2.24** | **Dock with the ISS: fly a capsule to the station by hand or on autopilot, with real orbital drift, real docking limits and the real Earth below; positions and geo: links in search** |
+| v2.23 | **References and assumptions on record: what each release assumes or approximates, in `docs/ASSUMPTIONS.md`; the change list and licence notices brought up to date; every version number checked** |
 | v2.22 | **The small worlds: Phobos, Deimos, Charon, Ceres, Vesta and Bennu, the odd-shaped ones in their real shapes, each where it really is now** |
 | v2.21 | **Thirteen big moons of Saturn, Uranus and Neptune, placed by the TASS 1.7 and GUST86 theories, with NASA maps; the desktop app builds on Windows again** |
 | v2.20 | **The whole solar system: space opens on every planet where it is today, with the asteroid and Kuiper belts and the farthest spacecraft; click a planet to fly there; sharper NASA maps as you fly in close to the Moon, Mars and Mercury** |
