@@ -17,7 +17,7 @@
 
 <sub><a href="https://normansrule.github.io/global-intelligence-atlas/">Website</a> · <a href="#-get-the-app">Install it from the browser, or which download to pick</a></sub>
 
-[![Version](https://img.shields.io/badge/version-2.30.0-1f4e9c)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.31.0-1f4e9c)](CHANGELOG.md)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Deploy to Pages](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml)
 [![Tests](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml)
@@ -41,7 +41,7 @@
   <img src="site/docs-media/layers-dark.svg" alt="The layers of the atlas scrolling past as labelled chips, each with its colour: air quality, US weather warnings, live flights, earthquakes, ships, rocket launches, wildlife, satellites, undersea cables, landmarks and the rest" width="100%" />
 </picture>
 
-[What's new](#-new-in-v230-the-sun-the-planets-and-their-moons-in-depth) · [Get the app](#-get-the-app) · [Click anything](#-click-anything) · [At a glance](#-at-a-glance) · [Web or desktop](#-web-app-and-desktop-app) · [Gallery](#-gallery) · [Features](#-features) · [Design](#-design) · [Progress](#-progress) · [How it works](#-how-it-works) · [Run it](#-run-it-yourself) · [References](#-data-and-references) · [Credits](#-credits) · [Changelog](CHANGELOG.md)
+[What's new](#-new-in-v231-tonights-sky-the-next-60-days-and-the-far-spacecraft) · [Get the app](#-get-the-app) · [Click anything](#-click-anything) · [At a glance](#-at-a-glance) · [Web or desktop](#-web-app-and-desktop-app) · [Gallery](#-gallery) · [Features](#-features) · [Design](#-design) · [Progress](#-progress) · [How it works](#-how-it-works) · [Run it](#-run-it-yourself) · [References](#-data-and-references) · [Credits](#-credits) · [Changelog](CHANGELOG.md)
 
 <sub>Global Intelligence Atlas (GIA) is built on the basis of <a href="https://github.com/koala73/worldmonitor">World Monitor</a> by Elie Habib.</sub>
 
@@ -49,7 +49,14 @@
 
 ---
 
-## ✨ New in v2.30: the Sun, the planets and their moons in depth
+## ✨ New in v2.31: tonight's sky, the next 60 days and the far spacecraft
+
+<p align="center"><img src="site/docs-media/v231-sky.jpg" alt="Two views of the solar system in the atlas. Left: the solar system card, Tonight from United Kingdom: full darkness from 18:05 until 05:25, then the Moon and each planet with when it is highest, which way and how bright, for example Jupiter 51° high in the south at 05:15, magnitude −2.1, and Uranus needing binoculars. Right: Voyager 1's page: 173.9 AU from Earth now, a command and its answer take 48.2 hours, one light-day from the Sun in November 2026." width="100%"/></p>
+<p align="center"><sub>Tonight's sky from London, and Voyager 1 passing one light-day from the Sun.</sub></p>
+
+The solar system card now starts with **tonight**: from wherever the globe was looking, when it is fully dark and, for the Moon and each planet, whether it is up then, when it is highest, which way to look and how bright. Below it are **the next 60 days**: the Moon's phases, the Moon passing close to planets, oppositions, meteor shower peaks and eclipses. The Moon's page gets its month ahead. **Voyager 1, Voyager 2 and New Horizons** each show how far they are from Earth now, how long a command takes there and back, when they pass one light-day from the Sun (Voyager 1 does this month) and the star each will pass next. The limits are in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md#v231-tonights-sky-the-next-60-days-and-the-far-spacecraft).
+
+## ✨ Also new in v2.30: the Sun, the planets and their moons in depth
 
 <p align="center"><img src="site/docs-media/v230-space.jpg" alt="Two pages of the atlas in space. Left: Mars filling the view, and its page: someone of 70 kg weighs like 26.5 kg, a 50 cm jump goes 1.32 m, the Sun looks 65.6 % as wide with 43.1 % of the light, 669 days in its year; then getting there: 259 days, 3.61 km/s from low Earth orbit, the planets line up every 2.14 years, next launch window around December 2026. Right: Titan, and its page: air at 1.48 times Earth's pressure, 98.4 % nitrogen and 1.4 % methane as bars, then the spacecraft that went there: Voyager 1, Cassini–Huygens and Dragonfly." width="100%"/></p>
 <p align="center"><sub>Mars and Titan, each with a deeper page of its own.</sub></p>
@@ -641,7 +648,8 @@ Fifteen lessons on the [Learn page](https://normansrule.github.io/global-intelli
 | v2.10 | The Global Intelligence Atlas (GIA) repository launch: this README, browser tuning, release branding |
 | v2.11 | Cameras from 22 more agencies and Osiris's worldwide webcam list, the rest of World Monitor's map datasets, markers that share a spot, economy, property and industry |
 | v2.12 | A News tab: headlines from 16 publishers' own feeds around the world and free live news channels from broadcasters' official streams |
-| **v2.30** | **The Sun, the planets and their moons in depth: your weight and the Sun on each world, when it rises and the best night to see it, the trip from Earth and the next launch window, its air, its size and the spacecraft that went there** |
+| **v2.31** | **Tonight's sky from anywhere, the next 60 days of Moon phases, close passes, meteor showers and eclipses, and the far spacecraft from Earth now** |
+| v2.30 | **The Sun, the planets and their moons in depth: your weight and the Sun on each world, when it rises and the best night to see it, the trip from Earth and the next launch window, its air, its size and the spacecraft that went there** |
 | v2.29 | **Markets, cloud regions and AI labs in depth: the local time and trading status of every exchange with the world's trading day, round trips and people within reach of each cloud region, the compute near each AI lab** |
 | v2.28 | **Conflict zones, watch regions and military bases in depth: each theatre's size, countries, people, bases and what is at stake; each base's network, rival powers within 1,000 km and what it overlooks** |
 | v2.27 | **Spaceports and mines in depth: Earth's spin and sea-safe launch directions with the orbits they reach, each mine's share of world output, its way to the sea, where its mineral is refined and priced** |

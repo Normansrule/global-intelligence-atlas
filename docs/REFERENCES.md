@@ -278,6 +278,8 @@ International Energy Agency. (2024a). *Oil 2024*. https://www.iea.org/reports/oi
 
 International Energy Agency. (2024b). *Gas market report, Q1-2024*. https://www.iea.org/reports/gas-market-report-q1-2024
 
+International Meteor Organization. (n.d.). *Meteor shower calendar*. https://www.imo.net/resources/calendar/
+
 International Organization for Standardization. (1975). *Standard atmosphere* (ISO Standard No. 2533:1975).
 
 International Organization for Standardization. (2020). *Document management — Portable document format — Part 2: PDF 2.0* (ISO Standard No. 32000-2:2020). https://www.iso.org/standard/75839.html
@@ -914,6 +916,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (World Nuclear Association, 2024) | World uranium production in 2022 and Kazakhstan’s share, on the mine pages (v2.27). | Reference |
 | (Petit & Luzum, 2010) | Earth’s equatorial radius (6,378.137 km) and rotation rate, for the speed its spin lends a rocket (v2.27). | Reference |
 | (Chamberlain & Duquette, 2007) | The area of a drawn conflict zone on a sphere (v2.28). | Reference |
+| (International Meteor Organization, n.d.) | Peak dates and typical hourly rates of the big annual meteor showers in the next 60 days (v2.31). | Facts (dates and rates), not copied text |
 | (Internet Assigned Numbers Authority, n.d.) | Local time and daylight-saving rules for every financial place, through the browser’s Intl API (v2.29). | Public domain |
 | (Singla et al., 2014) | Light in fibre at about two-thirds of its speed in a vacuum and routes longer than the straight line, behind the cloud round-trip estimates (v2.29). | Reference |
 | (World Aquatics, n.d.) | An Olympic pool: 50 × 25 m and at least 2 m deep, so at least 2,500 m³ (v2.26). | Reference |

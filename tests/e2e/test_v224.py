@@ -12,10 +12,10 @@ with sync_playwright() as p:
     br=p.chromium.launch(args=['--use-gl=swiftshader','--enable-unsafe-swiftshader'])
     pg=br.new_page(viewport={'width':1280,'height':800}); errs=[]
     pg.on('pageerror', lambda e: errs.append(str(e)))
-    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.30')}catch(e){}")
+    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.31')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@20,0,2.4&l=borders,stations', wait_until='commit')
     pg.wait_for_function("() => window.gia", timeout=60000); pg.wait_for_timeout(3000)
-    check('version 2.30', pg.evaluate("() => gia.VERSION")=='2.30')
+    check('version 2.31', pg.evaluate("() => gia.VERSION")=='2.31')
     check('the docking code is not loaded until it is opened', not pg.evaluate("() => performance.getEntriesByType('resource').some((e) => e.name.includes('docking.js'))"))
     sim=pg.evaluate("""async () => { const m = await import('/app/js/docking.js'); const st = await m.loadStation();
       const out = { tris: st.tris, size: [st.size.x, st.size.y, st.size.z], groups: st.group.children.length };

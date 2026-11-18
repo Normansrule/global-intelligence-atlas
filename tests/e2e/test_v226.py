@@ -13,10 +13,10 @@ def open_(pg, layer, find, wait=2000):
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800}); errs=[]
     pg.on('pageerror', lambda e: errs.append(str(e)))
-    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.30')}catch(e){}")
+    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.31')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@26,56,2&l=borders,'+','.join(LAYERS), wait_until='commit'); pg.wait_for_function("() => window.gia", timeout=60000)
     pg.wait_for_function(f"() => {json.dumps(LAYERS)}.every((k) => gia.state.data[k])", timeout=60000); pg.wait_for_timeout(1000)
-    check('version 2.30', pg.evaluate("() => gia.VERSION")=='2.30')
+    check('version 2.31', pg.evaluate("() => gia.VERSION")=='2.31')
     # a chokepoint, first with Live ships off, then with ships placed in the strait
     t=open_(pg, 'waterways', "x => /hormuz/i.test(x.name)")
     check('Hormuz: its width against the Strait of Dover and what it joins', '34 km' in t and 'about as wide as the Strait of Dover' in t and 'the Persian Gulf and the Gulf of Oman' in t, t[:400])

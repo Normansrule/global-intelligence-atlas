@@ -8,6 +8,19 @@ Every release adds a section at the top. `tests/docs/check_release.py` fails if 
 
 ---
 
+## v2.31: tonight's sky, the next 60 days and the far spacecraft
+
+The new sections (`site/app/js/skydetail.js`) on the solar system card, the Moon's page and the far spacecraft's pages are worked out on the device with Astronomy Engine (Cross, 2023); nothing new is fetched.
+
+- **Approximation:** "tonight" is the night's full darkness (the Sun more than 18° below the horizon) at the point the globe was looking at, from its start even when asked in the middle of the night. A body counts as up when it is more than 10° high at some moment of it, checked every 10 minutes; Mercury and Venus are checked from 90 minutes before full darkness to 90 minutes after, with the Sun at least 6° down, since they are seen in twilight. Sea-level horizon, standard refraction, no hills, buildings or weather.
+- **Judgement:** Uranus and Neptune are marked as needing binoculars or a telescope (magnitude 5.6 and 7.8); the Moon and the five bright planets are not.
+- **Approximation:** the Moon passing a planet is reported at its closest within 4° (planets passing each other within 2°), as seen from the Earth's centre; from a given place the Moon can look up to about 1° nearer or farther. Searches step every 6 hours (1 day for planet pairs) and then narrow down.
+- **Not verified:** meteor shower peaks and typical hourly rates (ZHR, for a dark sky with the radiant overhead) are the International Meteor Organization's usual values (International Meteor Organization, n.d.), typed in; the peak moves by about a day from year to year and real counts are lower in a bright sky.
+- **Approximation:** the far spacecraft's distance from Earth combines its published distance from the Sun and fixed direction (from v2.20) with Astronomy Engine's Earth, so it shares their accuracy of about 1 AU. "One light-day" is 173.1 AU from the Sun; reports that Voyager 1 reaches one light-day "from Earth" in late 2026 differ by up to a few weeks because the Earth swings 1 AU either side.
+- **Not verified:** the stars the Voyagers will pass (Gliese 445 at 1.6 light-years and Ross 248 at 1.7 light-years, in about 40,000 years), the instruments still on and the 4 watts a year power loss are from NASA's mission pages (NASA Jet Propulsion Laboratory, n.d.-a), not checked against current status.
+
+---
+
 ## v2.30: the Sun, the planets and their moons in depth
 
 Each body's page in space gains six sections (`site/app/js/spacedetail.js`), worked out on the device from Astronomy Engine (Cross, 2023) and figures rounded from NASA's Planetary Fact Sheets (Williams, n.d.). Nothing new is fetched, so they open offline too.

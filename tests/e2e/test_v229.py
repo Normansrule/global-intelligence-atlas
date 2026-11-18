@@ -13,10 +13,10 @@ def open_(pg, layer, find, wait=3000):
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800}); errs=[]
     pg.on('pageerror', lambda e: errs.append(str(e)))
-    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.30')}catch(e){}")
+    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.31')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@15,40,2&l=borders,'+','.join(LAYERS), wait_until='commit'); pg.wait_for_function("() => window.gia", timeout=60000)
     pg.wait_for_function(f"() => {json.dumps(LAYERS)}.every((k) => gia.state.data[k])", timeout=60000); pg.wait_for_timeout(1000)
-    check('version 2.30', pg.evaluate("() => gia.VERSION")=='2.30')
+    check('version 2.31', pg.evaluate("() => gia.VERSION")=='2.31')
     # an exchange
     t=open_(pg, 'economic', "x => x.id === 'nyse'")
     check('NYSE: the local time in New York', 'local time in' in t and 'America/New York' in t, t[:300])

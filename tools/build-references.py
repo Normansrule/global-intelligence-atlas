@@ -162,6 +162,7 @@ E = {
  'wnaura': ('World Nuclear Association, 2024', 'World Nuclear Association. (2024). *World uranium mining production*. https://world-nuclear.org/information-library/nuclear-fuel-cycle/mining-of-uranium/world-uranium-mining-production'),
  'iers': ('Petit & Luzum, 2010', 'Petit, G., & Luzum, B. (Eds.). (2010). *IERS conventions (2010)* (IERS Technical Note No. 36). Verlag des Bundesamts für Kartographie und Geodäsie. https://www.iers.org/IERS/EN/Publications/TechnicalNotes/tn36.html'),
  'chamberlain2007': ('Chamberlain & Duquette, 2007', 'Chamberlain, R. G., & Duquette, W. H. (2007). *Some algorithms for polygons on a sphere* (JPL Publication 07-03). Jet Propulsion Laboratory, National Aeronautics and Space Administration.'),
+ 'imocalendar': ('International Meteor Organization, n.d.', 'International Meteor Organization. (n.d.). *Meteor shower calendar*. https://www.imo.net/resources/calendar/'),
  'ianatz': ('Internet Assigned Numbers Authority, n.d.', 'Internet Assigned Numbers Authority. (n.d.). *Time zone database* [Data set]. https://www.iana.org/time-zones'),
  'singla2014': ('Singla et al., 2014', 'Singla, A., Chandrasekaran, B., Godfrey, P. B., & Maggs, B. (2014). The Internet at the speed of light. In *Proceedings of the 13th ACM Workshop on Hot Topics in Networks* (pp. 1–7). Association for Computing Machinery. https://doi.org/10.1145/2670518.2673876'),
  'fina': ('World Aquatics, n.d.', 'World Aquatics. (n.d.). *Facilities rules* (FR 2: Swimming pools). https://www.worldaquatics.com/rules/competition-regulations'),

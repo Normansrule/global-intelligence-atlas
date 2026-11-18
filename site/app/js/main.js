@@ -66,7 +66,7 @@ import { isOffline, servedSince } from './lastknown.js'; // offline mode
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.30';
+export const VERSION = '2.31';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg, unitSvg } from './icons.js';
@@ -1992,7 +1992,13 @@ if (NEW_VERSION) { if (!state.pendingSel && !state.pendingSpace) setTimeout(what
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>The Sun, the planets and their moons in depth</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>Tonight’s sky and the far spacecraft</h3>
+    <div class="newlist">
+      <span>${g('eye', '#7fe3c4')}<b>Tonight:</b> from wherever the globe is looking, when it is fully dark and which planets are up in those hours, how high, which way and how bright. <button class="btn ghost" data-space="system">Open the solar system</button></span>
+      <span>${g('moon', '#c9c4ba')}<b>The next 60 days:</b> the Moon’s phases, the Moon passing close to planets, oppositions, meteor shower peaks and eclipses, and the Moon’s month ahead on its own page.</span>
+      <span>${g('rocket', '#ffb37a')}<b>The far spacecraft:</b> how far the Voyagers and New Horizons are from Earth now, how long a command takes there and back, Voyager 1 reaching one light-day from the Sun, and the star each will pass next.</span>
+    </div>
+    <h4>From v2.30: the Sun, the planets and their moons in depth</h4>
     <div class="newlist">
       <span>${g('moon', '#c9c4ba')}<b>Standing there:</b> on every planet, moon and small world, what you would weigh, how high you could jump, how big and bright the Sun looks, and how long its day and year are. <button class="btn ghost" data-space="mars">Try Mars</button></span>
       <span>${g('rocket', '#ffb37a')}<b>Getting there:</b> how long the trip takes, the speed a rocket must add, and the next launch window, worked out from where the planets really are. <button class="btn ghost" data-space="titan">Try Titan</button></span>

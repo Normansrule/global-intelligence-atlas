@@ -1349,3 +1349,16 @@ body.in-space #globe { cursor: grab; }
 .sd-missions { list-style: none; margin: 4px 0 8px; padding: 0; display: grid; gap: 8px; }
 .sd-missions li { display: grid; gap: 1px; font-size: var(--fs-caption); padding-left: 10px; border-left: 2px solid color-mix(in srgb, var(--ochre) 60%, transparent); }
 .sd-missions small { color: var(--ink-2); }
+/* v2.31 tonight's sky, the months ahead and the far spacecraft (skydetail.js) */
+.sk-list, .sk-ahead { list-style: none; margin: 4px 0 8px; padding: 0; display: grid; gap: 6px; font-size: var(--fs-caption); }
+.sk-list li { display: grid; grid-template-columns: 70px 1fr auto; gap: 8px; align-items: baseline; }
+.sk-list li.sk-down { opacity: 0.55; }
+.sk-list small, .sk-ahead small { color: var(--ink-2); }
+.sk-ahead li { display: grid; grid-template-columns: 92px auto 1fr; gap: 6px; align-items: center; }
+.sk-ahead li b { font-weight: 600; }
+.sk-ahead li.sk-shower span, .sk-ahead li.sk-eclipse span { color: var(--ochre); }
+.sk-phase .sk-dark { fill: color-mix(in srgb, var(--ink) 18%, transparent); }
+.sk-phase .sk-lit { fill: #f1ead8; }
+.sk-month { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; margin: 6px 0; text-align: center; font-size: var(--fs-caption); }
+.sk-month > div { display: grid; justify-items: center; gap: 2px; }
+.sk-month small { color: var(--ink-2); }

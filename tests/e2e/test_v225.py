@@ -21,11 +21,11 @@ with sync_playwright() as p:
     pg=br.new_page(viewport={'width':1280,'height':800}); errs=[]
     pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler); pg.route('**/live-data/lightning.json', lambda r: r.fulfill(status=404, body='404: Not Found', headers={'Access-Control-Allow-Origin':'*'}))  # the copy missing: nowCOAST itself
-    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.30')}catch(e){}")
+    pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.31')}catch(e){}")
     pg.goto(f'http://localhost:8765/app/#@30,-90,2.2&l={LAYERS}', wait_until='commit')
     pg.wait_for_function("() => window.gia", timeout=60000)
     pg.wait_for_function("() => ['cyclones','lightning','perimeters','airspace','gnss'].every((k) => gia.state.data[k])", timeout=60000); pg.wait_for_timeout(1500)
-    check('version 2.30', pg.evaluate("() => gia.VERSION")=='2.30')
+    check('version 2.31', pg.evaluate("() => gia.VERSION")=='2.31')
     reg=pg.evaluate("""async () => { const { validateLayer } = await import('./js/registry.js'); const w = await import('./js/watchlayers.js');
       const ls = [w.lightningLayer(), w.cyclonesLayer({}), w.perimetersLayer({}), w.airspaceLayer({}), w.gnssLayer({})];
       const v = (l) => validateLayer(l, { groups: [{ id: 'live' }] }); return ls.map((l) => [l.id, l.group, v(l).length === 0 ? 'ok' : v(l)]); }""")
@@ -70,7 +70,7 @@ with sync_playwright() as p:
     pg2.on('pageerror', lambda e: errs2.append(str(e)))
     pg2.route('**/*', handler)
     for h in DIRECT: pg2.route(f'**://{h}/**', lambda r: r.abort())
-    pg2.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.30')}catch(e){}")
+    pg2.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.31')}catch(e){}")
     pg2.goto(f'http://localhost:8765/app/#@30,-90,2.2&l={LAYERS}', wait_until='commit')
     pg2.wait_for_function("() => window.gia", timeout=60000)
     pg2.wait_for_function("() => ['cyclones','lightning','perimeters','airspace','gnss'].every((k) => gia.state.data[k])", timeout=90000); pg2.wait_for_timeout(1000)

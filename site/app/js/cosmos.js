@@ -24,6 +24,7 @@ import { THREE } from '../vendor/vendor.min.mjs';
 import { BODIES, BODY } from './bodies.js';
 import { LANDINGS } from './landings.js';
 import { spaceSections } from './spacedetail.js';
+import { skySections, moonMonth, probeSections } from './skydetail.js';
 
 const D2R = Math.PI / 180;
 const R = 100; const KM = R / 6371.0088; // scene units per km
@@ -170,7 +171,7 @@ let active = null; // the installed cosmos, for the layer below
 /** The layer-list switch: the Sun, the Moon and the planets drawn in the night sky behind the globe. */
 export const planetsLayer = {
   id: 'planets', group: 'space', label: 'Moon and planets', swatch: '#ffd27a', on: true, fresh: true,
-  sources: ['astronomyengine', 'iaurotation', 'solarsystemscope', 'nasa3d', 'nasatrek', 'nssdcfacts', 'apollosites', 'nssdcmaster', 'espenak', 'tass17', 'gust86', 'lainey', 'mpcorb', 'stellariumdata', 'curtis2020'],
+  sources: ['astronomyengine', 'iaurotation', 'solarsystemscope', 'nasa3d', 'nasatrek', 'nssdcfacts', 'apollosites', 'nssdcmaster', 'espenak', 'tass17', 'gust86', 'lainey', 'mpcorb', 'stellariumdata', 'curtis2020', 'imocalendar'],
   async load() { return {}; },
   channels() { return {}; },
   onToggle(on) { active?.setBodies(on); },
@@ -605,6 +606,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
   async function exploreSystem({ instant = false } = {}) {
     const c = ensureControls(); ensureEarth();
     if (!st.focus) {
+      st.obs = null; skyObs(); // v2.31 tonight's sky is seen from where the globe was looking
       cam.position.copy(mainCam.position); cam.quaternion.copy(mainCam.quaternion); cam.updateMatrixWorld(); c.target.set(0, 0, 0);
       globe.controls().enabled = false; globe.enablePointerInteraction(false); globe.controls().autoRotate = false;
       document.body.classList.add('in-space');
@@ -905,10 +907,13 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     }
     return rows;
   }
+  /** v2.31 the place on Earth the sky is seen from: where the globe was looking when you flew out. */
+  function skyObs() { if (!st.obs) { try { const pv = globe.pointOfView(); st.obs = { lat: pv.lat, lng: pv.lng, place: placeName?.(pv.lat, pv.lng) }; } catch { st.obs = null; } } return st.obs; }
   /** v2.30 the extra sections of a body's page: standing there, in our sky, getting there, its air, size, missions. */
   function sections(id) {
     if (!st.obs) { try { const pv = globe.pointOfView(); st.obs = { lat: pv.lat, lng: pv.lng, place: placeName?.(pv.lat, pv.lng) }; } catch { st.obs = null; } }
-    try { return spaceSections(id, { A, date: now(), obs: st.obs, def: BODY[id], hostName: BODY[hostOf(id)]?.name }); } catch (e) { console.warn('space page', e); return ''; }
+    let extra = ''; if (id === 'moon') { try { extra = moonMonth(A, now()); } catch { extra = ''; } } // v2.31 the Moon's phases ahead
+    try { return extra + spaceSections(id, { A, date: now(), obs: st.obs, def: BODY[id], hostName: BODY[hostOf(id)]?.name }); } catch (e) { console.warn('space page', e); return ''; }
   }
   function card(id) {
     const d = BODY[id];
@@ -941,6 +946,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     const fmtMin = (m) => (m < 60 ? `${m.toFixed(1)} min` : `${Math.floor(m / 60)} h ${Math.round(m % 60)} min`);
     openNotes('Space', `
       <h3 class="withglyph"><span class="space-glyph" style="--c:#ffd27a">☉</span><span>The solar system</span></h3><p class="sub">Where everything is now · drag to turn, right-drag or two fingers to slide, scroll to zoom · click a planet to fly there</p>
+      ${(() => { try { return skySections(A, skyObs(), now()); } catch (e) { console.warn('sky', e); return ''; } })()}
       <table class="sys-table"><thead><tr><th>Planet</th><th>From the Sun</th><th>Sunlight takes</th></tr></thead><tbody>${rows.map((r) => `<tr><td><button class="linkish" data-space="${r.id}"><i style="--c:${BODY[r.id].dot}"></i>${esc(BODY[r.id].name)}</button></td><td>${r.au.toFixed(2)} AU</td><td>${fmtMin(r.min)}</td></tr>`).join('')}</tbody></table>
       <p class="small muted">1 astronomical unit (AU) is the Earth's average distance from the Sun, 149.6 million km. Everything is drawn to scale, so out here the planets are dots: even Jupiter is less than a pixel wide.</p>
       <p><b>Asteroid belt</b> (2.1–3.3 AU, between Mars and Jupiter) and <b>Kuiper belt</b> (39–48 AU, beyond Neptune, Pluto's home): drawn where they are, with the gaps Jupiter's pull clears in the asteroid belt, each rock going round at its own speed. The rocks are illustrative, not individual known asteroids.</p>
@@ -958,6 +964,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
       <h3 class="withglyph"><span class="space-glyph" style="--c:#7fe3c4">✦</span><span>${esc(p.name)}</span></h3><p class="sub">Spacecraft · launched ${p.launched}</p>
       ${factsHtml([['From the Sun', `about ${Math.round(au)} AU (${(km / 1e9).toFixed(1)} billion km)`], ['Moving away at', `${(p.auYr * 149597870.7 / 31557600).toFixed(1)} km/s`], ['A radio signal takes', `${(km / 299792.458 / 3600).toFixed(1)} hours`]])}
       <p>${esc(p.note)}</p>
+      ${(() => { try { return probeSections(A, p, now()); } catch (e) { console.warn('probe', e); return ''; } })()}
       <div class="quick"><button class="btn ghost" data-space="system">The solar system</button></div>
       <details class="more"><summary>Where this comes from</summary><p class="small">Distance on 1 January 2025 and cruise speed from the mission's published status, carried forward to the atlas clock; direction in the sky as seen from the Sun. Good to about 1 AU.</p>${refsHtml([p.ref])}</details>`, `space:${p.id}`);
   }

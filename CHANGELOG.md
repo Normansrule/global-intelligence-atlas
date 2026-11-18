@@ -4,6 +4,14 @@ Release notes for Global Intelligence Atlas (GIA), newest first. Versions before
 
 ---
 
+## 🔭 v2.31: tonight's sky, the next 60 days and the far spacecraft
+
+- **Tonight:** on the solar system card, from wherever the globe is looking, when it is fully dark and, for the Moon and each planet, whether it is up in those hours, when it is highest, which way to look, how bright and in front of which stars.
+- **The next 60 days:** the Moon's phases (drawn), the Moon passing close to planets, oppositions and greatest elongations, the peaks of the big meteor showers and eclipses. The Moon's own page gets its month ahead.
+- **The far spacecraft:** Voyager 1, Voyager 2 and New Horizons each show how far they are from Earth now (not just the Sun), how long a command takes there and back, when they pass one light-day from the Sun (Voyager 1: November 2026), and the star each will pass next.
+- **Tests back to green:** GitHub moved `ubuntu-latest` to Ubuntu 26.04, which Playwright 1.56 cannot install a browser on, so the end-to-end job failed on main after v2.30. The test and screenshot jobs now run on Ubuntu 24.04.
+- A new reference: the International Meteor Organization's shower calendar. Every figure and its limits are in `docs/ASSUMPTIONS.md`.
+
 ## 🪐 v2.30: the Sun, the planets and their moons in depth
 
 - **Standing there:** on every one of the 34 bodies, what someone of 70 kg would weigh, how high a 50 cm jump would go (on Bennu you would leave for good), the speed needed to leave, how wide and bright the Sun looks, and how long the day and the year are.
