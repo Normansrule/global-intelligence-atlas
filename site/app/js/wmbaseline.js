@@ -8,6 +8,10 @@
 // hundred markers at most and goes through the shared marker pass (one instanced mesh for the columns, a capped set
 // of pins), so turning all of them on adds no per-item meshes.
 import { worldMonitorData } from './layers.js';
+import { mineHtml, mineFill, siteOverlay } from './sitedetail.js';
+import { baseHtml, baseFill, geoOverlay } from './geodetail.js';
+import { marketHtml, marketFill, cloudHtml, cloudFill, labHtml, labFill, econOverlay } from './econdetail.js';
+import { cities as cityRows } from './citydetail.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const tip = (t, s = '') => `<div class="tip"><b>${esc(t)}</b>${s ? `<span>${esc(s)}</span>` : ''}</div>`;
@@ -33,21 +37,23 @@ const baseOp = (b) => BASE_OPERATORS[b.type] ?? [b.type, '#d98c6a'];
 export const basesLayer = {
   id: 'bases', pin: 'badge', group: 'geo', label: 'Military bases', swatch: '#d98c6a', on: false, sources: ['worldmonitor'],
   load: from('bases'),
-  channels(bs) {
-    return { points: bs.map((b) => point('bases', b, b.status === 'closed' ? 'rgba(217,140,106,0.45)' : baseOp(b)[1], 0.17, 0.01, tip(b.name, `${baseOp(b)[0]}${b.country ? ` · in ${b.country}` : ''}`))) };
+  channels(bs, ctx) {
+    const open = ctx ? geoOverlay(ctx, 'bases', window.gia?.state?.selected) : { custom: [] }; // the open base page's ring and lines to other powers (geodetail.js)
+    return { ...(open.custom.length ? { custom: open.custom } : {}), points: bs.map((b) => point('bases', b, b.status === 'closed' ? 'rgba(217,140,106,0.45)' : baseOp(b)[1], 0.17, 0.01, tip(b.name, `${baseOp(b)[0]}${b.country ? ` · in ${b.country}` : ''}`))) };
   },
   describe(b) {
     return {
       title: b.name, sub: `${baseOp(b)[0]} base${b.country ? ` · host: ${b.country}` : ''}`, probe: [b.lat, b.lon],
       rows: rows([['Operated by', baseOp(b)[0]], ['Host country', b.country], ['Branch', b.arm], ['Status', b.status ?? 'active']]),
-      body: b.description,
+      /** The base page: its power's network, other powers within 1,000 km, the chokepoint, conflict and watch region it overlooks (geodetail.js). */
+      html: baseHtml(b), async fill() { const gi = window.gia; baseFill(b, { data: gi.state.data, wm: await worldMonitorData(), refresh: () => gi.refreshLayer('bases', { soft: true }) }); },
       links: [wiki(b.name), credit('shared/military-bases-data.ts')],
     };
   },
   learn: {
     what: 'Overseas and key home military bases of the United States and NATO, China, Russia, the United Kingdom, France, India, Italy, the United Arab Emirates and Japan, coloured by the country that runs them. Faded markers are closed.',
     how: 'World Monitor’s list, built from the Overseas Military Bases dataset of Asian Religious Connections (ASIAR, University of Hong Kong, 2020) with status changes since, such as the French withdrawals from the Sahel in 2024–25 and the Chinese naval facility at Ream, Cambodia, plus major home bases.',
-    try: 'Turn on Chokepoints: count how many foreign bases sit within a day’s sailing of Bab-el-Mandeb and the Strait of Hormuz.',
+    try: 'Click Camp Lemonnier in Djibouti: its page joins it to the Chinese base a few kilometres away and to Bab-el-Mandeb.',
     refs: ['worldmonitor'],
   },
 };
@@ -119,22 +125,24 @@ export const techHqLayer = {
 
 const CLOUD = { aws: ['Amazon Web Services', '#ffb35c'], gcp: ['Google Cloud', '#6fb8ff'], azure: ['Microsoft Azure', '#4ad4ff'], cloudflare: ['Cloudflare', '#ff8a4c'] };
 export const cloudLayer = {
-  id: 'cloud', pin: 'server', group: 'infra', label: 'Cloud regions', swatch: '#6fb8ff', on: false, sources: ['worldmonitor'],
+  id: 'cloud', pin: 'server', group: 'infra', label: 'Cloud regions', swatch: '#6fb8ff', on: false, sources: ['worldmonitor', 'singla2014', 'natearth'],
   load: from('cloudRegions'),
-  channels(cs) { return { points: cs.map((c) => point('cloud', c, (CLOUD[c.provider] ?? ['', '#6fb8ff'])[1], 0.15 + (c.zones ?? 2) * 0.02, 0.008 + (c.zones ?? 2) * 0.003, tip(c.name, `${(CLOUD[c.provider] ?? [c.provider])[0]} · ${c.city}`))) }; },
+  channels(cs, ctx) { const open = ctx ? econOverlay(ctx, 'cloud', window.gia?.state?.selected) : { custom: [] }; // the open cloud page's latency rings (econdetail.js)
+    return { ...(open.custom.length ? { custom: open.custom } : {}), points: cs.map((c) => point('cloud', c, (CLOUD[c.provider] ?? ['', '#6fb8ff'])[1], 0.15 + (c.zones ?? 2) * 0.02, 0.008 + (c.zones ?? 2) * 0.003, tip(c.name, `${(CLOUD[c.provider] ?? [c.provider])[0]} · ${c.city}`))) }; },
   describe(c) {
     return {
       title: c.name, sub: `${(CLOUD[c.provider] ?? [c.provider])[0]} · ${c.city}, ${c.country}`, probe: [c.lat, c.lon],
       rows: rows([['Provider', (CLOUD[c.provider] ?? [c.provider])[0]], ['Region code', c.id.replace(/^(aws|gcp|azure|cloudflare)-/, '')], ['City', c.city], ['Availability zones', c.zones]]),
-      body: 'A cloud region is a cluster of data centres; its availability zones are separate buildings with their own power and cooling, close enough for fast links but far enough apart that one fire or flood does not take them all down.',
+      /** The cloud page: round-trip times to the biggest cities, people within 10 and 30 ms, regions and AI sites next door (econdetail.js). */
+      html: cloudHtml(c), async fill(stillOpen) { const gi = window.gia; const cs = await cityRows(); if (stillOpen && !stillOpen()) return; cloudFill(c, { wm: await worldMonitorData(), cities: cs, refresh: () => gi.refreshLayer('cloud', { soft: true }) }); },
       links: [credit('src/config/tech-geo.ts')],
     };
   },
   learn: {
     what: 'Major cloud regions of Amazon Web Services (amber), Google Cloud (blue), Microsoft Azure (cyan) and Cloudflare (orange). Bigger markers have more availability zones.',
     how: 'World Monitor’s list of the main regions, from each provider’s published region maps; positions are the metro area, not the exact buildings.',
-    try: 'Turn on Undersea cables: the big regions sit where many cables land, like Ashburn, Dublin, Frankfurt and Singapore.',
-    refs: ['worldmonitor'],
+    try: 'Click a region and look at the two rings: everyone inside the green one is within a 10 ms round trip, at the speed of light in fibre.',
+    refs: ['worldmonitor', 'singla2014'],
   },
 };
 
@@ -147,7 +155,8 @@ export const aiLabsLayer = {
     return {
       title: l.name, sub: `${l.type} lab · ${[l.city, l.country].filter(Boolean).join(', ')}`, wiki: l.name, probe: [l.lat, l.lon],
       rows: rows([['Kind', l.type], ['Part of', l.parent], ['Founded', l.foundedYear], ['Focus', l.focusAreas?.length ? list(l.focusAreas) : null], ['Known for', l.notableWork?.length ? list(l.notableWork, 4) : null], ['Publications', l.publications], ['Faculty', l.faculty]]),
-      body: l.description,
+      /** The lab page: its work, the labs and tech headquarters around it, the cloud regions and AI data centres nearest it (econdetail.js). */
+      html: labHtml(l), async fill() { const gi = window.gia; labFill(l, { wm: await worldMonitorData(), refresh: () => gi.refreshLayer('ailabs', { soft: true }) }); },
       links: [wiki(l.name), credit('src/config/ai-research-labs.ts')],
     };
   },
@@ -199,7 +208,7 @@ export const startupsLayer = {
 
 const FIN_KIND = { centre: 'Financial centre', exchange: 'Stock exchange', bank: 'Central bank or monetary institution' };
 export const financeLayer = {
-  id: 'finance', group: 'infra', label: 'More financial centres', swatch: '#c7d8e4', on: false, sources: ['worldmonitor'],
+  id: 'finance', group: 'infra', label: 'More financial centres', swatch: '#c7d8e4', on: false, sources: ['worldmonitor', 'ianatz'],
   pin: (d) => (d.kind === 'centre' ? 'city' : 'bank'), legend: [['city', 'Financial centre'], ['bank', 'Exchange or central bank']],
   load: from('finance'),
   channels(fs) {
@@ -211,6 +220,8 @@ export const financeLayer = {
       rows: rows([['Short name', f.shortName], ['Kind', f.kind === 'centre' ? `${f.type} centre` : f.type ?? f.tier], ['Global Financial Centres Index rank', f.gfciRank], ['Specialties', f.specialties?.length ? f.specialties.join(', ') : null],
         ['Market value', f.marketCap != null ? `$${f.marketCap} trillion` : null], ['Trading hours', f.tradingHours], ['Time zone', f.timezone], ['Currency', f.currency]]),
       body: f.description,
+      /** The market page (econdetail.js). */
+      html: marketHtml(f), async fill() { const gi = window.gia; const wm = await worldMonitorData(); marketFill(f, { layer: 'finance', all: [...(gi.state.data.economic ?? wm.economic), ...wm.finance], refresh: () => gi.refreshLayer('finance', { soft: true }) }); },
       links: [wiki(f.name), credit('src/config/finance-geo.ts')],
     };
   },
@@ -247,26 +258,28 @@ export const commoditiesLayer = {
 
 const MINE_STATUS = { producing: 1, development: 0.7, 'care-and-maintenance': 0.45, exploration: 0.55, closed: 0.35 };
 export const miningLayer = {
-  id: 'mining', group: 'infra', label: 'Mines and processing plants', swatch: '#b08d5a', on: false, sources: ['worldmonitor'],
+  id: 'mining', group: 'infra', label: 'Mines and processing plants', swatch: '#b08d5a', on: false, sources: ['worldmonitor', 'usgsmcs', 'wnaura'],
   pin: (d) => (d.kind === 'plant' ? 'factory' : 'mine'), legend: [['mine', 'Mine'], ['factory', 'Smelter, refinery or processing plant']],
   load: from('mining'),
-  channels(ms) {
-    return { points: ms.map((m) => point('mining', m, m.kind === 'plant' ? '#d7b98a' : `rgba(176,141,90,${MINE_STATUS[m.status] ?? 1})`, 0.26, 0.02, tip(m.name, `${m.kind === 'plant' ? `${m.type} · ` : ''}${m.mineral} · ${m.country}`))) };
+  channels(ms, ctx) {
+    const open = ctx ? siteOverlay(ctx, 'mining', window.gia?.state?.selected) : { custom: [] }; // the open mine page's line to its port (sitedetail.js)
+    return { ...(open.custom.length ? { custom: open.custom } : {}), points: ms.map((m) => point('mining', m, m.kind === 'plant' ? '#d7b98a' : `rgba(176,141,90,${MINE_STATUS[m.status] ?? 1})`, 0.26, 0.02, tip(m.name, `${m.kind === 'plant' ? `${m.type} · ` : ''}${m.mineral} · ${m.country}`))) };
   },
   describe(m) {
     return {
       title: m.name, sub: `${m.kind === 'plant' ? m.type : 'Mine'} · ${m.mineral} · ${m.country}`, wiki: m.name, probe: [m.lat, m.lon],
       rows: rows([['Mineral', m.mineral], ['Also processes', m.materials?.length ? m.materials.join(', ') : null], ['Operator', m.operator], ['Status', m.status], ['Mining method', m.openPitOrUnderground],
         ['Rank', m.productionRank], ['Capacity', m.productionCapacity ?? m.outputCapacity ?? (m.capacityTpa != null ? `${num(m.capacityTpa)} t a year` : null)], ['Output', m.annualOutput]]),
-      body: m.significance,
+      /** The mine or plant page: what the mineral is for, its share of the world, its port, where it is refined and priced (sitedetail.js). */
+      html: mineHtml(m), async fill() { const gi = window.gia; mineFill(m, { layer: 'mining', data: gi.state.data, wm: await worldMonitorData(), refresh: () => gi.refreshLayer('mining', { soft: true }) }); },
       links: [wiki(m.name), credit('src/config/commodity-geo.ts')],
     };
   },
   learn: {
     what: 'The world’s most significant gold, silver, copper, iron ore, coal, platinum, uranium and other mines, and the smelters, refineries and separation plants that turn ore into metal. Faded mines are not producing yet or are idle.',
-    how: 'World Monitor’s commodity-geography list; mines that the Critical minerals layer already shows are left out so nothing is drawn twice.',
+    how: 'World Monitor’s commodity-geography list; mines that the Critical minerals layer already shows are left out so nothing is drawn twice. Click one for its page: what the mineral is for, the site’s share of world output, the line to its export port, where the mineral is refined and priced, and other mines of it.',
     try: 'Click the key to show only processing plants and see how many rare-earth and battery-metal plants sit in China.',
-    refs: ['worldmonitor'],
+    refs: ['worldmonitor', 'usgsmcs', 'wnaura'],
   },
 };
 

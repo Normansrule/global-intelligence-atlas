@@ -72,6 +72,8 @@ ATR. (n.d.). *ATR 72-600: Specifications* [Manufacturer specifications]. https:/
 
 Australian Broadcasting Corporation. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.abc.net.au/news/feed/51120/rss.xml
 
+Automatic Dependent Surveillance-Broadcast (ADS-B) Out equipment performance requirements, 14 C.F.R. § 91.227 (2010). https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-91/subpart-C/section-91.227
+
 Autostrade per l'Italia. (n.d.). *Webcam: Viabilità in tempo reale* [Data set]. Retrieved October 14, 2026, from https://www.autostrade.it/it/webcam
 
 Baker, N. T., & Stone, W. W. (2015). *Estimated annual agricultural pesticide use for counties of the conterminous United States, 2008–12* (Data Series 907). U.S. Geological Survey. https://doi.org/10.3133/ds907
@@ -121,6 +123,8 @@ Central Intelligence Agency. (n.d.). *CIA FOIA electronic reading room* [Data se
 Cesium GS. (n.d.). *CesiumJS* [Computer software]. GitHub. https://github.com/CesiumGS/cesium
 
 CGTN. (n.d.). *CGTN (China Global Television Network) live* [Video live stream]. Retrieved October 18, 2026, from https://english-livebkali.cgtn.com/live/encgtn.m3u8
+
+Chamberlain, R. G., & Duquette, W. H. (2007). *Some algorithms for polygons on a sphere* (JPL Publication 07-03). Jet Propulsion Laboratory, National Aeronautics and Space Administration.
 
 Channels Television. (n.d.). *Channels Television live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCEXGDNclvmg6RW0vipJYsTQ/live
 
@@ -196,6 +200,8 @@ Exec. Order No. 13526, 75 Fed. Reg. 707 (2010). https://www.federalregister.gov/
 
 Faure, A. (n.d.). *free-sfx* [Sound recording collection]. GitHub. https://github.com/arnofaure/free-sfx
 
+Federal Aviation Administration. (n.d.). *Special use airspace* [Data set]. FAA Aeronautical Data Delivery Service. https://adds-faa.opendata.arcgis.com/datasets/faa::special-use-airspace/about
+
 Federal Bureau of Investigation. (n.d.). *FBI records: The Vault* [Data set]. Retrieved October 14, 2026, from https://vault.fbi.gov/
 
 Fedkiw, R., Stam, J., & Jensen, H. W. (2001). Visual simulation of smoke. In *Proceedings of the 28th Annual Conference on Computer Graphics and Interactive Techniques* (pp. 15–22). ACM. https://doi.org/10.1145/383259.383260
@@ -268,6 +274,10 @@ International Atomic Energy Agency. (n.d.). *Power Reactor Information System (P
 
 International Civil Aviation Organization. (n.d.). *Aircraft type designators* (Doc 8643). https://www.icao.int/publications/DOC8643/Pages/Search.aspx
 
+International Energy Agency. (2024a). *Oil 2024*. https://www.iea.org/reports/oil-2024
+
+International Energy Agency. (2024b). *Gas market report, Q1-2024*. https://www.iea.org/reports/gas-market-report-q1-2024
+
 International Organization for Standardization. (1975). *Standard atmosphere* (ISO Standard No. 2533:1975).
 
 International Organization for Standardization. (2020). *Document management — Portable document format — Part 2: PDF 2.0* (ISO Standard No. 32000-2:2020). https://www.iso.org/standard/75839.html
@@ -281,6 +291,8 @@ International Telecommunication Union. (2019). *Assignment and use of identities
 Internet Archive. (n.d.-a). *Advanced search* [Application programming interface]. Retrieved October 14, 2026, from https://archive.org/advancedsearch.php
 
 Internet Archive. (n.d.-b). *Wayback Machine* [Data set]. Retrieved October 14, 2026, from https://web.archive.org/
+
+Internet Assigned Numbers Authority. (n.d.). *Time zone database* [Data set]. https://www.iana.org/time-zones
 
 Japan Center for Asian Historical Records. (n.d.). *JACAR* [Data set]. National Archives of Japan. Retrieved October 14, 2026, from https://www.jacar.go.jp/english/
 
@@ -400,6 +412,14 @@ The National Archives. (n.d.). *Discovery* [Catalogue]. Retrieved October 14, 20
 
 National Geospatial-Intelligence Agency. (n.d.). *World port index (Pub. 150)* [Data set]. Maritime Safety Information. Retrieved October 14, 2026, from https://msi.nga.mil/Publications/WPI
 
+National Hurricane Center. (n.d.-a). *GIS data and products: Active storms and forecast cones* [Data set]. NOAA National Weather Service. https://www.nhc.noaa.gov/gis/
+
+National Hurricane Center. (n.d.-b). *Saffir-Simpson hurricane wind scale*. NOAA National Weather Service. https://www.nhc.noaa.gov/aboutsshws.php
+
+National Interagency Fire Center. (n.d.). *WFIGS current interagency fire perimeters* [Data set]. NIFC Open Data. https://data-nifc.opendata.arcgis.com/datasets/nifc::wfigs-current-interagency-fire-perimeters/about
+
+National Oceanic and Atmospheric Administration. (n.d.). *nowCOAST: Lightning strike density* [Web map service]. National Weather Service. https://nowcoast.noaa.gov/
+
 National Security Agency. (2005). *Redacting with confidence: How to safely publish sanitized reports converted from Word to PDF* (Report No. I333-015R-2005).
 
 National Security Agency. (n.d.). *Declassified historical releases* [Data set]. Retrieved October 14, 2026, from https://www.nsa.gov/
@@ -423,6 +443,8 @@ New York City Department of Transportation. (n.d.). *NYC real-time traffic camer
 New York City Police Department. (n.d.). *NYPD complaint data current (year to date)* [Data set]. NYC Open Data. https://data.cityofnewyork.us/d/5uac-w243
 
 NHK World-Japan. (n.d.). *NHK World-Japan live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCSPEjw8F2nQDtmUKPFNF7_A/live
+
+NOAA Ocean Prediction Center. (n.d.). *Lightning strike density product description document*. National Weather Service. https://ocean.weather.gov/lightning/lightning_pdd.php
 
 NOAA Ocean Service. (n.d.). *Tides and water levels* [Tutorial]. https://oceanservice.noaa.gov/education/tutorial_tides/
 
@@ -449,6 +471,10 @@ Norman, A. (2026f). *Global Intelligence Atlas news data* [Data set]. GitHub. ht
 North Carolina Department of Transportation. (n.d.). *DriveNC: Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://drivenc.gov/
 
 NPR. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://feeds.npr.org/1004/rss.xml
+
+NVIDIA. (n.d.-a). *NVIDIA DGX B200* [Product page and data sheet]. https://www.nvidia.com/en-us/data-center/dgx-b200/
+
+NVIDIA. (n.d.-b). *NVIDIA GB200 NVL72* [Product page]. https://www.nvidia.com/en-us/data-center/gb200-nvl72/
 
 NZ Transport Agency Waka Kotahi. (n.d.). *Traffic cameras API* [Data set]. https://www.nzta.govt.nz/traffic-and-travel-information/infoconnect-section-page/about-the-apis/traffic-cameras/
 
@@ -492,6 +518,8 @@ Panoramax. (n.d.). *Panoramax* [Data set]. https://panoramax.fr
 
 PeeringDB. (n.d.). *PeeringDB* [Data set]. https://www.peeringdb.com
 
+Petit, G., & Luzum, B. (Eds.). (2010). *IERS conventions (2010)* (IERS Technical Note No. 36). Verlag des Bundesamts für Kartographie und Geodäsie. https://www.iers.org/IERS/EN/Publications/TechnicalNotes/tn36.html
+
 Petrov, D. (n.d.). *ISS sim automatic docking system* [Computer software]. GitHub. https://github.com/DaniruKun/spacex-iss-docking-sim-autopilot
 
 PROJ contributors. (2026). *PROJ coordinate transformation software library* [Computer software]. Open Source Geospatial Foundation. https://doi.org/10.5281/zenodo.5884394
@@ -533,6 +561,8 @@ Simon, B. (2019). *folio-2019* [Computer software]. GitHub. https://github.com/b
 simplifaisoul. (2026). *Osiris* (public webcam lists: src/app/api/cctv) [Computer software and data set]. GitHub. Retrieved October 14, 2026, from https://github.com/simplifaisoul/osiris
 
 simplifaisoul. (2026). *Osiris: Open source intelligence & reconnaissance integrated system* [Computer software]. GitHub. https://github.com/simplifaisoul/osiris
+
+Singla, A., Chandrasekaran, B., Godfrey, P. B., & Maggs, B. (2014). The Internet at the speed of light. In *Proceedings of the 13th ACM Workshop on Hot Topics in Networks* (pp. 1–7). Association for Computing Machinery. https://doi.org/10.1145/2670518.2673876
 
 Sky News. (n.d.). *Sky News live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCoMdktPbSTixAyNGwb-UYkQ/live
 
@@ -584,6 +614,8 @@ U.S. Census Bureau. (n.d.-a). *Gazetteer files* [Data set]. https://www.census.g
 
 U.S. Census Bureau. (n.d.-b). *American Community Survey 5-year estimates: Median value (B25077) and median gross rent (B25064)* [Data set]. Retrieved October 14, 2026, from https://www.census.gov/programs-surveys/acs
 
+U.S. Energy Information Administration. (2023). *How much electricity does an American home use?* https://www.eia.gov/tools/faqs/faq.php?id=97&t=3
+
 U.S. Energy Information Administration. (2024). *Electric power monthly: Tables 6.07.A and 6.07.B, capacity factors for utility scale generators* [Data set]. https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_6_07_a
 
 U.S. Energy Information Administration. (n.d.). *World oil transit chokepoints*. https://www.eia.gov/international/analysis/special-topics/World_Oil_Transit_Chokepoints
@@ -602,6 +634,8 @@ U.S. Federal Housing Finance Agency. (n.d.). *House Price Index datasets* [Data 
 
 U.S. Geological Survey Astrogeology Science Center. (n.d.). *Ceres and Vesta Dawn global mosaics* [Data set]. https://astrogeology.usgs.gov/search?target=ceres
 
+U.S. Geological Survey. (2024). *Mineral commodity summaries 2024*. https://doi.org/10.3133/mcs2024
+
 U.S. Geological Survey. (n.d.-a). *Earthquake Hazards Program: ComCat event detail feed and FDSN event web service* [Data set]. Retrieved October 14, 2026, from https://earthquake.usgs.gov/fdsnws/event/1/
 
 U.S. Geological Survey. (n.d.-b). *Earthquake Hazards Program: GeoJSON summary feeds* [Data set]. Retrieved October 14, 2026, from https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
@@ -617,6 +651,8 @@ Uber Technologies. (n.d.). *H3: A hexagonal hierarchical geospatial indexing sys
 United Nations Conference on Trade and Development. (n.d.). *Review of maritime transport*. https://unctad.org/topic/transport-and-trade-logistics/review-of-maritime-transport
 
 United Nations. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://news.un.org/feed/subscribe/en/news/all/rss.xml
+
+Uptime Institute. (2024). *Uptime Institute global data center survey 2024*. https://uptimeinstitute.com/resources/research-and-reports/uptime-institute-global-data-center-survey-results-2024
 
 Utah Department of Transportation. (n.d.). *UDOT Traffic: Cameras* [Data set]. Retrieved October 14, 2026, from https://udottraffic.utah.gov/
 
@@ -664,13 +700,19 @@ Windyty, SE. (n.d.). *Windy webcams* [Data set]. Retrieved October 14, 2026, fro
 
 WION. (n.d.). *WION (World Is One News) live* [Video live stream]. YouTube. https://www.youtube.com/channel/UC_gUM8rL-Lrg6O3adPW9K1g/live
 
+Wiseman, J. (n.d.). *GPSJam: Frequently asked questions*. https://gpsjam.org/faq
+
 Worden, C. B., Thompson, E. M., Hearne, M., & Wald, D. J. (2020). *ShakeMap manual online: Technical manual, user’s guide, and software guide* (Version 4) [Computer software manual]. U.S. Geological Survey. https://doi.org/10.5066/F7D21VPQ
+
+World Aquatics. (n.d.). *Facilities rules* (FR 2: Swimming pools). https://www.worldaquatics.com/rules/competition-regulations
 
 World Bank. (n.d.). *World Bank Open Data API* [Data set]. https://datahelpdesk.worldbank.org/knowledgebase/articles/889392
 
 World Health Organization. (2021). *WHO global air quality guidelines: Particulate matter (PM2.5 and PM10), ozone, nitrogen dioxide, sulfur dioxide and carbon monoxide*. https://www.who.int/publications/i/item/9789240034228
 
 World Meteorological Organization. (2019). *Manual on codes: International codes, Volume I.1, Part A: Alphanumeric codes* (WMO-No. 306; 2011 ed., updated 2019). https://library.wmo.int/idurl/4/35713
+
+World Nuclear Association. (2024). *World uranium mining production*. https://world-nuclear.org/information-library/nuclear-fuel-cycle/mining-of-uranium/world-uranium-mining-production
 
 World Resources Institute. (2021). *Global power plant database* (Version 1.3.0) [Data set]. https://datasets.wri.org/dataset/globalpowerplantdatabase
 
@@ -697,7 +739,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Van Flandern & Pulkkinen, 1979) | Moon position, distance and phase for the Moon and tides layer. | Published formulae |
 | (Norman, 2026b) | Every ~4 minutes, fetches feeds that browsers may not read directly (flights, launches, GDACS, orbits, GDELT news) and serves them with CORS headers. | AGPL-3.0 code; data keeps each source’s licence |
 | (NASA, n.d.-b) | Yesterday’s Earth base map. We acknowledge the use of imagery provided by services from NASA’s Global Imagery Browse Services (GIBS), part of NASA’s Earth Science Data and Information System (ESDIS). | Public domain; acknowledgement requested |
-| (Sidhu, 2026) | The idea of typing a position or a geo: link straight into search (v2.24). | MIT (no code used) |
+| (Sidhu, 2026) | Inspiration for sensor looks and keyless browser data sources; typing a position or a geo: link into search (v2.24); the choice of live feeds for lightning, hurricane forecasts, wildfire outlines, restricted airspace and GPS interference, and its rule for an aircraft with poor GPS (v2.25). | MIT (ideas and source choices; no code copied) |
 | (airplanes.live, n.d.) | Regional aircraft fallback feed. | Free non-commercial API |
 | (adsbdb, n.d.) | Aircraft type, registration, photo and route for a selected flight (looked up live, never stored). | Courtesy API; route data © David Taylor & Jim Mason, not stored |
 | (Virtual Radar Server, 2026) | Airline names and codes, aircraft models, the country each aircraft address block belongs to, airports and 620,000 scheduled flight routes, built into the site by tools/build-flightdb.py. | CC0 1.0 (public domain) |
@@ -807,7 +849,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Båth, 1965) | Båth’s law: the largest aftershock is on average about 1.2 magnitude units smaller than the main shock. | Journal article |
 | (Kelso, n.d.-b) | The satellite page: owner, launch date and site, kind, status and radar size of each object. | Free for use with attribution |
 | (Montenbruck & Gill, 2000) | The satellite page: horizon footprint, sunlight and shadow along the orbit, and position on the orbital ellipse. | Book (cited for method) |
-| (Curtis, 2020) | The launch page: the heading a rocket leaves on for an orbit tilt (sin of the heading = cos of the tilt ÷ cos of the latitude) and the speed Earth’s spin gives it. | Book (cited for method) |
+| (Curtis, 2020) | The launch page: the heading a rocket leaves on for an orbit tilt (sin of the heading = cos of the tilt ÷ cos of the latitude) and the speed Earth’s spin gives it. v2.30: the Hohmann transfer, trip time and launch-window angle on every planet page. | Book (cited for method) |
 | (Schott et al., 2019) | The storm page: the steps from tropical depression to category 5 on sustained wind in knots. | Public domain (NOAA) |
 | (Freire et al., 2019) | The volcano page: counting the people within 10, 30 and 100 km of a volcano. | CC BY 4.0 |
 | (Neurath, 1936) | The Isotype rule behind the counted rows and the country page: one figure always stands for the same number, and more means more figures, never bigger ones. | Book |
@@ -842,9 +884,9 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Solar System Scope, n.d.) | Global maps of the Sun, Mercury, Venus (clouds and radar surface), the Moon, Mars, Jupiter, Saturn and its rings, Uranus, Neptune and Pluto, made from NASA mission imagery. Copied from the PyVista vtk-data mirror (github.com/pyvista/vtk-data). | CC BY 4.0 |
 | (NASA, n.d.-d) | Global maps of Io, Europa, Ganymede and Callisto, and the Tycho star map with the Milky Way behind the globe. | Public domain (NASA media guidelines) |
 | (NASA, n.d.-e) | Full-resolution global mosaics (Lunar Reconnaissance Orbiter Wide Angle Camera, Viking colour, MESSENGER enhanced colour) loaded when you fly close to the Moon, Mars or Mercury. | Public domain (NASA) |
-| (D. R. Williams, n.d.) | Sizes, day and year lengths, gravity, temperatures and moon counts on the space cards. | Public domain (NASA) |
+| (D. R. Williams, n.d.) | Sizes, day and year lengths, gravity, temperatures and moon counts on the space cards. v2.30: gravity, escape speed, day, year, tilt, temperature and air for the “standing there” and “its air” sections. | Public domain (NASA) |
 | (Davies & Colvin, 2000) | Latitude and longitude of the six Apollo lunar modules, pinned on the Moon. | Published paper (facts cited) |
-| (NASA Space Science Data Coordinated Archive, n.d.) | Landing dates and places of the other Moon and Mars landers and rovers. | Public domain (NASA) |
+| (NASA Space Science Data Coordinated Archive, n.d.) | Landing dates and places of the other Moon and Mars landers and rovers. v2.30: the spacecraft listed on each body’s page. | Public domain (NASA) |
 | (Vienne & Duriez, 1995) | Where Mimas, Enceladus, Tethys, Dione, Rhea, Titan and Iapetus are, computed in the browser (v2.21). | Published theory |
 | (Laskar & Jacobson, 1987) | Where Miranda, Ariel, Umbriel, Titania and Oberon are, computed in the browser (v2.21). | Published theory |
 | (Gajdosik, 2005) | The code and coefficient tables the atlas translated to JavaScript (outermoons.js) for the moons of Saturn and Uranus. | MIT (these files) |
@@ -858,6 +900,27 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (International Space Station Multilateral Coordination Board, 2016) | The soft-capture limits a docking must meet in Dock with the ISS (v2.24). | Published standard |
 | (Petrov, n.d.) | The idea of an autopilot that flies the approach axis by axis (v2.24). | Eclipse Public License 2.0 (no code used) |
 | (Mayrhofer & Spanring, 2010) | The geo: link format search understands (v2.24). | IETF document |
+| (National Oceanic and Atmospheric Administration, n.d.) | The Lightning layer: a world image of the latest 15-minute strike density over the Americas and the Pacific (v2.25). | US government work (public domain); the density is a NOAA product derived from Vaisala data that NOAA may distribute, the strikes themselves are not public |
+| (NOAA Ocean Prediction Center, n.d.) | How the strikes behind the lightning density are detected, and what may be shown (v2.25). | Reference (product description) |
+| (National Hurricane Center, n.d.-a) | The Hurricane forecasts layer: each storm’s position, wind, pressure and motion (CurrentStorms.json) and its forecast points, track and cone (NOAA tropical weather summary map service) (v2.25). | US government work (public domain) |
+| (National Hurricane Center, n.d.-b) | Hurricane categories 1 to 5 from the sustained wind (v2.25). | US government work (public domain) |
+| (NVIDIA, n.d.-a) | System power per accelerator behind the AI data-centre power estimate (v2.26). | Reference |
+| (NVIDIA, n.d.-b) | Rack power per Blackwell accelerator behind the AI data-centre power estimate (v2.26). | Reference |
+| (Uptime Institute, 2024) | Average power usage effectiveness (about 1.56), the high end of the data-centre power range (v2.26). | Reference |
+| (U.S. Energy Information Administration, 2023) | A US home’s electricity in a year (10,791 kWh in 2022), for the data-centre page (v2.26). | Public domain |
+| (International Energy Agency, 2024a) | World oil demand (about 102 million barrels a day) for a pipeline’s share (v2.26). | Reference |
+| (International Energy Agency, 2024b) | World gas demand (about 4,000 bcm a year) for a pipeline’s share (v2.26). | Reference |
+| (U.S. Geological Survey, 2024) | World mine production in 2023 and the biggest producer of each mineral, rounded, on the mine pages (v2.27). | Public domain (U.S. Government work) |
+| (World Nuclear Association, 2024) | World uranium production in 2022 and Kazakhstan’s share, on the mine pages (v2.27). | Reference |
+| (Petit & Luzum, 2010) | Earth’s equatorial radius (6,378.137 km) and rotation rate, for the speed its spin lends a rocket (v2.27). | Reference |
+| (Chamberlain & Duquette, 2007) | The area of a drawn conflict zone on a sphere (v2.28). | Reference |
+| (Internet Assigned Numbers Authority, n.d.) | Local time and daylight-saving rules for every financial place, through the browser’s Intl API (v2.29). | Public domain |
+| (Singla et al., 2014) | Light in fibre at about two-thirds of its speed in a vacuum and routes longer than the straight line, behind the cloud round-trip estimates (v2.29). | Reference |
+| (World Aquatics, n.d.) | An Olympic pool: 50 × 25 m and at least 2 m deep, so at least 2,500 m³ (v2.26). | Reference |
+| (National Interagency Fire Center, n.d.) | The Wildfire outlines layer: the mapped edge of each current US fire with its size, containment, cause and crews (v2.25). | US government work (public domain) |
+| (Federal Aviation Administration, n.d.) | The Restricted airspace layer: prohibited and restricted areas with their floors, ceilings, times of use and controlling agencies (v2.25). | US government work (public domain) |
+| (Wiseman, n.d.) | The cell formula and its 2 % and 10 % bands used by the GPS interference layer (v2.25). | Reference (method only) |
+| (Automatic Dependent Surveillance-Broadcast (ADS-B) Out equipment performance requirements, 2010) | The minimum position integrity (NIC 7) and accuracy (NACp 8) used as the thresholds for an aircraft with poor GPS (v2.25). | US government work (public domain) |
 | (NASA Goddard Space Flight Center & University of Arizona, n.d.) | Bennu’s map and, through NASA 3D Resources, its shape (v2.22). | Public domain (NASA) |
 | (NASA Jet Propulsion Laboratory, n.d.-b) | Triton’s orbit around Neptune (its place along the orbit is approximate). | Public domain (NASA) |
 | (NASA Jet Propulsion Laboratory, n.d.-a) | Distances and speeds of Voyager 1 and 2, shown out beyond the planets in the solar system view. | Public domain (NASA) |
@@ -1018,6 +1081,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Faure, n.d.) | v2.15 idea source for the sound cues; the cues are synthesised in the browser, no audio copied. | CC BY 4.0 |
 | (ElevenLabs, n.d.) | v2.15 idea source for Listen (a voice for every page); Listen uses the system voice, no key or code. | MIT |
 | (Sidhu, 2026) | v2.16 idea source for the lifelike close-ups: simulated traffic on real roads. Ideas only; no code copied. | MIT |
+| (Sidhu, 2026) | v2.25 idea source for the live watch layers (lightning, hurricane forecasts, wildfire outlines, restricted airspace, GPS interference): which public feeds to use, their field names and its rule for an aircraft with poor GPS. Ideas only; no code copied. | MIT |
 | (OpenStreetMap contributors, n.d.) | v2.16 close-ups: the roads the simulated traffic drives on and the buildings around it, via the Overpass API. | ODbL |
 | (codeptor, n.d.) | v2.16 idea source for the Print look (ordered dithering as a visual style). Ideas only: the repository has no licence file, so no code or text was copied. | No licence stated |
 | (Bayer, 1973) | The 4×4 ordered-dither threshold matrix behind the Print look. | Paper |

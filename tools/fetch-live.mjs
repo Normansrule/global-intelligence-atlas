@@ -21,6 +21,7 @@ import { execFileSync } from 'node:child_process';
 import { AIS_URL, SHIP_FIELDS, STATIC_FIELDS, aisSubscription, createAisStore, parseFrame } from '../site/app/js/ais.js';
 import { airSites, batchUrl, batchRows, CURRENT } from '../site/app/js/aqi.js';
 import { NWS_ACTIVE, slim, fillZones } from '../site/app/js/warnings.js';
+import { lightningUrl, LIGHTNING_CAPS, lightningTime, NHC_STATUS, NHC_QUERIES, assembleStorms, wfigsUrl, slimFires, suaUrl, slimZones, GNSS_HUBS, gnssUrl, gnssRow, gnssCells } from '../site/app/js/watchfeeds.js';
 
 const OUT = process.argv[2] ?? 'live';
 mkdirSync(OUT, { recursive: true });
@@ -32,7 +33,7 @@ const status = { generatedAt: new Date().toISOString(), run: process.env.GITHUB_
 async function get(url, { type = 'json', timeout = 45_000, headers = {} } = {}) {
   const r = await fetch(url, { headers: { ...UA, ...headers }, signal: AbortSignal.timeout(timeout) });
   if (!r.ok) throw new Error(`HTTP ${r.status} from ${new URL(url).host}`);
-  return type === 'text' ? r.text() : r.json();
+  return type === 'text' ? r.text() : type === 'bytes' ? Buffer.from(await r.arrayBuffer()) : r.json();
 }
 const write = (name, obj) => { const s = typeof obj === 'string' ? obj : JSON.stringify(obj); writeFileSync(join(OUT, name), s); return s.length; };
 const ageMin = (name) => {
@@ -240,6 +241,66 @@ async function nws() {
   return { note: `${out.length} of ${alerts.length} alerts with an outline`, count: out.length };
 }
 
+// ------------------------------------------------------------------ live watch layers (v2.25, site/app/js/watchfeeds.js)
+// Lightning: the 15-minute strike density as one world PNG (nowCOAST updates it every few minutes), with its time.
+async function lightning() {
+  if (ageMin('lightning.json') < 8) return 'fresh enough';
+  const png = await get(lightningUrl(), { type: 'bytes', timeout: 60_000 });
+  if (png.length < 100 || png.readUInt32BE(0) !== 0x89504e47) throw new Error('nowCOAST did not send a PNG image');
+  let time = null; try { time = lightningTime(await get(LIGHTNING_CAPS, { type: 'text', timeout: 30_000 })); } catch (e) { log('lightning time:', e.message); }
+  writeFileSync(join(OUT, 'lightning.png'), png);
+  write('lightning.json', { generatedAt: new Date().toISOString(), time, bytes: png.length, source: 'NOAA/NWS nowCOAST, derived from Vaisala NLDN/GLD360' });
+  return { note: `${(png.length / 1024).toFixed(0)} KB image${time ? ` for ${time}` : ''}`, count: 1 };
+}
+// Hurricane forecasts: active storms (NHC) with the forecast points, track and cone of their latest advisory.
+async function nhc() {
+  if (ageMin('nhc.json') < 8) return 'fresh enough';
+  const status = await get(NHC_STATUS);
+  const gis = (status.activeStorms ?? []).length ? await Promise.all(NHC_QUERIES.map((u) => get(u, { timeout: 30_000 }).catch((e) => { log('NHC map service:', e.message); return null; }))) : [];
+  const storms = assembleStorms(status, gis);
+  write('nhc.json', { generatedAt: new Date().toISOString(), storms });
+  return { note: `${storms.length} active storms, ${storms.filter((s) => s.cone).length} with a cone`, count: storms.length };
+}
+// ArcGIS feature services send at most maxRecordCount features a page; follow exceededTransferLimit for up to five pages.
+async function arcgisPages(url) {
+  const features = [];
+  for (let page = 0; page < 5; page++) {
+    const j = await get(url(features.length), { timeout: 60_000 });
+    if (!Array.isArray(j.features)) throw new Error('no features in the answer');
+    features.push(...j.features);
+    if (!(j.exceededTransferLimit || j.properties?.exceededTransferLimit) || !j.features.length) break;
+    await sleep(800);
+  }
+  return { features };
+}
+async function perimeters() {
+  if (ageMin('perimeters.json') < 25) return 'fresh enough';
+  const fires = slimFires(await arcgisPages(wfigsUrl));
+  const n = write('perimeters.json', { generatedAt: new Date().toISOString(), fires });
+  return { note: `${fires.length} fire outlines, ${(n / 1024).toFixed(0)} KB`, count: fires.length };
+}
+async function airspace() {
+  if (ageMin('airspace.json') < 12 * 60) return 'fresh enough';
+  const zones = slimZones(await arcgisPages(suaUrl));
+  if (!zones.length) throw new Error('the FAA listed no prohibited or restricted areas (the previous copy is kept)');
+  const n = write('airspace.json', { generatedAt: new Date().toISOString(), zones });
+  return { note: `${zones.length} prohibited and restricted areas, ${(n / 1024).toFixed(0)} KB`, count: zones.length };
+}
+// GPS interference: aircraft position integrity around ~30 areas from adsb.lol (ODbL), counted per 1° cell.
+async function gnss() {
+  if (ageMin('gnss.json') < 10) return 'fresh enough';
+  const rows = []; let ok = 0; let fail = 0; let aircraft = 0;
+  for (const hub of GNSS_HUBS) {
+    try { const j = await get(gnssUrl(hub), { timeout: 20_000 }); ok += 1; for (const a of j.ac ?? []) { aircraft += 1; const r = gnssRow(a); if (r) rows.push(r); } } catch (e) { fail += 1; if (fail === 1) log('adsb.lol:', e.message); }
+    if (fail >= 4 && ok === 0) break;
+    await sleep(1100);
+  }
+  if (!ok) throw new Error('adsb.lol did not answer (the previous copy is kept)');
+  const cells = gnssCells(rows);
+  write('gnss.json', { generatedAt: new Date().toISOString(), deg: 1, fields: ['south', 'west', 'aircraft', 'bad'], cells, aircraft: rows.length, regions: ok, source: 'adsb.lol (ODbL 1.0); method after gpsjam.org and God’s Eye View' });
+  return { note: `${cells.length} cells from ${rows.length} aircraft in ${ok} regions, ${cells.filter((c) => c[3] > 1 && (c[3] - 1) / c[2] >= 0.02).length} with poor GPS`, count: cells.length };
+}
+
 async function tles() {
   // CelesTrak asks that a group is downloaded at most once every two hours.
   if (ageMin('tle-meta.json') < 115) return 'fresh enough';
@@ -338,7 +399,7 @@ async function news() {
 // last real refresh from the previous status file.
 const prevStatus = (() => { try { return JSON.parse(readFileSync(join(OUT, 'status.json'), 'utf8')).feeds ?? {}; } catch { return {}; } })();
 const only = process.env.LIVE_ONLY?.split(','); // e.g. LIVE_ONLY=ships for a quick local test
-for (const [name, fn] of [['flights', flights], ['gdacs', gdacs], ['launches', launches], ['tle', tles], ['news', news], ['fires', fires], ['ships', ships], ['air', air], ['nws', nws]]) {
+for (const [name, fn] of [['flights', flights], ['gdacs', gdacs], ['launches', launches], ['tle', tles], ['news', news], ['fires', fires], ['ships', ships], ['air', air], ['nws', nws], ['lightning', lightning], ['nhc', nhc], ['perimeters', perimeters], ['airspace', airspace], ['gnss', gnss]]) {
   if (only && !only.includes(name)) { if (prevStatus[name]) status.feeds[name] = prevStatus[name]; continue; }
   const t0 = Date.now();
   try {
@@ -348,5 +409,5 @@ for (const [name, fn] of [['flights', flights], ['gdacs', gdacs], ['launches', l
   } catch (e) { status.feeds[name] = { ...prevStatus[name], ok: false, note: e.message, failedAt: new Date().toISOString() }; log(name, 'FAILED:', e.message); }
 }
 write('status.json', status);
-write('README.md', `# Global Intelligence Atlas live-data\n\nMachine-written snapshots for https://normansrule.github.io/global-intelligence-atlas/app/ — rebuilt every ~4 minutes by \`.github/workflows/live.yml\` on the main branch. Nothing here is edited by hand; each run replaces the whole branch.\n\nLast run: ${status.generatedAt}\n\n${Object.entries(status.feeds).map(([k, v]) => `- **${k}**: ${v.ok ? 'ok' : 'failed'} — ${v.note}`).join('\n')}\n\nData: OpenSky Network / airplanes.live / adsb.lol (flights), NASA FIRMS (fire hotspots), AISStream (ships), The Space Devs (launches), GDACS (disaster alerts), CelesTrak (orbits), The GDELT Project (news), Open-Meteo / CAMS (air quality), US National Weather Service (weather warnings). See docs/REFERENCES.md on main for licences.\n`);
+write('README.md', `# Global Intelligence Atlas live-data\n\nMachine-written snapshots for https://normansrule.github.io/global-intelligence-atlas/app/ — rebuilt every ~4 minutes by \`.github/workflows/live.yml\` on the main branch. Nothing here is edited by hand; each run replaces the whole branch.\n\nLast run: ${status.generatedAt}\n\n${Object.entries(status.feeds).map(([k, v]) => `- **${k}**: ${v.ok ? 'ok' : 'failed'} — ${v.note}`).join('\n')}\n\nData: OpenSky Network / airplanes.live / adsb.lol (flights), NASA FIRMS (fire hotspots), AISStream (ships), The Space Devs (launches), GDACS (disaster alerts), CelesTrak (orbits), The GDELT Project (news), Open-Meteo / CAMS (air quality), US National Weather Service (weather warnings), NOAA nowCOAST (lightning density), NHC (hurricane forecasts), NIFC WFIGS (fire perimeters), FAA (special use airspace), adsb.lol (GPS integrity). See docs/REFERENCES.md on main for licences.\n`);
 if (!only && !status.feeds.flights?.ok && !existsSync(join(OUT, 'flights.json'))) process.exitCode = 1;

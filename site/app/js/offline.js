@@ -25,6 +25,11 @@ const WORKS = [
   ['Tools', 'measure, time machine, tours, the quiz, saved views, pictures'],
   ['Last known', 'every feed you have opened, with its age: quakes, storms, fires, news, launches'],
   ['Lessons and the fluid lab', 'the Learn pages and the simulations'],
+  // v2.25: what was added since offline mode first shipped (v2.14)
+  ['Space', 'the solar system, every planet and moon, the small worlds and their real shapes, worked out on the device; close-up maps for the parts you have looked at'],
+  ['City close-ups', 'the buildings, roads and terrain of places you have already visited up close'],
+  ['Dock with the ISS', 'the whole simulator, with the station placed from the saved or bundled orbits'],
+  ['Live watch layers', 'the last saved hurricane forecasts, wildfire outlines, restricted airspace, GPS interference (up to a week old) and lightning (up to a day old), each with its age'],
 ];
 
 export function installOffline(api) {

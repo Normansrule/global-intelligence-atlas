@@ -4,6 +4,54 @@ Release notes for Global Intelligence Atlas (GIA), newest first. Versions before
 
 ---
 
+## 🪐 v2.30: the Sun, the planets and their moons in depth
+
+- **Standing there:** on every one of the 34 bodies, what someone of 70 kg would weigh, how high a 50 cm jump would go (on Bennu you would leave for good), the speed needed to leave, how wide and bright the Sun looks, and how long the day and the year are.
+- **In our sky:** whether it is up now from the place the globe was looking at, when it next rises and sets, and the best date to see it (opposition, greatest elongation or the full Moon). Moons of other planets use their planet's times.
+- **Getting there:** the classic minimum-energy trip from Earth (time and speed to add from low Earth orbit), how often the planets line up for it and the next launch window, from where the planets really are, next to how long real missions took.
+- **Its air, size to scale and missions:** what the air is made of as bars with the pressure against Earth's, the body drawn next to the Earth (and the Moon), and the spacecraft that went there.
+- What's new has Try buttons for Mars and Titan. Every figure and its limits are in `docs/ASSUMPTIONS.md`.
+
+## 💹 v2.29: markets, cloud regions and AI labs in depth
+
+- **Exchanges, central banks and financial centres:** the local time there now, whether its exchange is open and how long until that changes, lunch breaks included; the world's trading day as a 24-hour strip of 16 big exchanges with a line for now; every exchange open right now; and the financial places near it.
+- **Cloud regions:** how long a round trip takes to 12 big cities on every continent (as a floor, the speed of light in fibre over a realistic route), how many people live within 10 and 30 milliseconds, both drawn as rings on the globe, and the other providers' regions and AI data centres next door.
+- **AI labs:** when it was founded and what it works on, the labs and tech headquarters around it, and the compute near it: the nearest cloud regions with their round-trip time and the AI data centres.
+- All three open one another and work offline from the atlas's own data. Every figure and its limits are in `docs/ASSUMPTIONS.md`.
+
+## ⚔️ v2.28: conflict zones, watch regions and military bases in depth
+
+- **Conflict zones:** how big each drawn theatre is against a country you know; the countries it covers with each one's share as bars; at least how many people live in its cities and towns; the military bases in and near it grouped by the power that runs them; and what is at stake: nuclear plants, chokepoints, pipelines, ports, cable landings and big airports.
+- **Watch regions:** the same for everything within 500 km, ringed on the globe, and the distance to the nearest conflict zone.
+- **Military bases:** the network each belongs to (how many bases its power has and in how many countries, the nearest ones), the other powers' bases within 1,000 km with a line to the nearest of each, and the chokepoint, conflict zone and watch region it overlooks.
+- All three open one another and work offline from the atlas's own data. Every figure and its limits are in `docs/ASSUMPTIONS.md`.
+
+## 🚀 v2.27: spaceports and mines in depth
+
+- **Spaceports:** the speed Earth's spin lends a rocket there, the flattest orbit it can reach straight up and the cost of flattening it for the geostationary belt; the directions a rocket can fly while staying over open sea for 900 km, as a compass rose on the page and a fan on the globe, and which orbits those reach (geostationary transfer, the space station, polar, Sun-synchronous); its launches in the atlas's list; the spaceports near it.
+- **Mines and processing plants:** what the mineral is for and which country mines most of it; the site's yearly output as a share of the world's; the nearest port and the export port for its mineral, with the line drawn on the globe; the plants that refine it and the exchanges that price it; the other mines of the same mineral. Works for both the Critical minerals and the Mines and processing plants layers.
+- Both pages open one another and work offline: everything comes from the atlas's own data. Every figure and its source is in `docs/ASSUMPTIONS.md`.
+
+## 🛢️ v2.26: chokepoints, pipelines, trade routes and AI data centres in depth
+
+- **Chokepoints:** each one's narrowest width against straits you know, the live ships passing now and which way they are heading, the trade routes that rely on it, the pipelines built to avoid it (with their oil added up) and what happens if it closes.
+- **Pipelines:** length against journeys you know, capacity as a flow you can picture (an Olympic pool every so many seconds or minutes, tonnes or TWh a year, a share of the world's oil or gas), how long the oil or gas takes end to end, the countries on its line in order, the chokepoint it avoids and the lines it meets. The oil or gas is drawn flowing along it.
+- **Trade routes:** stop by stop with the distance and day at sea, volume as containers or barrels a minute, the chokepoints it relies on with what closing each would mean, and the ships at each stop now.
+- **AI data centres:** the electricity its chips need as a range (with how it is worked out), as US homes, reactors and GWh a year; the big power stations within 150 km and the share of their output it would take; the owners' other sites and its neighbours.
+- The four pages open one another and work offline: everything comes from the atlas's own data. Waterway names keep small words lower-case; AI data centres in service are no longer drawn faded.
+
+## ⚡ v2.25: live watch layers, and the whole atlas offline
+
+- **Hurricane forecasts:** every active Atlantic and eastern or central Pacific storm from the National Hurricane Center, with its forecast track, its forecast points out to five days and the cone of uncertainty, in the Saffir–Simpson colours. Its page gives the wind in knots and km/h, the pressure, the motion and the forecast hour by hour.
+- **Lightning:** the last 15 minutes of strike density over the Americas and the Pacific from NOAA nowCOAST, wrapped on the globe.
+- **Wildfire outlines:** the mapped edge of every current US wildfire (NIFC WFIGS), coloured by containment, with its size, cause, crews and cost.
+- **Restricted airspace:** US prohibited and restricted areas from the FAA, with each one's floor, ceiling, hours and controlling agency.
+- **GPS interference:** where aircraft report poor GPS integrity, per 1° square, from adsb.lol and gpsjam.org's published bands. The idea and the feeds for all five came from God's Eye View.
+- **Offline, everything:** space, the small worlds, city close-ups, Dock with the ISS and the new layers keep working with no internet. The app could not have opened offline with the new layers without this: the service worker's start-up list now covers them, and `build-preload.mjs --check` fails CI if a start-up file is ever missing from it. NASA Trek space maps, close-up terrain and the lightning image are kept for offline, and each saved layer says how old it is.
+- **Tests that do not age or depend on live feeds:** the new layers are tested on sample answers in each service's own format with times made relative to now (`tests/e2e/watchmock.py`), with every service down too. The whole suite was run with the clock 180 days ahead; the one fault it found (close-up lights a few seconds late after moving from day to night) is fixed. The Tests workflow's time limit rose from 30 to 50 minutes, since the suite already took 26. The offline tests (`test_offline.py`, new `test_offline_all.py`) now run in CI.
+- **Outlines fill the right side:** the globe reads a ring the d3-geo way (the area on its right), while GeoJSON and the ArcGIS services send outer rings the other way round, so a fire outline painted the whole planet. Every polygon given to the globe now has its outer rings clockwise (`smallSide()` in `watchfeeds.js`); outlines that were already right are unchanged, and a test checks the order.
+- The duplicate God's Eye View entry in the sources and the references is merged into one.
+
 ## 🛰️ v2.24: dock with the ISS
 
 - **Dock with the ISS:** a new window (Tools → Dock with the ISS, the station's card, or the command palette) puts you in a crew capsule 200 m in front of the International Space Station. Fly it to the forward docking port by hand (W/S forward and back, A/D left and right, R/F up and down, arrow keys and Q/E to turn, or the on-screen pads) or press Autopilot (P) and watch it fly the approach the way real ones go: straight in, a hold at 20 m, then about 0.1 m/s to contact. Contact counts only within the soft-capture limits of the International Docking System Standard (closing at 0.05–0.10 m/s, within 10 cm of the axis, lined up within 4°); miss one and the window says which. Three views (chase, the capsule's own camera with a cross to line up, and from the station) and three time speeds (1×, 10×, 50×).

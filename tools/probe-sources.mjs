@@ -32,6 +32,12 @@ const PROBES = [
   ['Open-Meteo weather', 'https://api.open-meteo.com/v1/forecast?latitude=51.5&longitude=0&current=temperature_2m', json(0, (j) => j.current)],
   ['Open-Meteo air quality', 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=52.5,28.6&longitude=13.4,77.2&current=us_aqi,pm2_5', json(0, (j) => Array.isArray(j) && j[0].current)],
   ['NWS active alerts', 'https://api.weather.gov/alerts/active?status=actual&area=KS', json(0, (j) => Array.isArray(j.features))],
+  // v2.25 live watch layers (site/app/js/watchfeeds.js)
+  ['NOAA nowCOAST lightning (capabilities)', 'https://nowcoast.noaa.gov/geoserver/observations/lightning_detection/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities', text(1000, /ldn_lightning_strike_density/)],
+  ['NHC active storms', 'https://www.nhc.noaa.gov/CurrentStorms.json', json(0, (j) => Array.isArray(j.activeStorms))],
+  ['NHC forecast cones (map service)', 'https://mapservices.weather.noaa.gov/tropical/rest/services/tropical/NHC_tropical_weather_summary/MapServer/7/query?where=1%3D1&outFields=idp_source&f=geojson&resultRecordCount=1', json(0, (j) => Array.isArray(j.features))],
+  ['NIFC WFIGS fire perimeters', 'https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/WFIGS_Interagency_Perimeters_Current/FeatureServer/0/query?where=1%3D1&outFields=poly_IncidentName&returnGeometry=false&resultRecordCount=1&f=json', json(0, (j) => Array.isArray(j.features))],
+  ['FAA Special Use Airspace', "https://services6.arcgis.com/ssFJjBXIUyZDrSYZ/arcgis/rest/services/Special_Use_Airspace/FeatureServer/0/query?where=TYPE_CODE%3D'P'&outFields=NAME&returnGeometry=false&resultRecordCount=1&f=json", json(0, (j) => Array.isArray(j.features) && j.features.length > 0)],
   ['NASA GIBS imagery', 'https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/wmts.cgi?SERVICE=WMTS&REQUEST=GetCapabilities', text(10_000)],
   ['Fintraffic ships (AIS)', 'https://meri.digitraffic.fi/api/ais/v1/locations', json(0, (j) => Array.isArray(j.features))],
   ['Wikipedia summaries', 'https://en.wikipedia.org/api/rest_v1/page/summary/Earth', json(0, (j) => j.title)],

@@ -286,7 +286,7 @@ export function installCloseup({ globe, R = 100, ships = () => null, onBusy = ()
     try {
       const j = await getFeed('overpass', `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(q)}`, { ttl: 6 * 3600_000, timeout: 40_000 });
       const els = j?.elements ?? [];
-      net.lat = lat; net.lng = lng; net.left = drivesLeft(lat, lng);
+      net.lat = lat; net.lng = lng; net.left = drivesLeft(lat, lng); net.sunAt = 0; // a new place: work out its sun at once (v2.25)
       net.roads = roadsFrom(els, lat, lng);
       const hour = (new Date().getUTCHours() + new Date().getUTCMinutes() / 60 + lng / 15 + 24) % 24; net.busy = trafficAt(hour);
       net.cars = spawnTraffic(net.roads, { busy: net.busy, seed: Math.round(lat * 1000) * 7919 + Math.round(lng * 1000) });

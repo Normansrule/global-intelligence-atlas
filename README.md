@@ -17,7 +17,7 @@
 
 <sub><a href="https://normansrule.github.io/global-intelligence-atlas/">Website</a> · <a href="#-get-the-app">Install it from the browser, or which download to pick</a></sub>
 
-[![Version](https://img.shields.io/badge/version-2.24.0-1f4e9c)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.30.0-1f4e9c)](CHANGELOG.md)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Deploy to Pages](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml)
 [![Tests](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml)
@@ -28,9 +28,9 @@
 
 <table>
 <tr>
-<td align="center" width="20%"><h2>71</h2>layers in 11 groups</td>
+<td align="center" width="20%"><h2>76</h2>layers in 11 groups</td>
 <td align="center" width="20%"><h2>160+</h2>live and open sources</td>
-<td align="center" width="20%"><h2>17</h2>kinds of thing to click for the whole story</td>
+<td align="center" width="20%"><h2>29</h2>kinds of thing to click for the whole story</td>
 <td align="center" width="20%"><h2>15</h2>lessons, 6 tours, 1 quiz</td>
 <td align="center" width="20%"><h2>0</h2>accounts, keys or servers</td>
 </tr>
@@ -38,10 +38,10 @@
 
 <picture>
   <source media="(prefers-color-scheme: light)" srcset="site/docs-media/layers-light.svg" />
-  <img src="site/docs-media/layers-dark.svg" alt="All 71 layers of the atlas scrolling past as labelled chips, each with its colour: air quality, US weather warnings, live flights, earthquakes, ships, rocket launches, wildlife, satellites, undersea cables, landmarks and the rest" width="100%" />
+  <img src="site/docs-media/layers-dark.svg" alt="The layers of the atlas scrolling past as labelled chips, each with its colour: air quality, US weather warnings, live flights, earthquakes, ships, rocket launches, wildlife, satellites, undersea cables, landmarks and the rest" width="100%" />
 </picture>
 
-[What's new](#-new-in-v224-dock-with-the-iss) · [Get the app](#-get-the-app) · [Click anything](#-click-anything) · [At a glance](#-at-a-glance) · [Web or desktop](#-web-app-and-desktop-app) · [Gallery](#-gallery) · [Features](#-features) · [Design](#-design) · [Progress](#-progress) · [How it works](#-how-it-works) · [Run it](#-run-it-yourself) · [References](#-data-and-references) · [Credits](#-credits) · [Changelog](CHANGELOG.md)
+[What's new](#-new-in-v230-the-sun-the-planets-and-their-moons-in-depth) · [Get the app](#-get-the-app) · [Click anything](#-click-anything) · [At a glance](#-at-a-glance) · [Web or desktop](#-web-app-and-desktop-app) · [Gallery](#-gallery) · [Features](#-features) · [Design](#-design) · [Progress](#-progress) · [How it works](#-how-it-works) · [Run it](#-run-it-yourself) · [References](#-data-and-references) · [Credits](#-credits) · [Changelog](CHANGELOG.md)
 
 <sub>Global Intelligence Atlas (GIA) is built on the basis of <a href="https://github.com/koala73/worldmonitor">World Monitor</a> by Elie Habib.</sub>
 
@@ -49,7 +49,51 @@
 
 ---
 
-## ✨ New in v2.24: dock with the ISS
+## ✨ New in v2.30: the Sun, the planets and their moons in depth
+
+<p align="center"><img src="site/docs-media/v230-space.jpg" alt="Two pages of the atlas in space. Left: Mars filling the view, and its page: someone of 70 kg weighs like 26.5 kg, a 50 cm jump goes 1.32 m, the Sun looks 65.6 % as wide with 43.1 % of the light, 669 days in its year; then getting there: 259 days, 3.61 km/s from low Earth orbit, the planets line up every 2.14 years, next launch window around December 2026. Right: Titan, and its page: air at 1.48 times Earth's pressure, 98.4 % nitrogen and 1.4 % methane as bars, then the spacecraft that went there: Voyager 1, Cassini–Huygens and Dragonfly." width="100%"/></p>
+<p align="center"><sub>Mars and Titan, each with a deeper page of its own.</sub></p>
+
+Every one of the 34 bodies in space now has a fuller page. **Standing there** gives what someone of 70 kg would weigh, how high a 50 cm jump would go (on Bennu you would leave it for good), the speed needed to leave, how wide and bright the Sun looks, and how long the day and the year are. **In our sky** says whether it is up now from the place the globe was looking at, when it next rises and sets, and the best date to see it. **Getting there** gives the classic minimum-energy trip from Earth, the speed a rocket must add, how often the planets line up and the next launch window, worked out from where the planets really are, with real missions' times beside it. Then **its air** as bars, the body **drawn to scale** next to the Earth, and the **spacecraft that went there**. Everything works offline; the limits are in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md#v230-the-sun-the-planets-and-their-moons-in-depth).
+
+## ✨ Also new in v2.29: markets, cloud regions and AI labs in depth
+
+<p align="center"><img src="site/docs-media/v229-econ.jpg" alt="Two pages of the atlas. Left: the New York Stock Exchange on the east coast of North America, and its page: Tuesday 10:21 local time in New York, open now, closes in 5 hours 39 minutes, then the world's trading day as a strip of 16 exchanges from New Zealand to Brazil in UTC with the ones trading now in green and a line for now. Right: Amazon's US East region in Virginia with a green ring at 10 milliseconds and a blue ring at 30 milliseconds round trip, AI data centres around it, and its page: 6 zones, then round-trip times from 5.2 ms to New York to 202 ms to Manila." width="100%"/></p>
+<p align="center"><sub>The New York Stock Exchange and Amazon's Virginia cloud region, each with a page of its own. The clock and the open exchanges are whenever you look.</sub></p>
+
+Three more layers now open into a full page. An **exchange, central bank or financial centre** shows the local time there, whether its exchange is trading and how long until that changes (lunch breaks included), the world's trading day as a 24-hour strip of 16 big exchanges with a line for now, every exchange open right now and the financial places near it. A **cloud region** shows how long a round trip takes to 12 big cities on every continent, as a floor set by the speed of light in fibre, how many people live within 10 and 30 milliseconds (both drawn as rings on the globe), and the other providers' regions and AI data centres next door. An **AI lab** shows when it was founded and what it works on, the labs and tech headquarters around it, and the cloud regions nearest it with their round-trip time. Everything works offline from the atlas's own data; the limits are in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md#v229-markets-cloud-regions-and-ai-labs-in-depth).
+
+## ✨ Also new in v2.28: conflict zones, watch regions and military bases in depth
+
+<p align="center"><img src="site/docs-media/v228-geo.jpg" alt="Two pages of the atlas. Left: the Sudan Civil War zone outlined in red over Africa with military bases around it, and its page: 1,941 thousand square kilometres, about the size of Saudi Arabia, intensity high, the parties, then bars for the countries it covers (Sudan 89 %, Chad 5 %, Libya 3 %, South Sudan 2 %) and at least 10 million people in 14 cities and towns. Right: Camp Lemonnier in Djibouti ringed at 1,000 km, and its page: 124 United States and NATO bases on the map in 31 countries, the nearest ones, and the host countries with the most." width="100%"/></p>
+<p align="center"><sub>Sudan's conflict zone and Camp Lemonnier, each with a page of its own.</sub></p>
+
+Three geopolitical layers now open into a full page. A **conflict zone** shows how big its drawn area is against a country you know, the countries it covers and each one's share, at least how many people live in its cities and towns, the military bases in and near it grouped by the power that runs them, and what is at stake there: nuclear plants, chokepoints, pipelines, ports, cable landings and big airports. A **watch region** does the same for everything within 500 km and gives the nearest conflict. A **military base** shows the network it belongs to, the other powers' bases within 1,000 km with a line to the nearest of each, and the chokepoint, conflict and watch region it overlooks. Open Camp Lemonnier to see China, France, Japan and Italy all within reach. Everything works offline from the atlas's own data; the limits are in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md#v228-conflict-zones-watch-regions-and-military-bases-in-depth).
+
+## ✨ Also new in v2.27: spaceports and mines in depth
+
+<p align="center"><img src="site/docs-media/v227-sites.jpg" alt="Two pages of the atlas. Left: Kennedy Space Center in Florida with a gold fan of lines spreading north-east to south-east over the Atlantic inside a 900 km circle, and its page: 408 m/s free from Earth's spin at 28.6° N, the flattest orbit straight up 28.6°, 1.5 km/s to remove the tilt for geostationary, and 125° of the compass over open sea. Right: the Chuquicamata copper mine in Chile's Atacama Desert with a gold line to Coloso Port at Antofagasta, and its page: copper goes into electric wiring, motors and power lines, Chile mined about 23 % of the world's copper in 2023, the world's largest open pit by volume, the export port 213 km away." width="100%"/></p>
+<p align="center"><sub>Kennedy Space Center's sea-safe launch directions, and a copper mine's way to the sea.</sub></p>
+
+Two more kinds of place now open into a full page. A **spaceport** shows the speed Earth's spin lends a rocket there, the flattest orbit it can reach straight up and the cost of flattening it for the geostationary belt, then the directions a rocket can fly while staying over open sea for its first 900 km, as a compass rose and a fan on the globe, with the orbits those directions reach (geostationary transfer, the space station, polar, Sun-synchronous), its launches in the atlas's list and the spaceports near it. Open Kennedy and then Vandenberg to see why polar satellites launch from California. A **mine or processing plant** shows what its mineral is for and which country mines most of it, the site's yearly output as a share of the world's, the line to its export port, the plants that refine the mineral and the exchanges that price it, and the other mines of the same mineral. Both work offline from the atlas's own data. The figures and their limits are in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md#v227-spaceports-and-mines-in-depth).
+
+## ✨ Also new in v2.26: chokepoints, pipelines, trade routes and AI data centres in depth
+
+<p align="center"><img src="site/docs-media/v226-infra.jpg" alt="Two pages of the atlas. Left: the Strait of Hormuz ringed in gold on a night map of the Gulf, with its page: 34 km at its narrowest, about as wide as the Strait of Dover, and ships passing now, 9 heading into the Persian Gulf and 7 out to the Gulf of Oman, 13 tankers and 7 cargo ships. Right: an AI data centre in Wisconsin ringed in violet among other sites, with its page: 700,000 NVIDIA GB200 accelerators needing about 1,512 to 1,966 MW, the electricity of about 1.2 million US homes, and the big power stations within 150 km." width="100%"></p>
+<p align="center"><sub>The Strait of Hormuz and an AI data centre, each with a page of its own. The ships in the Hormuz picture were placed by the test script, not heard live.</sub></p>
+
+Four more kinds of thing now open into a full page. A **chokepoint** shows how narrow it is against straits you know, the live ships passing it and which way they are heading, the trade routes that rely on it, the pipelines built to avoid it (Hormuz has four, up to about 11 million barrels a day) and what happens if it closes. A **pipeline** shows what it carries as a flow you can picture (an Olympic pool every few minutes, a share of the world's oil or gas), how long the oil or gas takes from end to end and every country on its line, with the oil drawn flowing along it. A **trade route** goes stop by stop with the distance and days at sea and the chokepoints it relies on. An **AI data centre** shows the electricity its chips need, as homes and reactors, worked out from its chip count and labelled as an estimate, and the big power stations near it. Everything comes from data the atlas already has, so the pages work offline too. What this release assumes is in [`docs/ASSUMPTIONS.md`](docs/ASSUMPTIONS.md).
+
+## ✨ Also new in v2.25: live watch layers, and the whole atlas offline
+
+<p align="center"><img src="site/docs-media/v225-watch.jpg" alt="The atlas's globe over the Americas with the Hurricane forecasts and Lightning layers on. A hurricane's forecast points run north from the Gulf of Mexico, labelled from now to 120 hours, and a second storm sits off Mexico's Pacific coast. A patch of lightning strike density glows off Brazil. The side panel shows the hurricane's page: its forecast hour by hour with wind in knots and km/h and its category." width="100%"></p>
+<p align="center"><sub>Hurricane forecasts and lightning. The screenshot uses the test suite's sample storms, not a real advisory.</sub></p>
+
+Five new layers in Live Earth. **Hurricane forecasts** draw every active Atlantic and eastern or central Pacific storm from the National Hurricane Center (NHC): its forecast track, its forecast points out to five days and the cone of uncertainty, with the wind, pressure and motion on its page. **Lightning** wraps the last 15 minutes of strike density from NOAA nowCOAST round the globe. **Wildfire outlines** draw the mapped edge of every current US wildfire (NIFC), coloured by containment, with its size, cause, crews and cost. **Restricted airspace** shows the FAA's prohibited and restricted areas with their floors, ceilings and hours. **GPS interference** marks the 1° squares where aircraft report poor GPS, counted from adsb.lol with gpsjam.org's published bands. The idea and the feeds came from God's Eye View.
+
+**The whole atlas now works offline.** Use it once online (or press **Save everything** in the Offline kit), and with no internet it still opens with space, the small worlds, city close-ups, Dock with the ISS and the live layers, each live layer saying it is showing what the device saved and how long ago. A test in CI saves everything, cuts the network and checks each part. What this release assumes is in [`docs/ASSUMPTIONS.md`](docs/ASSUMPTIONS.md).
+
+## ✨ Also new in v2.24: dock with the ISS
 
 <p align="center"><img src="site/docs-media/v224-dock-iss.jpg" alt="Two views of the atlas's Dock with the ISS window. Left: from behind a crew capsule, the International Space Station spreads across the view 35 m ahead, its truss and solar arrays above the desert of Egypt, with readouts for distance, closing speed and alignment on the left. Right: the same capsule seen from the station, 5 m from its docking port, with the Nile delta and the Mediterranean below." width="100%"></p>
 <p align="center"><sub>Fly a capsule to the station's docking port, by hand or on autopilot, over where the real station is now.</sub></p>
@@ -295,7 +339,7 @@ Every dot on the globe opens into a page of its own: one line first, the full de
 <tr>
 <td valign="top">☢ <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@50,5,1.4&l=borders,nuclear,cities&s=1">Nuclear plants</a></b><br/><sub>Output, the people inside its 16, 30 and 80 km planning zones, the wind there now.</sub></td>
 <td valign="top">🏛 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@41.9,12.5,0.8&l=borders,landmarks&s=1">Landmarks</a></b><br/><sub>Nearly 200 on every continent, with a credited photo, key figures and what else is nearby.</sub></td>
-<td valign="top">🪐 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@15,0,3&b=daynight&l=sun,planets&s=1">The Moon, the planets and eclipses</a></b><br/><sub>Fly to any of them where they really are now, watch an eclipse's shadow cross the globe.</sub></td>
+<td valign="top">🪐 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@15,0,3&b=daynight&l=sun,planets&s=1">The Moon, the planets and eclipses</a></b><br/><sub>Fly to any of them where they really are now: your weight there, when it rises, the trip from Earth and its next launch window, the missions that went; watch an eclipse's shadow cross the globe.</sub></td>
 </tr>
 <tr>
 <td valign="top">⚠ <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@10,100,2.6&l=borders,alerts,cities&s=1">Disaster alerts</a></b><br/><sub>The Global Disaster Alert and Coordination System (GDACS) level in words, the people inside each ring, the quake or storm behind it.</sub></td>
@@ -306,6 +350,26 @@ Every dot on the globe opens into a page of its own: one line first, the full de
 <td valign="top">🫁 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@24,84,1.6&l=borders,air,cities&s=1">Air quality</a></b><br/><sub>The index in words, who should take care, the main pollutant and why, the dose as cigarettes, the cleanest hours this week.</sub></td>
 <td valign="top">⛈ <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@37,-98,1&l=borders,warnings,cities&s=1">US weather warnings</a></b><br/><sub>The exact area, how serious, soon and sure, the time left, the people inside and what to do.</sub></td>
 <td valign="top">📍 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@20,0,2.4&l=borders,cities&s=1">Any spot on Earth</a></b><br/><sub>Click the ground: the weather, height, air, Sun, nearest plate boundary, street photos and cameras right there.</sub></td>
+</tr>
+<tr>
+<td valign="top">⚓ <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@26.4,56.4,0.6&l=borders,waterways,routes&s=1">Chokepoints and trade routes</a></b><br/><sub>How narrow, the ships passing now and which way, the routes that rely on it, what closing it would cost; routes stop by stop in days at sea.</sub></td>
+<td valign="top">🛢 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@45,30,1.6&l=borders,pipelines&s=1">Pipelines</a></b><br/><sub>Its flow as an Olympic pool every few minutes and a share of the world, end-to-end time, every country on its line, the chokepoint it avoids.</sub></td>
+<td valign="top">🖥 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@40,-95,1.8&l=borders,datacenters&s=1">AI data centres</a></b><br/><sub>The power its chips need as homes and reactors, the big power stations near it and its owners' other sites.</sub></td>
+</tr>
+<tr>
+<td valign="top">🚀 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@28.5,-80.6,0.6&l=borders,spaceports,launches&s=1">Spaceports</a></b><br/><sub>The speed Earth's spin lends, the directions over open sea and the orbits they reach, its launches.</sub></td>
+<td valign="top">⛏ <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@-23,-69,0.6&l=borders,mining,minerals,commodities&s=1">Mines and refineries</a></b><br/><sub>What the mineral is for, the site's share of the world, the way to its port, where it is refined and priced.</sub></td>
+<td valign="top">🔋 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@-10,30,2&l=borders,minerals&s=1">Critical minerals</a></b><br/><sub>Lithium, cobalt, nickel and rare earths: who mines most of each and the other mines of it.</sub></td>
+</tr>
+<tr>
+<td valign="top">⚔ <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@20,35,2.2&l=borders,conflicts,bases&s=1">Conflict zones</a></b><br/><sub>Its size against a country you know, the countries and people inside, the bases near it, what is at stake.</sub></td>
+<td valign="top">👁 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@10,40,2.2&l=borders,hotspots&s=1">Watch regions</a></b><br/><sub>Everything within 500 km: countries, people, bases and key sites, and the nearest conflict.</sub></td>
+<td valign="top">🛡 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@11.5,43.2,0.8&l=borders,bases&s=1">Military bases</a></b><br/><sub>Its power's network, other powers within 1,000 km, the chokepoint and conflict it overlooks.</sub></td>
+</tr>
+<tr>
+<td valign="top">🏦 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@45,-30,2.6&l=borders,economic,finance&s=1">Exchanges and financial centres</a></b><br/><sub>The local time, open or closed and for how long, the world's trading day, what is trading now.</sub></td>
+<td valign="top">☁ <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@39,-77,1.1&l=borders,cloud,datacenters&s=1">Cloud regions</a></b><br/><sub>Round trips to big cities, people within 10 and 30 ms, the regions and AI data centres next door.</sub></td>
+<td valign="top">🧠 <b><a href="https://normansrule.github.io/global-intelligence-atlas/app/#@37.6,-122.2,0.5&l=borders,ailabs,cloud&s=1">AI labs</a></b><br/><sub>When it was founded and what it works on, the labs around it, the compute nearest it.</sub></td>
 </tr>
 </table>
 
@@ -318,7 +382,7 @@ Every dot on the globe opens into a page of its own: one line first, the full de
 
 | | |
 |---|---|
-| **71 layers in 11 groups** | Live Earth, air quality, US weather warnings, wildlife, economy and property, chemicals and environment, cameras, civic data, sky and space, Earth science, places, infrastructure, geopolitics and Intel |
+| **76 layers in 11 groups** | Live Earth (with hurricane forecasts, lightning, wildfire outlines, restricted airspace and GPS interference), air quality, US weather warnings, wildlife, economy and property, chemicals and environment, cameras, civic data, sky and space, Earth science, places, infrastructure, geopolitics and Intel |
 | **Data sources and references** | Every source is listed in the app (About) and in [`docs/REFERENCES.md`](docs/REFERENCES.md) in American Psychological Association (APA) 7th edition style |
 | **No server, no account, no key** | No application programming interface (API) keys needed. A static site on GitHub Pages; scheduled GitHub Actions jobs collect what browsers cannot fetch directly |
 | **Weather you can see** | Real clouds from the forecast, rain and snow where they are falling, lightning in thunderstorms, and the glow and smoke of large fires, drawn on the globe rather than as symbols. Pick the Weather map style to switch it all on over a muted Earth, and any other style to switch it off |
@@ -577,7 +641,13 @@ Fifteen lessons on the [Learn page](https://normansrule.github.io/global-intelli
 | v2.10 | The Global Intelligence Atlas (GIA) repository launch: this README, browser tuning, release branding |
 | v2.11 | Cameras from 22 more agencies and Osiris's worldwide webcam list, the rest of World Monitor's map datasets, markers that share a spot, economy, property and industry |
 | v2.12 | A News tab: headlines from 16 publishers' own feeds around the world and free live news channels from broadcasters' official streams |
-| **v2.24** | **Dock with the ISS: fly a capsule to the station by hand or on autopilot, with real orbital drift, real docking limits and the real Earth below; positions and geo: links in search** |
+| **v2.30** | **The Sun, the planets and their moons in depth: your weight and the Sun on each world, when it rises and the best night to see it, the trip from Earth and the next launch window, its air, its size and the spacecraft that went there** |
+| v2.29 | **Markets, cloud regions and AI labs in depth: the local time and trading status of every exchange with the world's trading day, round trips and people within reach of each cloud region, the compute near each AI lab** |
+| v2.28 | **Conflict zones, watch regions and military bases in depth: each theatre's size, countries, people, bases and what is at stake; each base's network, rival powers within 1,000 km and what it overlooks** |
+| v2.27 | **Spaceports and mines in depth: Earth's spin and sea-safe launch directions with the orbits they reach, each mine's share of world output, its way to the sea, where its mineral is refined and priced** |
+| v2.26 | **Chokepoints, pipelines, trade routes and AI data centres in depth: ships passing each strait and which way, pipeline flow as pools and shares of the world, routes stop by stop, the power each AI site needs and the power stations near it** |
+| v2.25 | **Live watch layers (hurricane forecasts with their cones, lightning, US wildfire outlines, restricted airspace, GPS interference) and the whole atlas offline: space, close-ups, docking and the live layers keep working with no internet, each saying how old its copy is** |
+| v2.24 | **Dock with the ISS: fly a capsule to the station by hand or on autopilot, with real orbital drift, real docking limits and the real Earth below; positions and geo: links in search** |
 | v2.23 | **References and assumptions on record: what each release assumes or approximates, in `docs/ASSUMPTIONS.md`; the change list and licence notices brought up to date; every version number checked** |
 | v2.22 | **The small worlds: Phobos, Deimos, Charon, Ceres, Vesta and Bennu, the odd-shaped ones in their real shapes, each where it really is now** |
 | v2.21 | **Thirteen big moons of Saturn, Uranus and Neptune, placed by the TASS 1.7 and GUST86 theories, with NASA maps; the desktop app builds on Windows again** |

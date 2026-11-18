@@ -32,11 +32,12 @@ export const lightMs = (km) => (km / FIBRE_KM_S) * 1000;
 /** A length against distances people know. */
 export function lengthWords(km) {
   if (!(km > 0)) return '';
-  if (km >= 40_075 * 0.9) return `${fmt(km / 40_075, 2)} times round the Earth at the equator`;
-  if (km >= 17_000 * 0.6) return `${fmt(km / 17_000, 1)} times London to Sydney as the crow flies`;
-  if (km >= 5_570 * 0.5) return `${fmt(km / 5_570, 1)} times London to New York`;
-  if (km >= 344 * 0.5) return `${fmt(km / 344, 1)} times London to Paris`;
-  return `${fmt(km / 33.3, 1)} times across the Strait of Dover`;
+  const times = (r, d, what) => (fmt(r, d) === '1' ? `about as far as ${what}` : `${fmt(r, d)} times ${what}`);
+  if (km >= 40_075 * 0.9) return fmt(km / 40_075, 2) === '1' ? 'about once round the Earth at the equator' : `${fmt(km / 40_075, 2)} times round the Earth at the equator`;
+  if (km >= 17_000 * 0.6) return times(km / 17_000, 1, 'London to Sydney as the crow flies');
+  if (km >= 5_570 * 0.5) return times(km / 5_570, 1, 'London to New York');
+  if (km >= 344 * 0.5) return times(km / 344, 1, 'London to Paris');
+  return times(km / 33.3, 1, 'across the Strait of Dover');
 }
 /** Landing stations grouped by country, in the order they are listed: [[countryName, [landing…]]…]. */
 export function landingsByCountry(c) {

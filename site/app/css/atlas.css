@@ -1286,3 +1286,66 @@ body.in-space #globe { cursor: grab; }
 .moon-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
 .moon-chips .chip { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; }
 .moon-chips .chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+
+/* v2.26 chokepoint, pipeline, route and data-centre pages (infradetail.js) */
+.ix-ways { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 8px; }
+.ix-way { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; }
+.ix-way b { font: 600 1.4rem/1 var(--display); }
+.ix-way small { grid-column: 1 / -1; color: var(--ink-2); font-size: var(--fs-caption); }
+.ix-arrow { display: inline-flex; color: var(--ochre); transform: rotate(calc(var(--b) - 90deg)); }
+.ix-pool { position: relative; height: 14px; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; margin: 8px 0; }
+.ix-fill { position: absolute; inset: 0; background: linear-gradient(90deg, var(--accent), var(--ochre)); transform-origin: left; animation: ix-fill var(--s) linear infinite; }
+@keyframes ix-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.ix-steps { list-style: none; margin: 4px 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 6px; counter-reset: ix; }
+.ix-steps li { display: inline-flex; align-items: baseline; gap: 6px; animation: unit-in 320ms var(--settle) both; animation-delay: calc(var(--i) * 40ms); }
+.ix-steps li + li::before { content: '›'; color: var(--ink-2); }
+.ix-steps.ix-line { flex-direction: column; gap: 0; border-left: 2px solid var(--ochre); margin-left: 6px; padding-left: 12px; }
+.ix-steps.ix-line li { position: relative; padding: 4px 0; display: flex; justify-content: space-between; gap: 10px; }
+.ix-steps.ix-line li::before { content: ''; position: absolute; left: -18px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: var(--panel); border: 2px solid var(--ochre); }
+.ix-steps.ix-line small, .ix-alts small { color: var(--ink-2); font-size: var(--fs-caption); }
+.ix-alts { list-style: none; margin: 4px 0 8px; padding: 0; display: grid; gap: 8px; }
+.ix-alts li { display: grid; gap: 2px; justify-items: start; }
+.ix-meter { height: 10px; border-radius: 5px; background: color-mix(in srgb, var(--line) 70%, transparent); overflow: hidden; margin: 6px 0 8px; }
+.ix-meter span { display: block; height: 100%; width: var(--w); background: linear-gradient(90deg, #b7a3ff, var(--ochre)); border-radius: 5px; animation: unit-in 600ms var(--settle) both; }
+@media (prefers-reduced-motion: reduce) { .ix-fill { animation: none; transform: scaleX(1); } }
+/* v2.27 spaceport and mine pages (sitedetail.js) */
+.sx-fanrow { display: grid; grid-template-columns: 112px 1fr; gap: 12px; align-items: center; margin: 4px 0 8px; }
+.sx-rose { width: 112px; height: 112px; animation: unit-in 420ms var(--settle) both; }
+.sx-rose .sx-rose-bg { fill: color-mix(in srgb, var(--line) 45%, transparent); }
+.sx-rose .sx-safe { fill: color-mix(in srgb, var(--ochre) 80%, transparent); stroke: var(--panel); stroke-width: 0.4; }
+.sx-rose .sx-land { fill: color-mix(in srgb, var(--ink-2) 18%, transparent); stroke: var(--panel); stroke-width: 0.4; }
+.sx-rose text { font: 600 8px/1 var(--body, sans-serif); fill: var(--ink-2); }
+@media (max-width: 380px) { .sx-fanrow { grid-template-columns: 1fr; justify-items: center; } }
+@media (prefers-reduced-motion: reduce) { .sx-rose { animation: none; } }
+/* v2.28 conflict-zone, watch-region and base pages (geodetail.js) */
+.gx-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 25%, transparent); vertical-align: -1px; }
+.gx-pow { display: inline-flex; align-items: center; gap: 6px; }
+.gx-bars { list-style: none; margin: 4px 0 8px; padding: 0; display: grid; gap: 6px; }
+.gx-bars li { display: grid; grid-template-columns: minmax(80px, 34%) 1fr 44px; gap: 8px; align-items: center; font-size: var(--fs-caption); animation: unit-in 320ms var(--settle) both; }
+.gx-bars small { color: var(--ink-2); text-align: right; }
+.gx-bar { height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--line) 70%, transparent); overflow: hidden; }
+.gx-bar i { display: block; height: 100%; width: var(--w); background: linear-gradient(90deg, #f07a63, var(--ochre)); border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { .gx-bars li { animation: none; } }
+/* v2.29 market, cloud and lab pages (econdetail.js) */
+.ex-strip { width: 100%; height: auto; margin: 4px 0 6px; font: 600 7px/1 var(--body, sans-serif); }
+.ex-strip text { fill: var(--ink-2); }
+.ex-strip .ex-h { text-anchor: middle; font-weight: 500; }
+.ex-strip .ex-grid { stroke: var(--line); stroke-width: 0.5; }
+.ex-strip .ex-s { fill: color-mix(in srgb, var(--ink-2) 28%, transparent); }
+.ex-strip .ex-on { fill: color-mix(in srgb, #3fbf7f 80%, transparent); }
+.ex-strip .ex-me { stroke: var(--ochre); stroke-width: 1.2; }
+.ex-strip .ex-lunch { fill: var(--panel); opacity: 0.75; }
+.ex-strip .ex-now { stroke: var(--ochre); stroke-width: 1.4; }
+.ex-rtt { list-style: none; margin: 4px 0 8px; padding: 0; display: grid; gap: 6px; }
+.ex-rtt li { display: grid; grid-template-columns: minmax(80px, 34%) 1fr 52px; gap: 8px; align-items: center; font-size: var(--fs-caption); animation: unit-in 320ms var(--settle) both; }
+.ex-rtt small { color: var(--ink-2); text-align: right; }
+@media (prefers-reduced-motion: reduce) { .ex-rtt li { animation: none; } }
+/* v2.30 body pages in depth (spacedetail.js) */
+.sd { margin: 4px 0 10px; }
+.notes dl.sd-facts, .sd-facts { display: grid; grid-template-columns: 40% minmax(0, 1fr); gap: 5px 10px; margin: 4px 0 8px; font-size: var(--fs-caption); }
+.sd-facts dt { color: var(--ink-2); }
+.sd-facts dd { margin: 0; font-weight: 600; }
+.sd-scale { width: 100%; max-height: 150px; margin: 4px 0; font: 600 9px/1 var(--body, sans-serif); fill: var(--ink-2); }
+.sd-missions { list-style: none; margin: 4px 0 8px; padding: 0; display: grid; gap: 8px; }
+.sd-missions li { display: grid; gap: 1px; font-size: var(--fs-caption); padding-left: 10px; border-left: 2px solid color-mix(in srgb, var(--ochre) 60%, transparent); }
+.sd-missions small { color: var(--ink-2); }

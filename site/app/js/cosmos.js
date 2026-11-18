@@ -23,6 +23,7 @@ import { ui } from './uicons.js';
 import { THREE } from '../vendor/vendor.min.mjs';
 import { BODIES, BODY } from './bodies.js';
 import { LANDINGS } from './landings.js';
+import { spaceSections } from './spacedetail.js';
 
 const D2R = Math.PI / 180;
 const R = 100; const KM = R / 6371.0088; // scene units per km
@@ -169,7 +170,7 @@ let active = null; // the installed cosmos, for the layer below
 /** The layer-list switch: the Sun, the Moon and the planets drawn in the night sky behind the globe. */
 export const planetsLayer = {
   id: 'planets', group: 'space', label: 'Moon and planets', swatch: '#ffd27a', on: true, fresh: true,
-  sources: ['astronomyengine', 'iaurotation', 'solarsystemscope', 'nasa3d', 'nasatrek', 'nssdcfacts', 'apollosites', 'nssdcmaster', 'espenak', 'tass17', 'gust86', 'lainey', 'mpcorb', 'stellariumdata'],
+  sources: ['astronomyengine', 'iaurotation', 'solarsystemscope', 'nasa3d', 'nasatrek', 'nssdcfacts', 'apollosites', 'nssdcmaster', 'espenak', 'tass17', 'gust86', 'lainey', 'mpcorb', 'stellariumdata', 'curtis2020'],
   async load() { return {}; },
   channels() { return {}; },
   onToggle(on) { active?.setBodies(on); },
@@ -575,6 +576,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     const c = ensureControls(); ensureEarth();
     const from = st.focus;
     if (!from) { // leaving the globe: start exactly where the globe camera is
+      try { const pv = globe.pointOfView(); st.obs = { lat: pv.lat, lng: pv.lng, place: placeName?.(pv.lat, pv.lng) }; } catch { /* keep the last place */ } // v2.30 the sky is seen from here
       cam.position.copy(mainCam.position); cam.quaternion.copy(mainCam.quaternion); cam.updateMatrixWorld();
       c.target.set(0, 0, 0);
       globe.controls().enabled = false; globe.enablePointerInteraction(false); globe.controls().autoRotate = false;
@@ -903,6 +905,11 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     }
     return rows;
   }
+  /** v2.30 the extra sections of a body's page: standing there, in our sky, getting there, its air, size, missions. */
+  function sections(id) {
+    if (!st.obs) { try { const pv = globe.pointOfView(); st.obs = { lat: pv.lat, lng: pv.lng, place: placeName?.(pv.lat, pv.lng) }; } catch { st.obs = null; } }
+    try { return spaceSections(id, { A, date: now(), obs: st.obs, def: BODY[id], hostName: BODY[hostOf(id)]?.name }); } catch (e) { console.warn('space page', e); return ''; }
+  }
   function card(id) {
     const d = BODY[id];
     const credit = { sss: 'Map: Solar System Scope, from NASA imagery (Creative Commons Attribution 4.0)', nasa3d: `Map: NASA 3D Resources, from ${GALILEAN.includes(id) ? 'Voyager and Galileo' : SATURNIAN.includes(id) ? 'Cassini' : URANIAN.includes(id) || id === 'triton' ? 'Voyager 2' : 'spacecraft'} images (public domain)`, bluemarble: 'Map: NASA Blue Marble and Black Marble (public domain)',
@@ -919,11 +926,12 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
       ${factsHtml([...live(id), ...d.facts])}
       <p class="fold" tabindex="0" role="button" aria-expanded="false" title="Show the full text">${esc(d.about)}</p>
       ${moons}
+      ${sections(id)}
       <div class="quick">${venus}${id === 'sun' || id === 'moon' ? '<button class="btn ghost" data-eclipses="1">Eclipses</button>' : ''}<button class="btn ghost" data-space="earth">Back to Earth</button></div>
       ${sharp}
       <details class="more"><summary>Where the picture comes from</summary>
         <p class="small">${esc(credit ?? '')}.${esc(shapeNote)} Position and spin: ${OUTER.includes(id) ? `${id === 'triton' ? 'a fixed orbit from JPL elements for 2008 (approximate)' : SATURNIAN.includes(id) ? 'the TASS 1.7 theory of Saturn’s moons (IMCCE)' : 'the GUST86 theory of Uranus’s moons (IMCCE)'}, around a planet placed by Astronomy Engine` : MARTIAN.includes(id) ? 'Lainey’s ephemerides of the Martian moons (Royal Observatory of Belgium and IMCCE), around Mars placed by Astronomy Engine' : id === 'charon' ? 'always over the same meridian of Pluto, from Pluto’s rotation (International Astronomical Union), 19,600 km out' : SMALL.includes(id) ? `a fixed Kepler orbit from Minor Planet Center elements${id === 'bennu' ? ' (approximate: the Earth’s pull changes Bennu’s orbit a little at each close pass)' : ''}, and the International Astronomical Union’s rotation elements` : 'Astronomy Engine'}, computed in your browser for the time on the atlas clock (the time machine moves everything).</p>
-        ${refsHtml(['astronomyengine', ...(OUTER.includes(id) ? [id === 'triton' ? 'jplsatelem' : SATURNIAN.includes(id) ? 'tass17' : 'gust86', 'stellariumephem'] : []), ...(MARTIAN.includes(id) ? ['lainey', 'stellariummarssat'] : []), ...(SMALL.includes(id) ? ['mpcorb'] : []), 'iaurotation', 'nssdcfacts', ...({ nasa3d: ['nasa3d'], nasa3dnh: ['nasa3d'], bluemarble: ['bluemarble'], sss: ['solarsystemscope'], stellarium: ['stellariumdata'], usgsdawn: ['usgsdawn', 'stellariumdata'], nasaosirisrex: ['bennumosaic', 'stellariumdata'] }[d.credit] ?? []), ...(d.shape && d.credit !== 'stellarium' && id !== 'bennu' ? ['stellariumdata'] : []), ...(id === 'bennu' ? ['nasa3d'] : []), ...(d.trek ? ['nasatrek'] : [])])}
+        ${refsHtml(['astronomyengine', ...(OUTER.includes(id) ? [id === 'triton' ? 'jplsatelem' : SATURNIAN.includes(id) ? 'tass17' : 'gust86', 'stellariumephem'] : []), ...(MARTIAN.includes(id) ? ['lainey', 'stellariummarssat'] : []), ...(SMALL.includes(id) ? ['mpcorb'] : []), 'iaurotation', 'nssdcfacts', ...({ nasa3d: ['nasa3d'], nasa3dnh: ['nasa3d'], bluemarble: ['bluemarble'], sss: ['solarsystemscope'], stellarium: ['stellariumdata'], usgsdawn: ['usgsdawn', 'stellariumdata'], nasaosirisrex: ['bennumosaic', 'stellariumdata'] }[d.credit] ?? []), ...(d.shape && d.credit !== 'stellarium' && id !== 'bennu' ? ['stellariumdata'] : []), ...(id === 'bennu' ? ['nasa3d'] : []), ...(d.trek ? ['nasatrek'] : []), 'curtis2020', 'nssdcmaster'])}
       </details>`, `space:${id}`);
   }
   /** v2.20 the solar system card: every planet, how far from the Sun it is now and how long its light takes. */

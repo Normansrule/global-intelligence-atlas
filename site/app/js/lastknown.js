@@ -21,6 +21,10 @@ const MIN_GAP = 3 * 60_000; // save a given feed at most every 3 minutes (flight
 // 20 minutes on are elsewhere, so their copy is not drawn at all after that. Everything else carries its own
 // time stamps (an earthquake's time, a launch's date) and stays useful for weeks.
 const FRESH_FOR = [
+  // v2.25: GPS interference changes over hours and days, so its copy stays useful for a week (before the plane rule
+  // below, which would otherwise take it for flights by its adsb.lol source); a lightning image for a day
+  [/\/gnss\.json$/i, 7 * 86_400_000],
+  [/\/lightning\.json$/i, 86_400_000],
   [/^(opensky|adsb(?!db)|airplanes|adsbfi)|\/flights\.json$/i, 20 * 60_000],
   [/\/ships\.json$|ais\/v1\/locations/i, 60 * 60_000],
   [/^celestrak|FORMAT=tle|\/tle-[\w-]+\.txt$/i, 14 * 86_400_000], // orbits drift too far after two weeks; the bundled snapshot takes over

@@ -1,0 +1,9 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+   Global Intelligence Atlas: the v2.25 live watch layers (js/watchlayers.js): the hurricane forecast table. */
+.wl h4 { margin: 4px 0 6px; font-size: 0.82rem; }
+.wl-fc { width: 100%; border-collapse: collapse; font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+.wl-fc td { padding: 4px 6px 4px 0; border-top: 1px solid var(--line, #ffffff1f); vertical-align: middle; }
+.wl-fc td:first-child { font-weight: 600; white-space: nowrap; }
+.wl .sw { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1px #0006; vertical-align: -1px; }
+.wl p { margin: 8px 0 0; line-height: 1.4; }
+@media (max-width: 640px) { .wl-fc td:nth-child(2) { display: none; } }

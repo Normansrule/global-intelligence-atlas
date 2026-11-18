@@ -12,6 +12,11 @@ import { quakeHead, quakeFill, quakeChannels } from './quakedetail.js';
 import { countryOverlay } from './countrydetail.js';
 import { portHtml, portFill, portOverlay } from './portdetail.js';
 import { cableHtml, cableFill, cableOverlay } from './cabledetail.js';
+import { chokeHtml, chokeFill, pipeHtml, pipeFill, routeHtml, routeFill, dcHtml, dcFill, infraOverlay } from './infradetail.js';
+import { padHtml, padFill, mineHtml, mineFill, siteOverlay } from './sitedetail.js';
+import { zoneHtml, zoneFill, spotHtml, spotFill, geoOverlay } from './geodetail.js';
+import { cities as cityRows, airports as airportRows } from './citydetail.js';
+import { marketHtml, marketFill } from './econdetail.js';
 import { nuclearHtml, nuclearFill, nuclearOverlay } from './nucleardetail.js';
 import { shipMeta } from './networks.js';
 import { eventHtml, eventFill, eventOverlay } from './eventdetail.js';
@@ -39,6 +44,9 @@ const lonLatToLatLng = (pts) => pts.map(([lng, lat]) => [lat, lng]);
 const wiki = (q) => ({ label: 'Wikipedia', url: `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(q)}` });
 
 let WM = null; // World Monitor static bundle
+let PLANTS = null;
+/** The World Resources Institute's power plants (data/power-plants.json), loaded once, for the data-centre page. */
+function powerPlants() { PLANTS ??= getLocal('data/power-plants.json').then((d) => d.rows.map(([name, lat, lng, mw, fuel]) => ({ name, lat, lng, mw, fuel }))); return PLANTS; }
 export async function worldMonitorData() {
   if (!WM) WM = await getLocal('data/worldmonitor-static.json');
   return WM;
@@ -410,7 +418,7 @@ export const LAYERS = [
     },
   },
   {
-    id: 'pipelines', group: 'infra', label: 'Pipelines', swatch: '#c9803e', on: false, sources: ['worldmonitor'],
+    id: 'pipelines', group: 'infra', label: 'Pipelines', swatch: '#c9803e', on: false, sources: ['worldmonitor', 'ieaoil', 'ieagas', 'fina'],
     async load() { return (await worldMonitorData()).pipelines; },
     channels(ps, ctx) {
       if (!ps._fat) {
@@ -418,10 +426,15 @@ export const LAYERS = [
         ps._fat = ctx.fatLines(ps.map((p) => ({ pts: lonLatToLatLng(p.points), color: p.status === 'operating' ? PIPE_COLORS[p.type] ?? '#c9803e' : '#6d5a44', width: p.status === 'operating' ? 2 : 1.2, alt: 0.003 })));
         ps._set = { segs: ps._fat.segs, items: ps.map((p) => ({ ref: { layer: 'pipelines', d: p }, tip: tip(p.name, `${p.type} · ${p.status}`) })) };
       }
-      return { custom: [ps._fat], lines: [ps._set] };
+      const open = infraOverlay(ctx, 'pipelines', window.gia?.state?.selected); // the open pipeline page (infradetail.js)
+      return { custom: [ps._fat, ...open.custom], lines: [ps._set], ...(open.paths.length ? { paths: open.paths } : {}) };
     },
     describe(p) {
-      return { title: p.name, sub: `${p.type} pipeline · ${p.status}`, rows: [['Capacity', p.capacity ?? '—'], ['Length', p.length ?? '—'], ['Operator', p.operator ?? '—'], ['Countries', p.countries?.join(', ') ?? '—']], links: [wiki(p.name)] };
+      const gi = window.gia;
+      return { title: p.name, sub: `${p.type} pipeline · ${p.status}`,
+        /** The pipeline page: its flow as pools and shares of the world, the countries it crosses, the chokepoint it avoids (infradetail.js). */
+        html: pipeHtml(p), async fill() { pipeFill(p, { data: gi.state.data, wm: await worldMonitorData(), countryAt: (a, b) => gi.countryAt(a, b), refresh: () => gi.refreshLayer('pipelines', { soft: true }) }); },
+        rows: [['Capacity', p.capacity ?? '—'], ['Length', p.length ?? '—'], ['Operator', p.operator ?? '—'], ['Countries', p.countries?.join(', ') ?? '—']], links: [wiki(p.name)] };
     },
     learn: {
       what: 'Major oil (amber) and gas (blue) pipelines from World Monitor’s energy catalogue. Dashed lines are planned, paused or under construction.',
@@ -433,16 +446,21 @@ export const LAYERS = [
   {
     id: 'routes', group: 'infra', label: 'Trade routes', swatch: '#e3b55b', on: false, sources: ['worldmonitor', 'unctad'],
     async load() { return (await worldMonitorData()).tradeRoutes; },
-    channels(rs) {
+    channels(rs, ctx) {
       const arcs = [];
       for (const r of rs) for (let i = 0; i + 1 < r.stops.length; i++) {
         const [a, b] = [r.stops[i], r.stops[i + 1]];
         arcs.push({ sLat: a[0], sLng: a[1], eLat: b[0], eLng: b[1], color: ['rgba(227,181,91,0.15)', 'rgba(227,181,91,0.95)'], stroke: 0.4, alt: 0.05, dashLen: 0.35, dashGap: 0.15, animMs: 4000, tip: tip(r.name, r.volumeDesc), ref: { layer: 'routes', d: r } });
       }
-      return { arcs };
+      const open = ctx ? infraOverlay(ctx, 'routes', window.gia?.state?.selected) : { custom: [] }; // the open route page (infradetail.js)
+      return { arcs, ...(open.custom.length ? { custom: open.custom } : {}) };
     },
     describe(r) {
-      return { title: r.name, sub: `${r.category} route · ${r.status}`, rows: [['Volume', r.volumeDesc ?? '—'], ['Passes', r.stops.slice(1, -1).map((s) => s[2]).join(' → ') || 'open ocean']], links: [{ label: 'UNCTAD Review of Maritime Transport', url: 'https://unctad.org/topic/transport-and-trade-logistics/review-of-maritime-transport' }] };
+      const gi = window.gia;
+      return { title: r.name, sub: `${r.category} route · ${r.status}`,
+        /** The route page: stop by stop with days at sea, the chokepoints it relies on, ships at its stops (infradetail.js). */
+        html: routeHtml(r), async fill() { routeFill(r, { data: gi.state.data, wm: await worldMonitorData(), metaOf: shipMeta, refresh: () => gi.refreshLayer('routes', { soft: true }) }); },
+        rows: [['Volume', r.volumeDesc ?? '—'], ['Passes', r.stops.slice(1, -1).map((s) => s[2]).join(' → ') || 'open ocean']], links: [{ label: 'UNCTAD Review of Maritime Transport', url: 'https://unctad.org/topic/transport-and-trade-logistics/review-of-maritime-transport' }] };
     },
     learn: {
       what: 'Principal container, tanker and bulk routes from World Monitor, drawn port → chokepoints → port.',
@@ -454,13 +472,17 @@ export const LAYERS = [
   {
     id: 'waterways', pin: 'strait', group: 'infra', label: 'Chokepoints', swatch: '#e3b55b', on: false, sources: ['worldmonitor', 'eia'],
     async load() { return infraData('waterways', async () => (await worldMonitorData()).waterways); },
-    channels(ws) {
+    channels(ws, ctx) {
+      const open = ctx ? infraOverlay(ctx, 'waterways', window.gia?.state?.selected) : { custom: [] }; // the open chokepoint page (infradetail.js)
       return {
+        ...(open.custom.length ? { custom: open.custom } : {}),
         points: ws.map((w) => point('waterways', w, w.lat, w.lon, '#e3b55b', 0.4, 0.02, tip(title(w.name), w.description))),
         labels: ws.map((w) => ({ lat: w.lat, lng: w.lon, text: title(w.name), size: 0.75, color: '#e3b55b', dot: 0, ref: { layer: 'waterways', d: w } })),
       };
     },
-    describe(w) { return { wiki: title(w.name), probe: [w.lat, w.lon], title: title(w.name), sub: 'Strategic waterway', body: w.description, links: [{ label: 'EIA: World Oil Transit Chokepoints', url: 'https://www.eia.gov/international/analysis/special-topics/World_Oil_Transit_Chokepoints' }, wiki(title(w.name))] }; },
+    describe(w) { const gi = window.gia; return { wiki: title(w.name), probe: [w.lat, w.lon], title: title(w.name), sub: 'Strategic waterway', body: w.description,
+      /** The chokepoint page: its width, ships passing now and which way, routes through it, pipelines round it, if it closed (infradetail.js). */
+      html: chokeHtml(w), async fill() { chokeFill(w, { data: gi.state.data, wm: await worldMonitorData(), metaOf: shipMeta, refresh: () => gi.refreshLayer('waterways', { soft: true }) }); }, links: [{ label: 'EIA: World Oil Transit Chokepoints', url: 'https://www.eia.gov/international/analysis/special-topics/World_Oil_Transit_Chokepoints' }, wiki(title(w.name))] }; },
     learn: {
       what: 'Narrow straits and canals that a large share of shipping must pass through.',
       how: 'With open data on, the eight oil-transit chokepoints of the U.S. Energy Information Administration (EIA); otherwise positions and notes from World Monitor’s chokepoint registry.',
@@ -490,10 +512,13 @@ export const LAYERS = [
     learn: { what: 'Ports of the world: with open data on, every large, medium and small harbour in the U.S. National Geospatial-Intelligence Agency’s World Port Index, sized by harbour size; otherwise World Monitor’s list of the biggest container, oil, LNG and bulk ports. Click one for its port page: the waves, wind and water temperature now, the tide over three days with the next high and low water, a cut-away of its depths showing which of nine typical ships can get in, what limits entry, the cargo it handles and its heaviest lift, the live ships in port now and the nearest airports.', how: 'The World Port Index (Pub. 150) is a U.S. Government publication for mariners, in the public domain. World Monitor’s list was curated from port-authority statistics.', try: 'Notice how many large harbours sit on one stretch of coast between Shanghai and Singapore, then click one and pick the very large crude carrier: only a few hundred ports in the world are deep enough for it.', refs: ['ngawpi', 'openmeteomarine', 'wmocodes', 'worldmonitor'] },
   },
   {
-    id: 'datacenters', pin: 'chip', group: 'infra', label: 'AI data centres', swatch: '#b7a3ff', on: false, sources: ['worldmonitor'],
+    id: 'datacenters', pin: 'chip', group: 'infra', label: 'AI data centres', swatch: '#b7a3ff', on: false, sources: ['worldmonitor', 'wri', 'nvdgx', 'nvl72', 'uptime', 'eiahome'],
     async load() { return (await worldMonitorData()).datacenters; },
-    channels(ds) { return { points: ds.map((d) => point('datacenters', d, d.lat, d.lon, d.status === 'operational' ? '#b7a3ff' : 'rgba(183,163,255,0.55)', 0.16 + Math.min(0.35, Math.log10((d.chipCount ?? 1000) + 1) * 0.05), 0.01 + Math.min(0.12, (d.chipCount ?? 0) / 4e6), tip(d.name, `${d.owner ?? ''} · ${d.status}`))) }; },
-    describe(d) { return { title: d.name, sub: `${d.owner ?? ''} · ${d.country}`, rows: [['Status', d.status], ['Accelerators', d.chipType ?? '—'], ['Chip count', d.chipCount ? d.chipCount.toLocaleString() : '—']], body: 'Large AI clusters are measured in accelerators and in grid power — a 100,000-GPU site draws on the order of 100+ MW, comparable to a small city.' }; },
+    channels(ds, ctx) { const open = ctx ? infraOverlay(ctx, 'datacenters', window.gia?.state?.selected) : { custom: [] }; // the open data-centre page (infradetail.js)
+      return { ...(open.custom.length ? { custom: open.custom } : {}), points: ds.map((d) => point('datacenters', d, d.lat, d.lon, d.status !== 'planned' ? '#b7a3ff' : 'rgba(183,163,255,0.55)', 0.16 + Math.min(0.35, Math.log10((d.chipCount ?? 1000) + 1) * 0.05), 0.01 + Math.min(0.12, (d.chipCount ?? 0) / 4e6), tip(d.name, `${d.owner ?? ''} · ${d.status}`))) }; },
+    describe(d) { const gi = window.gia; return { title: d.name, sub: `${d.owner ?? ''} · ${d.country}`,
+      /** The data-centre page: the power its chips need as homes and reactors, power stations near it, its owners' other sites (infradetail.js). */
+      html: dcHtml(d), async fill(stillOpen) { await dcFill(d, { data: gi.state.data, wm: await worldMonitorData(), plants: powerPlants, stillOpen, refresh: () => gi.refreshLayer('datacenters', { soft: true }) }); }, rows: [['Status', d.status], ['Accelerators', d.chipType ?? '—'], ['Chip count', d.chipCount ? d.chipCount.toLocaleString() : '—']], body: 'Large AI clusters are measured in accelerators and in grid power: a 100,000-GPU site draws on the order of 150 MW, as much electricity as more than 100,000 homes.' }; },
     learn: { what: 'Announced and operating AI compute clusters from World Monitor. Bar height scales with chip count.', how: 'Compiled from company announcements and press reports; planned sites are faded.', try: 'Turn on Pipelines and Nuclear sites too — compute follows cheap, reliable power.', refs: ['worldmonitor'] },
   },
   {
@@ -510,43 +535,61 @@ export const LAYERS = [
     learn: { what: 'Nuclear power plants: from Wikidata when open data is on (with capacity and years in service), otherwise World Monitor’s catalogue of plants and other nuclear facilities. Click one for its page: what it makes in a year and how many people that supplies, the people living within its 16, 30 and 80 km planning zones, which way the wind would carry anything released now, and the other plants near it.', how: 'Wikidata is the free, openly licensed (CC0) knowledge base behind Wikipedia; a monthly job asks it for every nuclear power plant with coordinates. World Monitor’s list was curated from public registries such as the IAEA’s Power Reactor Information System.', try: 'Compare France, Japan and South Korea — dense fleets on coasts, because reactors need lots of cooling water.', refs: ['worldmonitor', 'iaea', 'nrcepz', 'ember2024'] },
   },
   {
-    id: 'spaceports', pin: 'rocket', group: 'infra', label: 'Spaceports', swatch: '#ffd37a', on: false, sources: ['worldmonitor', 'wikidata', 'opendata'],
+    id: 'spaceports', pin: 'rocket', group: 'infra', label: 'Spaceports', swatch: '#ffd37a', on: false, sources: ['worldmonitor', 'wikidata', 'opendata', 'curtis2020', 'iers'],
     async load() { return infraData('spaceports', async () => (await worldMonitorData()).spaceports); },
-    channels(ss) { return { points: ss.map((s) => point('spaceports', s, s.lat, s.lon, '#ffd37a', 0.35, 0.03, tip(s.name, s.operator))) }; },
-    describe(s) { return { wiki: s.name, probe: [s.lat, s.lon], title: s.name, sub: `${s.country} · ${s.operator}`, rows: [['Status', s.status], ['Launch cadence', s.launches]], body: 'Launching east near the equator borrows up to 465 m/s from Earth’s spin — one reason Kourou (5° N) is prized for geostationary missions.', links: [...(s.wikidata ? [{ label: 'Wikidata', url: s.wikidata }] : []), wiki(s.name)] }; },
-    learn: { what: 'Orbital launch sites: every spaceport in Wikidata when open data is on, otherwise World Monitor’s list of active ones.', how: 'From Wikidata (CC0) or World Monitor’s spaceport list.', try: 'Note which ones sit on an east-facing coast: rockets launch over water, eastward.', refs: ['worldmonitor'] },
+    channels(ss, ctx) { const open = ctx ? siteOverlay(ctx, 'spaceports', window.gia?.state?.selected) : { custom: [] }; // the open spaceport page's sea-safe fan (sitedetail.js)
+      return { ...(open.custom.length ? { custom: open.custom } : {}), points: ss.map((s) => point('spaceports', s, s.lat, s.lon, '#ffd37a', 0.35, 0.03, tip(s.name, s.operator))) }; },
+    describe(s) { const gi = window.gia; return { wiki: s.name, probe: [s.lat, s.lon], title: s.name, sub: `${s.country} · ${s.operator}`,
+      /** The spaceport page: Earth's spin there, the directions over open sea and the orbits they reach, its launches, its neighbours (sitedetail.js). */
+      html: padHtml(s), async fill() { padFill(s, { data: gi.state.data, wm: await worldMonitorData(), countryAt: (a, b) => gi.countryAt(a, b), bordersReady: !!gi.state.data.borders, launchesOn: gi.state.on.has('launches'), refresh: () => gi.refreshLayer('spaceports', { soft: true }) }); },
+      rows: [['Status', s.status], ['Launch cadence', s.launches]], links: [...(s.wikidata ? [{ label: 'Wikidata', url: s.wikidata }] : []), wiki(s.name)] }; },
+    learn: { what: 'Orbital launch sites: every spaceport in Wikidata when open data is on, otherwise World Monitor’s list of active ones. Click one for its page: the speed Earth’s spin lends a rocket there, the flattest orbit it can reach, the directions a rocket can fly while staying over open sea (drawn as a fan on the globe) and the orbits those lead to, its launches in the atlas’s list and the spaceports near it.', how: 'From Wikidata (CC0) or World Monitor’s spaceport list. The fan is worked out from the atlas’s own country outlines, every 5° out to 900 km.', try: 'Open Kennedy Space Center and then Vandenberg: one fans out east over the Atlantic, the other south over the Pacific, which is why polar satellites launch from California.', refs: ['worldmonitor', 'curtis2020', 'iers'] },
   },
   {
-    id: 'economic', pin: 'bank', group: 'infra', label: 'Financial centres', swatch: '#e9f2f7', on: false, sources: ['worldmonitor', 'wikidata', 'opendata'],
+    id: 'economic', pin: 'bank', group: 'infra', label: 'Financial centres', swatch: '#e9f2f7', on: false, sources: ['worldmonitor', 'wikidata', 'opendata', 'ianatz'],
     async load() { return infraData('economic', async () => (await worldMonitorData()).economic); },
     channels(es) { return { points: es.map((e) => point('economic', e, e.lat, e.lon, '#e9f2f7', 0.26, 0.02, tip(e.name, e.type))) }; },
-    describe(e) { return { wiki: e.name, title: e.name, sub: `${e.country} · ${e.type}`, body: e.description, links: [...(e.wikidata ? [{ label: 'Wikidata', url: e.wikidata }] : []), wiki(e.name)] }; },
-    learn: { what: 'Stock exchanges, central banks and financial hubs.', how: 'From Wikidata (CC0: every stock exchange and central bank with a location) when open data is on, otherwise World Monitor’s economic-centres list.', try: 'Switch on Day and night — trading moves west with the Sun from Tokyo to London to New York.', refs: ['worldmonitor'] },
+    describe(e) { const gi = window.gia; return { wiki: e.name, title: e.name, sub: `${e.country} · ${e.type}`,
+      /** The market page: the local time, whether it is trading, the world's trading day, what is open now (econdetail.js). */
+      html: marketHtml(e), async fill() { const wm = await worldMonitorData(); marketFill(e, { layer: 'economic', all: [...(gi.state.data.economic ?? wm.economic), ...wm.finance], refresh: () => gi.refreshLayer('economic', { soft: true }) }); },
+      links: [...(e.wikidata ? [{ label: 'Wikidata', url: e.wikidata }] : []), wiki(e.name)] }; },
+    learn: { what: 'Stock exchanges, central banks and financial hubs. Click one for its page: the local time there, whether its exchange is trading and for how long, the world’s trading day as a 24-hour strip with a line for now, every exchange open right now and the financial places near it.', how: 'From Wikidata (CC0: every stock exchange and central bank with a location) when open data is on, otherwise World Monitor’s economic-centres list.', try: 'Switch on Day and night — trading moves west with the Sun from Tokyo to London to New York.', refs: ['worldmonitor'] },
   },
   {
-    id: 'minerals', pin: 'mine', group: 'infra', label: 'Critical minerals', swatch: '#c9a66b', on: false, sources: ['worldmonitor', 'wikidata', 'opendata'],
+    id: 'minerals', pin: 'mine', group: 'infra', label: 'Critical minerals', swatch: '#c9a66b', on: false, sources: ['worldmonitor', 'wikidata', 'opendata', 'usgsmcs', 'wnaura'],
     async load() { return infraData('minerals', async () => (await worldMonitorData()).minerals); },
-    channels(ms) { return { points: ms.map((m) => point('minerals', m, m.lat, m.lon, '#c9a66b', 0.34, 0.03, tip(m.name, m.mineral))) }; },
-    describe(m) { return { wiki: m.name, title: m.name, sub: `${m.mineral} · ${m.country}`, rows: [['Operator', m.operator], ['Status', m.status]], body: m.significance, links: m.wikidata ? [{ label: 'Wikidata', url: m.wikidata }] : [] }; },
-    learn: { what: 'Mines for lithium, cobalt, nickel, copper, rare earths, graphite, uranium and other battery and chip minerals.', how: 'From Wikidata (CC0: mines whose product is one of these minerals) when open data is on, otherwise World Monitor’s list of landmark mines.', try: 'Compare where these are mined with where the AI data centres are.', refs: ['worldmonitor'] },
+    channels(ms, ctx) { const open = ctx ? siteOverlay(ctx, 'minerals', window.gia?.state?.selected) : { custom: [] }; // the open mine page's line to its port (sitedetail.js)
+      return { ...(open.custom.length ? { custom: open.custom } : {}), points: ms.map((m) => point('minerals', m, m.lat, m.lon, '#c9a66b', 0.34, 0.03, tip(m.name, m.mineral))) }; },
+    describe(m) { const gi = window.gia; return { wiki: m.name, title: m.name, sub: `${m.mineral} · ${m.country}`,
+      /** The mine page: what the mineral is for, the site's share of the world, its port, where it is refined and priced (sitedetail.js). */
+      html: mineHtml(m), async fill() { mineFill(m, { layer: 'minerals', data: gi.state.data, wm: await worldMonitorData(), refresh: () => gi.refreshLayer('minerals', { soft: true }) }); },
+      rows: [['Operator', m.operator], ['Status', m.status]], links: m.wikidata ? [{ label: 'Wikidata', url: m.wikidata }] : [] }; },
+    learn: { what: 'Mines for lithium, cobalt, nickel, copper, rare earths, graphite, uranium and other battery and chip minerals. Click one for its page: what the mineral is for and which country mines most of it, the site’s share of world output where known, the nearest port and the export port for its mineral, where it is refined and priced, and the other mines of the same mineral.', how: 'From Wikidata (CC0: mines whose product is one of these minerals) when open data is on, otherwise World Monitor’s list of landmark mines.', try: 'Compare where these are mined with where the AI data centres are.', refs: ['worldmonitor', 'usgsmcs', 'wnaura'] },
   },
 
   // ------------------------------------------------------------ GEOPOLITICS (World Monitor data)
   {
-    id: 'conflicts', group: 'geo', label: 'Conflict zones', swatch: '#f07a63', on: false, sources: ['worldmonitor'],
+    id: 'conflicts', group: 'geo', label: 'Conflict zones', swatch: '#f07a63', on: false, sources: ['worldmonitor', 'natearth', 'ourairports', 'chamberlain2007'],
     async load() { return (await worldMonitorData()).conflicts; },
     channels(zs) {
       return { polygons: zs.map((z) => ({ geometry: { type: 'Polygon', coordinates: [z.coords] }, cap: 'rgba(240,122,99,0.22)', side: 'rgba(240,122,99,0.12)', stroke: 'rgba(240,122,99,0.9)', alt: 0.012, tip: tip(z.name, z.intensity), ref: { layer: 'conflicts', d: z } })) };
     },
-    describe(z) { return { title: z.name, sub: `Intensity: ${z.intensity}`, rows: [['Parties', z.parties?.join(', ') ?? '—']], body: z.description, links: [wiki(z.name)] }; },
-    learn: { what: 'Active conflict theatres as outlined in World Monitor’s static configuration.', how: 'A hand-drawn baseline; the full World Monitor app enriches it with live event data (not available on this static site).', try: 'Turn on Chokepoints: several theatres sit beside a strategic strait.', refs: ['worldmonitor'] },
+    describe(z) { const gi = window.gia; return { title: z.name, sub: `Intensity: ${z.intensity}`,
+      /** The conflict-zone page: its size, the countries it covers, the people inside, the bases in and near it, what is at stake (geodetail.js). */
+      html: zoneHtml(z), async fill(stillOpen) { const [cs, as] = await Promise.all([cityRows(), airportRows()]); if (stillOpen && !stillOpen()) return; zoneFill(z, { data: gi.state.data, wm: await worldMonitorData(), countryAt: gi.state.data.borders ? (a, b) => gi.countryAt(a, b) : null, features: gi.state.data.borders, cities: cs, airports: as, refresh: () => gi.refreshLayer('conflicts', { soft: true }) }); },
+      rows: [['Parties', z.parties?.join(', ') ?? '—']], body: z.description, links: [wiki(z.name)] }; },
+    learn: { what: 'Active conflict theatres as outlined in World Monitor’s static configuration. Click one for its page: how big the drawn area is against a country you know, the countries it covers, the people in the cities and towns inside it, the military bases in and near it by the power that runs them, and the nuclear plants, ports, airports, pipelines, cables and chokepoints at stake.', how: 'A hand-drawn baseline; the full World Monitor app enriches it with live event data (not available on this static site).', try: 'Turn on Chokepoints: several theatres sit beside a strategic strait.', refs: ['worldmonitor'] },
   },
   {
-    id: 'hotspots', pin: 'eye', group: 'geo', label: 'Watch regions', swatch: '#f07a63', on: false, sources: ['worldmonitor'],
+    id: 'hotspots', pin: 'eye', group: 'geo', label: 'Watch regions', swatch: '#f07a63', on: false, sources: ['worldmonitor', 'natearth', 'ourairports'],
     async load() { return (await worldMonitorData()).hotspots; },
-    channels(hs) { return { points: hs.map((h) => point('hotspots', h, h.lat, h.lon, '#f07a63', 0.32, 0.02, tip(h.name, h.subtext))) }; },
-    describe(h) { return { title: h.name, sub: h.location, body: h.description, links: [wiki(h.name)] }; },
-    learn: { what: 'Regions World Monitor tracks for geopolitical developments.', how: 'Static baseline positions; in the full app their level rises with matching news volume.', try: 'Open one, then use the country card to read background on the countries involved.', refs: ['worldmonitor'] },
+    channels(hs, ctx) { const open = ctx ? geoOverlay(ctx, 'hotspots', window.gia?.state?.selected) : { custom: [] }; // the open watch region's 500 km ring (geodetail.js)
+      return { ...(open.custom.length ? { custom: open.custom } : {}), points: hs.map((h) => point('hotspots', h, h.lat, h.lon, '#f07a63', 0.32, 0.02, tip(h.name, h.subtext))) }; },
+    describe(h) { const gi = window.gia; return { title: h.name, sub: h.location,
+      /** The watch-region page: everything within 500 km, and the nearest conflict (geodetail.js). */
+      html: spotHtml(h), async fill(stillOpen) { const [cs, as] = await Promise.all([cityRows(), airportRows()]); if (stillOpen && !stillOpen()) return; spotFill(h, { data: gi.state.data, wm: await worldMonitorData(), countryAt: gi.state.data.borders ? (a, b) => gi.countryAt(a, b) : null, cities: cs, airports: as, refresh: () => gi.refreshLayer('hotspots', { soft: true }) }); },
+      links: [wiki(h.name)] }; },
+    learn: { what: 'Regions World Monitor tracks for geopolitical developments. Click one for its page: the countries, people, military bases and key sites within 500 km of it, and the nearest conflict zone.', how: 'Static baseline positions; in the full app their level rises with matching news volume.', try: 'Open one, then use the country card to read background on the countries involved.', refs: ['worldmonitor'] },
   },
 ];
 
@@ -563,7 +606,7 @@ function describeSat(p) {
     actions: [['passes', 'When can I see it from here?'], ['orbit', 'Show its full orbit']],
   };
 }
-function title(s) { return String(s).toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()); }
+function title(s) { return String(s).toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()).replace(/(?!^)\b(Of|The|El|De)\b/g, (w) => w.toLowerCase()); } // "STRAIT OF HORMUZ" → "Strait of Hormuz"
 export function plateLabel(code) {
   const [a, b] = String(code).split(/[-\\/]/);
   return `${PLATE_NAMES[a] ?? a} – ${PLATE_NAMES[b] ?? b} boundary`;

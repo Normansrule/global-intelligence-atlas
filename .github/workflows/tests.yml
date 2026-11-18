@@ -12,7 +12,8 @@ permissions:
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # The whole suite took 26 of the old 30 minutes by v2.22; v2.23–v2.25 add about six more (v2.25 raised the limit).
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -21,8 +22,22 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install playwright==1.56.0 && python -m playwright install --with-deps chromium
-      - name: v2.16 speed (every start-up module preloaded in parallel)
+      - name: v2.16 speed (every start-up module preloaded in parallel) and v2.25 offline shell (every start-up file cached by the service worker)
         run: node tools/build-preload.mjs --check
+      - name: v2.30 the Sun, the planets and their moons in depth (weight, launch windows, the sky, air, size, missions)
+        run: node tests/space/test-space.mjs && bash tests/e2e/run.sh test_v230.py | tee v230.log && grep -q "SUMMARY 19 / 19" v230.log
+      - name: v2.29 markets, cloud regions and AI labs in depth (exchange hours, round-trip floors, from the atlas's own data)
+        run: node tests/econ/test-econ.mjs && bash tests/e2e/run.sh test_v229.py | tee v229.log && grep -q "SUMMARY 22 / 22" v229.log
+      - name: v2.28 conflict zones, watch regions and military bases in depth (from the atlas's own data)
+        run: node tests/geo/test-geo.mjs && bash tests/e2e/run.sh test_v228.py | tee v228.log && grep -q "SUMMARY 20 / 20" v228.log
+      - name: v2.27 spaceports and mines in depth (orbits, sea-safe launch directions, mineral shares, from the atlas's own data)
+        run: node tests/sites/test-sites.mjs && bash tests/e2e/run.sh test_v227.py | tee v227.log && grep -q "SUMMARY 21 / 21" v227.log
+      - name: v2.26 chokepoints, pipelines, trade routes and AI data centres in depth (from the atlas's own data)
+        run: node tests/infra/test-infra.mjs && bash tests/e2e/run.sh test_v226.py | tee v226.log && grep -q "SUMMARY 20 / 20" v226.log
+      - name: v2.25 live watch layers (lightning, hurricane forecasts, wildfire outlines, restricted airspace, GPS interference) on recorded sample data
+        run: node tests/watch/test-watch.mjs && bash tests/e2e/run.sh test_v225.py | tee v225.log && grep -q "SUMMARY 18 / 18" v225.log
+      - name: v2.25 offline mode for everything since v2.14 (the app opened with the network switched off)
+        run: bash tests/e2e/run.sh test_offline.py | tee off.log && grep -q "SUMMARY 14 / 14" off.log && bash tests/e2e/run.sh test_offline_all.py | tee offall.log && grep -q "SUMMARY 14 / 14" offall.log
       - name: v2.24 dock with the ISS (station model, autopilot, docking limits, orbital drift, the window) and positions in search
         run: bash tests/e2e/run.sh test_v224.py | tee v224.log && grep -q "SUMMARY 19 / 19" v224.log
       - name: v2.23 release records (version strings agree, assumptions section, NOTICE row, licence notices)

@@ -1,6 +1,7 @@
 # Playwright request mocks for the Global Intelligence Atlas end-to-end tests. MOCK_REAL=1 serves the recorded
 # live-data snapshot in fixtures/; MOCK_CORS=1 makes flight and orbit hosts fail as a browser without CORS would.
 import json, random, time, os
+import watchmock
 SP=os.path.dirname(os.path.abspath(__file__))
 random.seed(3); now=int(time.time()*1000)
 TLE=open(os.path.join(SP,'tle-fresh.txt')).read()
@@ -187,6 +188,8 @@ def handler(route):
         return route.fulfill(status=200, body=buildings_json(float(m.group(1)), float(m.group(2))), headers={'Content-Type':'application/json','Access-Control-Allow-Origin':'*'})
     if u.startswith('http://localhost') and '/app/data/weather.json' in u and not os.environ.get('MOCK_NO_WEATHER'): return route.fulfill(status=200, body=WEATHER, headers={'Content-Type':'application/json'})
     if u.startswith('http://localhost'): return route.continue_()
+    w=watchmock.route(u)  # v2.25 live watch layers: sample answers in each service's own format (watchmock.py)
+    if w: return route.fulfill(status=w[0], body=w[1], headers={'Content-Type':w[2],'Access-Control-Allow-Origin':'*'})
     b=None; ct='application/json'
     if 'api.rainviewer.com' in u: return route.fulfill(status=200, body=RADAR, headers={'Content-Type':ct,'Access-Control-Allow-Origin':'*'})
     if 'tilecache.rainviewer.com' in u: return route.fulfill(status=200, body=RADAR_TILE, headers={'Content-Type':'image/png','Access-Control-Allow-Origin':'*'})

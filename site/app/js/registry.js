@@ -17,6 +17,7 @@ import { landmarksLayer } from './landmarks.js';
 import { wildlifeLayer } from './wildlife.js';
 import { airLayer } from './airquality.js';
 import { warningsLayer } from './warnings.js';
+import { lightningLayer, cyclonesLayer, perimetersLayer, airspaceLayer, gnssLayer } from './watchlayers.js';
 import { newsLayer } from './news.js';
 import { crimeLayer } from './crime.js';
 import { webcamsLayer } from './worldcams.js';
@@ -56,6 +57,12 @@ export const REGISTRY = [
   { make: () => launchesLayer, after: 'stations' },
   { make: () => alertsLayer, after: 'events' },
   { make: (api) => warningsLayer(api), after: 'alerts' }, // v2.15 US weather warnings (warnings.js)
+  // v2.25 live watch layers (watchlayers.js)
+  { make: (api) => cyclonesLayer(api), after: 'warnings' },
+  { make: () => lightningLayer(), after: 'cyclones' },
+  { make: (api) => perimetersLayer(api), after: 'fires' },
+  { make: (api) => airspaceLayer(api), after: 'aircraft' },
+  { make: (api) => gnssLayer(api), after: 'airspace' },
   { make: (api) => windLayer(api), after: 'grid' },
   { make: (api) => skyLayer(api), after: 'wind' },
   { make: (api) => airLayer(api), after: 'sky' }, // v2.15 air quality (airquality.js)
@@ -93,8 +100,8 @@ export const EDITIONS = {
   },
   lite: {
     label: 'Lite',
-    about: 'For slow computers and phones: leaves out the heaviest layers (camera lists, the wind field, weather radar, replay, crime maps and square-mile pesticide records, home sales by postcode and factories mapped in OpenStreetMap).',
-    exclude: ['cameras', 'webcams', 'alpr', 'crime', 'wind', 'radar', 'replay', 'pur', 'propsales', 'osmworks'],
+    about: 'For slow computers and phones: leaves out the heaviest layers (camera lists, the wind field, weather radar, the lightning image, replay, crime maps and square-mile pesticide records, home sales by postcode and factories mapped in OpenStreetMap).',
+    exclude: ['cameras', 'webcams', 'alpr', 'crime', 'wind', 'radar', 'lightning', 'replay', 'pur', 'propsales', 'osmworks'],
     hideSections: [],
   },
 };

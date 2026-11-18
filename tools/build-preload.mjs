@@ -5,7 +5,8 @@
 // level of imports only after the level above has downloaded (about eight round trips); with them it asks for all
 // of them at once. Modules loaded later on purpose (import('./closeup.js')) are left out.
 //   node tools/build-preload.mjs          rewrite the list
-//   node tools/build-preload.mjs --check  exit 1 if the list is out of date (used by the tests)
+//   node tools/build-preload.mjs --check  exit 1 if the list is out of date (used by the tests), or if a start-up module is
+//                                         missing from the service worker's SHELL list (then the app would not open offline, v2.25)
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname, normalize, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -34,4 +35,9 @@ const next = html.replace(re, (_, a, b) => `${a}${block}\n${b}`);
 if (process.argv.includes('--check')) {
   if (next !== html) { console.error('FAIL the module preload list in site/app/index.html is out of date: run node tools/build-preload.mjs'); process.exit(1); }
   console.log(`PASS the module preload list is current (${list.length + 1} modules)`);
+  const sw = readFileSync(join(APP, '..', 'sw.js'), 'utf8'); const shell = sw.slice(sw.indexOf('const SHELL'), sw.indexOf('];', sw.indexOf('const SHELL')));
+  const css = [...html.matchAll(/<link rel="stylesheet" href="((?!https?:)[^"]+)"/g)].map((m) => m[1]);
+  const missing = ['js/main.js', ...list, ...css].filter((f) => !shell.includes(`'app/${f}'`));
+  if (missing.length) { console.error(`FAIL start-up files missing from SHELL in site/sw.js, so the app would not open offline: ${missing.join(', ')}`); process.exit(1); }
+  console.log(`PASS every start-up module and style sheet is in the service worker's SHELL (works offline)`);
 } else { writeFileSync(HTML, next); console.log(`Wrote ${list.length + 1} module preloads`); }

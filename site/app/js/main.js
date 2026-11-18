@@ -13,11 +13,16 @@ import { satClose } from './satdetail.js';
 import { launchClose } from './launchdetail.js';
 import { portClose } from './portdetail.js';
 import { cableClose } from './cabledetail.js';
+import { infraClose } from './infradetail.js';
+import { siteClose } from './sitedetail.js';
+import { geoClose } from './geodetail.js';
+import { econClose } from './econdetail.js';
 import { nuclearClose } from './nucleardetail.js';
 import { alertClose } from './alertdetail.js';
 import { powerClose } from './powerdetail.js';
 import { countryHtml, countryFill, countryClose, cd as openCountry } from './countrydetail.js';
 import { getFeed, getLocal } from './feeds.js';
+import { smallSide } from './watchfeeds.js';
 import * as astro from './astro.js';
 import { SOURCES } from './sources.js';
 import { TOURS } from './tours.js';
@@ -61,7 +66,7 @@ import { isOffline, servedSince } from './lastknown.js'; // offline mode
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.24';
+export const VERSION = '2.30';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg, unitSvg } from './icons.js';
@@ -693,9 +698,12 @@ function cullSprites() {
   }
 }
 const plainTip = (t) => String(t ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60);
+// every outer ring clockwise, so the globe fills the area inside it and not the rest of the planet (see smallSide)
+const SIDED = new WeakMap();
+const sidedPoly = (p) => { if (!p?.geometry || typeof p.geometry !== 'object') return p; let g = SIDED.get(p.geometry); if (!g) { g = smallSide(p.geometry); SIDED.set(p.geometry, g); } return g === p.geometry ? p : { ...p, geometry: g }; };
 const SETTERS = {
   rings: (d) => pulses.set(d), paths: (d) => globe.pathsData(d), arcs: (d) => globe.arcsData(d),
-  polygons: (d) => globe.polygonsData(d), particles: (d) => globe.particlesData(d),
+  polygons: (d) => globe.polygonsData(d.map(sidedPoly)), particles: (d) => globe.particlesData(d),
   html: (d) => globe.htmlElementsData(d), custom: (d) => globe.customLayerData(d), pick: () => {}, lines: (d) => { state.lineSets = d; },
   hexes: (d) => globe.hexBinResolution(state.pov.altitude < 0.006 ? 9 : state.pov.altitude < 0.02 ? 8 : state.pov.altitude < 0.07 ? 7 : 6).hexBinPointsData(d),
 };
@@ -881,6 +889,10 @@ function leaveQuake(prev, next) {
   if ((prev?.layer === 'stations' || prev?.layer === 'satellites') && next?.d?.norad !== prev.d?.norad) { satClose(); setTimeout(() => refreshLayer(prev.layer, { soft: true }), 0); } // the satellite page's footprint and next orbit (satdetail.js)
   if (prev?.layer === 'launches' && next?.d?.id !== prev.d?.id) { launchClose(); setTimeout(() => refreshLayer('launches', { soft: true }), 0); } // the launch page's climb, orbit and landing spot (launchdetail.js)
   if (prev?.layer === 'nuclear' && next?.d !== prev.d) { nuclearClose(); setTimeout(() => refreshLayer('nuclear', { soft: true }), 0); } // the plant page's rings and wind arrow (nucleardetail.js)
+  if (['waterways', 'pipelines', 'routes', 'datacenters'].includes(prev?.layer) && next?.d !== prev.d) { infraClose(); setTimeout(() => refreshLayer(prev.layer, { soft: true }), 0); } // the chokepoint, pipeline, route or data-centre page's marks (infradetail.js)
+  if (['spaceports', 'minerals', 'mining'].includes(prev?.layer) && next?.d !== prev.d) { siteClose(); setTimeout(() => refreshLayer(prev.layer, { soft: true }), 0); } // the spaceport or mine page's marks (sitedetail.js)
+  if (['conflicts', 'hotspots', 'bases'].includes(prev?.layer) && next?.d !== prev.d) { geoClose(); setTimeout(() => refreshLayer(prev.layer, { soft: true }), 0); } // the conflict, watch-region or base page's marks (geodetail.js)
+  if (['economic', 'finance', 'cloud', 'ailabs'].includes(prev?.layer) && next?.d !== prev.d) { econClose(); setTimeout(() => refreshLayer(prev.layer, { soft: true }), 0); } // the market, cloud or lab page's marks (econdetail.js)
   if (prev?.layer === 'cables' && next?.d !== prev.d) { cableClose(); setTimeout(() => refreshLayer('cables', { soft: true }), 0); } // the cable page's flowing light and landing rings (cabledetail.js)
   if (prev?.layer === 'ports' && next?.d !== prev.d) { portClose(); setTimeout(() => refreshLayer('ports', { soft: true }), 0); } // the port page's circles (portdetail.js)
   if (prev?.layer === 'power' && next?.d !== prev.d) { powerClose(); setTimeout(() => refreshLayer('power', { soft: true }), 0); } // the plant page's ring and lines (powerdetail.js)
@@ -916,6 +928,19 @@ function zoomRow(at, layer) {
 document.addEventListener('click', (e) => {
   const b = e.target.closest('[data-cable-id]'); if (!b) return;
   const d = state.data.cables?.find((c) => String(c.id ?? c.name) === b.dataset.cableId); if (d) select({ layer: 'cables', d });
+});
+// Chokepoint, pipeline, route and data-centre pages open each other (infradetail.js): switch the layer on if needed, then fly there.
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-ix-layer]'); if (!b) return;
+  const layer = b.dataset.ixLayer; const id = b.dataset.ixId;
+  if (!state.on.has(layer)) { toggleLayer(layer, true); renderLayerPanel(); }
+  for (let i = 0; i < 50 && !state.data[layer]; i++) await new Promise((r) => setTimeout(r, 100));
+  const nm = b.dataset.ixName?.toLowerCase(); // open data renames ids (Wikidata's wd-…), so a Try button may also name the place
+  const d = state.data[layer]?.find((x) => String(x.id ?? x.name) === id) ?? (nm ? state.data[layer]?.find((x) => String(x.name ?? '').toLowerCase().includes(nm)) : null); if (!d) return;
+  const at = layer === 'conflicts' ? [d.center[1], d.center[0]] : layer === 'routes' ? d.stops[Math.floor(d.stops.length / 2)] : layer === 'pipelines' ? [d.points[Math.floor(d.points.length / 2)][1], d.points[Math.floor(d.points.length / 2)][0]] : [d.lat, d.lon];
+  const alt = layer === 'routes' || layer === 'conflicts' ? 2 : layer === 'pipelines' ? 0.9 : layer === 'waterways' ? 0.6 : 0.4;
+  globe.pointOfView({ lat: at[0], lng: at[1], altitude: alt }, reduceMotion ? 0 : 1400);
+  select({ layer, d });
 });
 // Port pages: a ship in port opens its own card (portdetail.js, Ships here now).
 document.addEventListener('click', (e) => {
@@ -1967,7 +1992,46 @@ if (NEW_VERSION) { if (!state.pendingSel && !state.pendingSpace) setTimeout(what
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>Dock with the ISS</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>The Sun, the planets and their moons in depth</h3>
+    <div class="newlist">
+      <span>${g('moon', '#c9c4ba')}<b>Standing there:</b> on every planet, moon and small world, what you would weigh, how high you could jump, how big and bright the Sun looks, and how long its day and year are. <button class="btn ghost" data-space="mars">Try Mars</button></span>
+      <span>${g('rocket', '#ffb37a')}<b>Getting there:</b> how long the trip takes, the speed a rocket must add, and the next launch window, worked out from where the planets really are. <button class="btn ghost" data-space="titan">Try Titan</button></span>
+      <span>${g('eye', '#7fe3c4')}<b>In our sky, its air, its size and its missions:</b> when it rises and sets where you were looking, the best night to see it, what its air is made of, the body drawn to scale next to the Earth, and every spacecraft that went there.</span>
+    </div>
+    <h4>From v2.29: markets, cloud regions and AI labs in depth</h4>
+    <div class="newlist">
+      <span>${g('bank', '#e9f2f7')}<b>Markets:</b> the local time at every exchange, central bank and financial centre, whether it is trading and for how long, the world’s trading day as a 24-hour strip with a line for now, and every exchange open right now. <button class="btn ghost" data-ix-layer="economic" data-ix-id="nyse" data-ix-name="new york stock exchange">Try the New York Stock Exchange</button></span>
+      <span>${g('server', '#6fb8ff')}<b>Cloud regions:</b> how fast each answers the world’s biggest cities, at the speed of light in fibre, and how many people live within 10 and 30 milliseconds, ringed on the globe. <button class="btn ghost" data-ix-layer="cloud" data-ix-id="aws-us-east-1">Try Amazon’s Virginia region</button></span>
+      <span>${g('bolt', '#b7a3ff')}<b>AI labs:</b> what each works on, the labs and tech companies around it, and the compute near it.</span>
+    </div>
+    <h4>From v2.28: conflict zones, watch regions and military bases in depth</h4>
+    <div class="newlist">
+      <span>${g('swords', '#f07a63')}<b>Conflict zones:</b> how big each drawn theatre is against a country you know, the countries it covers, the people in its cities and towns, the bases in and near it by the power that runs them, and the nuclear plants, ports, pipelines and chokepoints at stake. <button class="btn ghost" data-ix-layer="conflicts" data-ix-id="sudan">Try Sudan</button></span>
+      <span>${g('eye', '#f07a63')}<b>Watch regions:</b> the same for everything within 500 km, ringed on the globe, and the nearest conflict.</span>
+      <span>${g('badge', '#6fb8ff')}<b>Military bases:</b> the network each belongs to, the other powers’ bases within 1,000 km joined by lines, and the chokepoint and conflict it overlooks. <button class="btn ghost" data-ix-layer="bases" data-ix-id="camp_lemonnier">Try Camp Lemonnier</button></span>
+    </div>
+    <h4>From v2.27: spaceports and mines in depth</h4>
+    <div class="newlist">
+      <span>${g('rocket', '#ffd37a')}<b>Spaceports:</b> the speed Earth’s spin lends a rocket there, the flattest orbit it can reach, the directions a rocket can fly while staying over open sea (a fan on the globe) and the orbits those lead to, plus its launches and neighbours. <button class="btn ghost" data-ix-layer="spaceports" data-ix-id="vandenberg" data-ix-name="vandenberg">Try Vandenberg</button></span>
+      <span>${g('mine', '#c9a66b')}<b>Mines and plants:</b> what the mineral is for and who mines most of it, the site’s share of the world’s output, the line to its export port, where it is refined and priced, and other mines of the same mineral. <button class="btn ghost" data-ix-layer="mining" data-ix-id="escondida">Try Escondida</button></span>
+    </div>
+    <h4>From v2.26: chokepoints, pipelines, trade routes and AI data centres in depth</h4>
+    <div class="newlist">
+      <span>${g('strait', '#e3b55b')}<b>Chokepoints:</b> how narrow each one is, the ships passing it now and which way they are heading, the trade routes that rely on it, the pipelines built to avoid it and what happens if it closes.</span>
+      <span>${g('oil', '#c9803e')}<b>Pipelines:</b> what each one carries as a flow you can picture (an Olympic pool every few minutes, a share of the world’s oil or gas), how long it takes end to end, and every country on its line. <button class="btn ghost" data-ix-layer="pipelines" data-ix-id="sumed">Try the SUMED pipeline</button></span>
+      <span>${g('ship', '#e3b55b')}<b>Trade routes:</b> stop by stop with the distance and days at sea, the chokepoints each one relies on and the ships at its stops now. <button class="btn ghost" data-ix-layer="routes" data-ix-id="china-europe-suez">Try China → Europe</button></span>
+      <span>${g('chip', '#b7a3ff')}<b>AI data centres:</b> the electricity each cluster’s chips need, as homes and reactors, the big power stations near it and its owners’ other sites. All four work offline, from the atlas’s own data.</span>
+    </div>
+    <h4>From v2.25: live watch, and the whole atlas offline</h4>
+    <div class="newlist">
+      <span>${g('storm', '#ffc140')}<b>Hurricane forecasts:</b> every active Atlantic and eastern Pacific storm with its forecast track, its points out to five days and the cone of uncertainty, in the Saffir–Simpson colours.</span>
+      <span>${g('bolt', '#ffd23f')}<b>Lightning:</b> where it struck in the last 15 minutes across the Americas and the Pacific.</span>
+      <span>${g('flame', '#ff5a28')}<b>Wildfire outlines:</b> the mapped edge of every current US fire, with its size, containment, cause and crews.</span>
+      <span>${g('alert', '#ffb020')}<b>Restricted airspace:</b> where aircraft and drones may not fly over the United States, with each area’s floor, ceiling and hours.</span>
+      <span>${g('sat', '#ff3b30')}<b>GPS interference:</b> where aircraft report they cannot trust their GPS, square by square. All five are in Layers → Live Earth.</span>
+      <span>${g('eye', '#9fd3ff')}<b>Offline, everything:</b> space, the small worlds, city close-ups, Dock with the ISS and the new layers now keep working with no internet, from what this device saved, each saying how old it is.</span>
+    </div>
+    <h4>From v2.24: dock with the ISS</h4>
     <div class="newlist">
       <span>${g('rocket', '#7ef0b0')}<b>Fly a capsule to the space station:</b> from 200 m out to its forward docking port, by hand or on autopilot, over the part of the Earth the real station is above right now. Contact only counts as gently and as straight as a real docking must be. <button class="btn ghost" data-dock>Try it</button></span>
       <span>${g('pin', '#ffd37a')}<b>Positions in search:</b> type a latitude and longitude (any common way of writing it) or paste a geo: link to fly straight there.</span>
