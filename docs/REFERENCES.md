@@ -118,6 +118,8 @@ CBC News. (n.d.-b). *CBC News live* [Video live stream]. YouTube. https://www.yo
 
 CBS News. (n.d.). *CBS News 24/7 live* [Video live stream]. Retrieved October 18, 2026, from https://cbsn-us.cbsnstream.cbsnews.com/out/v1/55a8648e8f134e82a470f83d562deeca/master.m3u8
 
+Center for Near Earth Object Studies. (n.d.). *NEO Earth close approaches*. NASA Jet Propulsion Laboratory. https://cneos.jpl.nasa.gov/ca/
+
 Central Intelligence Agency. (n.d.). *CIA FOIA electronic reading room* [Data set]. Retrieved October 14, 2026, from https://www.cia.gov/readingroom/
 
 Cesium GS. (n.d.). *CesiumJS* [Computer software]. GitHub. https://github.com/CesiumGS/cesium
@@ -193,6 +195,8 @@ Espenak, F. (n.d.). *NASA eclipse web site*. NASA Goddard Space Flight Center. h
 Esri. (n.d.). *World Imagery* [Basemap]. Esri, Maxar, Earthstar Geographics, and the GIS User Community. https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9
 
 euronews. (n.d.). *Euronews live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCSrZ3UV4jOidv8ppoVuvW9Q/live
+
+European Space Agency. (n.d.). *Rosetta*. https://www.esa.int/Science_Exploration/Space_Science/Rosetta
 
 Eurostat. (n.d.). *House price index – quarterly data (prc_hpi_q)* [Data set]. Retrieved October 14, 2026, from https://ec.europa.eu/eurostat/databrowser/view/prc_hpi_q/default/table
 
@@ -296,9 +300,15 @@ Internet Archive. (n.d.-b). *Wayback Machine* [Data set]. Retrieved October 14, 
 
 Internet Assigned Numbers Authority. (n.d.). *Time zone database* [Data set]. https://www.iana.org/time-zones
 
+Japan Aerospace Exploration Agency. (n.d.). *Hayabusa2 project*. https://www.hayabusa2.jaxa.jp/en/
+
 Japan Center for Asian Historical Records. (n.d.). *JACAR* [Data set]. National Archives of Japan. Retrieved October 14, 2026, from https://www.jacar.go.jp/english/
 
 The Japan Times. (n.d.). *World news feeds* [RSS feed]. Retrieved October 18, 2026, from https://www.japantimes.co.jp/feed/
+
+Jet Propulsion Laboratory. (n.d.). *Small-Body Database lookup*. National Aeronautics and Space Administration. https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html
+
+Johns Hopkins University Applied Physics Laboratory. (n.d.). *DART: Double Asteroid Redirection Test*. https://dart.jhuapl.edu/
 
 Johns Hopkins University Applied Physics Laboratory. (n.d.). *Where is New Horizons?* New Horizons. https://pluto.jhuapl.edu/Mission/Where-is-New-Horizons/index.php
 
@@ -916,6 +926,11 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (World Nuclear Association, 2024) | World uranium production in 2022 and Kazakhstan’s share, on the mine pages (v2.27). | Reference |
 | (Petit & Luzum, 2010) | Earth’s equatorial radius (6,378.137 km) and rotation rate, for the speed its spin lends a rocket (v2.27). | Reference |
 | (Chamberlain & Duquette, 2007) | The area of a drawn conflict zone on a sphere (v2.28). | Reference |
+| (Jet Propulsion Laboratory, n.d.) | Orbital elements of the famous comets (v2.32) and asteroids (v2.34), carried forward on Kepler orbits; read through Wolfram|Alpha. | U.S. Government work (facts: orbital elements) |
+| (Center for Near Earth Object Studies, n.d.) | Apophis’s 13 April 2029 pass, the figure that includes the Earth’s pull (v2.34). | U.S. Government work (facts) |
+| (Johns Hopkins University Applied Physics Laboratory, n.d.) | The DART impact on Dimorphos and the change in its orbit (v2.34). | Facts, not copied text |
+| (Japan Aerospace Exploration Agency, n.d.) | Hayabusa2 at Ryugu and the sample return (v2.34). | Facts, not copied text |
+| (European Space Agency, n.d.) | Rosetta and Philae at comet 67P/Churyumov–Gerasimenko, and the comet's size (v2.32). | Facts, not copied text |
 | (International Meteor Organization, n.d.) | Peak dates and typical hourly rates of the big annual meteor showers in the next 60 days (v2.31). | Facts (dates and rates), not copied text |
 | (Internet Assigned Numbers Authority, n.d.) | Local time and daylight-saving rules for every financial place, through the browser’s Intl API (v2.29). | Public domain |
 | (Singla et al., 2014) | Light in fibre at about two-thirds of its speed in a vacuum and routes longer than the straight line, behind the cloud round-trip estimates (v2.29). | Reference |

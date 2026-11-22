@@ -17,7 +17,7 @@
 
 <sub><a href="https://normansrule.github.io/global-intelligence-atlas/">Website</a> · <a href="#-get-the-app">Install it from the browser, or which download to pick</a></sub>
 
-[![Version](https://img.shields.io/badge/version-2.31.0-1f4e9c)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.35.0-1f4e9c)](CHANGELOG.md)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Deploy to Pages](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml)
 [![Tests](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml)
@@ -41,7 +41,7 @@
   <img src="site/docs-media/layers-dark.svg" alt="The layers of the atlas scrolling past as labelled chips, each with its colour: air quality, US weather warnings, live flights, earthquakes, ships, rocket launches, wildlife, satellites, undersea cables, landmarks and the rest" width="100%" />
 </picture>
 
-[What's new](#-new-in-v231-tonights-sky-the-next-60-days-and-the-far-spacecraft) · [Get the app](#-get-the-app) · [Click anything](#-click-anything) · [At a glance](#-at-a-glance) · [Web or desktop](#-web-app-and-desktop-app) · [Gallery](#-gallery) · [Features](#-features) · [Design](#-design) · [Progress](#-progress) · [How it works](#-how-it-works) · [Run it](#-run-it-yourself) · [References](#-data-and-references) · [Credits](#-credits) · [Changelog](CHANGELOG.md)
+[What's new](#-new-in-v235-countries-in-the-news) · [Get the app](#-get-the-app) · [Click anything](#-click-anything) · [At a glance](#-at-a-glance) · [Web or desktop](#-web-app-and-desktop-app) · [Gallery](#-gallery) · [Features](#-features) · [Design](#-design) · [Progress](#-progress) · [How it works](#-how-it-works) · [Run it](#-run-it-yourself) · [References](#-data-and-references) · [Credits](#-credits) · [Changelog](CHANGELOG.md)
 
 <sub>Global Intelligence Atlas (GIA) is built on the basis of <a href="https://github.com/koala73/worldmonitor">World Monitor</a> by Elie Habib.</sub>
 
@@ -49,7 +49,35 @@
 
 ---
 
-## ✨ New in v2.31: tonight's sky, the next 60 days and the far spacecraft
+## ✨ New in v2.35: countries in the news
+
+<p align="center"><img src="site/docs-media/v235-countries.jpg" alt="Two views of the globe with Countries in the news on. Left: Europe, the Middle East and Africa, with Russia, Ukraine, Israel and Sudan shaded red for conflict, Germany and Iran blue for politics, and Ukraine's page: three stories from three publishers, all conflict and security, with a button to open Ukraine's page. Right: Asia, with China teal for economy and Russia red, and Taiwan's page: one economy story about chip exports and one conflict story about drills." width="100%" /></p>
+<p align="center"><sub>Ukraine and Taiwan in the news, by angle (sample headlines).</sub></p>
+
+A new layer, **Countries in the news**, shades every country that the last 48 hours of headlines name: the more stories, the stronger the colour, and the colour is what most of them are about, so **conflict** shows red, **politics** blue, **economy and markets** teal, **courts** amber and **technology** violet. A story counts when its title names the country, its capital or its people, and only public broadcasters, established newspapers and UN News are read; state-controlled outlets are left out. Click a country for its stories grouped by angle, each linking to its publisher, and a button to its full country page. How stories are matched, and what that misses, is in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md#v235-countries-in-the-news).
+
+## ✨ Also new in v2.34: asteroids that pass the Earth
+
+<p align="center"><img src="site/docs-media/v234-asteroids.jpg" alt="The inner solar system in the atlas with the orbits and labels of Apophis, Didymos and Dimorphos, Eros, Ryugu and Itokawa among the planets, next to two asteroid pages. Apophis: its next close pass on 13 April 2029, about 32,000 km above the Earth's surface, closer than the geostationary satellites. Didymos and Dimorphos: their sizes and spin, the DART impact that shortened Dimorphos's orbit by 33 minutes, and the Hera mission on its way." width="100%" /></p>
+<p align="center"><sub>Apophis's 2029 pass and the DART test at Didymos, 19 November 2026.</sub></p>
+
+Six asteroids now fly on their real orbits in the solar system view: **Apophis**, **Didymos** with its moon **Dimorphos**, **Eros**, **Psyche**, **Ryugu** and **Itokawa**. Click one for its page: how far it is from the Sun and the Earth now, its orbit drawn from above among the planets, its **next close pass by the Earth** in kilometres and Moon distances, its size and spin, and the **spacecraft** that went there. On 13 April 2029 **Apophis** passes about 32,000 km above the ground, closer than the geostationary satellites and bright enough to see without a telescope; **DART** knocked Dimorphos into an orbit 33 minutes shorter in 2022; Hayabusa and Hayabusa2 brought grains home from Itokawa and Ryugu. The positions land within 2 % of NASA JPL's own distances; the limits are in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md#v234-asteroids-that-pass-the-earth).
+
+## ✨ Also new in v2.33: companies and countries in the news, and the ISS from every side
+
+<p align="center"><img src="site/docs-media/v233-news.jpg" alt="Two views of the atlas. Left: the globe over California with Companies in the news on, and Apple's page: three stories from three publishers, a bar of their angles, and the stories grouped under politics and government, economy, business and markets, and courts and regulation, each linking to its publisher, with China as a button under where these stories are. Right: Dock with the ISS in the new Earth below view, looking down and ahead from under the station at Florida and the Bahamas with the curved horizon, labelled below: the Atlantic Ocean, 24.5° N, 78.0° W, daytime." width="100%" /></p>
+<p align="center"><sub>Apple in the news, by angle (sample headlines), and Florida from under the space station.</sub></p>
+
+**Companies in the news** puts the companies the last 48 hours of headlines name at their headquarters, sized by how many stories and coloured by the angle most of them take, so you see not only where something is happening but whether it is politics, money, the courts, conflict or technology. Only public broadcasters, established newspapers and UN News count; state-controlled outlets are left out. Click a company for its stories grouped by angle, each linking to its publisher, and the countries they name as buttons; every **country page** now has an **In the news** section too, and the News tab reads business, technology and politics feeds from BBC News, The Guardian, NPR, CBC News and DW. **Dock with the ISS** can now be looked around in: drag to swing the view, scroll or pinch to zoom, Space to pause, and a new view straight down at the Earth from under the station, with city lights at night and sharp satellite imagery of the ground below. Zooming in on the map no longer throws up spiky shards or blotches of night. How stories are matched and sorted, and what that misses, is in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md#v233-companies-and-countries-in-the-news-a-docking-you-can-look-around-smoother-zooming).
+
+## ✨ Also new in v2.32: the famous comets
+
+<p align="center"><img src="site/docs-media/v232-comets.jpg" alt="Two views of the solar system in the atlas. Left: the orbits of six comets drawn among the planets, and Halley's Comet's page: its orbit drawn from above with the planets' orbits out to Neptune, 35.16 AU from the Sun, beyond Neptune's orbit, falling back in towards the Sun at under 1 km/s. Right: comet Encke close up with its tail streaming away from the Sun, and its page: 0.93 AU from the Earth, 26.7 km/s, in Pegasus, its tail growing, and the Taurids meteor showers made of its dust." width="100%" /></p>
+<p align="center"><sub>Halley's Comet, falling back towards the Sun for 2061, and Encke with its tail, 18 November 2026.</sub></p>
+
+Six famous comets now fly on their real orbits in the solar system view: **Halley**, **Encke**, **Swift–Tuttle**, **Tempel–Tuttle**, **67P/Churyumov–Gerasimenko** (Rosetta's comet) and **Hale–Bopp**, each in its own colour, with a tail streaming away from the Sun when one comes within about 3 AU. Click one for its page: how far it is from the Sun and the Earth now, how fast it is going and whether it is falling in or climbing away, where it is in the sky, its orbit drawn from above among the planets, its closest and farthest points, its last and next closest passes, the **meteor showers** made of its dust with their next peaks (Halley gives the Orionids and Eta Aquariids, Swift–Tuttle the Perseids, Tempel–Tuttle the Leonids), its nucleus, and the **spacecraft** that visited it (Giotto at Halley, Rosetta and Philae at 67P). The positions are two-body orbits from NASA JPL's elements and land within 3 % of JPL's own distances for 18 November 2026.
+
+## ✨ Also new in v2.31: tonight's sky, the next 60 days and the far spacecraft
 
 <p align="center"><img src="site/docs-media/v231-sky.jpg" alt="Two views of the solar system in the atlas. Left: the solar system card, Tonight from United Kingdom: full darkness from 18:05 until 05:25, then the Moon and each planet with when it is highest, which way and how bright, for example Jupiter 51° high in the south at 05:15, magnitude −2.1, and Uranus needing binoculars. Right: Voyager 1's page: 173.9 AU from Earth now, a command and its answer take 48.2 hours, one light-day from the Sun in November 2026." width="100%"/></p>
 <p align="center"><sub>Tonight's sky from London, and Voyager 1 passing one light-day from the Sun.</sub></p>
@@ -648,7 +676,11 @@ Fifteen lessons on the [Learn page](https://normansrule.github.io/global-intelli
 | v2.10 | The Global Intelligence Atlas (GIA) repository launch: this README, browser tuning, release branding |
 | v2.11 | Cameras from 22 more agencies and Osiris's worldwide webcam list, the rest of World Monitor's map datasets, markers that share a spot, economy, property and industry |
 | v2.12 | A News tab: headlines from 16 publishers' own feeds around the world and free live news channels from broadcasters' official streams |
-| **v2.31** | **Tonight's sky from anywhere, the next 60 days of Moon phases, close passes, meteor showers and eclipses, and the far spacecraft from Earth now** |
+| **v2.35** | **Countries in the news: every country shaded by how many credible headlines name it, coloured by what they are about** |
+| v2.34 | **Six asteroids on their real orbits: where each is, its next close pass by the Earth (Apophis in 2029), and the spacecraft that went there** |
+| v2.33 | **Companies and countries in the news from credible outlets, by angle; Dock with the ISS you can look around in, with the Earth below; smoother zooming** |
+| v2.32 | **Six famous comets on their real orbits, with tails near the Sun, where each is now, when it comes back, its meteor showers and the spacecraft that visited** |
+| v2.31 | **Tonight's sky from anywhere, the next 60 days of Moon phases, close passes, meteor showers and eclipses, and the far spacecraft from Earth now** |
 | v2.30 | **The Sun, the planets and their moons in depth: your weight and the Sun on each world, when it rises and the best night to see it, the trip from Earth and the next launch window, its air, its size and the spacecraft that went there** |
 | v2.29 | **Markets, cloud regions and AI labs in depth: the local time and trading status of every exchange with the world's trading day, round trips and people within reach of each cloud region, the compute near each AI lab** |
 | v2.28 | **Conflict zones, watch regions and military bases in depth: each theatre's size, countries, people, bases and what is at stake; each base's network, rival powers within 1,000 km and what it overlooks** |

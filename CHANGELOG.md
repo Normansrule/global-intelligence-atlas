@@ -4,6 +4,46 @@ Release notes for Global Intelligence Atlas (GIA), newest first. Versions before
 
 ---
 
+## 🗞️ v2.35: countries in the news
+
+- **The world's news on the map:** a new layer, Countries in the news, shades every country by how many headlines in the last 48 hours name it, by its name, its people or its capital, from public broadcasters and established newspapers only.
+- **Coloured by what the news is about:** conflict, politics, economy and markets, courts and regulation, technology, climate or society, whichever most of a country's stories are about.
+- **Click a country:** its stories grouped by angle, each linking to its publisher, and a button to its full country page.
+- **Sharper angles:** more conflict words (prisoners, soldiers, frontline, drills, warships), and a company's colour in Companies in the news is now the angle most of its stories take.
+
+---
+
+## 🪨 v2.34: asteroids that pass the Earth
+
+- **Six asteroids on their real orbits:** Apophis, Didymos and its moon Dimorphos, Eros, Psyche, Ryugu and Itokawa, drawn in the solar system view with labels where they are now, within 2 % of NASA JPL's distances.
+- **Each asteroid's page:** where it is now (from the Sun and the Earth, speed, where in the sky), an orbit drawn from above with the planets, its next close pass by the Earth in kilometres and Moon distances, whether its path crosses the Earth's, its size, spin and story, and the spacecraft that went there.
+- **Apophis in 2029:** on 13 April 2029 it passes about 32,000 km above the ground, closer than the geostationary satellites and visible without a telescope.
+- **The missions:** DART shortening Dimorphos's orbit by 33 minutes, Hera on its way, NEAR Shoemaker landing on Eros, Hayabusa and Hayabusa2 bringing grains home from Itokawa and Ryugu, and Psyche flying to a metal-rich world.
+- **On the solar system card:** a table of the six, how far each is from the Earth now and when it next passes close.
+
+---
+
+## 📰 v2.33: companies and countries in the news, a docking you can look around, smoother zooming
+
+- **Companies in the news:** a new layer puts the companies the last 48 hours of headlines name at their headquarters (Apple in Cupertino, Nvidia in Santa Clara…), sized by how many stories and coloured by the angle most take. Only public broadcasters, established newspapers and UN News count; state-controlled outlets are left out.
+- **Each company's page:** its stories grouped by angle (politics and government, economy and markets, courts and regulation, conflict and security, technology, climate and energy, people and society), a bar of the angles, the countries the stories name as buttons to their pages, and each story linking to its publisher.
+- **In the news on every country page:** credible stories that name the country, its people or its capital, by angle.
+- **More headlines:** business, technology and politics feeds from BBC News, The Guardian, NPR, CBC News and DW join the News tab's world feeds.
+- **Dock with the ISS, looking around:** drag to swing the view round the capsule or the station, scroll or pinch to zoom, double-click to reset, Space to pause, and a fourth view straight down at the Earth from under the station: city lights on the night side, blue air at the edge, sharp satellite imagery of the ground below, and the country or sea you are over.
+- **Smoother zooming:** no more spiky shards of the shaded Earth cutting through the map, and no more night shading coming and going in blotches as you zoom in.
+
+---
+
+## ☄️ v2.32: the famous comets
+
+- **Six comets on their real orbits:** Halley, Encke, Swift–Tuttle, Tempel–Tuttle, 67P/Churyumov–Gerasimenko (Rosetta's comet) and Hale–Bopp, drawn in the solar system view in their own colours, with a tail streaming away from the Sun when one is within about 3 AU (Encke now).
+- **Each comet's page:** where it is now (distance from the Sun and the Earth, speed, falling in or climbing out, the constellation and how far from the Sun in the sky), an orbit drawn from above with the planets' orbits, its period, closest and farthest points with the speed at each, the last and next closest passes, the meteor showers made of its dust with the next peak, its nucleus and story, and the spacecraft that visited.
+- **On the solar system card:** a table of the comets, how far out each is, whether it is falling in or climbing away, and when it next comes back.
+- **Checked against JPL:** every comet's distance from the Sun and the Earth on 18 November 2026 is within 3 % of NASA JPL's figure (`tests/comets/test-comets.mjs`).
+- **Offline test:** the test that opens the app with the network off now waits for the saved copies first and reports which layer is missing if one is, after it timed out on GitHub's runner.
+
+---
+
 ## 🔭 v2.31: tonight's sky, the next 60 days and the far spacecraft
 
 - **Tonight:** on the solar system card, from wherever the globe is looking, when it is fully dark and, for the Moon and each planet, whether it is up in those hours, when it is highest, which way to look, how bright and in front of which stars.

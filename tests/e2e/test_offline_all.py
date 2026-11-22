@@ -16,7 +16,7 @@ def route(r):
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); ctx=b.new_context(viewport={'width':1280,'height':800}, service_workers='allow')
     ctx.route('**/*', route)
-    ctx.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.31')}catch(e){}")
+    ctx.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.35')}catch(e){}")
     pg=ctx.new_page(); errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     # the service worker first, so everything after this goes through it
     pg.goto('http://localhost:8765/app/', wait_until='load')
@@ -24,6 +24,14 @@ with sync_playwright() as p:
     pg.goto(URL, wait_until='commit'); pg.reload(wait_until='commit'); pg.wait_for_function("() => window.gia", timeout=60000)
     check('the service worker controls the page', pg.evaluate("() => !!navigator.serviceWorker.controller"))
     pg.wait_for_function(f"() => {json.dumps(WATCH)}.every((k) => gia.state.data[k])", timeout=60000); pg.wait_for_timeout(2000)
+    # every live copy is in IndexedDB before the network goes (the writes are asynchronous; a slow runner may lag)
+    SAVED="async () => (await (await import('./js/lastknown.js')).listSaved()).map((e) => e.k)"
+    NEED=['CurrentStorms.json', 'live-data/lightning.json', 'live-data/gnss.json', 'WFIGS_Interagency_Perimeters', 'Special_Use_Airspace']
+    for _ in range(60):
+        keys=pg.evaluate(SAVED)
+        if all(any(n in k for k in keys) for n in NEED): break
+        pg.wait_for_timeout(500)
+    else: print('saved copies before going offline:', keys)
     on=pg.evaluate(f"() => {json.dumps(WATCH)}.map((k) => [k, gia.state.lstatus[k]?.s])")
     check('online: the five live watch layers load', all(s=='ok' for _, s in on), on)
     pg.evaluate("async () => (await import('./js/docking.js')).loadStation()"); pg.evaluate("() => import('./js/closeup.js')")
@@ -46,7 +54,12 @@ with sync_playwright() as p:
     # --- the network is switched off; the app is opened again from the device
     net['down']=True; ctx.set_offline(True)
     pg.goto(URL, wait_until='commit'); pg.reload(wait_until='commit'); pg.wait_for_function("() => window.gia", timeout=60000)
-    pg.wait_for_function(f"() => {json.dumps(WATCH)}.every((k) => gia.state.data[k])", timeout=60000); pg.wait_for_timeout(2500)
+    # wait until each layer has settled (drawn, or said why not), so a failure reports which one and why instead of timing out
+    try: pg.wait_for_function(f"() => {json.dumps(WATCH)}.every((k) => gia.state.data[k] || gia.state.lstatus[k]?.s === 'error')", timeout=90000)
+    except Exception: pass
+    pg.wait_for_timeout(2500)
+    if not all(pg.evaluate(f"() => {json.dumps(WATCH)}.map((k) => !!gia.state.data[k])")):
+        print('offline layer status:', pg.evaluate(f"() => {json.dumps(WATCH)}.map((k) => [k, gia.state.lstatus[k]])"), 'saved:', [k[-60:] for k in pg.evaluate(SAVED)], 'online:', pg.evaluate("() => navigator.onLine"))
     o=pg.evaluate(f"""() => ({{ chip: !document.querySelector('#offline-chip')?.hidden, online: navigator.onLine,
       notes: Object.fromEntries({json.dumps(WATCH)}.map((k) => [k, gia.state.lstatus[k]])),
       storms: gia.state.data.cyclones?.storms?.length, cone: !!gia.state.data.cyclones?.storms?.[0]?.cone, light: !!gia.state.data.lightning?.tex,

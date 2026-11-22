@@ -32,10 +32,20 @@
 .dock-grp > span { position: absolute; top: 0; left: 0; font-size: 0.7rem; color: #a7b5c6; text-transform: uppercase; letter-spacing: 0.08em; }
 .dock-grp button { width: 44px; height: 44px; border-radius: 10px; border: 1px solid #ffffff2e; background: #13233acc; color: #eaeef4; font-size: 1.05rem; cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: none; }
 .dock-grp button.on, .dock-grp button:active { background: #93b6ff; color: #0b1524; }
-.dock-modes { grid-template-columns: auto; padding-top: 0; }
-.dock-modes button { width: auto; min-width: 150px; padding: 0 12px; font-size: 0.85rem; }
+.dock-modes { grid-template-columns: repeat(2, auto); padding-top: 0; }
+.dock-modes button { width: auto; min-width: 132px; padding: 0 12px; font-size: 0.85rem; }
 .dock-modes button[aria-pressed='true'] { background: #7ef0b0; color: #0b1524; border-color: #7ef0b0; }
+/* v2.33 look around and the ground below */
+.dock canvas { cursor: grab; } .dock canvas:active { cursor: grabbing; }
+.dock-below { position: absolute; right: 16px; top: 76px; margin: 0; max-width: min(360px, 45vw); padding: 8px 12px; border-radius: 10px; background: #0b1524b3;
+  border: 1px solid #ffffff1f; backdrop-filter: blur(6px); font-size: 0.8rem; color: #dfe8f5; pointer-events: none; font-variant-numeric: tabular-nums; }
+.dock-below:empty { display: none; }
+.dock-hint { position: absolute; left: 50%; bottom: 168px; transform: translateX(-50%); margin: 0; font-size: 0.75rem; color: #a7b5c6; text-shadow: 0 1px 3px #000; pointer-events: none; white-space: nowrap; }
+.dock-attr { position: absolute; right: 10px; bottom: 6px; font-size: 0.66rem; color: #a7b5c6cc; pointer-events: none; }
+.dock[data-dock-view='Earth below'] .dock-msg { display: none; }
 @media (max-width: 640px) {
+  .dock-below { top: auto; bottom: 236px; right: 8px; max-width: calc(100% - 16px); font-size: 0.72rem; }
+  .dock-hint { display: none; }
   .dock-hud { top: 70px; left: 8px; min-width: 0; font-size: 0.72rem; padding: 8px; gap: 4px; }
   .dock-msg { top: auto; bottom: 196px; max-width: calc(100% - 32px); }
   .dock-pad { gap: 8px 14px; }

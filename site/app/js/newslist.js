@@ -32,17 +32,19 @@ export const PUBLISHERS = [
     ['world', 'https://feeds.bbci.co.uk/news/world/rss.xml'], ['africa', 'https://feeds.bbci.co.uk/news/world/africa/rss.xml'],
     ['asia', 'https://feeds.bbci.co.uk/news/world/asia/rss.xml'], ['europe', 'https://feeds.bbci.co.uk/news/world/europe/rss.xml'],
     ['americas', 'https://feeds.bbci.co.uk/news/world/latin_america/rss.xml'], ['mideast', 'https://feeds.bbci.co.uk/news/world/middle_east/rss.xml'],
-    ['americas', 'https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml']] },
+    ['americas', 'https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml'],
+    // v2.33 business and technology, for Companies in the news
+    ['world', 'https://feeds.bbci.co.uk/news/business/rss.xml'], ['world', 'https://feeds.bbci.co.uk/news/technology/rss.xml']] },
   { key: 'guardian', name: 'The Guardian', author: 'The Guardian', owner: 'commercial', country: 'United Kingdom', home: 'https://www.theguardian.com/world', feeds: [
-    ['world', 'https://www.theguardian.com/world/rss']] },
+    ['world', 'https://www.theguardian.com/world/rss'], ['world', 'https://www.theguardian.com/business/rss'], ['world', 'https://www.theguardian.com/technology/rss']] },
   { key: 'dw', name: 'DW (Deutsche Welle)', author: 'Deutsche Welle', owner: 'public', country: 'Germany', home: 'https://www.dw.com/en', feeds: [
-    ['world', 'https://rss.dw.com/xml/rss-en-all']] },
+    ['world', 'https://rss.dw.com/xml/rss-en-all'], ['world', 'https://rss.dw.com/xml/rss-en-bus']] },
   { key: 'france24', name: 'France 24', author: 'France 24', owner: 'public', country: 'France', home: 'https://www.france24.com/en/', feeds: [
     ['world', 'https://www.france24.com/en/rss']] },
   { key: 'npr', name: 'NPR (National Public Radio)', author: 'NPR', owner: 'public', country: 'United States', home: 'https://www.npr.org/sections/world/', feeds: [
-    ['world', 'https://feeds.npr.org/1004/rss.xml']] },
+    ['world', 'https://feeds.npr.org/1004/rss.xml'], ['americas', 'https://feeds.npr.org/1006/rss.xml'], ['americas', 'https://feeds.npr.org/1019/rss.xml'], ['americas', 'https://feeds.npr.org/1014/rss.xml']] },
   { key: 'cbc', name: 'CBC News (Canadian Broadcasting Corporation)', author: 'CBC News', owner: 'public', country: 'Canada', home: 'https://www.cbc.ca/news/world', feeds: [
-    ['americas', 'https://www.cbc.ca/cmlink/rss-world']] },
+    ['americas', 'https://www.cbc.ca/cmlink/rss-world'], ['americas', 'https://www.cbc.ca/cmlink/rss-business'], ['americas', 'https://www.cbc.ca/cmlink/rss-technology']] },
   { key: 'mercopress', name: 'MercoPress', author: 'MercoPress', owner: 'commercial', country: 'Uruguay', home: 'https://en.mercopress.com', feeds: [
     ['americas', 'https://en.mercopress.com/rss/']] },
   { key: 'aljazeera', name: 'Al Jazeera English', author: 'Al Jazeera', owner: 'state', country: 'Qatar', home: 'https://www.aljazeera.com', feeds: [

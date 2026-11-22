@@ -31,6 +31,7 @@ import { firesLayer, radarLayer } from './hazards.js';
 import { replayLayer } from './replay.js';
 import { pesticideUseLayer, pesticideEstimatesLayer, toxicReleasesLayer, calEnviroScreenLayer, enforcementLayer, waterQualityLayer } from './chemicals.js';
 import { WM_BASELINE } from './wmbaseline.js';
+import { companyNewsLayer, countryNewsLayer } from './companynews.js';
 import { housePricesLayer, homeValuesLayer, propertySalesLayer, exportsLayer, industryLayer, osmWorksLayer } from './economy.js';
 import { SOURCES } from './sources.js';
 
@@ -87,6 +88,10 @@ export const REGISTRY = [
   { make: (api) => osmWorksLayer(api), after: 'industry' },
   // the rest of World Monitor's static map datasets (wmbaseline.js)
   ...WM_BASELINE.map(([layer, after]) => ({ make: () => layer, after })),
+  // v2.33 companies in the news, from credible outlets only (companynews.js)
+  { make: () => companyNewsLayer(), after: 'economic' },
+  { make: () => countryNewsLayer(), after: 'news' }, // v2.35 countries shaded by the news
+
 ];
 
 /** Editions: what each one leaves out. Layers and rail sections not listed stay. */
@@ -94,8 +99,8 @@ export const EDITIONS = {
   full: { label: 'Full atlas', about: 'Every layer and section.', exclude: [], hideSections: [] },
   classroom: {
     label: 'Classroom',
-    about: 'For schools: the live Earth, space, science, infrastructure and places, without surveillance cameras, licence-plate readers, crime maps, conflict zones, military bases, news pins, watch areas or the Intel section.',
-    exclude: ['cameras', 'webcams', 'alpr', 'crime', 'conflicts', 'hotspots', 'bases', 'news', 'watch', 'declass'],
+    about: 'For schools: the live Earth, space, science, infrastructure and places, without surveillance cameras, licence-plate readers, crime maps, conflict zones, military bases, news layers, watch areas or the Intel section.',
+    exclude: ['cameras', 'webcams', 'alpr', 'crime', 'conflicts', 'hotspots', 'bases', 'news', 'companynews', 'countrynews', 'watch', 'declass'],
     hideSections: ['intel'],
   },
   lite: {

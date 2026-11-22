@@ -12,10 +12,10 @@ with sync_playwright() as p:
     br=p.chromium.launch(args=['--use-gl=swiftshader','--enable-unsafe-swiftshader'])
     pg=br.new_page(viewport={'width':1280,'height':800}); errs=[]
     pg.on('pageerror', lambda e: errs.append(str(e)))
-    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.31')}catch(e){}")
+    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.35')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@20,0,2.4&l=borders,stations', wait_until='commit')
     pg.wait_for_function("() => window.gia", timeout=60000); pg.wait_for_timeout(3000)
-    check('version 2.31', pg.evaluate("() => gia.VERSION")=='2.31')
+    check('version 2.35', pg.evaluate("() => gia.VERSION")=='2.35')
     check('the docking code is not loaded until it is opened', not pg.evaluate("() => performance.getEntriesByType('resource').some((e) => e.name.includes('docking.js'))"))
     sim=pg.evaluate("""async () => { const m = await import('/app/js/docking.js'); const st = await m.loadStation();
       const out = { tris: st.tris, size: [st.size.x, st.size.y, st.size.z], groups: st.group.children.length };
@@ -50,7 +50,7 @@ with sync_playwright() as p:
     pg.evaluate("() => document.querySelector('[data-section=tools]')?.click()"); pg.wait_for_timeout(600)
     pg.evaluate("() => document.querySelector('.tool[data-dock]').click()"); pg.wait_for_timeout(5000)
     w=pg.evaluate("() => ({ open: !!document.querySelector('.dock canvas'), where: document.querySelector('.dock-where')?.textContent ?? '', hud: document.querySelector('.dock-hud')?.textContent ?? '', pads: document.querySelectorAll('.dock-grp button').length })")
-    check('Tools → Dock with the ISS opens the window with readouts, 12 control pads and the station’s real place below', w['open'] and 'Distance to the port' in w['hud'] and w['pads']==15 and ' km up' in w['where'], w)
+    check('Tools → Dock with the ISS opens the window with readouts, 12 control pads and the station’s real place below', w['open'] and 'Distance to the port' in w['hud'] and w['pads']==16 and ' km up' in w['where'], w)
     d0=pg.evaluate("async () => (await import('/app/js/docking.js'))")
     pg.keyboard.down('w'); pg.wait_for_timeout(1500); pg.keyboard.up('w'); pg.wait_for_timeout(300)
     c=pg.evaluate("() => document.querySelector('.dock-hud').textContent.match(/Closing speed([\\d.-]+)/)?.[1]")

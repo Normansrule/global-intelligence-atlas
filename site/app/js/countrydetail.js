@@ -9,6 +9,7 @@
 import { getFeed } from './feeds.js';
 import { unitSvg, glyphSvg } from './icons.js';
 import { solarElevation } from './astro.js';
+import { countryNews } from './companynews.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (n, d = 0) => Number(n).toLocaleString('en-GB', { maximumFractionDigits: d });
@@ -119,6 +120,7 @@ export function countryHtml(f) {
     <div class="lm-facts cd-facts" id="cd-facts">${'<div class="lm-fact skel"></div>'.repeat(4)}</div>
     <details class="qd-sec" open><summary><span>Against the world</span><small>since 1990, World Bank</small></summary><ul class="cd-ms" id="cd-ms"><li class="muted">Asking the World Bank…</li></ul></details>
     <details class="qd-sec" open id="cd-live-sec"><summary><span>Inside it right now</span><small id="cd-live-sum"></small></summary><div id="cd-live"></div></details>
+    <details class="qd-sec" open id="cd-news-sec"><summary><span>In the news</span><small id="cd-news-sum">credible outlets, last 48 hours</small></summary><div id="cd-news"><p class="muted">Reading the headlines…</p></div></details>
     <details class="qd-sec" id="cd-more-sec"><summary><span>Languages, money and more</span><small id="cd-more-sum"></small></summary><div id="cd-more"></div></details>
     <div id="cd-near"></div>
     <details class="qd-sec" id="cd-wiki-sec"><summary><span>From Wikipedia</span><small></small></summary><div id="cd-wiki"></div></details>
@@ -130,10 +132,13 @@ export async function countryFill(f, { stillOpen, data, refresh, featureByCc }) 
   const cc = iso2(f); const name = f.properties.name; const valid = cc && /^[A-Z]{2}$/.test(cc);
   Object.assign(cd, { cc, f, neighbours: [], capital: null }); refresh();
   const live = liveInside(f, data); fillLive(live);
-  if (!valid) { const el = document.getElementById('cd-people'); if (el) el.innerHTML = ''; return; }
+  if (!valid) { const el = document.getElementById('cd-people'); if (el) el.innerHTML = ''; document.getElementById('cd-news-sec')?.remove(); return; }
   const A = getFeed('restcountries', `https://restcountries.com/v3.1/alpha/${cc}?fields=name,capital,capitalInfo,population,area,region,subregion,languages,currencies,timezones`, { ttl: 24 * 3600_000 }).catch(() => null);
   const B = getFeed('restcountries', `https://restcountries.com/v3.1/alpha/${cc}?fields=cca3,borders,car,idd,tld,unMember,landlocked,startOfWeek,demonyms,independent`, { ttl: 24 * 3600_000 }).catch(() => null);
   const W = Promise.all(MEASURES.map(([ind]) => getFeed('worldbank', wbUrl(cc, ind), { ttl: 24 * 3600_000 }).then((j) => wbSeries(j, cc)).catch(() => ({ me: [], world: [] }))));
+  B.then((b1) => countryNews(cc, name, (Array.isArray(b1) ? b1[0] : b1)?.demonyms?.eng?.m)).then((html) => {
+    const el = document.getElementById('cd-news'); if (el && stillOpen()) el.innerHTML = html;
+  }).catch(() => { const el = document.getElementById('cd-news'); if (el && stillOpen()) el.innerHTML = '<p class="muted">The headlines could not be read just now.</p>'; });
   const [a0, b0, all] = await Promise.all([A, B, allCountries()]);
   if (!stillOpen()) return;
   const a = Array.isArray(a0) ? a0[0] : a0; const b = Array.isArray(b0) ? b0[0] : b0;

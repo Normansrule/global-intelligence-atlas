@@ -1362,3 +1362,33 @@ body.in-space #globe { cursor: grab; }
 .sk-month { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; margin: 6px 0; text-align: center; font-size: var(--fs-caption); }
 .sk-month > div { display: grid; justify-items: center; gap: 2px; }
 .sk-month small { color: var(--ink-2); }
+/* v2.32 comets: their orbit drawn from above, and their labels in the solar system view */
+.ce-figure { display: grid; justify-items: center; margin: 4px 0 8px; }
+.ce-orbit { width: min(260px, 100%); height: auto; }
+.ce-orbit .ce-pl { fill: none; stroke: color-mix(in srgb, var(--ink-2) 45%, transparent); stroke-width: 0.8; }
+.ce-orbit .ce-earth { fill: none; stroke: #6fb7ff; stroke-width: 1.2; }
+.ce-orbit .ce-path { fill: none; stroke: var(--c); stroke-width: 1.4; }
+.ce-orbit .ce-sun { fill: #ffd27a; }
+.ce-orbit .ce-peri { fill: var(--ink-2); }
+.ce-orbit .ce-now { fill: var(--c); stroke: #0b1220; stroke-width: 1.5; }
+.space-label.comet span { font-weight: 500; font-style: italic; }
+
+/* v2.33 companies and countries in the news (companynews.js, newsangles.js) */
+.na-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin: 8px 0 4px; background: var(--sunk); }
+.na-bar i { flex: 0 0 var(--w); background: var(--c); }
+.na-bar i + i { border-left: 1px solid var(--panel); }
+.na-key { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
+.na-key span { display: inline-flex; align-items: center; gap: 5px; }
+.na-key i { width: 9px; height: 9px; border-radius: 2px; background: var(--c); }
+.na-angle { margin: 10px 0 0; }
+.na-angle h5 { margin: 0 0 4px; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); }
+.na-angle h5 small { font-weight: 400; margin-left: 4px; }
+.na-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.na-list li { display: grid; gap: 1px; padding: 6px 8px; border-left: 3px solid var(--line); background: var(--hover); border-radius: 0 6px 6px 0; }
+.na-politics .na-list li { border-left-color: #8fb3ff; } .na-economy .na-list li { border-left-color: #7ed6c4; }
+.na-law .na-list li { border-left-color: #e3b55b; } .na-conflict .na-list li { border-left-color: #f07a63; }
+.na-tech .na-list li { border-left-color: #b7a3ff; } .na-climate .na-list li { border-left-color: #7fe39a; }
+.na-society .na-list li { border-left-color: #ffb3c7; }
+.na-list a { color: var(--ink); text-decoration: none; line-height: 1.35; }
+.na-list a:hover, .na-list a:focus-visible { text-decoration: underline; }
+.na-list small { color: var(--ink-2); font-size: 11.5px; }

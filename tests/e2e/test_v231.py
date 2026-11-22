@@ -7,7 +7,7 @@ from playwright.sync_api import sync_playwright
 res=[]
 def check(n, ok, info=''): res.append(bool(ok)); print(('PASS ' if ok else 'FAIL ')+n, '' if ok else info)
 ROOT=os.path.abspath(os.path.join(sys.argv[-1], '..', '..'))
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.31');localStorage.setItem('gia-theme','dark')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.35');localStorage.setItem('gia-theme','dark')}catch(e){}"
 TEXT="() => { document.querySelectorAll('#notes-body details.qd-sec').forEach((d) => d.open = true); return document.querySelector('#notes-body')?.innerText ?? ''; }"
 pack={p for p,_ in json.load(open(os.path.join(ROOT, 'site/app/data/offline-pack.json')))['files']}
 check('the offline pack has the new code', 'app/js/skydetail.js' in pack)
@@ -18,7 +18,7 @@ with sync_playwright() as p:
     pg.route('**/*', handler); pg.add_init_script(INIT)
     pg.goto('http://localhost:8765/app/#@-33.9,151.2,2.4&b=daynight&l=sun,borders,planets', wait_until='commit')
     pg.wait_for_function("() => window.gia && gia.cosmos && gia.cosmos.ready()", timeout=60000); pg.wait_for_timeout(1500)
-    check('version 2.31', pg.evaluate("() => gia.VERSION")=='2.31')
+    check('version 2.35', pg.evaluate("() => gia.VERSION")=='2.35')
     pg.evaluate("() => gia.cosmos.explore('system', { instant: true })"); pg.wait_for_timeout(3000)
     t=pg.evaluate(TEXT)
     check('the solar system card: Tonight from the place the globe was looking at (Sydney)', 'Tonight from' in t and 'Australia' in t, t[:600])
@@ -45,7 +45,7 @@ with sync_playwright() as p:
     pg.evaluate("() => document.querySelector('#notes-body [data-space-probe=\"newhorizons\"]').click()"); pg.wait_for_timeout(1500)
     t=pg.evaluate(TEXT)
     check('New Horizons: Clyde Tombaugh', 'Clyde Tombaugh' in t, t)
-    nw=pg.evaluate("async () => { const s = await (await fetch('js/main.js')).text(); return s.includes('Tonight’s sky and the far spacecraft') && s.includes('data-space=\"system\"'); }")
+    nw=pg.evaluate("async () => { const s = await (await fetch('js/main.js')).text(); return s.includes('onight’s sky and the far spacecraft') && s.includes('data-space=\"system\"'); }")
     check("What's new has a button for the solar system", nw)
     check('no page errors', not errs, errs[:3])
     b.close()

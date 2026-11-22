@@ -24,6 +24,14 @@ jobs:
       - run: pip install playwright==1.56.0 && python -m playwright install --with-deps chromium
       - name: v2.16 speed (every start-up module preloaded in parallel) and v2.25 offline shell (every start-up file cached by the service worker)
         run: node tools/build-preload.mjs --check
+      - name: v2.35 countries in the news (shaded by story count, coloured by lead angle, Taiwan, card and country page)
+        run: bash tests/e2e/run.sh test_v235.py | tee v235.log && grep -q "SUMMARY 9 / 9" v235.log
+      - name: v2.34 asteroids that pass the Earth (Kepler orbits checked against JPL, close passes, Apophis 2029, missions)
+        run: node tests/asteroids/test-asteroids.mjs && bash tests/e2e/run.sh test_v234.py | tee v234.log && grep -q "SUMMARY 12 / 12" v234.log
+      - name: v2.33 companies and countries in the news (credible outlets, angles, places), Dock with the ISS look-around, zoom fix
+        run: node tests/newsangles/test-newsangles.mjs && bash tests/e2e/run.sh test_v233.py | tee v233.log && grep -q "SUMMARY 22 / 22" v233.log
+      - name: v2.32 the famous comets (Kepler orbits checked against JPL, tails near the Sun, showers, spacecraft visits)
+        run: node tests/comets/test-comets.mjs && bash tests/e2e/run.sh test_v232.py | tee v232.log && grep -q "SUMMARY 15 / 15" v232.log
       - name: v2.31 tonight's sky, the next 60 days and the far spacecraft (darkness, planets up, events, light-day milestones)
         run: node tests/sky/test-sky.mjs && bash tests/e2e/run.sh test_v231.py | tee v231.log && grep -q "SUMMARY 16 / 16" v231.log
       - name: v2.30 the Sun, the planets and their moons in depth (weight, launch windows, the sky, air, size, missions)

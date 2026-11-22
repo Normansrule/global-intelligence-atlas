@@ -14,6 +14,10 @@
 //   The idea of an autopilot that flies the approach axis by axis comes from Daniel Petrov's autopilot for SpaceX's
 //   ISS Docking Simulator (Eclipse Public License 2.0); no code is taken from it. The capsule, the controls and the
 //   look are the atlas's own.
+//   v2.33: drag to look around and scroll or pinch to zoom in every view, pause to look, and a fourth view straight
+//   down from the station's Earth-facing side (where the real Cupola is). The Earth below has its night lights, blue
+//   air and dusk band, and the ground under the station is drawn from the same satellite imagery as the globe
+//   (Esri World Imagery, zoom 7: about 1.2 km a pixel), refreshed as it slides by.
 import { THREE } from '../vendor/vendor.min.mjs';
 import { subsolarPoint, bearingDeg } from './astro.js';
 
@@ -180,16 +184,105 @@ function target() {
   g.position.set(...PORT); return g;
 }
 
+// ------------------------------------------------------------------ the Earth below
+/** Web Mercator tile maths (the slippy-map scheme). */
+export const tileOf = (lat, lng, z) => { const n = 2 ** z; const la = Math.max(-85.05, Math.min(85.05, lat)) * D2R; return [Math.floor(((lng + 180) / 360) * n) % n, Math.floor(((1 - Math.log(Math.tan(la) + 1 / Math.cos(la)) / Math.PI) / 2) * n)]; };
+export const tileLat = (y, z) => Math.atan(Math.sinh(Math.PI * (1 - (2 * y) / 2 ** z))) / D2R;
+/** A point on the Earth in the docking scene's Earth frame (lng 0 on +x, north +y, east −z: the sphere's own texture layout). */
+export const earthPoint = (lat, lng, r = 1) => V(Math.cos(lat * D2R) * Math.cos(lng * D2R) * r, Math.sin(lat * D2R) * r, -Math.cos(lat * D2R) * Math.sin(lng * D2R) * r);
+const EARTH_TILT = 0.95; // radians up from straight down, so the curved horizon shows
+export const TILE_Z = 7; export const TILE_N = 5; // a 5 × 5 block of zoom-7 tiles, about 1,500 km across at the equator
+const TILE_URL = (x, y, z) => `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
+
+// The Earth's look: day imagery shaded by the real Sun, city lights only where it is dark, blue air toward the edge
+// and a red-orange band along the terminator (the globe's own Earth, simplified). TILE: a patch of sharp imagery,
+// faded out at the block's edge (attribute edge) and lit by the night texture through the global uv (attribute guv).
+function earthMaterial(day, night, sunDir, tile = false) {
+  return new THREE.ShaderMaterial({
+    uniforms: { day: { value: day }, night: { value: night }, sunDir },
+    defines: tile ? { TILE: 1 } : {}, transparent: tile, depthWrite: !tile,
+    vertexShader: `varying vec3 vN; varying vec2 vUv; varying vec2 gUv; varying vec3 vPos; varying float vEdge;
+      #ifdef TILE
+      attribute vec2 guv; attribute float edge;
+      #endif
+      void main() { vN = normalize((modelMatrix * vec4(normal, 0.0)).xyz); vUv = uv; vPos = (modelMatrix * vec4(position, 1.0)).xyz;
+        #ifdef TILE
+        gUv = guv; vEdge = edge;
+        #else
+        gUv = uv; vEdge = 1.0;
+        #endif
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform sampler2D day; uniform sampler2D night; uniform vec3 sunDir;
+      varying vec3 vN; varying vec2 vUv; varying vec2 gUv; varying vec3 vPos; varying float vEdge;
+      void main() {
+        vec3 n = normalize(vN); vec3 L = normalize(sunDir); vec3 V = normalize(cameraPosition - vPos); float i = dot(n, L);
+        vec4 d = texture2D(day, vUv); d.rgb *= 0.62 + 0.45 * smoothstep(-0.05, 0.6, i);
+        vec4 nt = texture2D(night, gUv); nt.rgb = nt.rgb * nt.rgb * vec3(1.9, 1.55, 1.05) * 2.1 + vec3(0.004, 0.009, 0.022);
+        float k = smoothstep(-0.08, 0.12, i); vec4 c = mix(nt, d, k);
+        float rim = pow(1.0 - max(dot(n, V), 0.0), 2.6);
+        c.rgb = mix(c.rgb, vec3(0.38, 0.62, 1.0), rim * 0.55 * smoothstep(-0.2, 0.45, i));
+        c.rgb += vec3(1.0, 0.45, 0.18) * (0.10 + 0.35 * rim) * (1.0 - abs(k * 2.0 - 1.0));
+        gl_FragColor = vec4(c.rgb, vEdge);
+      }`,
+  });
+}
+
+/** One imagery tile as a curved patch, 1 km above the sphere (its flat facets sag up to 2 km between vertices). */
+function tilePatch(x, y, z, x0, y0, n, tex, night, sunDir) {
+  const S = 10; const pos = []; const uv = []; const guv = []; const edge = []; const nrm = []; const idx = [];
+  for (let j = 0; j <= S; j++) for (let i = 0; i <= S; i++) {
+    const fy = y + j / S; const fx = x + i / S;
+    const lat = tileLat(fy, z); const lng = (fx / 2 ** z) * 360 - 180;
+    const p = earthPoint(lat, lng, R_E + 1); pos.push(p.x, p.y, p.z); const q = p.clone().normalize(); nrm.push(q.x, q.y, q.z);
+    uv.push(i / S, 1 - j / S); guv.push((lng + 180) / 360, (lat + 90) / 180);
+    const ex = Math.min(fx - x0, x0 + n - fx); const ey = Math.min(fy - y0, y0 + n - fy); const e = Math.min(ex, ey);
+    edge.push(Math.min(1, Math.max(0, e / 0.8)));
+  }
+  for (let j = 0; j < S; j++) for (let i = 0; i < S; i++) { const a = j * (S + 1) + i; idx.push(a, a + S + 1, a + 1, a + 1, a + S + 1, a + S + 2); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setAttribute('guv', new THREE.Float32BufferAttribute(guv, 2)); g.setAttribute('edge', new THREE.Float32BufferAttribute(edge, 1));
+  g.setIndex(idx);
+  const m = new THREE.Mesh(g, earthMaterial(tex, night, sunDir, true)); m.renderOrder = 1; return m;
+}
+
+/** Drag to look, scroll or pinch to zoom: { yaw, pitch, zoom } that the cameras read. */
+export function lookControls(el, onReset) {
+  const look = { yaw: 0, pitch: 0, zoom: 1, moved: 0 }; const pts = new Map(); let pinch = 0;
+  const clampLook = () => { look.pitch = Math.max(-1.45, Math.min(1.45, look.pitch)); look.zoom = Math.max(0.25, Math.min(30, look.zoom)); };
+  el.addEventListener('pointerdown', (e) => { pts.set(e.pointerId, [e.clientX, e.clientY]); el.setPointerCapture?.(e.pointerId); if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = Math.hypot(a[0] - b[0], a[1] - b[1]); } });
+  el.addEventListener('pointermove', (e) => {
+    const p = pts.get(e.pointerId); if (!p) return;
+    if (pts.size === 1) { look.yaw -= (e.clientX - p[0]) * 0.006; look.pitch -= (e.clientY - p[1]) * 0.006; look.moved++; }
+    pts.set(e.pointerId, [e.clientX, e.clientY]);
+    if (pts.size === 2) { const [a, b] = [...pts.values()]; const d = Math.hypot(a[0] - b[0], a[1] - b[1]); if (pinch) look.zoom *= pinch / Math.max(1, d); pinch = d; }
+    clampLook();
+  });
+  const up = (e) => { pts.delete(e.pointerId); pinch = 0; };
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) el.addEventListener(ev, up);
+  el.addEventListener('wheel', (e) => { e.preventDefault(); look.zoom *= Math.exp(Math.max(-200, Math.min(200, e.deltaY * (e.deltaMode ? 16 : 1))) * 0.0015); clampLook(); }, { passive: false });
+  el.addEventListener('dblclick', () => { look.yaw = 0; look.pitch = 0; look.zoom = 1; onReset?.(); });
+  return look;
+}
+/** Swing an offset round an up axis (yaw) and then tilt it (pitch). */
+function swing(off, upAxis, yaw, pitch) {
+  const o = off.clone().applyQuaternion(new THREE.Quaternion().setFromAxisAngle(upAxis, yaw));
+  const right = o.clone().cross(upAxis); if (right.lengthSq() < 1e-9) return o;
+  return o.applyQuaternion(new THREE.Quaternion().setFromAxisAngle(right.normalize(), pitch));
+}
+
 // ------------------------------------------------------------------ the window
 let open = null;
 /** Opens the docking window. iss(): the station now ({ lat, lng, altKm }) or null; now(): the atlas's clock. */
-export async function openDocking({ iss = () => null, now = () => new Date(), onClose } = {}) {
+export async function openDocking({ iss = () => null, now = () => new Date(), onClose, placeName = () => null, tiles = true } = {}) {
   if (open) return open;
   if (!document.querySelector('link[data-dock-css]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = new URL('../css/docking.css', import.meta.url).href; l.dataset.dockCss = '1'; document.head.append(l); }
   const root = document.createElement('div'); root.className = 'dock'; root.setAttribute('role', 'dialog'); root.setAttribute('aria-label', 'Dock with the International Space Station');
   root.innerHTML = `<canvas></canvas><div class="dock-cross" hidden></div>
     <header class="dock-top"><div><b>Dock with the ISS</b><small class="dock-where">…</small></div>
       <button class="dock-x" aria-label="Close" title="Close (Esc)">×</button></header>
+    <p class="dock-below" aria-live="off"></p><p class="dock-hint">Drag to look around · scroll or pinch to zoom · double-click to reset</p>
+    <small class="dock-attr" hidden>Imagery © Esri, Maxar, Earthstar Geographics</small>
     <dl class="dock-hud"></dl>
     <p class="dock-msg" aria-live="polite"></p>
     <div class="dock-result" hidden><b></b><p></p><div><button class="btn" data-again>Try again</button> <button class="btn ghost" data-close>Back to the globe</button></div></div>
@@ -198,7 +291,7 @@ export async function openDocking({ iss = () => null, now = () => new Date(), on
         <button data-t="0,1,0" title="Up (R)">▲</button><button data-t="-1,0,0" title="Left (A)">◀</button><button data-t="0,0,1" title="Forward (W)">⊕</button><button data-t="1,0,0" title="Right (D)">▶</button><button data-t="0,-1,0" title="Down (F)">▼</button><button data-t="0,0,-1" title="Back (S)">⊖</button></div>
       <div class="dock-grp" aria-label="Turn"><span>Turn</span>
         <button data-r="-1,0,0" title="Nose up (↑)">⤒</button><button data-r="0,1,0" title="Nose left (←)">↶</button><button data-r="0,0,-1" title="Roll left (Q)">⟲</button><button data-r="0,-1,0" title="Nose right (→)">↷</button><button data-r="1,0,0" title="Nose down (↓)">⤓</button><button data-r="0,0,1" title="Roll right (E)">⟳</button></div>
-      <div class="dock-grp dock-modes"><button data-auto aria-pressed="false" title="Autopilot (P)">Autopilot</button><button data-view title="Change view (C)">View: chase</button><button data-speed title="Time speed (T)">1×</button></div>
+      <div class="dock-grp dock-modes"><button data-auto aria-pressed="false" title="Autopilot (P)">Autopilot</button><button data-view title="Change view (C)">View: chase</button><button data-speed title="Time speed (T)">1×</button><button data-pause aria-pressed="false" title="Pause to look around (Space)">Pause</button></div>
     </nav>`;
   document.body.append(root);
   const $ = (s) => root.querySelector(s);
@@ -214,8 +307,10 @@ export async function openDocking({ iss = () => null, now = () => new Date(), on
   const stars = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(sp, 3)), new THREE.PointsMaterial({ color: 0xffffff, size: 1.2, sizeAttenuation: false }));
   sky.add(stars);
   // the Earth below, turned so the point under the station is the real one now
-  const tex = new THREE.TextureLoader().load(new URL('../textures/earth-blue-marble.jpg', import.meta.url).href); tex.colorSpace = THREE.SRGBColorSpace;
-  const earth = new THREE.Mesh(new THREE.SphereGeometry(R_E, 128, 64), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.9, metalness: 0 }));
+  const tl = new THREE.TextureLoader(); const tex = tl.load(new URL('../textures/earth-blue-marble.jpg', import.meta.url).href);
+  const nightTex = tl.load(new URL('../textures/earth-night.jpg', import.meta.url).href); tex.anisotropy = nightTex.anisotropy = 8; nightTex.wrapS = THREE.RepeatWrapping;
+  const sunDirE = { value: V(1, 0, 0) };
+  const earth = new THREE.Mesh(new THREE.SphereGeometry(R_E, 192, 96), earthMaterial(tex, nightTex, sunDirE));
   const air = new THREE.Mesh(new THREE.SphereGeometry(R_E + 60, 96, 48), new THREE.MeshBasicMaterial({ color: 0x6fa8ff, transparent: true, opacity: 0.12, side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false }));
   const earthG = new THREE.Group(); earthG.add(earth, air); sky.add(earthG);
   const sunE = new THREE.DirectionalLight(0xffffff, 3.2); sky.add(sunE, new THREE.AmbientLight(0x223344, 0.25));
@@ -249,7 +344,7 @@ export async function openDocking({ iss = () => null, now = () => new Date(), on
   const sunLocal = V(1, 0, 0); let where = ''; let dark = null;
   function light() {
     const sd = sunLocal.clone().applyQuaternion(earthG.quaternion).normalize();
-    sunE.position.copy(sd).multiplyScalar(1e5); sun.position.copy(sd);
+    sunE.position.copy(sd).multiplyScalar(1e5); sun.position.copy(sd); sunDirE.value.copy(sd);
     const d = sd.x < -Math.sqrt(1 - (R_E / (R_E + alt)) ** 2) && Math.hypot(sd.y, sd.z) < R_E / (R_E + alt); // the Sun is behind the Earth
     sun.intensity = d ? 0 : 2.6; head.intensity = d ? 40 : 0;
     if (d !== dark) { dark = d; earthshine.intensity = d ? 1.1 : 0.35; $('.dock-where').textContent = `${where} · ${dark ? 'in the Earth’s shadow' : 'in sunlight'}`; }
@@ -258,7 +353,8 @@ export async function openDocking({ iss = () => null, now = () => new Date(), on
 
   let s = startState(Date.now() % 100000 + 1); s.n = meanMotion(alt);
   const keys = new Set(); const held = { t: [0, 0, 0], r: [0, 0, 0] };
-  let view = 0; const VIEWS = ['chase', 'capsule camera', 'from the station']; let speed = 1; const SPEEDS = [1, 10, 50];
+  let view = 0; const VIEWS = ['chase', 'capsule camera', 'from the station', 'Earth below']; let speed = 1; const SPEEDS = [1, 10, 50]; let paused = false;
+  const look = lookControls(canvas);
   const ctl = () => {
     const k = (a, b) => (keys.has(a) ? 1 : 0) - (keys.has(b) ? 1 : 0);
     return { t: [k('d', 'a') + held.t[0], k('r', 'f') + held.t[1], k('w', 's') + held.t[2]].map((x) => Math.max(-1, Math.min(1, x))),
@@ -270,16 +366,18 @@ export async function openDocking({ iss = () => null, now = () => new Date(), on
     const k = e.key.toLowerCase();
     if (e.type === 'keydown') {
       if (k === 'escape') { close(); return; }
-      if (k === 'p') return toggleAuto(); if (k === 'c') return cycleView(); if (k === 't') return cycleSpeed();
+      if (k === 'p') return toggleAuto(); if (k === 'c') return cycleView(); if (k === 't') return cycleSpeed(); if (k === ' ') { e.preventDefault(); return togglePause(); }
       if ('wasdrfqe'.includes(k) || k.startsWith('arrow')) { keys.add(k); e.preventDefault(); }
     } else keys.delete(k);
   };
   addEventListener('keydown', onKey, true); addEventListener('keyup', onKey, true);
   const autoBtn = $('[data-auto]'); const viewBtn = $('[data-view]'); const speedBtn = $('[data-speed]');
   const toggleAuto = () => { s.auto = !s.auto; autoBtn.setAttribute('aria-pressed', String(s.auto)); };
-  const cycleView = () => { view = (view + 1) % 3; viewBtn.textContent = `View: ${VIEWS[view]}`; $('.dock-cross').hidden = view !== 1; };
+  const pauseBtn = $('[data-pause]');
+  const cycleView = () => { view = (view + 1) % VIEWS.length; viewBtn.textContent = `View: ${VIEWS[view]}`; $('.dock-cross').hidden = view !== 1; Object.assign(look, { yaw: 0, pitch: 0, zoom: 1 }); root.dataset.dockView = VIEWS[view]; };
   const cycleSpeed = () => { speed = SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length]; speedBtn.textContent = `${speed}×`; };
-  autoBtn.onclick = toggleAuto; viewBtn.onclick = cycleView; speedBtn.onclick = cycleSpeed;
+  const togglePause = () => { paused = !paused; pauseBtn.setAttribute('aria-pressed', String(paused)); pauseBtn.textContent = paused ? 'Resume' : 'Pause'; };
+  autoBtn.onclick = toggleAuto; viewBtn.onclick = cycleView; speedBtn.onclick = cycleSpeed; pauseBtn.onclick = togglePause;
   for (const b of root.querySelectorAll('[data-t], [data-r]')) {
     const kind = b.dataset.t ? 't' : 'r'; const v = (b.dataset.t ?? b.dataset.r).split(',').map(Number);
     const set = (on) => { held[kind] = held[kind].map((x, i) => x + (on ? v[i] : -v[i])); b.classList.toggle('on', on); };
@@ -308,8 +406,37 @@ export async function openDocking({ iss = () => null, now = () => new Date(), on
     if (!s.done) msg.textContent = s.auto ? (s.hold > 0 && s.hold < 10 && m.along < 21 ? 'Autopilot: holding at 20 m, as the real approach does, before the final run in' : 'Autopilot flying') : m.along > 190 && s.t < 20 ? 'Line up on the green cross and close in slowly. P for autopilot, C to change the view.' : '';
   }
 
-  function frame(dt) {
-    const sub = Math.min(dt * speed, 2); const n = Math.ceil(sub / 0.05);
+  // the ground under the station: where it is, sharp imagery there, and its name
+  const below = $('.dock-below'); const attr = $('.dock-attr'); const patches = new Map(); let centre = ''; let lastBelow = 0; const blk = { x0: 0, y0: 0 };
+  function subPoint() { const q = earthG.worldToLocal(V(0, 0, 0)).normalize(); return { lat: Math.asin(q.y) / D2R, lng: Math.atan2(-q.z, q.x) / D2R }; }
+  const dropPatch = (rec) => { if (rec.mesh) { earthG.remove(rec.mesh); rec.mesh.geometry.dispose(); rec.mesh.material.dispose(); rec.mesh = null; } };
+  function groundTiles(lat, lng) {
+    const [cx, cy] = tileOf(lat, lng, TILE_Z); const key = `${cx}/${cy}`; if (key === centre) return; centre = key;
+    const n = 2 ** TILE_Z; const x0 = cx - (TILE_N >> 1); const y0 = Math.max(0, Math.min(n - TILE_N, cy - (TILE_N >> 1))); const want = new Set(); Object.assign(blk, { x0, y0 });
+    const build = (rec) => { dropPatch(rec); rec.mesh = tilePatch(rec.x, rec.y, TILE_Z, blk.x0, blk.y0, TILE_N, rec.tex, nightTex, sunDirE); earthG.add(rec.mesh); };
+    for (let j = 0; j < TILE_N; j++) for (let i = 0; i < TILE_N; i++) {
+      const x = x0 + i; const y = y0 + j; const wx = ((x % n) + n) % n; const id = `${wx}/${y}`; want.add(id);
+      const old = patches.get(id);
+      if (old) { old.x = x; if (old.tex) build(old); continue; } // re-fade the edges for the new block
+      const rec = { x, y, tex: null, mesh: null }; patches.set(id, rec);
+      tl.load(TILE_URL(wx, y, TILE_Z), (t) => {
+        if (!open || patches.get(id) !== rec) { t.dispose(); return; }
+        t.anisotropy = 8; rec.tex = t; build(rec); attr.hidden = false;
+      }, undefined, () => {});
+    }
+    for (const [id, rec] of patches) if (!want.has(id)) { dropPatch(rec); rec.tex?.dispose(); patches.delete(id); }
+  }
+  function updateBelow(t) {
+    if (t - lastBelow < 1000) return; lastBelow = t;
+    const g = subPoint(); if (tiles && speed <= 10) groundTiles(g.lat, g.lng);
+    const name = placeName(g.lat, g.lng);
+    const sunUp = earthPoint(g.lat, g.lng).applyQuaternion(earthG.quaternion).dot(sunDirE.value) > 0;
+    below.textContent = `Below: ${name ? `${name}, ` : ''}${Math.abs(g.lat).toFixed(1)}° ${g.lat >= 0 ? 'N' : 'S'}, ${Math.abs(g.lng).toFixed(1)}° ${g.lng >= 0 ? 'E' : 'W'} · ${sunUp ? 'daytime' : 'night'}`;
+    return g;
+  }
+
+  function frame(dt, t = performance.now()) {
+    const sub = paused ? 0 : Math.min(dt * speed, 2); const n = Math.ceil(sub / 0.05);
     for (let i = 0; i < n && !s.done; i++) step(s, ctl(), sub / n);
     if (s.done && result.hidden) {
       result.hidden = false; result.dataset.ok = String(s.done.ok);
@@ -319,9 +446,29 @@ export async function openDocking({ iss = () => null, now = () => new Date(), on
     ship.position.copy(s.p); ship.quaternion.copy(s.q);
     // the ground slides backwards under the station at the orbit's rate
     earthG.rotateOnWorldAxis(V(0, 0, 1), -s.n * sub); light();
-    if (view === 0) { cam.position.copy(V(0, 6.5, -20).applyQuaternion(s.q).add(s.p)); cam.up.copy(V(0, 1, 0).applyQuaternion(s.q)); cam.lookAt(V(0, -1.5, 40).applyQuaternion(s.q).add(s.p)); }
-    else if (view === 1) { cam.position.copy(V(0, 0, 0.2).applyQuaternion(s.q).add(s.p)); cam.up.copy(V(0, 1, 0).applyQuaternion(s.q)); cam.lookAt(V(0, 0, 10).applyQuaternion(s.q).add(s.p)); }
-    else { cam.position.set(PORT[0] + 6, PORT[1] + 3, PORT[2] + 6); cam.up.set(1, 0, 0); cam.lookAt(s.p); }
+    // cameras: each view's own place, swung round by dragging and pulled in or out by zooming
+    const fov = view === 3 || view === 1 ? Math.max(8, Math.min(75, 60 * look.zoom)) : 50;
+    if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
+    if (view === 0) {
+      const upA = V(0, 1, 0).applyQuaternion(s.q);
+      cam.position.copy(swing(V(0, 6.5, -20).multiplyScalar(look.zoom).applyQuaternion(s.q), upA, look.yaw, look.pitch).add(s.p)); cam.up.copy(upA);
+      // straight on it looks ahead to the station; once swung round it turns to keep the capsule in the middle
+      const w = Math.max(0, 1 - (Math.abs(look.yaw) + Math.abs(look.pitch)) / 0.6) / Math.max(1, look.zoom);
+      cam.lookAt(swing(V(0, -1.5, 40).applyQuaternion(s.q), upA, look.yaw, look.pitch).multiplyScalar(w).add(s.p));
+    } else if (view === 1) {
+      cam.position.copy(V(0, 0, 0.2).applyQuaternion(s.q).add(s.p)); cam.up.copy(V(0, 1, 0).applyQuaternion(s.q));
+      cam.lookAt(V(0, 0, 10).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(-look.pitch, look.yaw, 0, 'YXZ'))).applyQuaternion(s.q).add(s.p));
+    } else if (view === 2) {
+      cam.position.copy(swing(V(6, 3, 6).multiplyScalar(look.zoom), V(1, 0, 0), look.yaw, look.pitch).add(V(...PORT))); cam.up.set(1, 0, 0); cam.lookAt(s.p);
+    } else {
+      // under the station's Earth-facing side, looking down and ahead (the horizon at the top, as from the Cupola);
+      // drag down to look straight down, up to see the station's underside
+      const b = station ? new THREE.Box3().setFromObject(station.group) : null;
+      cam.position.set(b ? b.min.x - 1.5 : -12, b ? (b.min.y + b.max.y) / 2 : 0, b ? (b.min.z + b.max.z) / 2 : 0);
+      cam.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(V(0, 0, -1), V(0, 1, 0), V(1, 0, 0)))
+        .multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.max(-1.45, Math.min(1.5, look.pitch + EARTH_TILT)), look.yaw, 0, 'YXZ')));
+    }
+    updateBelow(t);
     head.position.copy(cam.position);
     camE.quaternion.copy(cam.quaternion); camE.position.copy(cam.position).multiplyScalar(0.001); camE.fov = cam.fov; camE.aspect = cam.aspect; camE.updateProjectionMatrix();
     renderer.clear(); renderer.render(sky, camE); renderer.clearDepth(); renderer.render(scene, cam);
@@ -330,15 +477,16 @@ export async function openDocking({ iss = () => null, now = () => new Date(), on
   const size = () => { const w = root.clientWidth; const h = root.clientHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
   const ro = new ResizeObserver(size); ro.observe(root); size();
   let last = performance.now(); let raf = 0; let placed = 0;
-  const loop = (t) => { const dt = Math.min(0.1, (t - last) / 1000); last = t; if (t - placed > 30000) { placed = t; placeEarth(); } frame(dt); raf = requestAnimationFrame(loop); };
+  const loop = (t) => { const dt = Math.min(0.1, (t - last) / 1000); last = t; if (t - placed > 30000 && !paused) { placed = t; placeEarth(); } frame(dt, t); raf = requestAnimationFrame(loop); };
   raf = requestAnimationFrame(loop);
   root.querySelector('.dock-x').focus();
 
   function close() {
     cancelAnimationFrame(raf); ro.disconnect(); removeEventListener('keydown', onKey, true); removeEventListener('keyup', onKey, true);
-    scene.traverse((o) => { o.geometry?.dispose(); o.material?.dispose?.(); }); sky.traverse((o) => { o.geometry?.dispose(); o.material?.dispose?.(); }); tex.dispose();
+    scene.traverse((o) => { o.geometry?.dispose(); o.material?.dispose?.(); }); sky.traverse((o) => { o.geometry?.dispose(); o.material?.dispose?.(); }); tex.dispose(); nightTex.dispose();
+    for (const rec of patches.values()) rec.tex?.dispose(); patches.clear();
     renderer.dispose(); root.remove(); open = null; onClose?.();
   }
-  open = { close, state: () => s, measure: () => measure(s), station: () => station, setState: (fn) => fn(s), frame, view: () => VIEWS[view], setView: (i) => { view = (i + 2) % 3; cycleView(); }, setSpeed: (x) => { speed = x; speedBtn.textContent = `${x}×`; }, sun: (v) => { sunLocal.copy(earthG.worldToLocal(V(...v).add(earthG.position)).normalize()); dark = null; light(); }, dark: () => dark };
+  open = { close, state: () => s, measure: () => measure(s), station: () => station, setState: (fn) => fn(s), frame, view: () => VIEWS[view], setView: (i) => { view = (i + VIEWS.length - 1) % VIEWS.length; cycleView(); }, look, below: () => { lastBelow = 0; return updateBelow(performance.now()); }, patches: () => [...patches.values()].filter((r) => r.mesh).length, paused: () => paused, togglePause, setSpeed: (x) => { speed = x; speedBtn.textContent = `${x}×`; }, sun: (v) => { sunLocal.copy(earthG.worldToLocal(V(...v).add(earthG.position)).normalize()); dark = null; light(); }, dark: () => dark };
   return open;
 }

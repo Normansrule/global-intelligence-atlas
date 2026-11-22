@@ -236,7 +236,7 @@ export function installExtras(x) {
       const p = positions(g, d ?? x.now()).find((q) => /ISS \(ZARYA\)|^ISS$/.test(q.name)); if (!p) return null;
       return { ...p, over: x.countryAt(p.lat, p.lng)?.properties?.name ?? waterName(p.lat, p.lng) };
     };
-    return import('./docking.js').then((m) => m.openDocking({ iss: where, now: () => x.now() }));
+    return import('./docking.js').then((m) => m.openDocking({ iss: where, now: () => x.now(), placeName: (lat, lng) => x.countryAt(lat, lng)?.properties?.name ?? waterName(lat, lng) }));
   }
   return { open, ride, dock, flightsBoard, saveView, viewsPanel };
 }

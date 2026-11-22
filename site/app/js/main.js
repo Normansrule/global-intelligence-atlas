@@ -66,7 +66,7 @@ import { isOffline, servedSince } from './lastknown.js'; // offline mode
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.31';
+export const VERSION = '2.35';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg, unitSvg } from './icons.js';
@@ -229,7 +229,7 @@ const nightShade = new THREE.Mesh(
       void main() { float i = dot(normalize(vNormal), normalize(sunDir)); gl_FragColor = vec4(0.01, 0.03, 0.08, max((1.0 - smoothstep(-0.12, 0.08, i)) * 0.5, pow(moonShadow(vPos), 0.6) * 0.8)); }`,
   }),
 );
-nightShade.visible = false; nightShade.raycast = () => {};
+nightShade.visible = false; nightShade.raycast = () => {}; nightShade.name = 'night-shade';
 // Night shading also goes over the detail tiles, so the day/night line stays where it is when they switch in.
 function updateShade() {
   nightShade.visible = state.on.has('sun') && (!SHADED.has(state.base) || !!state.detailTiles);
@@ -405,15 +405,29 @@ function setBase(base) {
 }
 // Under the map tiles: globe.gl hides its sphere while tiles are on, so until they arrive (or when they cannot load
 // at all, offline or blocked) the view was black. The Sun-lit Earth now shows through instead (v2.17).
+/** The Sun-lit Earth under the tiles: the same shader and uniforms as the globe's, but it never writes depth (v2.33). */
+function backdropMaterial() {
+  const m = dayNightMaterial.clone(); m.uniforms = dayNightMaterial.uniforms; m.depthWrite = false; return m;
+}
 function tileBackdrop(on) {
   let underTiles = tileBackdrop.mesh; // kept on the function: this can run before the module reaches this line
   if (on && !underTiles) {
     let g = null; globe.scene().traverse((o) => { if (!g && o.__globeObjType === 'globe') g = o; });
     if (!g) { if ((tileBackdrop.tries = (tileBackdrop.tries ?? 0) + 1) < 120) requestAnimationFrame(() => tileBackdrop(!!(TILE[state.base] ?? (state.detailTiles && TILE[state.detailTiles])))); return; } // the globe joins the scene a moment after it is ready
-    underTiles = new THREE.Mesh(new THREE.SphereGeometry(R * 0.9995, 128, 64), dayNightMaterial);
-    underTiles.rotation.y = -Math.PI / 2; underTiles.raycast = () => {}; underTiles.name = 'under-tiles'; g.add(underTiles); tileBackdrop.mesh = underTiles;
+    // v2.33: drawn first and without writing depth, so the map tiles always cover it. Before, it sat 3 km under the
+    // ground and the big, coarse tiles of the first zoom levels cut through it while zooming in: spiky shards of the
+    // shaded Earth flickering through the map. A plain sphere further down (3 % of the radius) still writes depth,
+    // so markers on the far side of the planet stay hidden where tiles have not arrived yet.
+    underTiles = new THREE.Mesh(new THREE.SphereGeometry(R * 0.9995, 128, 64), backdropMaterial());
+    underTiles.renderOrder = -10; underTiles.rotation.y = -Math.PI / 2; underTiles.raycast = () => {}; underTiles.name = 'under-tiles';
+    const occluder = new THREE.Mesh(new THREE.SphereGeometry(R * 0.97, 64, 32), new THREE.MeshBasicMaterial({ colorWrite: false }));
+    occluder.renderOrder = -11; occluder.raycast = () => {}; underTiles.add(occluder);
+    g.add(underTiles); tileBackdrop.mesh = underTiles;
   }
   if (underTiles) underTiles.visible = on;
+  // globe.gl puts a black sphere just under its tiles; with the backdrop no longer writing depth it would paint over
+  // it, so while the backdrop shows that sphere only writes depth (it still hides the far side of the planet).
+  underTiles?.parent?.traverse((o) => { if (o.isMesh && o !== underTiles && o.parent !== underTiles && o.geometry?.type === 'SphereGeometry' && o.material?.type === 'MeshBasicMaterial' && o.material.color?.getHex() === 0) o.material.colorWrite = !on; });
 }
 function applyBase() {
   const tiles = TILE[state.base] ?? (state.detailTiles && TILE[state.detailTiles]);
@@ -1523,6 +1537,11 @@ function onCamera(pov) {
   // The night shade floats just above the ground: 5 km up from far away (no flicker against the globe), only
   // tens of metres up close, so low planes and the camera itself are never above or inside it.
   nightShade.scale.setScalar((1 + Math.min(0.0008, Math.max(0.000006, pov.altitude * 0.0015))) / 1.0008);
+  // v2.33: up close the shade's flat facets (each about 300 km across) dip up to 2 km into the curved ground, so the
+  // depth test hid them in patches and the night came and went in blotches while zooming. Below about 600 km up it
+  // is drawn over the ground without the depth test (only the near side of the planet is on screen by then).
+  const close = pov.altitude < 0.1; const sm = nightShade.material;
+  if (sm.depthTest === close) { sm.depthTest = !close; nightShade.renderOrder = close ? 1 : 0; sm.needsUpdate = true; }
   if (state.on.has('aircraft') && (Math.abs(Math.log(pov.altitude / prevAlt)) > 0.02 || planesStale(pov))) layoutPlanes(globe, pov.altitude);
   closeups(pov); // v2.16 lifelike close-ups (closeup.js, loaded the first time you zoom in that far)
   if (!onCamera.raf) onCamera.raf = requestAnimationFrame(() => {
@@ -1992,7 +2011,32 @@ if (NEW_VERSION) { if (!state.pendingSel && !state.pendingSpace) setTimeout(what
 else if (!location.hash.includes('@') && !isMobile) welcome();
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>Tonight’s sky and the far spacecraft</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>Countries in the news</h3>
+    <div class="newlist">
+      <span>${g('news', '#b7a3ff')}<b>The world’s news on the map:</b> every country shaded by how many headlines name it in the last 48 hours, by its name, its people or its capital, from public broadcasters and established newspapers only. <button class="btn ghost" data-ix-layer="countrynews">Try it</button></span>
+      <span>${g('pin', '#f07a63')}<b>Coloured by what the news is about:</b> conflict, politics, economy and markets, courts and regulation, technology, climate or society, so you can see at a glance where the fighting, the elections and the markets are.</span>
+      <span>${g('eye', '#7fe3c4')}<b>Click a country:</b> its stories sorted by angle, with a button to its full country page.</span>
+    </div>
+    <h4>From v2.34: asteroids that pass the Earth</h4>
+    <div class="newlist">
+      <span>${g('sat', '#ff9d7a')}<b>Six asteroids on their real orbits:</b> Apophis, Didymos and its moon Dimorphos, Eros, Psyche, Ryugu and Itokawa, drawn in the solar system with where each is now, within 2 % of NASA JPL’s distances. <button class="btn ghost" data-space-asteroid="apophis">Try Apophis</button></span>
+      <span>${g('eye', '#7fe3c4')}<b>When each passes the Earth:</b> the next close pass in kilometres and Moon distances. Apophis comes within 32,000 km of the ground on 13 April 2029, closer than the TV satellites, and you will see it without a telescope.</span>
+      <span>${g('rocket', '#ffb37a')}<b>The missions:</b> DART knocking Dimorphos into a shorter orbit, Hera on its way there, Hayabusa and Hayabusa2 bringing dust home from Itokawa and Ryugu, and Psyche flying to a metal world. <button class="btn ghost" data-space-asteroid="didymos">Try Didymos</button></span>
+    </div>
+    <h4>From v2.33: companies in the news, and the ISS from every side</h4>
+    <div class="newlist">
+      <span>${g('news', '#8fb3ff')}<b>Companies in the news:</b> Apple, Nvidia, Microsoft and the rest at their headquarters, sized by how many stories name them in the last 48 hours, from public broadcasters and established newspapers only (state-run outlets left out). Each story is sorted by angle: politics, economy and markets, courts and regulation, conflict, technology. <button class="btn ghost" data-ix-layer="companynews">Try it</button></span>
+      <span>${g('pin', '#7fe3c4')}<b>Where those stories are, and every country in the news:</b> the countries a company’s stories name are buttons to their pages, and every country page now has an In the news section by angle. <button class="btn ghost" data-country-cc="US">Try the United States</button></span>
+      <span>${g('rocket', '#7ef0b0')}<b>Dock with the ISS, looking around:</b> drag to swing the view, scroll or pinch to zoom, Space to pause, and a new view straight down at the Earth from under the station, with city lights at night and sharp satellite imagery of the ground below. <button class="btn ghost" data-dock>Try it</button></span>
+      <span>${g('eye', '#c9c4ba')}<b>Smoother zooming:</b> no more spiky shards or night-time blotches while you zoom in on the map.</span>
+    </div>
+    <h4>From v2.32: the famous comets</h4>
+    <div class="newlist">
+      <span>${g('sat', '#9fe6ff')}<b>Six comets on their real orbits:</b> Halley, Encke, Swift–Tuttle, Tempel–Tuttle, 67P (Rosetta’s comet) and Hale–Bopp, drawn in the solar system with a tail when one is near the Sun. <button class="btn ghost" data-space-comet="halley">Try Halley’s Comet</button></span>
+      <span>${g('eye', '#7fe3c4')}<b>Where each is now:</b> how far from the Sun and the Earth, how fast, falling in or climbing out, which constellation, and an orbit drawn from above with the planets. <button class="btn ghost" data-space-comet="encke">Try Encke (tail now)</button></span>
+      <span>${g('moon', '#c9c4ba')}<b>When they come back and what they leave:</b> the next closest pass, the meteor showers made from their dust with the next peak, and the spacecraft that visited.</span>
+    </div>
+    <h4>From v2.31: tonight’s sky and the far spacecraft</h4>
     <div class="newlist">
       <span>${g('eye', '#7fe3c4')}<b>Tonight:</b> from wherever the globe is looking, when it is fully dark and which planets are up in those hours, how high, which way and how bright. <button class="btn ghost" data-space="system">Open the solar system</button></span>
       <span>${g('moon', '#c9c4ba')}<b>The next 60 days:</b> the Moon’s phases, the Moon passing close to planets, oppositions, meteor shower peaks and eclipses, and the Moon’s month ahead on its own page.</span>
