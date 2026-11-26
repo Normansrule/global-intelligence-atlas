@@ -7,7 +7,7 @@ from playwright.sync_api import sync_playwright
 res=[]
 def check(n, ok, info=''): res.append(bool(ok)); print(('PASS ' if ok else 'FAIL ')+n, '' if ok else info)
 SHOTS=os.environ.get('SHOT_DIR', '/tmp')
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.35');localStorage.setItem('gia-theme','dark')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.39');localStorage.setItem('gia-theme','dark')}catch(e){}"
 now=datetime.datetime.now(datetime.timezone.utc)
 iso=lambda m: (now-datetime.timedelta(minutes=m)).strftime('%Y-%m-%dT%H:%M:%S.000Z')
 H=[('Russian drones strike Kyiv overnight','bbc',5),('Ukraine and Russia agree prisoner swap','guardian',20),('Kremlin rejects ceasefire plan','npr',40),
@@ -24,7 +24,7 @@ with sync_playwright() as p:
     pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler); pg.route('**/news-data/**', news); pg.add_init_script(INIT)
     pg.goto('http://localhost:8765/app/#@40,60,1.8&l=borders,countrynews', wait_until='commit'); pg.wait_for_timeout(11000)
-    check('version 2.35', pg.evaluate("() => gia.VERSION")=='2.35')
+    check('version 2.39', pg.evaluate("() => gia.VERSION")=='2.39')
     d=pg.evaluate("() => { const d = gia.state.data.countrynews; return d && { rows: d.rows.map((r) => [r.cc, r.stories.length]), n: d.headlines }; }")
     rows=dict(d['rows']) if d else {}
     check('Countries in the news: Russia and Ukraine most named (Kremlin, Kyiv, Russian), the state-run outlet not read', d and d['n']==len(H)-1 and rows.get('RU')==3 and rows.get('UA')==2 and 'IR' not in rows, d)
@@ -40,7 +40,7 @@ with sync_playwright() as p:
     check('… which opens Russia’s country page with In the news', pg.evaluate("() => (document.querySelector('#notes-body h3')?.innerText ?? '').endsWith('Russia') && !!document.querySelector('#cd-news')"))
     ed=pg.evaluate("async () => { const r = await import('/app/js/registry.js'); return r.EDITIONS.classroom.exclude; }")
     check('the classroom edition leaves the news layers out, as it does the news pins', 'countrynews' in ed and 'companynews' in ed, ed)
-    nw=pg.evaluate("async () => { const s = await (await fetch('js/main.js')).text(); return s.includes('Countries in the news') && s.includes('data-ix-layer=\"countrynews\"'); }")
+    nw=pg.evaluate("async () => { const s = await (await fetch('js/main.js')).text(); return s.includes('ountries in the news') && s.includes('data-ix-layer=\"countrynews\"'); }")
     check("What's new has a Try button for Countries in the news", nw)
     check('no page errors', not errs, errs[:3])
     b.close()

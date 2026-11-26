@@ -4,6 +4,8 @@
 // The globe gets whatever space is left, so panels never cover each other or the controls.
 import { glyphSvg } from './icons.js';
 import { installOsint, osintSection } from './osint.js';
+import { clockHtml, DEFAULT_PICKS, CITY } from './worldclock.js';
+import { biggestHtml } from './firetracker.js';
 
 const TITLES = { layers: 'Layers', map: 'Map style', live: 'Live now', explore: 'Explore', tools: 'Tools', news: 'News', intel: 'Open-source intelligence', saved: 'Saved views', about: 'About and sources' };
 // openNotes() calls whose content is a "section" rather than the details of one thing
@@ -28,7 +30,7 @@ export function installShell(x) {
     if (innerWidth < 1280 && document.body.classList.contains('right-open')) x.closeDetails();
     document.querySelectorAll('.drawer .sect').forEach((el) => { el.hidden = el.id !== `sect-${section}`; });
     $('#drawer-title').textContent = title ?? TITLES[section];
-    if (html != null) { const b = body(section); if (b) { b.innerHTML = html; b.scrollTop = 0; } }
+    if (html != null) { const b = body(section); if (b) { b.innerHTML = html; b.scrollTop = 0; if (b.parentElement) b.parentElement.scrollTop = 0; } } // v2.38: the section, not its body, is what scrolls
     setOpen(true);
   }
   function close() { setOpen(false); key = null; }
@@ -70,6 +72,7 @@ export function installShell(x) {
       </div>
       <h4>Monitor</h4>
       <div class="toolgrid">
+        <button class="tool" data-tool="wildfires">${g('flame', '#ff9a3c')}<b>Wildfire tracker</b><small>The biggest fires now, how they spread, and the view from the ground.</small></button>
         <button class="tool" data-watch="open">${g('alert', '#e3b55b')}<b>Watch areas</b><small>Get notified about quakes, alerts, emergencies and fires in places you choose.</small></button>
         <button class="tool" data-health="open">${g('server', '#7ed6c4')}<b>Data health</b><small>Is every source working? Last update, counts and errors.</small></button>
         <button class="tool" data-offline="open">${g('server', '#e3b55b')}<b>Offline kit</b><small>What works with no internet, save it all, where am I.</small></button>
@@ -84,6 +87,7 @@ export function installShell(x) {
       </div>
       <h4>Time</h4>
       <div class="toolgrid">
+        <button class="tool" data-tool="clock">${g('clock', '#9fe6ff')}<b>World clock</b><small>The time in 16 cities, and when their working hours overlap.</small></button>
         <button class="tool" data-tool="time">${g('sun', '#ffd37a')}<b>Time machine</b><small>Run the planet forwards or back, up to 7 days.</small></button>
         <button class="tool" data-start="replay">${g('quake', '#f79d5c')}<b>Replay quakes</b><small>A week of earthquakes at an hour a second.</small></button>
       </div>
@@ -120,7 +124,38 @@ export function installShell(x) {
     if (k === 'shot') $('#shot')?.click();
     if (k === 'spin') $('#spin')?.click();
     if (k === 'find') { x.palette(); }
+    if (k === 'clock') worldClock();
+    if (k === 'wildfires') wildfires();
   });
+  // v2.38 the world clock: shown in the Tools section, redrawn every 20 seconds while it is open
+  const here = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch { return 'UTC'; } })();
+  let picks = DEFAULT_PICKS;
+  try { const saved = JSON.parse(localStorage.getItem('global-intelligence-atlas-clock') ?? 'null'); if (Array.isArray(saved)) picks = saved.filter((id) => CITY[id]); } catch { /* private mode */ }
+  let clockTimer = null;
+  function worldClock(keepScroll) {
+    const sc = document.querySelector('#sect-tools'); const top = sc?.scrollTop ?? 0;
+    show('tools', 'World clock', clockHtml(Date.now(), picks, here), 'tool:clock');
+    if (keepScroll && sc) { sc.scrollTop = top; requestAnimationFrame(() => { sc.scrollTop = top; }); } // the browser can reset it once the ticked box is replaced
+    clearInterval(clockTimer);
+    clockTimer = setInterval(() => { if (isOpen('tool:clock')) worldClock(true); else clearInterval(clockTimer); }, 20000);
+  }
+  document.addEventListener('change', (e) => {
+    const t = e.target.closest?.('[data-wc-pick]'); if (!t) return;
+    const id = t.dataset.wcPick; picks = t.checked ? [...new Set([...picks, id])] : picks.filter((p) => p !== id);
+    picks = Object.keys(CITY).filter((k) => picks.includes(k)); // keep west-to-east order
+    try { localStorage.setItem('global-intelligence-atlas-clock', JSON.stringify(picks)); } catch { /* private mode */ }
+    worldClock(true);
+  });
+  document.addEventListener('click', (e) => { if (e.target.closest('[data-wc-back]')) tools(); });
+  // v2.39 the wildfire tracker: the biggest fires burning now (firetracker.js)
+  async function wildfires() {
+    const back = '<p class="row"><button class="btn ghost" data-wc-back="1">Back to Tools</button></p>';
+    show('tools', 'Wildfire tracker', '<p class="muted">Grouping the latest NASA FIRMS hot spots into fires…</p>', 'tool:wildfires');
+    let rows = window.gia?.state?.data?.fires?.rows;
+    if (!rows) { try { rows = (await (await import('./hazards.js')).loadFireRows()).rows; } catch { rows = []; } }
+    const html = await biggestHtml(rows);
+    if (isOpen('tool:wildfires')) show('tools', 'Wildfire tracker', html + back, 'tool:wildfires');
+  }
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape' || e.target.matches('input, select, textarea')) return;
     if (document.querySelector('#palette:not([hidden])')) return;
@@ -129,5 +164,5 @@ export function installShell(x) {
   // restore the last open section (Layers on a first visit)
   let last = 'layers'; try { last = localStorage.getItem('global-intelligence-atlas-section') ?? 'layers'; } catch { /* ignore */ }
   if (matchMedia('(max-width: 860px)').matches) close(); else if (!last) close(); else if (last === 'layers' || !['explore', 'tools', 'news', 'intel'].includes(last)) show('layers'); else setTimeout(() => open(last), 0);
-  return { show, close, open, isOpen, current: () => current, explore, tools, register };
+  return { show, close, open, isOpen, current: () => current, explore, tools, register, worldClock, wildfires };
 }

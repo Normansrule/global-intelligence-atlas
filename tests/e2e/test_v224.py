@@ -12,10 +12,10 @@ with sync_playwright() as p:
     br=p.chromium.launch(args=['--use-gl=swiftshader','--enable-unsafe-swiftshader'])
     pg=br.new_page(viewport={'width':1280,'height':800}); errs=[]
     pg.on('pageerror', lambda e: errs.append(str(e)))
-    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.35')}catch(e){}")
+    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.39')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@20,0,2.4&l=borders,stations', wait_until='commit')
     pg.wait_for_function("() => window.gia", timeout=60000); pg.wait_for_timeout(3000)
-    check('version 2.35', pg.evaluate("() => gia.VERSION")=='2.35')
+    check('version 2.39', pg.evaluate("() => gia.VERSION")=='2.39')
     check('the docking code is not loaded until it is opened', not pg.evaluate("() => performance.getEntriesByType('resource').some((e) => e.name.includes('docking.js'))"))
     sim=pg.evaluate("""async () => { const m = await import('/app/js/docking.js'); const st = await m.loadStation();
       const out = { tris: st.tris, size: [st.size.x, st.size.y, st.size.z], groups: st.group.children.length };
@@ -52,7 +52,14 @@ with sync_playwright() as p:
     w=pg.evaluate("() => ({ open: !!document.querySelector('.dock canvas'), where: document.querySelector('.dock-where')?.textContent ?? '', hud: document.querySelector('.dock-hud')?.textContent ?? '', pads: document.querySelectorAll('.dock-grp button').length })")
     check('Tools → Dock with the ISS opens the window with readouts, 12 control pads and the station’s real place below', w['open'] and 'Distance to the port' in w['hud'] and w['pads']==16 and ' km up' in w['where'], w)
     d0=pg.evaluate("async () => (await import('/app/js/docking.js'))")
-    pg.keyboard.down('w'); pg.wait_for_timeout(1500); pg.keyboard.up('w'); pg.wait_for_timeout(300)
+    # hold W until the closing speed builds up (the simulation runs slower than real time on a slow runner: each
+    # frame's step is capped at 0.1 s), up to 6 seconds
+    pg.keyboard.down('w')
+    for _ in range(12):
+        pg.wait_for_timeout(500)
+        c=pg.evaluate("() => document.querySelector('.dock-hud').textContent.match(/Closing speed([\\d.-]+)/)?.[1]")
+        if c and float(c) > 0.02: break
+    pg.keyboard.up('w'); pg.wait_for_timeout(300)
     c=pg.evaluate("() => document.querySelector('.dock-hud').textContent.match(/Closing speed([\\d.-]+)/)?.[1]")
     check('holding W fires the thrusters towards the station', c and float(c) > 0.02, c)
     pg.keyboard.press('p'); pg.keyboard.press('c'); pg.keyboard.press('t'); pg.wait_for_timeout(500)

@@ -8,6 +8,59 @@ Every release adds a section at the top. `tests/docs/check_release.py` fails if 
 
 ---
 
+## v2.39: a wildfire tracker
+
+**Wildfire tracker** (`site/app/js/wildfire.js`, `site/app/js/firetracker.js`, `site/app/js/fireview.js`; the 7-day file from `tools/fetch-live.mjs`): NASA FIRMS hot spots (National Aeronautics and Space Administration [NASA], n.d.-c; Schroeder et al., 2014) coloured by how long ago each was seen, grouped into fires, each fire's spread played back pass by pass on a map and on the globe, the biggest fires burning now, and a view of a fire from the ground on Terrain Tiles heights (Tilezen, n.d.) with the live wind from Open-Meteo.
+
+- **Judgement:** hot spots within about 2 km of each other are counted as one fire (a 2 km grid, each cell joined to its eight neighbours). Two fires closer than that merge; one fire with a gap of more than about 4 km (cloud, or a road it jumped) splits in two.
+- **Approximation:** the area "seen burning" counts each 375 m VIIRS pixel once (0.14 km² each). Pixels grow to about 0.8 km across at the edge of the satellite's swath, and a pixel is flagged when only part of it burns, so this is a rough size, not a mapped burn scar. Where the US has a mapped outline, the Wildfire outlines layer is the better figure.
+- **Approximation:** which way and how fast a fire is spreading compares the centre of its newest third of detections with the centre of its oldest third. A fire that grows on two sides at once, or that has been seen for less than 6 hours, gives a small or no movement. "Growing" or "dying down" compares detections in the newest quarter of the time it has been seen against the quarter before (at least 3 hours each); cloud hiding a pass makes a fire look as if it is dying down.
+- **Judgement:** the outline is the convex hull of the detections (the shortest line round all of them), which overstates a ragged or L-shaped fire.
+- **Assumption:** the 7 days come from FIRMS's public 7-day global VIIRS NOAA-20 file (Suomi NPP if that fails), saved by the live-data job at most once an hour, keeping the 150 fires with the most heat that burned in the last 36 hours, each thinned to 500 detections (all of its last day first). Without that file, or for smaller fires, the tracker uses the Fire hotspots layer's 24 hours. Not verified against FIRMS from the build environment, which cannot reach it; checked with made-up fires in `tests/wildfire/test-wildfire.mjs` and `tests/e2e/test_v239.py`.
+- **Judgement:** a group of at most four pixels that showed up on four or more passes over at least two days is marked "may be an industrial heat source" (a gas flare, a steel works) and left out of the biggest fires list. FIRMS's own static-source mask is not in its live files, so this is a hint, not a classification.
+- **Approximation:** the view from the ground draws flames where satellites saw the fire in the 12 hours before its last pass, a few flames per 375 m pixel, scattered at random inside it, 3 to 32 m tall by its fire radiative power (a picture, not a fire-behaviour model). Burnt ground is darkened per pixel. The flames are where the fire was at the last pass, not where it is this minute.
+- **Approximation:** the smoke rises and drifts with the wind 10 m above the ground now (Open-Meteo), shown 15 times faster than real; real plumes turn with height and can rise far higher. With no wind data it drifts north-east and says so.
+- **Not verified:** the terrain is the Terrain Tiles grid (about 50 to 140 m between heights at these sizes), so small ridges and valleys are smoothed; buildings are not drawn in this view.
+
+---
+
+## v2.38: a world clock, and a steadier website
+
+**World clock** (`site/app/js/worldclock.js`, opened from Tools by `site/app/js/shell.js`): the time now in sixteen cities, whether the Sun is up there, each city's offset from UTC and from the viewer's clock, and the hours in the next day that fall inside working hours in every city ticked. Worked out on the device; nothing new is fetched. **A steadier website** (`.github/workflows/pages.yml`): the publishing step tries once more after 45 seconds when it fails.
+
+- **Assumption:** local times and summer-time rules are the browser's own copy of the IANA time zone database (Internet Assigned Numbers Authority, n.d.), read through `Intl.DateTimeFormat`. An out-of-date browser can be wrong for a country that changed its rules recently; the atlas does not correct for that.
+- **Approximation:** the Sun's height in each city uses the low-precision formula for the Sun's position (U.S. Naval Observatory, n.d.), good to about half a degree, so the change from day to twilight to night can be a couple of minutes off. Day means the Sun's upper edge is above the horizon (−0.833°, allowing for refraction); twilight runs to 6° below.
+- **Judgement:** working hours are taken as 08:00 to 18:00 local time on any day, weekends included, and only whole hours from the start of the current hour are offered. Each city stands for its whole time zone (New York for the US Eastern zone, Beijing for all of China, and so on).
+- **Judgement:** the cities ticked for the meeting finder are kept in this browser only (`localStorage`), never sent anywhere.
+- **Assumption:** the occasional "No artifacts named github-pages" failure of GitHub's `actions/deploy-pages` step is a timing problem on GitHub's side (it failed on about one run in four in November 2026 and passed when run again unchanged), so one automatic retry after a short wait is enough. Not verified on GitHub from the build environment; the workflow passes `tools/check-workflows.py`.
+
+---
+
+## v2.37: visitors from other stars
+
+**Visitors from other stars** (`site/app/js/interstellar.js`, drawn by `site/app/js/cosmos.js`): 1I/ʻOumuamua, 2I/Borisov and 3I/ATLAS, the three objects known to have come into the solar system from interstellar space, on their open paths with a label where each is now, a table on the solar system card and a page each. Worked out on the device; nothing new is fetched.
+
+- **Approximation:** each follows a two-body hyperbolic path round the Sun from its osculating elements in NASA JPL's Small-Body Database (Jet Propulsion Laboratory, n.d.), leaving out the planets' pulls and any push from the object's own gas. Checked against the published passes: ʻOumuamua closest to the Earth on 14 October 2017 at 0.16 AU, Borisov on 28 December 2019 at 1.94 AU, 3I/ATLAS by Mars on 3 October 2025 at about 0.19 AU, by the Earth on 19 December 2025 at about 1.8 AU and by Jupiter in March 2026 at about 0.36 AU; and against their published speeds in interstellar space, 26.3, 32.3 and 58 km/s (`tests/interstellar/test-interstellar.mjs`).
+- **Not verified:** the elements were read through Wolfram|Alpha on 23 November 2026, which serves JPL's values but gave the time of perihelion only to the day; the hour is typed from JPL's published value from memory. An error of a few hours moves an object by well under 0.01 AU. Wolfram|Alpha's own "current distance" for these objects was wrong (it treated the paths as closed orbits), so it was not used.
+- **Approximation:** ʻOumuamua sped up slightly as it left, beyond what the Sun's pull explains; over nine years that moves it by a fraction of an AU from the path drawn here.
+- **Assumption:** sizes, who found each and the rest of their stories are from NASA's and ESA's pages (National Aeronautics and Space Administration [NASA], n.d.-g), rounded and in our own words. 3I/ATLAS's possible age (older than the Sun) is given as a suggestion from its speed, as published, not as a finding.
+- **Judgement:** paths are drawn from 10 years before to 60 years after each perihelion, enough to show them coming in and leaving without running far off the drawing.
+
+---
+
+## v2.36: a sleeker atlas, and the spacecraft at work
+
+**A sleeker look** (`site/app/css/atlas.css`, the v2.36 block, and the layer rows in `site/app/js/main.js`): the map buttons become one frosted stack, the live bar is frosted, each layer's source in brackets moves under its name, Learn becomes an info button, the status bar's secondary controls step back and the details panel slides in. **Spacecraft at work** (`site/app/js/spacecraft.js`, shown by `site/app/js/cosmos.js`) lists 22 spacecraft at the Sun–Earth Lagrange points, at Mars, round the Sun and on the way, each with its own page.
+
+- **Approximation:** spacecraft at L1 and L2 are given at the points' mean distances from the Earth (1.49 and 1.51 million km). Each actually circles its point on a halo or Lissajous orbit several hundred thousand km wide (Webb's is up to about 800,000 km), so the true distance and radio time differ by up to about half a second.
+- **Approximation:** the orbiters and rovers at Mars are given Mars's own distance from the Earth (Astronomy Engine); an orbiter is at most a few thousand km from Mars.
+- **Approximation:** Parker Solar Probe's distance from the Sun follows a fixed Kepler ellipse: closest 0.0459 AU (6.9 million km from the Sun's centre, about 6.1 million km above the surface), round every 88 days, timed from its close pass on 24 December 2024 11:53 UTC (National Aeronautics and Space Administration [NASA], n.d.-c). Its last Venus flyby was in November 2024, so nothing changes that orbit; the 88-day period is rounded, so predicted close passes can drift by a day or two over two years.
+- **Not verified:** launch dates, what each mission does and its status are typed from the agencies' pages as of mid-2025 (NASA, n.d.-b, n.d.-d, n.d.-e, n.d.-f; European Space Agency, n.d.-b; Indian Space Research Organisation, n.d.) and were not re-checked here, because those sites cannot be reached from the build environment. A mission may have ended since (for example, whether MAVEN, Mars Odyssey or SOHO are all still working), and BepiColombo's and Hera's arrivals in late 2026 are given as planned.
+- **Judgement:** spacecraft in cruise (Europa Clipper, JUICE, BepiColombo, Lucy, Hera, Psyche) have no position, only where they are going and when, because their paths cannot be worked out honestly without their published trajectories. Missions that have ended (Gaia, Ingenuity) are left out of the table.
+- **Judgement:** the design changes keep the Isotype colours and type; frosted surfaces use a backdrop blur where the browser supports it and fall back to the same panel colour slightly see-through. Every control keeps at least a 24 px target (the info buttons are 28 px) and its accessible name.
+
+---
+
 ## v2.35: countries in the news
 
 **Countries in the news** (`countryNewsLayer` in `site/app/js/companynews.js`, matching in `site/app/js/newsangles.js`) shades every country that the last 48 hours of credible headlines name, more strongly the more stories, in the colour of the angle most of them take. It reads the same headlines as the News tab and Companies in the news (v2.33) and the country outlines the atlas already draws (Natural Earth, n.d.); nothing new is fetched.
@@ -57,7 +110,7 @@ Six comets (`site/app/js/comets.js`): Halley, Encke, Swift–Tuttle, Tempel–Tu
 - **Not verified:** the elements were read through Wolfram|Alpha, which serves JPL's values, on 18 November 2026, and typed in; the JPL site itself could not be reached from the build environment.
 - **Approximation:** Halley's next closest pass is given as 28 July 2061, JPL's full prediction with the planets' pulls, because the two-body orbit says January 2062. For the other comets the next pass is the two-body date, given to the month.
 - **Approximation:** the tail is drawn only inside 3 AU from the Sun (roughly where water ice starts to turn to gas), pointing straight away from the Sun, with a length that grows towards the Sun. Real tails split into a straight gas tail and a curved dust tail and vary a lot from comet to comet; the drawing is illustrative, not to scale.
-- **Assumption:** nucleus sizes, the meteor showers each comet feeds and the spacecraft visits are from NASA, ESA and International Meteor Organization pages (European Space Agency, n.d.; International Meteor Organization, n.d.), rounded and typed in. Hale–Bopp's size is uncertain (estimates run from 40 to 80 km); the page says so.
+- **Assumption:** nucleus sizes, the meteor showers each comet feeds and the spacecraft visits are from NASA, ESA and International Meteor Organization pages (European Space Agency, n.d.-a; International Meteor Organization, n.d.), rounded and typed in. Hale–Bopp's size is uncertain (estimates run from 40 to 80 km); the page says so.
 - **Judgement:** six comets chosen because they are famous, feed a well-known meteor shower or were visited by spacecraft; the many thousands of others are left out. No brightness is given: a comet's brightness depends on how active it is and cannot be forecast well from its orbit.
 - **Not verified:** the end-to-end offline test (`tests/e2e/test_offline_all.py`) timed out on GitHub's runner after v2.31 while passing every time here (also with GitHub's Playwright 1.56). It now waits for every live layer's saved copy before going offline and, if a layer still fails, prints which one and why instead of timing out. The cause on the runner is not confirmed.
 

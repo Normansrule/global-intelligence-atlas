@@ -21,6 +21,7 @@ import { execFileSync } from 'node:child_process';
 import { AIS_URL, SHIP_FIELDS, STATIC_FIELDS, aisSubscription, createAisStore, parseFrame } from '../site/app/js/ais.js';
 import { airSites, batchUrl, batchRows, CURRENT } from '../site/app/js/aqi.js';
 import { NWS_ACTIVE, slim, fillZones } from '../site/app/js/warnings.js';
+import { clusterFires, maybeIndustrial, thin, packSpread } from '../site/app/js/wildfire.js';
 import { lightningUrl, LIGHTNING_CAPS, lightningTime, NHC_STATUS, NHC_QUERIES, assembleStorms, wfigsUrl, slimFires, suaUrl, slimZones, GNSS_HUBS, gnssUrl, gnssRow, gnssCells } from '../site/app/js/watchfeeds.js';
 
 const OUT = process.argv[2] ?? 'live';
@@ -161,6 +162,29 @@ async function fires() {
     } catch (e) { lastErr = e; log('FIRMS', src, e.message); }
   }
   throw lastErr ?? new Error('no FIRMS file answered');
+}
+
+// v2.39 the wildfire tracker's 7 days: FIRMS's public 7-day global file, grouped into fires (wildfire.js); the 150
+// fires with the most heat that burned in the last 36 hours and do not look like gas flares, each thinned to 500
+// detections (all of its last day first). Rows are relative to each fire's centre to keep the file small.
+async function fireSpread() {
+  if (ageMin('fires-spread.json') < 60) return 'fresh enough';
+  const tries = [
+    ['VIIRS NOAA-20, global 7 days', 'https://firms.modaps.eosdis.nasa.gov/data/active_fire/noaa-20-viirs-c2/csv/J1_VIIRS_C2_Global_7d.csv'],
+    ['VIIRS Suomi NPP, global 7 days', 'https://firms.modaps.eosdis.nasa.gov/data/active_fire/suomi-npp-viirs-c2/csv/SUOMI_VIIRS_C2_Global_7d.csv'],
+  ];
+  let lastErr = null;
+  for (const [src, url] of tries) {
+    try {
+      const rows = parseFirms(await get(url, { type: 'text', timeout: 240_000 }));
+      if (rows.length < 1000) throw new Error(`only ${rows.length} hotspots`);
+      const now = Date.now();
+      const fires = clusterFires(rows, { minN: 10 }).filter((f) => f.last > now - 36 * 36e5 && !maybeIndustrial(f)).slice(0, 150).map((f) => thin(f, 500));
+      const n = write('fires-spread.json', { generatedAt: new Date().toISOString(), src: `NASA FIRMS · ${src}`, fields: FIRE_FIELDS, fires: packSpread(fires) });
+      return { note: `${fires.length} fires from ${rows.length} hotspots (${src}), ${(n / 1024).toFixed(0)} KB`, count: fires.length };
+    } catch (e) { lastErr = e; log('FIRMS 7 days', src, e.message); }
+  }
+  throw lastErr ?? new Error('no FIRMS 7-day file answered');
 }
 
 // Ships worldwide from AISStream. The stream is listened to for AIS_SECONDS each round and merged with the previous
@@ -399,7 +423,7 @@ async function news() {
 // last real refresh from the previous status file.
 const prevStatus = (() => { try { return JSON.parse(readFileSync(join(OUT, 'status.json'), 'utf8')).feeds ?? {}; } catch { return {}; } })();
 const only = process.env.LIVE_ONLY?.split(','); // e.g. LIVE_ONLY=ships for a quick local test
-for (const [name, fn] of [['flights', flights], ['gdacs', gdacs], ['launches', launches], ['tle', tles], ['news', news], ['fires', fires], ['ships', ships], ['air', air], ['nws', nws], ['lightning', lightning], ['nhc', nhc], ['perimeters', perimeters], ['airspace', airspace], ['gnss', gnss]]) {
+for (const [name, fn] of [['flights', flights], ['gdacs', gdacs], ['launches', launches], ['tle', tles], ['news', news], ['fires', fires], ['spread', fireSpread], ['ships', ships], ['air', air], ['nws', nws], ['lightning', lightning], ['nhc', nhc], ['perimeters', perimeters], ['airspace', airspace], ['gnss', gnss]]) {
   if (only && !only.includes(name)) { if (prevStatus[name]) status.feeds[name] = prevStatus[name]; continue; }
   const t0 = Date.now();
   try {

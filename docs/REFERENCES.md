@@ -196,7 +196,9 @@ Esri. (n.d.). *World Imagery* [Basemap]. Esri, Maxar, Earthstar Geographics, and
 
 euronews. (n.d.). *Euronews live* [Video live stream]. YouTube. https://www.youtube.com/channel/UCSrZ3UV4jOidv8ppoVuvW9Q/live
 
-European Space Agency. (n.d.). *Rosetta*. https://www.esa.int/Science_Exploration/Space_Science/Rosetta
+European Space Agency. (n.d.-a). *Rosetta*. https://www.esa.int/Science_Exploration/Space_Science/Rosetta
+
+European Space Agency. (n.d.-b). *Space science missions*. https://www.esa.int/Science_Exploration/Space_Science
 
 Eurostat. (n.d.). *House price index – quarterly data (prc_hpi_q)* [Data set]. Retrieved October 14, 2026, from https://ec.europa.eu/eurostat/databrowser/view/prc_hpi_q/default/table
 
@@ -271,6 +273,8 @@ Houston TranStar. (n.d.). *Traffic cameras* [Data set]. Retrieved October 14, 20
 ibelick. (n.d.). *Motion Primitives* [Computer software]. GitHub. https://github.com/ibelick/motion-primitives
 
 iNaturalist. (n.d.). *iNaturalist API* (Version 1) [Data set]. California Academy of Sciences and National Geographic Society. Retrieved October 14, 2026, from https://api.inaturalist.org/v1/docs/
+
+Indian Space Research Organisation. (n.d.). *Aditya-L1*. https://www.isro.gov.in/Aditya_L1.html
 
 Indiana Department of Transportation. (n.d.). *511 Indiana (TrafficWise): Traffic cameras* [Data set]. Retrieved October 14, 2026, from https://511in.org/
 
@@ -404,13 +408,25 @@ National Aeronautics and Space Administration. (n.d.-a). *Earth Observatory Natu
 
 National Aeronautics and Space Administration. (n.d.-b). *Global Imagery Browse Services (GIBS): VIIRS SNPP corrected reflectance, true color* [Data set]. Earth Science Data and Information System. Retrieved October 14, 2026, from https://nasa-gibs.github.io/gibs-api-docs/
 
+National Aeronautics and Space Administration. (n.d.-b). *James Webb Space Telescope*. https://science.nasa.gov/mission/webb/
+
 National Aeronautics and Space Administration. (n.d.-c). *Fire Information for Resource Management System (FIRMS): VIIRS NOAA-20 375 m active fire product, near real time* [Data set]. Land, Atmosphere Near real-time Capability for EOS (LANCE). Retrieved October 14, 2026, from https://firms.modaps.eosdis.nasa.gov/active_fire/
 
+National Aeronautics and Space Administration. (n.d.-c). *Parker Solar Probe*. https://science.nasa.gov/mission/parker-solar-probe/
+
+National Aeronautics and Space Administration. (n.d.-d). *Mars exploration: Missions*. https://science.nasa.gov/planetary-science/programs/mars-exploration/
+
 National Aeronautics and Space Administration. (n.d.-d). *NASA 3D resources: Images and textures* [Image collection]. GitHub. https://github.com/nasa/NASA-3D-Resources
+
+National Aeronautics and Space Administration. (n.d.-e). *EPIC: Earth Polychromatic Imaging Camera*. https://epic.gsfc.nasa.gov/
 
 National Aeronautics and Space Administration. (n.d.-e). *Solar System Treks: Moon, Mars and Mercury Trek map services* [Data set]. Jet Propulsion Laboratory. Retrieved October 14, 2026, from https://trek.nasa.gov
 
 National Aeronautics and Space Administration. (n.d.-f). *International Space Station (ISS) (B)* [3D model]. NASA 3D Resources, GitHub. https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models/International%20Space%20Station%20(ISS)%20(B)
+
+National Aeronautics and Space Administration. (n.d.-f). *NASA science missions*. https://science.nasa.gov/science-missions/
+
+National Aeronautics and Space Administration. (n.d.-g). *Comet 3I/ATLAS*. https://science.nasa.gov/solar-system/comets/3i-atlas/
 
 National Archives and Records Administration. (n.d.-a). *National Archives catalog* [Data set]. Retrieved October 14, 2026, from https://catalog.archives.gov/
 
@@ -885,7 +901,7 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Kious & Tilling, 1996) | Plate tectonics primer. | Public domain |
 | (Riebeek, 2009) | Orbits primer (LEO, MEO, GEO). | Public domain |
 | (NOAA Space Weather Prediction Center, n.d.-b) | Kp scale explanation. | Public domain |
-| (NASA, n.d.-c) | Fire hotspots layer and fire alerts in watch areas. We acknowledge the use of data and imagery from LANCE FIRMS operated by NASA’s Earth Science Data and Information System (ESDIS). | Public domain (NASA); acknowledgement requested |
+| (NASA, n.d.-c) | Fire hotspots layer, fire alerts in watch areas, and the wildfire tracker’s 7-day spread (v2.39). We acknowledge the use of data and imagery from LANCE FIRMS operated by NASA’s Earth Science Data and Information System (ESDIS). | Public domain (NASA); acknowledgement requested |
 | (Schroeder et al., 2014) | How the fire hotspots are detected (Learn page of the fire layer). | Paper |
 | (RainViewer, n.d.) | Weather radar layer: the past two hours of rain and snow in 10-minute frames. | Free for personal and educational use with attribution |
 | (OpenSky Network, n.d.-c) | Weekly aircraft type table (ICAO 24-bit address → type and registration) that picks each plane’s shape and powers search by type. | Non-commercial research/education (OpenSky terms) |
@@ -928,11 +944,19 @@ Zippenfenig, P. (2023). *Open-Meteo.com weather API* [Computer software]. Zenodo
 | (Chamberlain & Duquette, 2007) | The area of a drawn conflict zone on a sphere (v2.28). | Reference |
 | (Jet Propulsion Laboratory, n.d.) | Orbital elements of the famous comets (v2.32) and asteroids (v2.34), carried forward on Kepler orbits; read through Wolfram|Alpha. | U.S. Government work (facts: orbital elements) |
 | (Center for Near Earth Object Studies, n.d.) | Apophis’s 13 April 2029 pass, the figure that includes the Earth’s pull (v2.34). | U.S. Government work (facts) |
+| (European Space Agency, n.d.-b) | Euclid, SOHO, Mars Express, the Trace Gas Orbiter, Solar Orbiter, JUICE, BepiColombo and Hera (v2.36). | Facts, not copied text |
+| (National Aeronautics and Space Administration [NASA], n.d.-b) | Webb at L2 (v2.36). | Facts, not copied text |
+| (National Aeronautics and Space Administration [NASA], n.d.-c) | Parker Solar Probe’s orbit and its December 2024 close pass (v2.36). | Facts, not copied text |
+| (National Aeronautics and Space Administration [NASA], n.d.-d) | The orbiters and rovers at Mars (v2.36). | Facts, not copied text |
+| (National Aeronautics and Space Administration [NASA], n.d.-e) | DSCOVR at L1 (v2.36). | Facts, not copied text |
+| (National Aeronautics and Space Administration [NASA], n.d.-f) | Europa Clipper, Lucy and Psyche on the way (v2.36). | Facts, not copied text |
+| (National Aeronautics and Space Administration [NASA], n.d.-g) | How ʻOumuamua, Borisov and 3I/ATLAS were found and what is known about them (v2.37). | Facts, not copied text |
+| (Indian Space Research Organisation, n.d.) | Aditya-L1 at L1 (v2.36). | Facts, not copied text |
 | (Johns Hopkins University Applied Physics Laboratory, n.d.) | The DART impact on Dimorphos and the change in its orbit (v2.34). | Facts, not copied text |
 | (Japan Aerospace Exploration Agency, n.d.) | Hayabusa2 at Ryugu and the sample return (v2.34). | Facts, not copied text |
-| (European Space Agency, n.d.) | Rosetta and Philae at comet 67P/Churyumov–Gerasimenko, and the comet's size (v2.32). | Facts, not copied text |
+| (European Space Agency, n.d.-a) | Rosetta and Philae at comet 67P/Churyumov–Gerasimenko, and the comet's size (v2.32). | Facts, not copied text |
 | (International Meteor Organization, n.d.) | Peak dates and typical hourly rates of the big annual meteor showers in the next 60 days (v2.31). | Facts (dates and rates), not copied text |
-| (Internet Assigned Numbers Authority, n.d.) | Local time and daylight-saving rules for every financial place, through the browser’s Intl API (v2.29). | Public domain |
+| (Internet Assigned Numbers Authority, n.d.) | Local time and daylight-saving rules for every financial place (v2.29) and the world clock (v2.38), through the browser’s Intl API. | Public domain |
 | (Singla et al., 2014) | Light in fibre at about two-thirds of its speed in a vacuum and routes longer than the straight line, behind the cloud round-trip estimates (v2.29). | Reference |
 | (World Aquatics, n.d.) | An Olympic pool: 50 × 25 m and at least 2 m deep, so at least 2,500 m³ (v2.26). | Reference |
 | (National Interagency Fire Center, n.d.) | The Wildfire outlines layer: the mapped edge of each current US fire with its size, containment, cause and crews (v2.25). | US government work (public domain) |

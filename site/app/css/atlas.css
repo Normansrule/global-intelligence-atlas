@@ -1392,3 +1392,110 @@ body.in-space #globe { cursor: grab; }
 .na-list a { color: var(--ink); text-decoration: none; line-height: 1.35; }
 .na-list a:hover, .na-list a:focus-visible { text-decoration: underline; }
 .na-list small { color: var(--ink-2); font-size: 11.5px; }
+
+/* ---------- v2.36 sleeker: softer depth, quieter chrome, one-line layer rows ----------
+   The Isotype tokens stay; what changes is weight. Floating controls sit on a soft shadow and a frosted panel so the
+   globe shows through at the edges; borders go to hairlines; secondary text (sources, fps, attribution) steps back. */
+:root { --shadow-soft: 0 1px 2px rgba(40, 30, 10, 0.06), 0 6px 18px rgba(40, 30, 10, 0.08); --glass: color-mix(in srgb, var(--panel) 82%, transparent); --hair: color-mix(in srgb, var(--line) 70%, transparent); }
+:root[data-theme='dark'] { --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 4, 12, 0.45); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) { --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 4, 12, 0.45); } }
+
+/* floating controls: one frosted stack instead of five separate boxes */
+.mapctl { gap: 0; }
+.mapctl button { background: var(--glass); border-color: var(--hair); border-radius: 0; box-shadow: none; -webkit-backdrop-filter: blur(10px) saturate(1.2); backdrop-filter: blur(10px) saturate(1.2); transition: background var(--dur-ui) var(--ease-out), color var(--dur-ui) var(--ease-out); }
+.mapctl button + button { border-top-color: transparent; }
+.mapctl button:first-child { border-radius: 10px 10px 0 0; }
+.mapctl button:nth-last-child(2) { border-radius: 0 0 10px 10px; }
+.mapctl button:only-of-type { border-radius: 10px; }
+.mapctl button:hover { background: var(--panel); border-color: var(--hair); color: var(--accent); }
+.mapctl { filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.14)); }
+.mapctl .scalebar { margin-top: 10px; background: var(--glass); border-color: var(--hair); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.ticker { background: var(--glass); border-color: var(--hair); box-shadow: var(--shadow-soft); -webkit-backdrop-filter: blur(12px) saturate(1.2); backdrop-filter: blur(12px) saturate(1.2); }
+.notes, .drawer { box-shadow: var(--shadow-soft); }
+.notes { border-color: var(--hair); }
+
+/* layer rows: the source in brackets moves under the name, muted, so each row is one line; Learn is an info glyph */
+.layer .ln { display: inline-flex; flex-direction: column; line-height: 1.25; vertical-align: middle; }
+.layer .ln .src { font-size: var(--fs-micro); color: var(--ink-2); letter-spacing: 0.01em; }
+.layer label > svg { vertical-align: middle; margin-right: 6px; }
+.layer .learn { border: 0; padding: 0; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; color: var(--ink-2); opacity: 0.7; transition: opacity var(--dur-ui) var(--ease-out), background var(--dur-ui) var(--ease-out); }
+.layer .learn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.layer:hover .learn, .layer .learn:focus-visible { opacity: 1; }
+.layer .learn:hover { background: var(--hover); color: var(--accent); }
+.layer { padding: 4px 6px; margin: 0 -6px; border-radius: 6px; transition: background var(--dur-ui) var(--ease-out); }
+.layer:hover { background: var(--hover); }
+
+/* the status bar steps back: hairline, smaller type, the frame rate and quality as one quiet control */
+.statusbar { border-top-color: var(--hair); }
+.statusbar .attribution { font-size: var(--fs-micro); color: var(--ink-2); opacity: 0.8; }
+.statusbar .quality { opacity: 0.75; transition: opacity var(--dur-ui) var(--ease-out); }
+.statusbar .quality:hover, .statusbar .quality:focus-within { opacity: 1; }
+.statusbar .quality select { border-color: var(--hair); background: transparent; }
+
+/* the details panel fades in instead of appearing (opacity only, so its box never moves) */
+@media (prefers-reduced-motion: no-preference) {
+  .notes.open { animation: v236-in var(--dur-ui) var(--settle); }
+  @keyframes v236-in { from { opacity: 0; } to { opacity: 1; } }
+}
+/* v2.36 spacecraft at work: the Sun–L1–Earth–L2 sketch */
+.lg-svg { width: 100%; height: auto; display: block; margin: 6px 0 2px; color: var(--ink); font: 11px var(--body); }
+.lg-svg text { fill: var(--ink-2); }
+.lg-svg g circle { fill: none; stroke: var(--ink-2); stroke-width: 1.5; }
+.lg-svg g.on circle { fill: var(--accent); stroke: var(--accent); }
+.lg-svg g.on text { fill: var(--ink); font-weight: 700; }
+
+/* v2.38 the world clock (worldclock.js): one row per city with a 24-hour bar of the local day */
+.wc-list { list-style: none; margin: 8px 0 4px; padding: 0; display: grid; gap: 2px; }
+.wc-row { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; grid-template-rows: auto 4px; align-items: center; column-gap: 6px; row-gap: 3px; padding: 5px 6px 5px 2px; border-radius: 8px; }
+.wc-row:hover { background: var(--sunk); }
+.wc-pick { display: grid; place-items: center; width: 28px; height: 28px; cursor: pointer; }
+.wc-pick input { width: 16px; height: 16px; accent-color: var(--accent); margin: 0; }
+.wc-city { all: unset; cursor: pointer; min-width: 0; display: grid; border-radius: 6px; }
+.wc-city:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wc-city b { font-weight: 650; }
+.wc-city small, .wc-time small { color: var(--ink-2); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wc-time { display: grid; justify-items: end; }
+.wc-time b { font: 600 19px/1.1 var(--body); font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+.wc-night .wc-time b { color: var(--ink-2); }
+.wc-sun { display: inline-block; width: 1em; text-align: center; }
+.wc-row.wc-day .wc-sun { color: #e3a52b; }
+.wc-shift { color: var(--accent-2); }
+.wc-bar { grid-column: 2 / 4; height: 4px; border-radius: 2px; position: relative;
+  background: linear-gradient(90deg, var(--line) 33.333%, color-mix(in srgb, var(--accent) 55%, transparent) 33.333% 75%, var(--line) 75%); }
+.wc-bar::after { content: ''; position: absolute; left: var(--hp); top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 2px var(--panel); }
+.wc-meet { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 6px; }
+.wc-meet li { display: grid; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--sunk); }
+.wc-meet small { color: var(--ink-2); font-size: 11.5px; }
+
+/* v2.39 the wildfire tracker (firetracker.js, wildfire.js) and the view from the ground (fireview.js) */
+.wf-figs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 8px 0 10px; }
+.wf-figs span { display: grid; padding: 8px; border-radius: 8px; background: var(--sunk); }
+.wf-figs b { font: 650 16px/1.2 var(--body); font-variant-numeric: tabular-nums; }
+.wf-figs small { color: var(--ink-2); font-size: 11px; }
+.wf-trend { text-transform: capitalize; }
+.wf-growing { color: #e8553a; } .wf-dying-down { color: var(--accent-2); }
+.wf-play { margin: 8px 0; }
+.wf-map { width: 100%; height: auto; display: block; }
+.wf-map .wf-bg { fill: #141b22; }
+.wf-map .wf-edge { fill: rgba(255, 211, 122, .08); stroke: #ffd37a; stroke-width: 1.4; }
+.wf-map .wf-old { fill: none; stroke: #c9b79a; stroke-width: 1; stroke-dasharray: 4 3; opacity: .7; }
+.wf-map .wf-scale path { stroke: #eef3f6; stroke-width: 2; } .wf-map text { fill: #eef3f6; font: 11px var(--body); }
+.wf-map .wf-north path { fill: #eef3f6; }
+.wf-ctl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; align-items: center; margin: 8px 0 4px; }
+.wf-ctl input[type=range] { width: 100%; accent-color: #ff9a3c; }
+.wf-ctl output { grid-column: 1 / -1; color: var(--ink-2); font-size: 12px; font-variant-numeric: tabular-nums; }
+.wf-legend { list-style: none; padding: 0; margin: 4px 0; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11.5px; color: var(--ink-2); }
+.wf-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--c); margin-right: 5px; vertical-align: -1px; }
+.wf-sides .btn[aria-pressed=true] { background: var(--accent); color: var(--on-accent); }
+.wf-top { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 6px; }
+.fv { position: relative; margin-top: 8px; }
+.fv-canvas { width: 100%; aspect-ratio: 16 / 10; display: block; border-radius: 10px; background: #0b1020; touch-action: none; cursor: grab; }
+.fv-hud { display: grid; gap: 2px; margin: 6px 0; font-size: 12px; }
+.fv-look { font-weight: 650; }
+.fv-note { color: var(--ink-2); }
+.fv-ctl { gap: 6px; flex-wrap: wrap; }
+.fv-ctl select { min-height: 32px; }
+.fv-overlay { position: fixed; inset: 0; z-index: 60; background: var(--panel); padding: 12px 16px; overflow: auto; }
+.fv-overlay .fv { margin: 0; }
+.fv-overlay .fv-canvas { aspect-ratio: auto; height: calc(100vh - 130px); }
+@media (max-width: 520px) { .wf-figs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

@@ -9,7 +9,7 @@ res=[]
 def check(n, ok, info=''): res.append(bool(ok)); print(('PASS ' if ok else 'FAIL ')+n, '' if ok else info)
 TILE=open(os.path.join(sys.argv[-1], 'tile.jpg'), 'rb').read(); hits=[]
 def trek(route): hits.append(route.request.url); route.fulfill(status=200, content_type='image/jpeg', body=TILE)
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.35');localStorage.setItem('gia-theme','dark')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.39');localStorage.setItem('gia-theme','dark')}catch(e){}"
 ZOOM="""([id, a]) => { const { cam, B, st } = gia.cosmos.debug(); const c = st.ctl.target.clone(); const d = cam.position.clone().sub(c).normalize(); cam.position.copy(c).addScaledVector(d, B[id].r * (1 + a)); st.ctl.update(); }"""
 with sync_playwright() as p:
     b=p.chromium.launch(args=['--use-gl=swiftshader','--enable-unsafe-swiftshader'])
@@ -18,7 +18,7 @@ with sync_playwright() as p:
     pg.route('**/*', handler); pg.route('https://trek.nasa.gov/**', trek); pg.add_init_script(INIT)
     pg.goto('http://localhost:8765/app/#@20,0,2.4&b=daynight&l=sun,borders,planets', wait_until='commit')
     pg.wait_for_function("() => window.gia && gia.cosmos && gia.cosmos.ready()", timeout=60000); pg.wait_for_timeout(1500)
-    check('version 2.35', pg.evaluate("() => gia.VERSION")=='2.35')
+    check('version 2.39', pg.evaluate("() => gia.VERSION")=='2.39')
     sh=pg.evaluate("() => ({ open: document.querySelector('#space-open')?.dataset.space, title: document.querySelector('#space-open')?.title ?? '' })")
     check('the space button is the solar system', sh['open']=='system', sh)
     # the solar system view
@@ -30,7 +30,7 @@ with sync_playwright() as p:
     check('opens on the whole solar system, about 100 AU out, and the link remembers it', s['focus']=='system' and 'sp=system' in s['hash'] and 80 < s['dist'] < 120, s)
     check('you can slide (pan) and zoom far out (to 400 AU) in the solar system', s['pan'] and s['max'] > 350, s)
     planets=['Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto']
-    check('the card lists the 8 planets and Pluto with distance and light time, then 3 spacecraft', 'solar system' in s['card'] and [r for r in s['rows'] if any(r.startswith(n) for n in planets)].__len__()==9 and not any(r.startswith('Moon') for r in s['rows']) and sum(('Voyager' in r or 'New Horizons' in r) for r in s['rows'])==3, s['rows'])
+    check('the card lists the 8 planets and Pluto with distance and light time, then 3 spacecraft', 'solar system' in s['card'] and [r for r in s['rows'] if any(r.startswith(n) and r[len(n):len(n)+1].isdigit() for n in planets)].__len__()==9 and not any(r.startswith('Moon') for r in s['rows']) and sum(('Voyager' in r or 'New Horizons' in r) for r in s['rows'])==3, s['rows'])
     au=dict((m.group(1), float(m.group(2))) for m in (re.match(r'([A-Za-z]+?)\s*([\d.]+) AU', r) for r in s['rows']) if m and m.group(1) in planets)
     check('distances from the Sun are right (Earth 0.98–1.02, Jupiter 4.9–5.5, Neptune 29.7–30.4 AU)', 0.98 <= au.get('Earth',0) <= 1.02 and 4.9 <= au.get('Jupiter',0) <= 5.5 and 29.7 <= au.get('Neptune',0) <= 30.4, au)
     check('planet labels show (at least 6), the Moon’s does not sit on the Earth’s', len([l for l in s['labels'] if l in ('mercury','venus','earth','mars','jupiter','saturn','uranus','neptune','pluto')]) >= 6 and 'moon' not in s['labels'], s['labels'])

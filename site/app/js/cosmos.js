@@ -27,6 +27,8 @@ import { spaceSections } from './spacedetail.js';
 import { skySections, moonMonth, probeSections, SHOWERS } from './skydetail.js';
 import { COMETS, COMET, cometPos, orbitPoints as cometOrbit, cometSections, cometRows, tailAU } from './comets.js';
 import { ASTEROIDS, ASTEROID, asteroidSections, asteroidRows } from './asteroids.js';
+import { CRAFT_BY, PLACES, craftRows, craftSections } from './spacecraft.js';
+import { VISITORS, VISITOR, visitorPos, visitorPath, visitorRows, visitorSections } from './interstellar.js';
 
 const D2R = Math.PI / 180;
 const R = 100; const KM = R / 6371.0088; // scene units per km
@@ -365,6 +367,11 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     for (const a of ASTEROIDS) { const k = hexRgb(a.dot); let prev = null; for (const v of cometOrbit(a, 240)) { const w = [v[0] * AU, v[1] * AU, v[2] * AU]; if (prev) { ap.push(...prev, ...w); ac.push(...k, ...k); } prev = w; } }
     const ag = new THREE.BufferGeometry(); ag.setAttribute('position', new THREE.Float32BufferAttribute(ap, 3)); ag.setAttribute('color', new THREE.Float32BufferAttribute(ac, 3));
     const al = new THREE.LineSegments(ag, orbitMat); al.frustumCulled = false; al.userData.asteroids = true; helio.add(al);
+    // v2.37 the visitors from other stars (interstellar.js): open paths, 10 years in and 60 years out from perihelion
+    const vp = []; const vc = [];
+    for (const v of VISITORS) { const k = hexRgb(v.dot); let prev = null; for (const x of visitorPath(v, 10, 60, 300)) { const w = [x[0] * AU, x[1] * AU, x[2] * AU]; if (prev) { vp.push(...prev, ...w); vc.push(...k, ...k); } prev = w; } }
+    const vg = new THREE.BufferGeometry(); vg.setAttribute('position', new THREE.Float32BufferAttribute(vp, 3)); vg.setAttribute('color', new THREE.Float32BufferAttribute(vc, 3));
+    const vl = new THREE.LineSegments(vg, orbitMat); vl.frustumCulled = false; vl.userData.visitors = true; helio.add(vl);
   }
   function buildOuterOrbits(t) {
     if (outerOrbitsBuilt || !OM) return; outerOrbitsBuilt = true;
@@ -480,6 +487,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
       cs.tail.visible = tl > 0 && !!st.focus;
     }
     for (const a of ASTEROIDS) { const v = cometPos(a, jd); const as = AS[a.id]; as.pos.set(v[0] * AU, v[1] * AU, v[2] * AU); as.r = Math.hypot(...v); }
+    for (const x of VISITORS) { const v = visitorPos(x, (jd - 2440587.5) * 864e5); const vs = VS[x.id]; vs.pos.set(v[0] * AU, v[1] * AU, v[2] * AU); vs.r = Math.hypot(...v); }
     for (const id of ORDER) place(B[id]);
     // Saturn's rings share Saturn's frame (without its slight squash).
     const sat = B.saturn; rings.matrix.copy(sat.basis).scale(tmp.set(sat.r, sat.r, sat.r)).setPosition(sat.pos); rings.matrixWorldNeedsUpdate = true;
@@ -756,6 +764,26 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     el.innerHTML = `<i style="--c:${a.dot}"></i><span>${esc(a.name)}</span>`; el.title = `${a.name}: where it is and when it next passes the Earth`;
     el.hidden = true; layer.appendChild(el); AL[a.id] = el;
   }
+  // v2.37 visitors from other stars: a label where each is now, shown in the solar system view
+  const VS = {}; const VL = {};
+  for (const x of VISITORS) {
+    VS[x.id] = { pos: new THREE.Vector3(), r: 0 };
+    const el = document.createElement('button'); el.type = 'button'; el.className = 'space-label probe visitor'; el.dataset.spaceVisitor = x.id;
+    el.innerHTML = `<i style="--c:${x.dot}"></i><span>${esc(x.name)}</span>`; el.title = `${x.name}: a visitor from another star, where it is now`;
+    el.hidden = true; layer.appendChild(el); VL[x.id] = el;
+  }
+  function visitorLabels(rect, host0) {
+    const on = st.focus === 'system' && !st.fly; const far = st.ctl ? cam.position.distanceTo(st.ctl.target) : 0;
+    for (const x of VISITORS) {
+      const el = VL[x.id]; const vs = VS[x.id]; let vis = on && far > vs.r * AU * 0.4; // once the view takes in where it is
+      if (vis) {
+        const w = toWorld(tmp3.copy(B.sun.pos).add(vs.pos), tmp);
+        ndc.copy(w).project(cam); vis = ndc.z < 1 && Math.abs(ndc.x) < 1.02 && Math.abs(ndc.y) < 1.02;
+        if (vis) el.style.transform = `translate(${(rect.left - host0.left + (ndc.x + 1) / 2 * rect.width).toFixed(1)}px, ${(rect.top - host0.top + (1 - ndc.y) / 2 * rect.height - 7).toFixed(1)}px) translate(-5px, 0)`;
+      }
+      if (el.hidden === vis) el.hidden = !vis;
+    }
+  }
   function asteroidLabels(rect, host0) {
     const on = st.focus === 'system' && !st.fly; const far = st.ctl ? cam.position.distanceTo(st.ctl.target) : 0;
     for (const a of ASTEROIDS) {
@@ -826,7 +854,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
       }
       if (el.hidden === vis) el.hidden = !vis;
     }
-    probeLabels(rect, host0); cometLabels(rect, host0); asteroidLabels(rect, host0);
+    probeLabels(rect, host0); cometLabels(rect, host0); asteroidLabels(rect, host0); visitorLabels(rect, host0);
     sites();
   }
   function hideLabels() { for (const id of ORDER) if (!L[id].hidden) L[id].hidden = true; for (const el of [...Object.values(PL), ...Object.values(CL)]) el.hidden = true; siteLayer.hidden = true; }
@@ -1030,6 +1058,12 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
       <h4>The farthest spacecraft</h4>
       <table class="sys-table"><thead><tr><th>Spacecraft</th><th>From the Sun</th><th>Radio takes</th></tr></thead><tbody>${PROBES.map((p) => { const au = probeAU(p); return `<tr><td><button class="linkish" data-space-probe="${p.id}"><i style="--c:#7fe3c4"></i>${esc(p.name)}</button></td><td>about ${Math.round(au)} AU</td><td>${fmtMin((au * 149597870.7) / 299792.458 / 60)}</td></tr>`; }).join('')}</tbody></table>
       <p class="small muted">Zoom out (scroll) to find them, far beyond Pluto. Their places are worked out from published distances and speeds, good to about 1 AU.</p>
+      <h4>Visitors from other stars</h4>
+      <table class="sys-table"><thead><tr><th>Visitor</th><th>From the Sun</th><th>Leaving at</th></tr></thead><tbody>${(() => { try { return visitorRows(A, now()).map((x) => `<tr><td><button class="linkish" data-space-visitor="${x.v.id}"><i style="--c:${x.v.dot}"></i>${esc(x.v.name)}</button></td><td>${x.r.toFixed(1)} AU</td><td>${x.vInf.toFixed(0)} km/s</td></tr>`).join(''); } catch (e) { console.warn('visitors', e); return ''; } })()}</tbody></table>
+      <p class="small muted">The only three objects known to have come in from interstellar space, in 2017, 2019 and 2025. Each passed the Sun once on an open path and is leaving for good; their paths are drawn in their own colours.</p>
+      <h4>Spacecraft at work</h4>
+      <table class="sys-table sc-table"><thead><tr><th>Spacecraft</th><th>Where</th><th>Radio takes</th></tr></thead><tbody>${(() => { try { return craftRows(craftCtx()).map((x) => `<tr><td><button class="linkish" data-space-craft="${x.c.id}"><i style="--c:${PLACES[x.c.place].dot}"></i>${esc(x.c.short)}</button></td><td>${esc(x.where)}</td><td>${esc(x.sig)}</td></tr>`).join(''); } catch (e) { console.warn('craft', e); return ''; } })()}</tbody></table>
+      <p class="small muted">The observatories at L1 and L2 sit about 1.5 million km from the Earth, towards and away from the Sun; the Mars fleet is as far as Mars is. Statuses as of mid-2025.</p>
       <div class="quick"><button class="btn ghost" data-space="earth">Back to Earth</button></div>
       <details class="more"><summary>Where the positions come from</summary><p class="small">Astronomy Engine (VSOP87) computes every planet for the time on the atlas clock; press the time machine to set them moving. The belts use typical orbits (Kirkwood gaps at 2.50, 2.82 and 2.96 AU; the plutinos at 39.4 AU) after Minor Planet Center statistics.</p>${refsHtml(['astronomyengine', 'nssdcfacts', 'mpcorb', 'jplvoyager', 'newhorizons', 'jplsbdb'])}</details>`, 'space:system');
   }
@@ -1043,6 +1077,30 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
       ${(() => { try { return probeSections(A, p, now()); } catch (e) { console.warn('probe', e); return ''; } })()}
       <div class="quick"><button class="btn ghost" data-space="system">The solar system</button></div>
       <details class="more"><summary>Where this comes from</summary><p class="small">Distance on 1 January 2025 and cruise speed from the mission's published status, carried forward to the atlas clock; direction in the sky as seen from the Sun. Good to about 1 AU.</p>${refsHtml([p.ref])}</details>`, `space:${p.id}`);
+  }
+  /** v2.37 a visitor from another star: the solar system view, then its page. */
+  async function showVisitor(id) { if (!VISITOR[id]) return; if (st.focus !== 'system') await explore('system'); else await loadEngine(); visitorCard(id); }
+  function visitorCard(id) {
+    const v = VISITOR[id]; if (!v) return;
+    let body = ''; try { body = visitorSections(A, v, now()); } catch (e) { console.warn('visitor', e); }
+    openNotes('Space', `
+      <h3 class="withglyph"><span class="space-glyph" style="--c:${v.dot}">✧</span><span>${esc(v.name)}</span></h3><p class="sub">Interstellar object · ${esc(v.code)} · the ${['first', 'second', 'third'][v.n - 1]} known</p>
+      ${body}
+      <p>${VISITORS.filter((x) => x.id !== id).map((x) => `<button class="btn ghost" data-space-visitor="${x.id}">${esc(x.name)}</button>`).join(' ')}</p>
+      <div class="quick"><button class="btn ghost" data-space="system">The solar system</button></div>
+      <details class="more"><summary>Where this comes from</summary><p class="small">An open (hyperbolic) two-body path from the object's elements in NASA JPL's Small-Body Database, carried to the time on the atlas clock; it leaves out the planets' pulls, which changed these paths very little. Checked against the published close passes: ʻOumuamua by the Earth on 14 October 2017, Borisov on 28 December 2019, and 3I/ATLAS by Mars on 3 October 2025 and the Earth on 19 December 2025.</p>${refsHtml(['jplsbdb', 'nasainterstellar'])}</details>`, `space:visitor-${id}`);
+  }
+  /** v2.36 a spacecraft at work: where it is now (L1, L2, Mars, round the Sun or on the way), what it does, who is with it. */
+  function craftCtx() { const m = B?.mars?.pos; const au = m ? m.length() / AU : 0; return { ms: now().getTime(), marsAU: au > 0.3 ? au : null }; }
+  async function showCraft(id) { if (!CRAFT_BY[id]) return; if (st.focus !== 'system') await explore('system'); else await loadEngine(); craftCard(id); }
+  function craftCard(id) {
+    const c = CRAFT_BY[id]; if (!c) return; const pl = PLACES[c.place];
+    let body = ''; try { body = craftSections(c, craftCtx()); } catch (e) { console.warn('craft', e); }
+    openNotes('Space', `
+      <h3 class="withglyph"><span class="space-glyph" style="--c:${pl.dot}">✦</span><span>${esc(c.name)}</span></h3><p class="sub">Spacecraft · ${esc(pl.name)} · launched ${c.launched}</p>
+      ${body}
+      <div class="quick"><button class="btn ghost" data-space="system">The solar system</button>${c.place === 'mars' ? '<button class="btn ghost" data-space="mars">Fly to Mars</button>' : ''}</div>
+      <details class="more"><summary>Where this comes from</summary><p class="small">L1 and L2 are given at their mean distance from the Earth (the spacecraft circle them on orbits up to several hundred thousand km wide); the Mars fleet's distance is Mars's, from Astronomy Engine; Parker Solar Probe's distance from the Sun follows a fixed 88-day ellipse timed from its 24 December 2024 close pass. Mission facts from the agencies' own pages, as of mid-2025 and not re-checked here.</p>${refsHtml([c.ref, 'astronomyengine'])}</details>`, `space:craft-${id}`);
   }
   /** v2.34 an asteroid from anywhere: the solar system view, then its page. */
   async function showAsteroid(id) { if (!ASTEROID[id]) return; if (st.focus !== 'system') await explore('system'); else await loadEngine(); asteroidCard(id); }
@@ -1071,6 +1129,8 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     const pr = e.target.closest('[data-space-probe]'); if (pr) { probeCard(pr.dataset.spaceProbe); return; }
     const co = e.target.closest('[data-space-comet]'); if (co) { showComet(co.dataset.spaceComet); return; }
     const as = e.target.closest('[data-space-asteroid]'); if (as) { showAsteroid(as.dataset.spaceAsteroid); return; }
+    const sc = e.target.closest('[data-space-craft]'); if (sc) { showCraft(sc.dataset.spaceCraft); return; }
+    const vi = e.target.closest('[data-space-visitor]'); if (vi) { showVisitor(vi.dataset.spaceVisitor); return; }
     const v = e.target.closest('[data-space-venus]'); if (v) { st.venusSurface = !st.venusSurface; card('venus'); wake?.(); return; }
     if (e.target.closest('[data-space-card]') && st.focus && st.focus !== 'earth') { if (st.focus === 'system') systemCard(); else card(st.focus); return; }
     const site = e.target.closest('[data-site]');
@@ -1151,7 +1211,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
   // ---------------------------------------------------------------- start
   (window.requestIdleCallback ?? ((f) => setTimeout(f, 1500)))(() => loadEngine().then(() => { compute(); wake?.(); }), { timeout: 5000 }); // v2.21: at most 5 s, even on a device that is never idle
   return active = {
-    explore, comet: (id) => showComet(id), asteroid: (id) => showAsteroid(id), leave: () => st.focus && explore('earth'), eclipses: () => eclipseCard(), eclipseList: () => (A ? eclipseList() : []),
+    explore, comet: (id) => showComet(id), asteroid: (id) => showAsteroid(id), craft: (id) => showCraft(id), visitor: (id) => showVisitor(id), leave: () => st.focus && explore('earth'), eclipses: () => eclipseCard(), eclipseList: () => (A ? eclipseList() : []),
     focus: () => st.focus, flying: () => !!st.fly,
     setDark(on) { st.dark = !!on; st.sky = !!on; wake?.(); },
     setBodies(on) { st.bodies = !!on; wake?.(); },
@@ -1159,7 +1219,7 @@ export function installCosmos({ globe, now, earthMaterial, eclipse, watchEclipse
     /** Where a body is right now, for tests and the console: distance (km) and pixels across on screen. */
     info: (id) => (B[id] && st.ready ? { km: B[id].pos.length() / KM, px: B[id].px, visible: !!B[id].mesh?.visible } : null),
     ready: () => st.ready,
-    debug: () => ({ cam, B, st, F, scene, CS, AS }),
+    debug: () => ({ cam, B, st, F, scene, CS, AS, VS }),
     /** v2.20 the close-up patch of sharper map tiles, if one is showing: level, tiles asked for, tiles drawn. */
     patch: () => ({ id: patch.id, z: patch.z, tiles: patch.tiles, loaded: patch.loaded }),
     get stars() { return { set visible(v) { st.dark = !!v; st.sky = !!v; }, get visible() { return st.sky; } }; },

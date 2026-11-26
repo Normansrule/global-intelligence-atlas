@@ -13,10 +13,10 @@ def open_(pg, layer, find, wait=2000):
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); pg=b.new_page(viewport={'width':1280,'height':800}); errs=[]
     pg.on('pageerror', lambda e: errs.append(str(e)))
-    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.35')}catch(e){}")
+    pg.route('**/*', handler); pg.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.39')}catch(e){}")
     pg.goto('http://localhost:8765/app/#@30,-90,2&l=borders,'+','.join(LAYERS), wait_until='commit'); pg.wait_for_function("() => window.gia", timeout=60000)
     pg.wait_for_function(f"() => {json.dumps(LAYERS + ['borders'])}.every((k) => gia.state.data[k])", timeout=60000); pg.wait_for_timeout(1000)
-    check('version 2.35', pg.evaluate("() => gia.VERSION")=='2.35')
+    check('version 2.39', pg.evaluate("() => gia.VERSION")=='2.39')
     # a spaceport, first with no launch list, then with launches placed at its pads
     pg.evaluate("() => { delete gia.state.data.launches; if (gia.state.on.has('launches')) gia.toggleLayer('launches', false); }")
     t=open_(pg, 'spaceports', "x => /Kennedy/.test(x.name)")

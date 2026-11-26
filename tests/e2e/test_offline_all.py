@@ -16,7 +16,7 @@ def route(r):
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS); ctx=b.new_context(viewport={'width':1280,'height':800}, service_workers='allow')
     ctx.route('**/*', route)
-    ctx.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.35')}catch(e){}")
+    ctx.add_init_script("try{localStorage.setItem('global-intelligence-atlas-version','2.39')}catch(e){}")
     pg=ctx.new_page(); errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
     # the service worker first, so everything after this goes through it
     pg.goto('http://localhost:8765/app/', wait_until='load')

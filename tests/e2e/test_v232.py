@@ -7,7 +7,7 @@ from playwright.sync_api import sync_playwright
 res=[]
 def check(n, ok, info=''): res.append(bool(ok)); print(('PASS ' if ok else 'FAIL ')+n, '' if ok else info)
 ROOT=os.path.abspath(os.path.join(sys.argv[-1], '..', '..'))
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.35');localStorage.setItem('gia-theme','dark')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.39');localStorage.setItem('gia-theme','dark')}catch(e){}"
 TEXT="() => { document.querySelectorAll('#notes-body details.qd-sec').forEach((d) => d.open = true); return document.querySelector('#notes-body')?.innerText ?? ''; }"
 pack={p for p,_ in json.load(open(os.path.join(ROOT, 'site/app/data/offline-pack.json')))['files']}
 sw=open(os.path.join(ROOT, 'site/sw.js')).read()
@@ -19,7 +19,7 @@ with sync_playwright() as p:
     pg.route('**/*', handler); pg.add_init_script(INIT)
     pg.goto('http://localhost:8765/app/#@51.5,-0.1,2.4&b=daynight&l=sun,borders,planets', wait_until='commit')
     pg.wait_for_function("() => window.gia && gia.cosmos && gia.cosmos.ready()", timeout=60000); pg.wait_for_timeout(1500)
-    check('version 2.35', pg.evaluate("() => gia.VERSION")=='2.35')
+    check('version 2.39', pg.evaluate("() => gia.VERSION")=='2.39')
     pg.evaluate("() => gia.cosmos.explore('system', { instant: true })"); pg.wait_for_timeout(3500)
     t=pg.evaluate(TEXT)
     rows=pg.evaluate("() => [...document.querySelectorAll('#notes-body [data-space-comet]')].map((e) => e.dataset.spaceComet)")

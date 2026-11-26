@@ -17,7 +17,7 @@
 
 <sub><a href="https://normansrule.github.io/global-intelligence-atlas/">Website</a> · <a href="#-get-the-app">Install it from the browser, or which download to pick</a></sub>
 
-[![Version](https://img.shields.io/badge/version-2.35.0-1f4e9c)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.39.0-1f4e9c)](CHANGELOG.md)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Deploy to Pages](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/pages.yml)
 [![Tests](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml/badge.svg)](https://github.com/Normansrule/global-intelligence-atlas/actions/workflows/tests.yml)
@@ -41,7 +41,7 @@
   <img src="site/docs-media/layers-dark.svg" alt="The layers of the atlas scrolling past as labelled chips, each with its colour: air quality, US weather warnings, live flights, earthquakes, ships, rocket launches, wildlife, satellites, undersea cables, landmarks and the rest" width="100%" />
 </picture>
 
-[What's new](#-new-in-v235-countries-in-the-news) · [Get the app](#-get-the-app) · [Click anything](#-click-anything) · [At a glance](#-at-a-glance) · [Web or desktop](#-web-app-and-desktop-app) · [Gallery](#-gallery) · [Features](#-features) · [Design](#-design) · [Progress](#-progress) · [How it works](#-how-it-works) · [Run it](#-run-it-yourself) · [References](#-data-and-references) · [Credits](#-credits) · [Changelog](CHANGELOG.md)
+[What's new](#-new-in-v239-a-wildfire-tracker) · [Get the app](#-get-the-app) · [Click anything](#-click-anything) · [At a glance](#-at-a-glance) · [Web or desktop](#-web-app-and-desktop-app) · [Gallery](#-gallery) · [Features](#-features) · [Design](#-design) · [Progress](#-progress) · [How it works](#-how-it-works) · [Run it](#-run-it-yourself) · [References](#-data-and-references) · [Credits](#-credits) · [Changelog](CHANGELOG.md)
 
 <sub>Global Intelligence Atlas (GIA) is built on the basis of <a href="https://github.com/koala73/worldmonitor">World Monitor</a> by Elie Habib.</sub>
 
@@ -49,7 +49,35 @@
 
 ---
 
-## ✨ New in v2.35: countries in the news
+## 🔥 New in v2.39: a wildfire tracker
+
+<p align="center"><img src="site/docs-media/v239-wildfire.jpg" alt="Left: a fire at night seen from a helicopter 450 m up, its burnt ground dark, the part burning now glowing orange along its edge with flames and smoke rising. Right: the fire's page: 9.7 km² seen burning, 144 hot spots, 3,960 MW, growing, spreading east at about 2 km a day, the fire weather, and a map of its hot spots coloured by age with a Play the spread button." width="100%" /></p>
+<p align="center"><sub>A made-up test fire in northern California (the build machine cannot reach NASA FIRMS), seen from a helicopter at night, and its page.</sub></p>
+
+Every **NASA FIRMS** hot spot is now coloured by how long ago a satellite saw it, so the burning edge of a fire is its brightest side. Click one for the page of its **whole fire**: the ground it has burnt, which way and how fast it is spreading, whether it is growing, the fire weather, and its spread **played back pass by pass** over up to 7 days, on a map and on the globe. Then **see it in person**: stand on the real ground 1.5 km from the burning edge, on the side you choose, with the flames, the glow of the fire line, smoke drifting with the live wind and the burnt ground; walk closer, stand on a ridge or rise in a helicopter. **Tools → Wildfire tracker** lists the 15 biggest fires burning now. Hot spots come in every 30 minutes; each satellite passes about twice a day.
+
+## 🕒 Also new in v2.38: a world clock, and a steadier website
+
+<p align="center"><img src="site/docs-media/v238-clock.jpg" alt="The atlas at night over Europe, Africa and Asia with the World clock open in the left drawer: sixteen cities from Honolulu to Sydney, each with its local time, the Sun or Moon for day or night, its offset from UTC and from the viewer, and a bar of its local day with a dot at the current hour. New York, London and Berlin are ticked for the meeting finder." width="100%" /></p>
+<p align="center"><sub>The world clock at 23:25 in London, 23 November 2026, with New York, London and Berlin ticked.</sub></p>
+
+Under **Tools → World clock**: the time now in sixteen cities from Honolulu to Sydney, whether the Sun is up there, how far each is ahead of or behind you, and a bar of each city's day. Tick the cities you need and **Find a meeting time** lists the hours in the next day that fall inside 08:00 to 18:00 in all of them (New York, London and Berlin: 13:00 to 17:00 London time). Click a city to fly there. Behind the scenes, the website's publishing step now tries once more by itself when GitHub's side fails, which it did on about one run in four.
+
+## ✨ Also new in v2.37: visitors from other stars
+
+<p align="center"><img src="site/docs-media/v237-visitors.jpg" alt="The solar system in the atlas with the open paths of the three interstellar objects running in from far away, round the Sun and out again, labelled Borisov and 3I/ATLAS among the planets and comets; next to two pages. 3I/ATLAS: 13.6 AU from the Sun between the orbits of Saturn and Uranus, leaving at 59 km/s, closest to the Sun on 29 October 2025 and to the Earth on 19 December 2025, an eccentricity of 6.14. ʻOumuamua: closest to the Earth on 14 October 2017 at 24 million km, its path turned through 113 degrees by the Sun, found by Robert Weryk with Pan-STARRS1." width="100%" /></p>
+<p align="center"><sub>3I/ATLAS leaving past Saturn's orbit and ʻOumuamua's story, 23 November 2026.</sub></p>
+
+Only three things are known to have come into the solar system from another star: **ʻOumuamua** in 2017, **Borisov** in 2019 and **3I/ATLAS** in 2025. Each now flies on its real open path in the solar system view, with a label where it is. Click one for its page: how far out it is and how fast it is leaving, its speed in interstellar space (26, 32 and 58 km/s), when it passed closest to the Sun and the Earth, how much the Sun bent its path, who found it and what it is. The paths reproduce the published close passes, including 3I/ATLAS's pass by Mars in October 2025; the limits are in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md#v237-visitors-from-other-stars).
+
+## ✨ Also new in v2.36: a sleeker atlas, and the spacecraft at work
+
+<p align="center"><img src="site/docs-media/v236-sleek.jpg" alt="Two views of the atlas. Left: the day theme with the layers drawer, each layer on one line with its source in small type underneath (Fire hotspots, NASA FIRMS) and an info button, and the map buttons as one frosted stack beside the globe. Right: the solar system at night with the James Webb Space Telescope's page: at Sun–Earth L2, 1.51 million km from the Earth, a radio signal 5 seconds each way, and a sketch of the Sun, L1, the Earth and L2 along one line." width="100%" /></p>
+<p align="center"><sub>The new layer rows and map buttons, and the James Webb Space Telescope at L2, 22 November 2026.</sub></p>
+
+The atlas looks **lighter**: the map buttons are one frosted stack, the live bar is frosted so the globe shows through, each layer fits on one line with its source set underneath, a small info button replaces the Learn buttons, and the status bar's secondary controls step back. **Spacecraft at work** adds a table to the solar system card and a page for each of 22 spacecraft: **Webb** and **Euclid** at L2, **SOHO**, **DSCOVR**, **Aditya-L1** and **ACE** at L1, the six orbiters and two rovers at **Mars**, how far each is and how long a radio signal takes; **Parker Solar Probe**'s distance from the Sun right now and its next dive to 6.1 million km from the surface; and the missions on the way, from Europa Clipper to Hera. What is approximate, and what could not be checked, is in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md#v236-a-sleeker-atlas-and-the-spacecraft-at-work).
+
+## ✨ Also new in v2.35: countries in the news
 
 <p align="center"><img src="site/docs-media/v235-countries.jpg" alt="Two views of the globe with Countries in the news on. Left: Europe, the Middle East and Africa, with Russia, Ukraine, Israel and Sudan shaded red for conflict, Germany and Iran blue for politics, and Ukraine's page: three stories from three publishers, all conflict and security, with a button to open Ukraine's page. Right: Asia, with China teal for economy and Russia red, and Taiwan's page: one economy story about chip exports and one conflict story about drills." width="100%" /></p>
 <p align="center"><sub>Ukraine and Taiwan in the news, by angle (sample headlines).</sub></p>
@@ -676,7 +704,11 @@ Fifteen lessons on the [Learn page](https://normansrule.github.io/global-intelli
 | v2.10 | The Global Intelligence Atlas (GIA) repository launch: this README, browser tuning, release branding |
 | v2.11 | Cameras from 22 more agencies and Osiris's worldwide webcam list, the rest of World Monitor's map datasets, markers that share a spot, economy, property and industry |
 | v2.12 | A News tab: headlines from 16 publishers' own feeds around the world and free live news channels from broadcasters' official streams |
-| **v2.35** | **Countries in the news: every country shaded by how many credible headlines name it, coloured by what they are about** |
+| **v2.39** | **A wildfire tracker: hot spots by age, each fire's spread played back over 7 days, and the view from the ground** |
+| v2.38 | A world clock with a meeting finder, and a website deploy that retries by itself |
+| v2.37 | Visitors from other stars: ʻOumuamua, Borisov and 3I/ATLAS on their real open paths, where each is now and how fast it is leaving |
+| v2.36 | **A sleeker look (frosted map controls, one-line layer rows, info buttons) and 22 spacecraft at work: L1, L2, Mars, Parker Solar Probe and the missions on the way** |
+| v2.35 | **Countries in the news: every country shaded by how many credible headlines name it, coloured by what they are about** |
 | v2.34 | **Six asteroids on their real orbits: where each is, its next close pass by the Earth (Apophis in 2029), and the spacecraft that went there** |
 | v2.33 | **Companies and countries in the news from credible outlets, by angle; Dock with the ISS you can look around in, with the Earth below; smoother zooming** |
 | v2.32 | **Six famous comets on their real orbits, with tails near the Sun, where each is now, when it comes back, its meteor showers and the spacecraft that visited** |

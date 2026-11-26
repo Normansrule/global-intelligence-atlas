@@ -9,7 +9,7 @@ from playwright.sync_api import sync_playwright
 res=[]
 def check(n, ok, info=''): res.append(bool(ok)); print(('PASS ' if ok else 'FAIL ')+n, '' if ok else info)
 ROOT=os.path.abspath(os.path.join(sys.argv[-1], '..', '..'))
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.35');localStorage.setItem('gia-theme','dark')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.39');localStorage.setItem('gia-theme','dark')}catch(e){}"
 now=datetime.datetime.now(datetime.timezone.utc)
 iso=lambda m: (now-datetime.timedelta(minutes=m)).strftime('%Y-%m-%dT%H:%M:%S.000Z')
 H=[('Apple shares fall after iPhone sales slow in China','bbc',5),('EU regulators fine Apple over App Store rules','guardian',30),
@@ -35,7 +35,7 @@ with sync_playwright() as p:
     pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.route('**/*', handler); pg.route('**/news-data/**', news); pg.route(lambda u: 'World_Imagery/MapServer/tile/7/' in u, tile); pg.add_init_script(INIT)
     pg.goto('http://localhost:8765/app/#@46,3,1.2&l=borders,companynews', wait_until='commit'); pg.wait_for_timeout(11000)
-    check('version 2.35', pg.evaluate("() => gia.VERSION")=='2.35')
+    check('version 2.39', pg.evaluate("() => gia.VERSION")=='2.39')
     # zooming in: the backdrop never writes depth and is drawn first; the night shade drops its depth test up close
     z=pg.evaluate("""async () => { gia.setBase('imagery'); await new Promise((r) => setTimeout(r, 800)); let u = null, n = null; gia.globe.scene().traverse((o) => { if (o.name === 'under-tiles') u = o; if (o.name === 'night-shade') n = o; });
       const far = n.material.depthTest; gia.globe.pointOfView({ lat: 46, lng: 3, altitude: 0.02 }, 0); await new Promise((r) => setTimeout(r, 600)); const near = n.material.depthTest;

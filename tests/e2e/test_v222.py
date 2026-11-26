@@ -8,7 +8,7 @@ res=[]
 def check(n, ok, info=''): res.append(bool(ok)); print(('PASS ' if ok else 'FAIL ')+n, '' if ok else info)
 ROOT=os.path.abspath(os.path.join(sys.argv[-1], '..', '..'))
 NEW=['phobos','deimos','charon','ceres','vesta','bennu']; SHAPED=['phobos','deimos','vesta','bennu']
-INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.35');localStorage.setItem('gia-theme','dark')}catch(e){}"
+INIT="try{localStorage.setItem('global-intelligence-atlas-version','2.39');localStorage.setItem('gia-theme','dark')}catch(e){}"
 # the shape files (no browser)
 import math
 sh={}
@@ -27,7 +27,7 @@ with sync_playwright() as p:
     pg.route('**/*', handler); pg.add_init_script(INIT)
     pg.goto('http://localhost:8765/app/#@20,0,2.4&b=daynight&l=sun,borders,planets', wait_until='commit')
     pg.wait_for_function("() => window.gia && gia.cosmos && gia.cosmos.ready()", timeout=60000); pg.wait_for_timeout(1500)
-    check('version 2.35', pg.evaluate("() => gia.VERSION")=='2.35')
+    check('version 2.39', pg.evaluate("() => gia.VERSION")=='2.39')
     check('the small worlds’ code is not loaded on the globe', not pg.evaluate("() => performance.getEntriesByType('resource').some((e) => e.name.includes('smallworlds.js'))"))
     th=pg.evaluate("""async () => { const m = await import('/app/js/smallworlds.js'); const AU = 149597870.7; const jd = 2461000.5; const D = Math.PI / 180;
       const km = (v) => Math.hypot(...v) * AU; const ang = (a, b) => Math.acos((a[0] * b[0] + a[1] * b[1] + a[2] * b[2]) / Math.hypot(...a) / Math.hypot(...b)) / D;

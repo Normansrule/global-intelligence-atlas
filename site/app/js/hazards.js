@@ -9,6 +9,8 @@ import { ui } from './uicons.js';
 import { THREE } from '../vendor/vendor.min.mjs';
 import { getFeed, getSnapshot, isDesktop } from './feeds.js';
 import { fmtLat, fmtLng, haversineKm } from './astro.js';
+import { AGES } from './wildfire.js';
+import { fillTrack, trackOverlay } from './firetracker.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const tip = (t, s = '') => `<div class="tip"><b>${esc(t)}</b>${s ? `<span>${esc(s)}</span>` : ''}</div>`;
@@ -49,23 +51,34 @@ export function firesLayer() {
   return {
     id: 'fires', group: 'live', label: 'Fire hotspots (NASA FIRMS)', swatch: '#ff7a3c', on: false, refresh: 15 * 60_000, viewDependent: true, pin: 'flame',
     sources: ['firms', 'livedata'],
-    options: [{ id: 'conf', label: 'Confidence', choices: [['1', 'Nominal and high'], ['2', 'High only'], ['0', 'All detections']], value: '1' }],
+    options: [{ id: 'conf', label: 'Confidence', choices: [['1', 'Nominal and high'], ['2', 'High only'], ['0', 'All detections']], value: '1' },
+      { id: 'colour', label: 'Colour by', choices: [['age', 'How long ago (the spread)'], ['frp', 'How hot it burns']], value: 'age' }], // v2.39
     async load(o) {
       const { rows, src, at } = await loadFireRows();
       const min = Number(o.conf);
       const fires = rows.filter((r) => r[3] >= min);
-      return { rows: fires, total: rows.length, src, at, statusNote: `${fires.length.toLocaleString()} hotspots in the last 24 hours · ${src}${isDesktop ? '' : ` · saved ${ago(Date.now() - at)}`}` };
+      return { rows: fires, total: rows.length, src, at, colour: o.colour ?? 'age', statusNote: `${fires.length.toLocaleString()} hotspots in the last 24 hours · ${src}${isDesktop ? '' : ` · saved ${ago(Date.now() - at)}`}` };
     },
     channels(d, ctx) {
       const v = ctx.view;
       // Far away: three particle clouds (one draw call each) coloured by intensity. Close: the strongest
       // fires in view also get clickable flame symbols.
-      d._particles ??= [['#ff5a36', 1.3, (f) => f < 20], ['#ffb340', 1.8, (f) => f >= 20 && f < 100], ['#fff1a8', 2.4, (f) => f >= 100]]
-        .map(([color, size, test]) => ({ color, size, pts: d.rows.filter((r) => test(r[2])).map((r) => ({ lat: r[0], lng: r[1], alt: 0.0012 })) }));
+      // v2.39: coloured by how long ago each was seen (default), so a fire's spread reads from dark to bright, or by heat.
+      const byAge = d.colour !== 'frp';
+      const key = `${byAge}:${Math.floor(Date.now() / 600_000)}`;
+      if (d._pkey !== key) {
+        d._pkey = key; const now = Date.now();
+        d._particles = byAge
+          ? AGES.slice(0, 3).map((a, i) => ({ color: a.color, size: [2.3, 1.8, 1.3][i], pts: d.rows.filter((r) => { const h = (now - (r[4] ?? 0) * 60_000) / 36e5; return i === 2 ? h >= AGES[1].h : h >= (i ? AGES[i - 1].h : -1) && h < a.h; }).map((r) => ({ lat: r[0], lng: r[1], alt: 0.0012 })) }))
+          : [['#ff5a36', 1.3, (f) => f < 20], ['#ffb340', 1.8, (f) => f >= 20 && f < 100], ['#fff1a8', 2.4, (f) => f >= 100]]
+            .map(([color, size, test]) => ({ color, size, pts: d.rows.filter((r) => test(r[2])).map((r) => ({ lat: r[0], lng: r[1], alt: 0.0012 })) }));
+      }
+      const sel = window.gia?.state?.selected; const tracked = sel?.layer === 'fires' ? trackOverlay(sel.d) : null; // the open fire page (firetracker.js)
       const near = v.altitude < 1.1 ? d.rows.filter((r) => inView(v, r[0], r[1])).sort((a, b) => b[2] - a[2]).slice(0, 600) : [];
       return {
         particles: d._particles,
-        points: near.map((r) => ({ lat: r[0], lng: r[1], alt: 0.003, r: 0.05 + Math.min(0.2, r[2] / 800), color: frpColor(r[2]), tip: tip(`Fire hotspot · ${Math.round(r[2])} MW`, `${CONF[r[3]]} confidence · ${r[4] ? ago(Date.now() - r[4] * 60_000) : ''}`), ref: { layer: 'fires', d: r }, label: '' })),
+        ...(tracked ? { paths: tracked.paths } : {}),
+        points: (tracked?.points ?? []).concat(near.map((r) => ({ lat: r[0], lng: r[1], alt: 0.003, r: 0.05 + Math.min(0.2, r[2] / 800), color: byAge ? AGES[Math.max(0, AGES.findIndex((a) => (Date.now() - (r[4] ?? 0) * 60_000) / 36e5 < a.h))].color : frpColor(r[2]), tip: tip(`Fire hotspot · ${Math.round(r[2])} MW`, `${CONF[r[3]]} confidence · ${r[4] ? ago(Date.now() - r[4] * 60_000) : ''}`), ref: { layer: 'fires', d: r }, label: '' }))),
         pick: (d._pick ??= d.rows.map((r) => ({ lat: r[0], lng: r[1], alt: 0.0012, ref: { layer: 'fires', d: r } }))),
       };
     },
@@ -78,12 +91,15 @@ export function firesLayer() {
         rows: [['Fire radiative power', `${frp.toFixed(1)} MW (${frp >= 100 ? 'very intense' : frp >= 20 ? 'strong' : 'small or smouldering'})`], ['Detection confidence', CONF[conf]],
           ['Seen', t ? `${new Date(t * 60_000).toUTCString()} (${ago(Date.now() - t * 60_000)})` : '—'], ['Pass', day ? 'daytime' : 'night-time']],
         body: 'Each hotspot is a 375-metre pixel where the satellite measured more heat than its surroundings: a wildfire, a farm burning stubble, a gas flare or a volcano. Fire radiative power is the heat given off as light, in megawatts; it tracks how much fuel is burning.',
+        // v2.39 the page of the whole fire this hot spot belongs to (firetracker.js)
+        html: '<div id="wf-track" class="wf-track"><p class="muted">Finding the fire this hot spot belongs to…</p></div>',
+        async fill(stillOpen) { const g = window.gia; await fillTrack(r, { stillOpen, liveRows: g?.state?.data?.fires?.rows, refresh: () => g?.refreshLayer('fires', { soft: true }) }); },
         links: [{ label: 'NASA FIRMS map here', url: `https://firms.modaps.eosdis.nasa.gov/map/#d:24hrs;@${lng.toFixed(3)},${lat.toFixed(3)},10.0z` }],
         probe: [lat, lng],
       };
     },
     learn: {
-      what: 'Every active fire NASA’s VIIRS instrument detected in the last 24 hours, about 375 metres across each. Red dots are small fires, orange strong ones and pale yellow the most intense. Zoom in for clickable flame symbols.',
+      what: 'Every active fire NASA’s VIIRS instrument detected in the last 24 hours, about 375 metres across each, coloured by how long ago it was seen: pale yellow in the last 3 hours, orange 3 to 12 hours ago, red 12 to 24 hours ago, so the edge of a spreading fire is its brightest side (or, in the layer’s options, by how hot it burns). Click a hot spot for the page of its whole fire: its size, which way and how fast it is spreading, its spread played back pass by pass over up to 7 days, and a view from the ground.',
       how: 'VIIRS flies on the NOAA-20 and Suomi NPP satellites, which pass over every place about twice a day. It measures heat in the middle-infrared; pixels much hotter than their neighbours are flagged as fires within about three hours. FIRMS publishes them openly. The live-data job saves a copy every 30 minutes because NASA’s files are not readable directly from a web page; the desktop app reads them live.',
       try: 'Turn on Natural events and compare NASA’s named wildfires with the raw hotspots around them. Then look at Africa south of the Sahara by day: most of those dots are farmers clearing fields.',
       refs: ['firms', 'viirs', 'livedata'],

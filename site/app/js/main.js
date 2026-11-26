@@ -66,7 +66,7 @@ import { isOffline, servedSince } from './lastknown.js'; // offline mode
 import { isDesktop, feedsReady, appConfig } from './feeds.js';
 import { REGISTRY, EXTRA_GROUPS, EDITIONS, editionOf, manifest, validateLayer, pluginNames } from './registry.js';
 import { DATASET_MODES, OPEN_DATA, WM_ONLY, datasetMode, setDatasetMode, infraData, origins } from './opendata.js';
-export const VERSION = '2.35';
+export const VERSION = '2.39';
 const NEW_VERSION = (() => { try { return localStorage.getItem('global-intelligence-atlas-version') !== VERSION; } catch { return false; } })();
 
 import { glyphSvg, unitSvg } from './icons.js';
@@ -787,9 +787,9 @@ function renderLayerPanel() {
         <div class="layer${wantOn(l) ? ' is-on' : ''}" style="--sw:${l.swatch}" data-name="${esc(`${l.label} ${g.label}`.toLowerCase())}">
           <input type="checkbox" id="ly-${l.id}" data-layer="${l.id}" ${(state.pending.has(l.id) ? state.pending.get(l.id) : state.on.has(l.id)) ? 'checked' : ''}/>
           <label class="sw" for="ly-${l.id}" aria-hidden="true"></label>
-          <label for="ly-${l.id}">${layerGlyph(l) ? glyphSvg(layerGlyph(l), l.swatch, 17) : ''}${esc(l.label)}${l.fresh ? ' <em class="new">new</em>' : ''}${state.pending.has(l.id) ? ' <em class="pend">' + (state.pending.get(l.id) ? 'will show' : 'will hide') + '</em>' : ''}<span class="cnt" data-count="${l.id}">${state.on.has(l.id) ? countOf(l.id) : ''}</span></label>
+          <label for="ly-${l.id}">${layerGlyph(l) ? glyphSvg(layerGlyph(l), l.swatch, 17) : ''}${layerName(l.label)}${l.fresh ? ' <em class="new">new</em>' : ''}${state.pending.has(l.id) ? ' <em class="pend">' + (state.pending.get(l.id) ? 'will show' : 'will hide') + '</em>' : ''}<span class="cnt" data-count="${l.id}">${state.on.has(l.id) ? countOf(l.id) : ''}</span></label>
           <span class="st" data-status="${l.id}" data-s="${state.lstatus[l.id]?.s ?? ''}"></span>
-          <button class="learn" data-learn="${l.id}" aria-label="Learn about ${esc(l.label)}">Learn</button>
+          <button class="learn" data-learn="${l.id}" aria-label="Learn about ${esc(l.label)}" title="Learn about this layer">${ui('info')}</button>
           ${(l.options ?? []).map((o) => optionHtml(l, o)).join('')}
           ${legendChips(l)}
           ${l.panel ? `<div class="lpanel" data-lpanel="${l.id}" ${state.on.has(l.id) && state.data[l.id] ? '' : 'hidden'}>${state.on.has(l.id) ? l.panel(state.data[l.id]) : ''}</div>` : ''}
@@ -2009,9 +2009,37 @@ if (state.pendingSpace) setTimeout(() => cosmos.explore(state.pendingSpace, { in
 addEventListener('keydown', (e) => { if (e.key === 'Escape' && cosmos.focus() && !e.target.closest?.('input, textarea')) cosmos.leave(); });
 if (NEW_VERSION) { if (!state.pendingSel && !state.pendingSpace) setTimeout(whatsNew, 600); try { localStorage.setItem('global-intelligence-atlas-version', VERSION); } catch { /* private mode */ } }
 else if (!location.hash.includes('@') && !isMobile) welcome();
+/** v2.36 A layer's name with its source in brackets set apart and muted: "Fire hotspots" over "NASA FIRMS". */
+function layerName(label) {
+  const m = /^(.*?) \(([^()]+)\)$/.exec(label);
+  return m ? `<span class="ln">${esc(m[1])}<small class="src">${esc(m[2])}</small></span>` : `<span class="ln">${esc(label)}</span>`;
+}
 function whatsNew() {
   const g = (n, c) => glyphSvg(n, c, 26);
-  openNotes(`What’s new in v${VERSION}`, `<h3>Countries in the news</h3>
+  openNotes(`What’s new in v${VERSION}`, `<h3>A wildfire tracker</h3>
+    <div class="newlist">
+      <span>${g('flame', '#ff9a3c')}<b>Fires by age:</b> every NASA FIRMS hot spot is now coloured by how long ago a satellite saw it, pale yellow in the last 3 hours to red a day ago, so the burning edge of a fire is its brightest side. <button class="btn ghost" data-tool="wildfires">Try the wildfire tracker</button></span>
+      <span>${g('eye', '#ffd37a')}<b>Each fire’s page:</b> click a hot spot for its whole fire: how much ground it has burnt, which way and how fast it is spreading, whether it is growing, the fire weather, and its spread played back pass by pass over up to 7 days, on a map and on the globe.</span>
+      <span>${g('peak', '#c9b79a')}<b>See it in person:</b> stand on the real ground 1.5 km from the fire’s edge, on the side you choose, and watch the flames, the glow of the fire line, the smoke drifting with the live wind and the ground already burnt. Walk closer, climb a ridge or rise in a helicopter.</span>
+    </div>
+    <h4>From v2.38: a world clock, and a steadier website</h4>
+    <div class="newlist">
+      <span>${g('clock', '#9fe6ff')}<b>World clock:</b> the time now in sixteen cities from Honolulu to Sydney, whether the Sun is up there, how far each is ahead of or behind you, and a bar of each city’s day. Click a city to fly there. It is under Tools, then Time. <button class="btn ghost" data-tool="clock">Try the world clock</button></span>
+      <span>${g('pin', '#7fe3c4')}<b>Find a meeting time:</b> tick the cities you need and it lists the hours in the next day that fall inside 08:00 to 18:00 in all of them, in your time and theirs. Your choice is kept on this device.</span>
+      <span>${g('server', '#e3b55b')}<b>A steadier website:</b> when GitHub’s publishing step fails, which happens now and then for reasons on GitHub’s side, it now waits and tries once more by itself.</span>
+    </div>
+    <h4>From v2.37: visitors from other stars</h4>
+    <div class="newlist">
+      <span>${g('sat', '#c7a6ff')}<b>The three interstellar objects:</b> ʻOumuamua (2017), Borisov (2019) and 3I/ATLAS (2025), the only things known to have come in from another star, drawn on their real open paths through the solar system and labelled where they are now. <button class="btn ghost" data-space-visitor="atlas3i">Try 3I/ATLAS</button></span>
+      <span>${g('eye', '#7fe3c4')}<b>Each one’s story:</b> how far out it is and how fast it is leaving, when it passed closest to the Sun and the Earth, who found it and what it is made of. <button class="btn ghost" data-space-visitor="oumuamua">Try ʻOumuamua</button></span>
+    </div>
+    <h4>From v2.36: a sleeker atlas, and the spacecraft at work</h4>
+    <div class="newlist">
+      <span>${g('eye', '#93b6ff')}<b>Sleeker:</b> the map buttons are one frosted stack and the live bar is frosted too, so the globe shows through; each layer fits on one line with its source underneath, an info button instead of Learn; quieter status bar, softer panels that slide in.</span>
+      <span>${g('sat', '#b7a3ff')}<b>Spacecraft at work:</b> Webb and Euclid at L2, SOHO, DSCOVR, Aditya-L1 and ACE at L1, the six orbiters and two rovers at Mars, and how long a radio signal takes to each. <button class="btn ghost" data-space-craft="jwst">Try Webb</button></span>
+      <span>${g('rocket', '#ffb347')}<b>Parker Solar Probe:</b> how far from the Sun it is right now on its 88-day orbit, and when it next dives to 6.1 million km from the surface at about 190 km/s. Plus the missions on the way: Europa Clipper, JUICE, BepiColombo, Lucy, Hera and Psyche. <button class="btn ghost" data-space-craft="parker">Try Parker</button></span>
+    </div>
+    <h4>From v2.35: countries in the news</h4>
     <div class="newlist">
       <span>${g('news', '#b7a3ff')}<b>The world’s news on the map:</b> every country shaded by how many headlines name it in the last 48 hours, by its name, its people or its capital, from public broadcasters and established newspapers only. <button class="btn ghost" data-ix-layer="countrynews">Try it</button></span>
       <span>${g('pin', '#f07a63')}<b>Coloured by what the news is about:</b> conflict, politics, economy and markets, courts and regulation, technology, climate or society, so you can see at a glance where the fighting, the elections and the markets are.</span>

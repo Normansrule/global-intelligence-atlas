@@ -24,6 +24,14 @@ jobs:
       - run: pip install playwright==1.56.0 && python -m playwright install --with-deps chromium
       - name: v2.16 speed (every start-up module preloaded in parallel) and v2.25 offline shell (every start-up file cached by the service worker)
         run: node tools/build-preload.mjs --check
+      - name: v2.39 wildfire tracker (fires from hot spots, spread, playback, the view from the ground)
+        run: node tests/wildfire/test-wildfire.mjs && bash tests/e2e/run.sh test_v239.py | tee v239.log && grep -q "SUMMARY 19 / 19" v239.log
+      - name: v2.38 world clock and meeting finder
+        run: node tests/worldclock/test-worldclock.mjs && bash tests/e2e/run.sh test_v238.py | tee v238.log && grep -q "SUMMARY 14 / 14" v238.log
+      - name: v2.37 visitors from other stars (hyperbolic paths checked against published passes, labels, table, pages)
+        run: node tests/interstellar/test-interstellar.mjs && bash tests/e2e/run.sh test_v237.py | tee v237.log && grep -q "SUMMARY 9 / 9" v237.log
+      - name: v2.36 sleeker design and spacecraft at work (layer rows, frosted map controls, L1, L2, Mars, Parker)
+        run: node tests/spacecraft/test-spacecraft.mjs && bash tests/e2e/run.sh test_v236.py | tee v236.log && grep -q "SUMMARY 13 / 13" v236.log
       - name: v2.35 countries in the news (shaded by story count, coloured by lead angle, Taiwan, card and country page)
         run: bash tests/e2e/run.sh test_v235.py | tee v235.log && grep -q "SUMMARY 9 / 9" v235.log
       - name: v2.34 asteroids that pass the Earth (Kepler orbits checked against JPL, close passes, Apophis 2029, missions)

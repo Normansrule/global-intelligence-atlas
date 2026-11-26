@@ -4,6 +4,43 @@ Release notes for Global Intelligence Atlas (GIA), newest first. Versions before
 
 ---
 
+## 🔥 v2.39: a wildfire tracker
+
+- **Fires by age:** every NASA FIRMS hot spot is coloured by how long ago a satellite saw it (pale yellow in the last 3 hours, orange, then red a day ago), so a fire's burning edge is its brightest side. The old colouring by heat is one click away in the layer's options.
+- **Each fire's page:** click a hot spot for its whole fire: the ground it has burnt, hot spots and heat, which way and how fast it is spreading, whether it is growing or dying down, the fire weather, and a map that plays its spread back pass by pass over up to 7 days, with the globe playing along.
+- **See it in person:** stand on the real ground 1.5 km from the burning edge, on the side you pick, and watch the flames, the glow of the fire line, the smoke drifting with the live wind and the burnt ground. Walk closer, stand on a ridge, rise in a helicopter, or go full screen.
+- **Tools → Wildfire tracker:** the 15 fires giving off the most heat now, with gas flares left out.
+- **The live-data job** now also saves 7 days of the 150 biggest fires every hour, for the spread.
+
+---
+
+## 🕒 v2.38: a world clock, and a steadier website
+
+- **World clock:** under Tools, the time now in sixteen cities from Honolulu to Sydney, with day, twilight or night, each city's offset from UTC and from you, and a bar of each city's local day. Click a city to fly there.
+- **Find a meeting time:** tick the cities you need and it lists the hours in the next day inside 08:00 to 18:00 in all of them, in your time and theirs.
+- **A steadier website:** the GitHub Pages publishing step now waits 45 seconds and tries once more when it fails, which it did on about one run in four.
+
+---
+
+## ✨ v2.37: visitors from other stars
+
+- **The three interstellar objects:** ʻOumuamua (2017), Borisov (2019) and 3I/ATLAS (2025), drawn in the solar system on their real open paths, with a label where each is now.
+- **Each one's page:** how far out it is and how fast it is leaving, its speed in interstellar space, when it passed closest to the Sun and the Earth, how much the Sun bent its path, who found it and what it is.
+- **Checked:** the paths reproduce the published close passes (ʻOumuamua by the Earth in October 2017, Borisov in December 2019, 3I/ATLAS by Mars and the Earth in 2025) and their published speeds.
+- **On the solar system card:** a table of the three, with how far out each is and how fast it is leaving.
+
+---
+
+## 🛰️ v2.36: a sleeker atlas, and the spacecraft at work
+
+- **Sleeker:** the map buttons are one frosted stack and the live bar is frosted, so the globe shows through at the edges; each layer fits on one line with its source set underneath; an info button replaces the Learn buttons; the status bar's frame rate, quality and credits step back; the details panel slides in.
+- **Spacecraft at work:** a table on the solar system card and a page for each of 22 spacecraft: Webb and Euclid at L2; SOHO, DSCOVR, Aditya-L1 and ACE at L1, with a sketch of where those points are; six orbiters and two rovers at Mars; and how long a radio signal takes to each.
+- **Parker Solar Probe:** how far from the Sun it is now on its 88-day orbit, how fast it is going, and when it next dives to 6.1 million km from the surface.
+- **On the way:** Europa Clipper, JUICE, BepiColombo, Lucy, Hera and Psyche, with where each is going and when it arrives.
+- **Tests:** the docking test now holds the thruster key until the speed builds, so a slow test computer no longer fails it.
+
+---
+
 ## 🗞️ v2.35: countries in the news
 
 - **The world's news on the map:** a new layer, Countries in the news, shades every country by how many headlines in the last 48 hours name it, by its name, its people or its capital, from public broadcasters and established newspapers only.
